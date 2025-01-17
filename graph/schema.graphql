@@ -1,0 +1,10 @@
+extend type Query {
+    getPoliceStations(
+        where: PoliceStationWhereInput
+        after: Cursor,
+        first: Int,
+        before: Cursor,
+        last: Int,
+        orderBy: PoliceStationOrder
+    ): [PoliceStation!]!
+}
