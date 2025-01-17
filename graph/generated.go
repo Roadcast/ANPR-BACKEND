@@ -96,6 +96,11 @@ type ComplexityRoot struct {
 		Users         func(childComplexity int) int
 	}
 
+	PoliceStationConnection struct {
+		Edges    func(childComplexity int) int
+		PageInfo func(childComplexity int) int
+	}
+
 	Query struct {
 		GetPoliceStations func(childComplexity int, where *ent.PoliceStationWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.PoliceStationOrder) int
 		Node              func(childComplexity int, id string) int
@@ -123,7 +128,7 @@ type ComplexityRoot struct {
 type QueryResolver interface {
 	Node(ctx context.Context, id string) (ent.Noder, error)
 	Nodes(ctx context.Context, ids []string) ([]ent.Noder, error)
-	GetPoliceStations(ctx context.Context, where *ent.PoliceStationWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.PoliceStationOrder) ([]*ent.PoliceStation, error)
+	GetPoliceStations(ctx context.Context, where *ent.PoliceStationWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.PoliceStationOrder) (*model.PoliceStationConnection, error)
 }
 
 type CameraOrderResolver interface {
@@ -367,6 +372,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PoliceStation.Users(childComplexity), true
+
+	case "PoliceStationConnection.edges":
+		if e.complexity.PoliceStationConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.PoliceStationConnection.Edges(childComplexity), true
+
+	case "PoliceStationConnection.pageInfo":
+		if e.complexity.PoliceStationConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.PoliceStationConnection.PageInfo(childComplexity), true
 
 	case "Query.getPoliceStations":
 		if e.complexity.Query.GetPoliceStations == nil {
@@ -2828,6 +2847,122 @@ func (ec *executionContext) fieldContext_PoliceStation_childStations(_ context.C
 	return fc, nil
 }
 
+func (ec *executionContext) _PoliceStationConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.PoliceStationConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PoliceStationConnection_pageInfo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PoliceStationConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PoliceStationConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "hasNextPage":
+				return ec.fieldContext_PageInfo_hasNextPage(ctx, field)
+			case "hasPreviousPage":
+				return ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
+			case "startCursor":
+				return ec.fieldContext_PageInfo_startCursor(ctx, field)
+			case "endCursor":
+				return ec.fieldContext_PageInfo_endCursor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PageInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PoliceStationConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.PoliceStationConnection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PoliceStationConnection_edges(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.PoliceStation)
+	fc.Result = res
+	return ec.marshalNPoliceStation2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PoliceStationConnection_edges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PoliceStationConnection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_PoliceStation_id(ctx, field)
+			case "name":
+				return ec.fieldContext_PoliceStation_name(ctx, field)
+			case "location":
+				return ec.fieldContext_PoliceStation_location(ctx, field)
+			case "code":
+				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "identifier":
+				return ec.fieldContext_PoliceStation_identifier(ctx, field)
+			case "users":
+				return ec.fieldContext_PoliceStation_users(ctx, field)
+			case "parentStation":
+				return ec.fieldContext_PoliceStation_parentStation(ctx, field)
+			case "childStations":
+				return ec.fieldContext_PoliceStation_childStations(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PoliceStation", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_node(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_node(ctx, field)
 	if err != nil {
@@ -2961,9 +3096,9 @@ func (ec *executionContext) _Query_getPoliceStations(ctx context.Context, field 
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*ent.PoliceStation)
+	res := resTmp.(*model.PoliceStationConnection)
 	fc.Result = res
-	return ec.marshalNPoliceStation2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStationᚄ(ctx, field.Selections, res)
+	return ec.marshalNPoliceStationConnection2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐPoliceStationConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getPoliceStations(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2974,24 +3109,12 @@ func (ec *executionContext) fieldContext_Query_getPoliceStations(ctx context.Con
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_PoliceStation_id(ctx, field)
-			case "name":
-				return ec.fieldContext_PoliceStation_name(ctx, field)
-			case "location":
-				return ec.fieldContext_PoliceStation_location(ctx, field)
-			case "code":
-				return ec.fieldContext_PoliceStation_code(ctx, field)
-			case "identifier":
-				return ec.fieldContext_PoliceStation_identifier(ctx, field)
-			case "users":
-				return ec.fieldContext_PoliceStation_users(ctx, field)
-			case "parentStation":
-				return ec.fieldContext_PoliceStation_parentStation(ctx, field)
-			case "childStations":
-				return ec.fieldContext_PoliceStation_childStations(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_PoliceStationConnection_pageInfo(ctx, field)
+			case "edges":
+				return ec.fieldContext_PoliceStationConnection_edges(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type PoliceStation", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type PoliceStationConnection", field.Name)
 		},
 	}
 	defer func() {
@@ -8275,6 +8398,50 @@ func (ec *executionContext) _PoliceStation(ctx context.Context, sel ast.Selectio
 	return out
 }
 
+var policeStationConnectionImplementors = []string{"PoliceStationConnection"}
+
+func (ec *executionContext) _PoliceStationConnection(ctx context.Context, sel ast.SelectionSet, obj *model.PoliceStationConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, policeStationConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PoliceStationConnection")
+		case "pageInfo":
+			out.Values[i] = ec._PoliceStationConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._PoliceStationConnection_edges(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var queryImplementors = []string{"Query"}
 
 func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -9099,6 +9266,16 @@ func (ec *executionContext) marshalNOrderDirection2goᚑentᚑprojectᚋgraphᚋ
 	return v
 }
 
+func (ec *executionContext) marshalNPageInfo2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v *model.PageInfo) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._PageInfo(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNPermission2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPermission(ctx context.Context, sel ast.SelectionSet, v *ent.Permission) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -9114,7 +9291,7 @@ func (ec *executionContext) unmarshalNPermissionWhereInput2ᚖgoᚑentᚑproject
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNPoliceStation2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStationᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.PoliceStation) graphql.Marshaler {
+func (ec *executionContext) marshalNPoliceStation2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStation(ctx context.Context, sel ast.SelectionSet, v []*ent.PoliceStation) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -9138,7 +9315,7 @@ func (ec *executionContext) marshalNPoliceStation2ᚕᚖgoᚑentᚑprojectᚋint
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNPoliceStation2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStation(ctx, sel, v[i])
+			ret[i] = ec.marshalOPoliceStation2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStation(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -9148,12 +9325,6 @@ func (ec *executionContext) marshalNPoliceStation2ᚕᚖgoᚑentᚑprojectᚋint
 
 	}
 	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
 
 	return ret
 }
@@ -9166,6 +9337,20 @@ func (ec *executionContext) marshalNPoliceStation2ᚖgoᚑentᚑprojectᚋintern
 		return graphql.Null
 	}
 	return ec._PoliceStation(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNPoliceStationConnection2goᚑentᚑprojectᚋgraphᚋmodelᚐPoliceStationConnection(ctx context.Context, sel ast.SelectionSet, v model.PoliceStationConnection) graphql.Marshaler {
+	return ec._PoliceStationConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPoliceStationConnection2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐPoliceStationConnection(ctx context.Context, sel ast.SelectionSet, v *model.PoliceStationConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._PoliceStationConnection(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNPoliceStationOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐPoliceStationOrderField(ctx context.Context, v any) (model.PoliceStationOrderField, error) {

@@ -4,6 +4,7 @@ package model
 
 import (
 	"fmt"
+	"go-ent-project/internal/ent"
 	"io"
 	"strconv"
 )
@@ -112,6 +113,11 @@ type PageInfo struct {
 	StartCursor *string `json:"startCursor,omitempty"`
 	// When paginating forwards, the cursor to continue.
 	EndCursor *string `json:"endCursor,omitempty"`
+}
+
+type PoliceStationConnection struct {
+	PageInfo *PageInfo            `json:"pageInfo"`
+	Edges    []*ent.PoliceStation `json:"edges"`
 }
 
 type Query struct {

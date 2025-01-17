@@ -6,5 +6,10 @@ extend type Query {
         before: Cursor,
         last: Int,
         orderBy: PoliceStationOrder
-    ): [PoliceStation!]!
+    ): PoliceStationConnection!
+}
+
+type PoliceStationConnection {
+    pageInfo: PageInfo!
+    edges: [PoliceStation]!
 }

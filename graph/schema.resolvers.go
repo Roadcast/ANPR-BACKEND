@@ -7,6 +7,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"go-ent-project/graph/model"
 	"go-ent-project/internal/ent"
 	"log"
 
@@ -14,7 +15,7 @@ import (
 )
 
 // GetPoliceStations is the resolver for the getPoliceStations field.
-func (r *queryResolver) GetPoliceStations(ctx context.Context, where *ent.PoliceStationWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.PoliceStationOrder) ([]*ent.PoliceStation, error) {
+func (r *queryResolver) GetPoliceStations(ctx context.Context, where *ent.PoliceStationWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.PoliceStationOrder) (*model.PoliceStationConnection, error) {
 	var afterCursor, beforeCursor *entgql.Cursor[int]
 	if after != nil {
 		cursor, err := DecodeCursor(*after)
@@ -44,15 +45,39 @@ func (r *queryResolver) GetPoliceStations(ctx context.Context, where *ent.Police
 		val := int(*last)
 		lastInt = &val
 	}
+	query := r.Client.PoliceStation.Query()
 
-	paginate, err := r.Client.PoliceStation.Query().Paginate(ctx, afterCursor, firstInt, beforeCursor, lastInt)
+	// Apply `where` filters if provided
+	if where != nil {
+		var err error
+		query, err = where.Filter(query)
+		if err != nil {
+			return nil, fmt.Errorf("failed to apply filters: %v", err)
+		}
+	}
+
+	paginate, err := query.Paginate(ctx, afterCursor, firstInt, beforeCursor, lastInt, ent.WithPoliceStationOrder(orderBy))
 	if err != nil {
 		return nil, err
 	}
 	var data []*ent.PoliceStation
 	for _, node := range paginate.Edges {
+		println("node: ", node.Node.ID)
 		data = append(data, node.Node)
 	}
 
-	return data, nil
+	startCursor := convertCursorToString(paginate.PageInfo.StartCursor)
+	endCursor := convertCursorToString(paginate.PageInfo.EndCursor)
+
+	println(startCursor, endCursor, "sssss")
+
+	return &model.PoliceStationConnection{
+		PageInfo: &model.PageInfo{ // PageInfo struct
+			HasNextPage:     paginate.PageInfo.HasNextPage,
+			HasPreviousPage: paginate.PageInfo.HasPreviousPage,
+			StartCursor:     startCursor,
+			EndCursor:       endCursor,
+		},
+		Edges: data,
+	}, nil
 }
