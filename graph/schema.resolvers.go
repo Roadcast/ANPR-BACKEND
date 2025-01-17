@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"go-ent-project/graph/model"
 	"go-ent-project/internal/ent"
-	"log"
 
 	"entgo.io/contrib/entgql"
 )
@@ -32,9 +31,6 @@ func (r *queryResolver) GetPoliceStations(ctx context.Context, where *ent.Police
 		}
 		beforeCursor = &entgql.Cursor[int]{Value: cursor}
 	}
-	log.Printf("r.Client: %v", r.Client)
-	log.Printf("first: %v, last: %v", first, last)
-	log.Printf("after: %v, before: %v", after, before)
 
 	var firstInt, lastInt *int
 	if first != nil {
@@ -62,14 +58,11 @@ func (r *queryResolver) GetPoliceStations(ctx context.Context, where *ent.Police
 	}
 	var data []*ent.PoliceStation
 	for _, node := range paginate.Edges {
-		println("node: ", node.Node.ID)
 		data = append(data, node.Node)
 	}
 
 	startCursor := convertCursorToString(paginate.PageInfo.StartCursor)
 	endCursor := convertCursorToString(paginate.PageInfo.EndCursor)
-
-	println(startCursor, endCursor, "sssss")
 
 	return &model.PoliceStationConnection{
 		PageInfo: &model.PageInfo{ // PageInfo struct

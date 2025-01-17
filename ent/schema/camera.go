@@ -21,7 +21,6 @@ func (Camera) Fields() []ent.Field {
 
 				entgql.OrderField("NAME"),
 			),
-
 		// Model of the camera
 		field.String("model").
 			NotEmpty().
