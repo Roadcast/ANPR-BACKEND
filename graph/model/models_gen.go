@@ -9,6 +9,11 @@ import (
 	"strconv"
 )
 
+type CameraConnection struct {
+	PageInfo *PageInfo     `json:"pageInfo"`
+	Edges    []*ent.Camera `json:"edges"`
+}
+
 type Car struct {
 	ID           string `json:"id"`
 	Make         string `json:"make"`

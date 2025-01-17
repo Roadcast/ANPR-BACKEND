@@ -7,9 +7,22 @@ extend type Query {
         last: Int,
         orderBy: PoliceStationOrder
     ): PoliceStationConnection!
+    getCameras(
+        where: CameraWhereInput
+        after: Cursor,
+        first: Int,
+        before: Cursor,
+        last: Int,
+        orderBy: CameraOrder
+    ): CameraConnection!
 }
 
 type PoliceStationConnection {
     pageInfo: PageInfo!
     edges: [PoliceStation]!
+}
+
+type CameraConnection {
+    pageInfo: PageInfo!
+    edges: [Camera]!
 }

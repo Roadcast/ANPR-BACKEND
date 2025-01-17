@@ -74,3 +74,8 @@ func (r *queryResolver) GetPoliceStations(ctx context.Context, where *ent.Police
 		Edges: data,
 	}, nil
 }
+
+// GetCameras is the resolver for the getCameras field.
+func (r *queryResolver) GetCameras(ctx context.Context, where *ent.CameraWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.CameraOrder) (*model.CameraConnection, error) {
+	panic(fmt.Errorf("not implemented: GetCameras - getCameras"))
+}
