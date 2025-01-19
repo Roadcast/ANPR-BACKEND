@@ -92,14 +92,11 @@ func (r *mutationResolver) RefreshToken(ctx context.Context, refreshToken string
 
 // GetMe is the resolver for the getMe field.
 func (r *queryResolver) GetMe(ctx context.Context) (*ent.User, error) {
-	authUser, ok := ctx.Value(constant.UserCtxKey).(ent.User)
-	fmt.Printf("User: %v\n", authUser)
-	if !ok {
-		fmt.Printf("User not found in context\n")
-		return nil, fmt.Errorf("failed to fetch user from context")
+	authUser, err := middleware.GetUserFromContext(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve user from context: %v", err)
 	}
-
-	return &authUser, nil
+	return authUser, nil
 }
 
 // Mutation returns MutationResolver implementation.

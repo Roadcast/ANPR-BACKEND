@@ -18,7 +18,7 @@ import (
 var (
 	accessTokenSecret  = []byte("your-access-token-secret")
 	refreshTokenSecret = []byte("your-refresh-token-secret")
-	tokenExpiry        = time.Minute * 15   // Access token expiration
+	tokenExpiry        = time.Hour * 2      // Access token expiration
 	refreshExpiry      = time.Hour * 24 * 7 // Refresh token expiration
 )
 
