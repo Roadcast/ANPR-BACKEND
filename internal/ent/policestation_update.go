@@ -9,6 +9,7 @@ import (
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/predicate"
 	"go-ent-project/internal/ent/user"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -25,6 +26,12 @@ type PoliceStationUpdate struct {
 // Where appends a list predicates to the PoliceStationUpdate builder.
 func (psu *PoliceStationUpdate) Where(ps ...predicate.PoliceStation) *PoliceStationUpdate {
 	psu.mutation.Where(ps...)
+	return psu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (psu *PoliceStationUpdate) SetUpdatedAt(t time.Time) *PoliceStationUpdate {
+	psu.mutation.SetUpdatedAt(t)
 	return psu
 }
 
@@ -186,6 +193,7 @@ func (psu *PoliceStationUpdate) RemoveChildStations(p ...*PoliceStation) *Police
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (psu *PoliceStationUpdate) Save(ctx context.Context) (int, error) {
+	psu.defaults()
 	return withHooks(ctx, psu.sqlSave, psu.mutation, psu.hooks)
 }
 
@@ -208,6 +216,14 @@ func (psu *PoliceStationUpdate) Exec(ctx context.Context) error {
 func (psu *PoliceStationUpdate) ExecX(ctx context.Context) {
 	if err := psu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (psu *PoliceStationUpdate) defaults() {
+	if _, ok := psu.mutation.UpdatedAt(); !ok {
+		v := policestation.UpdateDefaultUpdatedAt()
+		psu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -242,6 +258,9 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := psu.mutation.UpdatedAt(); ok {
+		_spec.SetField(policestation.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := psu.mutation.Name(); ok {
 		_spec.SetField(policestation.FieldName, field.TypeString, value)
@@ -395,6 +414,12 @@ type PoliceStationUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *PoliceStationMutation
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (psuo *PoliceStationUpdateOne) SetUpdatedAt(t time.Time) *PoliceStationUpdateOne {
+	psuo.mutation.SetUpdatedAt(t)
+	return psuo
 }
 
 // SetName sets the "name" field.
@@ -568,6 +593,7 @@ func (psuo *PoliceStationUpdateOne) Select(field string, fields ...string) *Poli
 
 // Save executes the query and returns the updated PoliceStation entity.
 func (psuo *PoliceStationUpdateOne) Save(ctx context.Context) (*PoliceStation, error) {
+	psuo.defaults()
 	return withHooks(ctx, psuo.sqlSave, psuo.mutation, psuo.hooks)
 }
 
@@ -590,6 +616,14 @@ func (psuo *PoliceStationUpdateOne) Exec(ctx context.Context) error {
 func (psuo *PoliceStationUpdateOne) ExecX(ctx context.Context) {
 	if err := psuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (psuo *PoliceStationUpdateOne) defaults() {
+	if _, ok := psuo.mutation.UpdatedAt(); !ok {
+		v := policestation.UpdateDefaultUpdatedAt()
+		psuo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -641,6 +675,9 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := psuo.mutation.UpdatedAt(); ok {
+		_spec.SetField(policestation.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := psuo.mutation.Name(); ok {
 		_spec.SetField(policestation.FieldName, field.TypeString, value)

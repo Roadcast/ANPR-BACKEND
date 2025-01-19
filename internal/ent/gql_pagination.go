@@ -312,6 +312,20 @@ func (c *CameraQuery) Paginate(
 }
 
 var (
+	// CameraOrderFieldID orders Camera by id.
+	CameraOrderFieldID = &CameraOrderField{
+		Value: func(c *Camera) (ent.Value, error) {
+			return c.ID, nil
+		},
+		column: camera.FieldID,
+		toTerm: camera.ByID,
+		toCursor: func(c *Camera) Cursor {
+			return Cursor{
+				ID:    c.ID,
+				Value: c.ID,
+			}
+		},
+	}
 	// CameraOrderFieldName orders Camera by name.
 	CameraOrderFieldName = &CameraOrderField{
 		Value: func(c *Camera) (ent.Value, error) {
@@ -332,6 +346,8 @@ var (
 func (f CameraOrderField) String() string {
 	var str string
 	switch f.column {
+	case CameraOrderFieldID.column:
+		str = "ID"
 	case CameraOrderFieldName.column:
 		str = "NAME"
 	}
@@ -350,6 +366,8 @@ func (f *CameraOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("CameraOrderField %T must be a string", v)
 	}
 	switch str {
+	case "ID":
+		*f = *CameraOrderFieldID
 	case "NAME":
 		*f = *CameraOrderFieldName
 	default:
@@ -607,6 +625,53 @@ func (c *CarQuery) Paginate(
 	return conn, nil
 }
 
+var (
+	// CarOrderFieldID orders Car by id.
+	CarOrderFieldID = &CarOrderField{
+		Value: func(c *Car) (ent.Value, error) {
+			return c.ID, nil
+		},
+		column: car.FieldID,
+		toTerm: car.ByID,
+		toCursor: func(c *Car) Cursor {
+			return Cursor{
+				ID:    c.ID,
+				Value: c.ID,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f CarOrderField) String() string {
+	var str string
+	switch f.column {
+	case CarOrderFieldID.column:
+		str = "ID"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f CarOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *CarOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("CarOrderField %T must be a string", v)
+	}
+	switch str {
+	case "ID":
+		*f = *CarOrderFieldID
+	default:
+		return fmt.Errorf("%s is not a valid CarOrderField", str)
+	}
+	return nil
+}
+
 // CarOrderField defines the ordering field of Car.
 type CarOrderField struct {
 	// Value extracts the ordering value from the given Car.
@@ -854,6 +919,53 @@ func (pe *PermissionQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
+}
+
+var (
+	// PermissionOrderFieldID orders Permission by id.
+	PermissionOrderFieldID = &PermissionOrderField{
+		Value: func(pe *Permission) (ent.Value, error) {
+			return pe.ID, nil
+		},
+		column: permission.FieldID,
+		toTerm: permission.ByID,
+		toCursor: func(pe *Permission) Cursor {
+			return Cursor{
+				ID:    pe.ID,
+				Value: pe.ID,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f PermissionOrderField) String() string {
+	var str string
+	switch f.column {
+	case PermissionOrderFieldID.column:
+		str = "ID"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f PermissionOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *PermissionOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("PermissionOrderField %T must be a string", v)
+	}
+	switch str {
+	case "ID":
+		*f = *PermissionOrderFieldID
+	default:
+		return fmt.Errorf("%s is not a valid PermissionOrderField", str)
+	}
+	return nil
 }
 
 // PermissionOrderField defines the ordering field of Permission.
@@ -1106,6 +1218,20 @@ func (ps *PoliceStationQuery) Paginate(
 }
 
 var (
+	// PoliceStationOrderFieldID orders PoliceStation by id.
+	PoliceStationOrderFieldID = &PoliceStationOrderField{
+		Value: func(ps *PoliceStation) (ent.Value, error) {
+			return ps.ID, nil
+		},
+		column: policestation.FieldID,
+		toTerm: policestation.ByID,
+		toCursor: func(ps *PoliceStation) Cursor {
+			return Cursor{
+				ID:    ps.ID,
+				Value: ps.ID,
+			}
+		},
+	}
 	// PoliceStationOrderFieldName orders PoliceStation by name.
 	PoliceStationOrderFieldName = &PoliceStationOrderField{
 		Value: func(ps *PoliceStation) (ent.Value, error) {
@@ -1126,6 +1252,8 @@ var (
 func (f PoliceStationOrderField) String() string {
 	var str string
 	switch f.column {
+	case PoliceStationOrderFieldID.column:
+		str = "ID"
 	case PoliceStationOrderFieldName.column:
 		str = "NAME"
 	}
@@ -1144,6 +1272,8 @@ func (f *PoliceStationOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("PoliceStationOrderField %T must be a string", v)
 	}
 	switch str {
+	case "ID":
+		*f = *PoliceStationOrderFieldID
 	case "NAME":
 		*f = *PoliceStationOrderFieldName
 	default:
@@ -1401,6 +1531,53 @@ func (r *RoleQuery) Paginate(
 	return conn, nil
 }
 
+var (
+	// RoleOrderFieldID orders Role by id.
+	RoleOrderFieldID = &RoleOrderField{
+		Value: func(r *Role) (ent.Value, error) {
+			return r.ID, nil
+		},
+		column: role.FieldID,
+		toTerm: role.ByID,
+		toCursor: func(r *Role) Cursor {
+			return Cursor{
+				ID:    r.ID,
+				Value: r.ID,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f RoleOrderField) String() string {
+	var str string
+	switch f.column {
+	case RoleOrderFieldID.column:
+		str = "ID"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f RoleOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *RoleOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("RoleOrderField %T must be a string", v)
+	}
+	switch str {
+	case "ID":
+		*f = *RoleOrderFieldID
+	default:
+		return fmt.Errorf("%s is not a valid RoleOrderField", str)
+	}
+	return nil
+}
+
 // RoleOrderField defines the ordering field of Role.
 type RoleOrderField struct {
 	// Value extracts the ordering value from the given Role.
@@ -1651,6 +1828,20 @@ func (u *UserQuery) Paginate(
 }
 
 var (
+	// UserOrderFieldID orders User by id.
+	UserOrderFieldID = &UserOrderField{
+		Value: func(u *User) (ent.Value, error) {
+			return u.ID, nil
+		},
+		column: user.FieldID,
+		toTerm: user.ByID,
+		toCursor: func(u *User) Cursor {
+			return Cursor{
+				ID:    u.ID,
+				Value: u.ID,
+			}
+		},
+	}
 	// UserOrderFieldName orders User by name.
 	UserOrderFieldName = &UserOrderField{
 		Value: func(u *User) (ent.Value, error) {
@@ -1679,32 +1870,18 @@ var (
 			}
 		},
 	}
-	// UserOrderFieldCreatedAt orders User by created_at.
-	UserOrderFieldCreatedAt = &UserOrderField{
-		Value: func(u *User) (ent.Value, error) {
-			return u.CreatedAt, nil
-		},
-		column: user.FieldCreatedAt,
-		toTerm: user.ByCreatedAt,
-		toCursor: func(u *User) Cursor {
-			return Cursor{
-				ID:    u.ID,
-				Value: u.CreatedAt,
-			}
-		},
-	}
 )
 
 // String implement fmt.Stringer interface.
 func (f UserOrderField) String() string {
 	var str string
 	switch f.column {
+	case UserOrderFieldID.column:
+		str = "ID"
 	case UserOrderFieldName.column:
 		str = "NAME"
 	case UserOrderFieldEmail.column:
 		str = "EMAIL"
-	case UserOrderFieldCreatedAt.column:
-		str = "CREATED_AT"
 	}
 	return str
 }
@@ -1721,12 +1898,12 @@ func (f *UserOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("UserOrderField %T must be a string", v)
 	}
 	switch str {
+	case "ID":
+		*f = *UserOrderFieldID
 	case "NAME":
 		*f = *UserOrderFieldName
 	case "EMAIL":
 		*f = *UserOrderFieldEmail
-	case "CREATED_AT":
-		*f = *UserOrderFieldCreatedAt
 	default:
 		return fmt.Errorf("%s is not a valid UserOrderField", str)
 	}

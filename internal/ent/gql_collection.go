@@ -36,6 +36,16 @@ func (c *CameraQuery) collectField(ctx context.Context, oneNode bool, opCtx *gra
 	)
 	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
 		switch field.Name {
+		case "createdAt":
+			if _, ok := fieldSeen[camera.FieldCreatedAt]; !ok {
+				selectedFields = append(selectedFields, camera.FieldCreatedAt)
+				fieldSeen[camera.FieldCreatedAt] = struct{}{}
+			}
+		case "updatedAt":
+			if _, ok := fieldSeen[camera.FieldUpdatedAt]; !ok {
+				selectedFields = append(selectedFields, camera.FieldUpdatedAt)
+				fieldSeen[camera.FieldUpdatedAt] = struct{}{}
+			}
 		case "name":
 			if _, ok := fieldSeen[camera.FieldName]; !ok {
 				selectedFields = append(selectedFields, camera.FieldName)
@@ -145,6 +155,16 @@ func (c *CarQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphq
 	)
 	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
 		switch field.Name {
+		case "createdAt":
+			if _, ok := fieldSeen[car.FieldCreatedAt]; !ok {
+				selectedFields = append(selectedFields, car.FieldCreatedAt)
+				fieldSeen[car.FieldCreatedAt] = struct{}{}
+			}
+		case "updatedAt":
+			if _, ok := fieldSeen[car.FieldUpdatedAt]; !ok {
+				selectedFields = append(selectedFields, car.FieldUpdatedAt)
+				fieldSeen[car.FieldUpdatedAt] = struct{}{}
+			}
 		case "make":
 			if _, ok := fieldSeen[car.FieldMake]; !ok {
 				selectedFields = append(selectedFields, car.FieldMake)
@@ -205,6 +225,28 @@ func newCarPaginateArgs(rv map[string]any) *carPaginateArgs {
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
 	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &CarOrder{Field: &CarOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithCarOrder(order))
+			}
+		case *CarOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithCarOrder(v))
+			}
+		}
+	}
 	if v, ok := rv[whereField].(*CarWhereInput); ok {
 		args.opts = append(args.opts, WithCarFilter(v.Filter))
 	}
@@ -232,6 +274,16 @@ func (pe *PermissionQuery) collectField(ctx context.Context, oneNode bool, opCtx
 	)
 	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
 		switch field.Name {
+		case "createdAt":
+			if _, ok := fieldSeen[permission.FieldCreatedAt]; !ok {
+				selectedFields = append(selectedFields, permission.FieldCreatedAt)
+				fieldSeen[permission.FieldCreatedAt] = struct{}{}
+			}
+		case "updatedAt":
+			if _, ok := fieldSeen[permission.FieldUpdatedAt]; !ok {
+				selectedFields = append(selectedFields, permission.FieldUpdatedAt)
+				fieldSeen[permission.FieldUpdatedAt] = struct{}{}
+			}
 		case "name":
 			if _, ok := fieldSeen[permission.FieldName]; !ok {
 				selectedFields = append(selectedFields, permission.FieldName)
@@ -291,6 +343,28 @@ func newPermissionPaginateArgs(rv map[string]any) *permissionPaginateArgs {
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &PermissionOrder{Field: &PermissionOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithPermissionOrder(order))
+			}
+		case *PermissionOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithPermissionOrder(v))
+			}
+		}
 	}
 	if v, ok := rv[whereField].(*PermissionWhereInput); ok {
 		args.opts = append(args.opts, WithPermissionFilter(v.Filter))
@@ -356,6 +430,16 @@ func (ps *PoliceStationQuery) collectField(ctx context.Context, oneNode bool, op
 			ps.WithNamedChildStations(alias, func(wq *PoliceStationQuery) {
 				*wq = *query
 			})
+		case "createdAt":
+			if _, ok := fieldSeen[policestation.FieldCreatedAt]; !ok {
+				selectedFields = append(selectedFields, policestation.FieldCreatedAt)
+				fieldSeen[policestation.FieldCreatedAt] = struct{}{}
+			}
+		case "updatedAt":
+			if _, ok := fieldSeen[policestation.FieldUpdatedAt]; !ok {
+				selectedFields = append(selectedFields, policestation.FieldUpdatedAt)
+				fieldSeen[policestation.FieldUpdatedAt] = struct{}{}
+			}
 		case "name":
 			if _, ok := fieldSeen[policestation.FieldName]; !ok {
 				selectedFields = append(selectedFields, policestation.FieldName)
@@ -486,6 +570,16 @@ func (r *RoleQuery) collectField(ctx context.Context, oneNode bool, opCtx *graph
 			r.WithNamedUsers(alias, func(wq *UserQuery) {
 				*wq = *query
 			})
+		case "createdAt":
+			if _, ok := fieldSeen[role.FieldCreatedAt]; !ok {
+				selectedFields = append(selectedFields, role.FieldCreatedAt)
+				fieldSeen[role.FieldCreatedAt] = struct{}{}
+			}
+		case "updatedAt":
+			if _, ok := fieldSeen[role.FieldUpdatedAt]; !ok {
+				selectedFields = append(selectedFields, role.FieldUpdatedAt)
+				fieldSeen[role.FieldUpdatedAt] = struct{}{}
+			}
 		case "name":
 			if _, ok := fieldSeen[role.FieldName]; !ok {
 				selectedFields = append(selectedFields, role.FieldName)
@@ -526,6 +620,28 @@ func newRolePaginateArgs(rv map[string]any) *rolePaginateArgs {
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
 	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &RoleOrder{Field: &RoleOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithRoleOrder(order))
+			}
+		case *RoleOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithRoleOrder(v))
+			}
+		}
+	}
 	if v, ok := rv[whereField].(*RoleWhereInput); ok {
 		args.opts = append(args.opts, WithRoleFilter(v.Filter))
 	}
@@ -564,6 +680,20 @@ func (u *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *graph
 				return err
 			}
 			u.withRole = query
+			if _, ok := fieldSeen[user.FieldRoleID]; !ok {
+				selectedFields = append(selectedFields, user.FieldRoleID)
+				fieldSeen[user.FieldRoleID] = struct{}{}
+			}
+		case "createdAt":
+			if _, ok := fieldSeen[user.FieldCreatedAt]; !ok {
+				selectedFields = append(selectedFields, user.FieldCreatedAt)
+				fieldSeen[user.FieldCreatedAt] = struct{}{}
+			}
+		case "updatedAt":
+			if _, ok := fieldSeen[user.FieldUpdatedAt]; !ok {
+				selectedFields = append(selectedFields, user.FieldUpdatedAt)
+				fieldSeen[user.FieldUpdatedAt] = struct{}{}
+			}
 		case "name":
 			if _, ok := fieldSeen[user.FieldName]; !ok {
 				selectedFields = append(selectedFields, user.FieldName)
@@ -579,15 +709,15 @@ func (u *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *graph
 				selectedFields = append(selectedFields, user.FieldPhone)
 				fieldSeen[user.FieldPhone] = struct{}{}
 			}
-		case "createdAt":
-			if _, ok := fieldSeen[user.FieldCreatedAt]; !ok {
-				selectedFields = append(selectedFields, user.FieldCreatedAt)
-				fieldSeen[user.FieldCreatedAt] = struct{}{}
+		case "active":
+			if _, ok := fieldSeen[user.FieldActive]; !ok {
+				selectedFields = append(selectedFields, user.FieldActive)
+				fieldSeen[user.FieldActive] = struct{}{}
 			}
-		case "updatedAt":
-			if _, ok := fieldSeen[user.FieldUpdatedAt]; !ok {
-				selectedFields = append(selectedFields, user.FieldUpdatedAt)
-				fieldSeen[user.FieldUpdatedAt] = struct{}{}
+		case "roleID":
+			if _, ok := fieldSeen[user.FieldRoleID]; !ok {
+				selectedFields = append(selectedFields, user.FieldRoleID)
+				fieldSeen[user.FieldRoleID] = struct{}{}
 			}
 		case "id":
 		case "__typename":

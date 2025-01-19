@@ -264,12 +264,12 @@ func (cq *CameraQuery) Clone() *CameraQuery {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Camera.Query().
-//		GroupBy(camera.FieldName).
+//		GroupBy(camera.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (cq *CameraQuery) GroupBy(field string, fields ...string) *CameraGroupBy {
@@ -287,11 +287,11 @@ func (cq *CameraQuery) GroupBy(field string, fields ...string) *CameraGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.Camera.Query().
-//		Select(camera.FieldName).
+//		Select(camera.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (cq *CameraQuery) Select(fields ...string) *CameraSelect {
 	cq.ctx.Fields = append(cq.ctx.Fields, fields...)

@@ -374,12 +374,12 @@ func (psq *PoliceStationQuery) WithChildStations(opts ...func(*PoliceStationQuer
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.PoliceStation.Query().
-//		GroupBy(policestation.FieldName).
+//		GroupBy(policestation.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (psq *PoliceStationQuery) GroupBy(field string, fields ...string) *PoliceStationGroupBy {
@@ -397,11 +397,11 @@ func (psq *PoliceStationQuery) GroupBy(field string, fields ...string) *PoliceSt
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.PoliceStation.Query().
-//		Select(policestation.FieldName).
+//		Select(policestation.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (psq *PoliceStationQuery) Select(fields ...string) *PoliceStationSelect {
 	psq.ctx.Fields = append(psq.ctx.Fields, fields...)

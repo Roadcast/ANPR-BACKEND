@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"go-ent-project/internal/ent/camera"
 	"go-ent-project/internal/ent/predicate"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -24,6 +25,12 @@ type CameraUpdate struct {
 // Where appends a list predicates to the CameraUpdate builder.
 func (cu *CameraUpdate) Where(ps ...predicate.Camera) *CameraUpdate {
 	cu.mutation.Where(ps...)
+	return cu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (cu *CameraUpdate) SetUpdatedAt(t time.Time) *CameraUpdate {
+	cu.mutation.SetUpdatedAt(t)
 	return cu
 }
 
@@ -96,6 +103,7 @@ func (cu *CameraUpdate) Mutation() *CameraMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (cu *CameraUpdate) Save(ctx context.Context) (int, error) {
+	cu.defaults()
 	return withHooks(ctx, cu.sqlSave, cu.mutation, cu.hooks)
 }
 
@@ -118,6 +126,14 @@ func (cu *CameraUpdate) Exec(ctx context.Context) error {
 func (cu *CameraUpdate) ExecX(ctx context.Context) {
 	if err := cu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (cu *CameraUpdate) defaults() {
+	if _, ok := cu.mutation.UpdatedAt(); !ok {
+		v := camera.UpdateDefaultUpdatedAt()
+		cu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -153,6 +169,9 @@ func (cu *CameraUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := cu.mutation.UpdatedAt(); ok {
+		_spec.SetField(camera.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := cu.mutation.Name(); ok {
 		_spec.SetField(camera.FieldName, field.TypeString, value)
 	}
@@ -186,6 +205,12 @@ type CameraUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *CameraMutation
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (cuo *CameraUpdateOne) SetUpdatedAt(t time.Time) *CameraUpdateOne {
+	cuo.mutation.SetUpdatedAt(t)
+	return cuo
 }
 
 // SetName sets the "name" field.
@@ -270,6 +295,7 @@ func (cuo *CameraUpdateOne) Select(field string, fields ...string) *CameraUpdate
 
 // Save executes the query and returns the updated Camera entity.
 func (cuo *CameraUpdateOne) Save(ctx context.Context) (*Camera, error) {
+	cuo.defaults()
 	return withHooks(ctx, cuo.sqlSave, cuo.mutation, cuo.hooks)
 }
 
@@ -292,6 +318,14 @@ func (cuo *CameraUpdateOne) Exec(ctx context.Context) error {
 func (cuo *CameraUpdateOne) ExecX(ctx context.Context) {
 	if err := cuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (cuo *CameraUpdateOne) defaults() {
+	if _, ok := cuo.mutation.UpdatedAt(); !ok {
+		v := camera.UpdateDefaultUpdatedAt()
+		cuo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -343,6 +377,9 @@ func (cuo *CameraUpdateOne) sqlSave(ctx context.Context) (_node *Camera, err err
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := cuo.mutation.UpdatedAt(); ok {
+		_spec.SetField(camera.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := cuo.mutation.Name(); ok {
 		_spec.SetField(camera.FieldName, field.TypeString, value)

@@ -11,6 +11,8 @@ var (
 	// CamerasColumns holds the columns for the "cameras" table.
 	CamerasColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
 		{Name: "model", Type: field.TypeString},
 		{Name: "imei", Type: field.TypeString, Unique: true},
@@ -26,6 +28,8 @@ var (
 	// CarsColumns holds the columns for the "cars" table.
 	CarsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "make", Type: field.TypeString},
 		{Name: "model", Type: field.TypeString},
 		{Name: "year", Type: field.TypeInt},
@@ -41,6 +45,8 @@ var (
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
 		{Name: "can_read", Type: field.TypeBool, Default: false},
 		{Name: "can_create", Type: field.TypeBool, Default: false},
@@ -56,7 +62,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "permissions_roles_permissions",
-				Columns:    []*schema.Column{PermissionsColumns[6]},
+				Columns:    []*schema.Column{PermissionsColumns[8]},
 				RefColumns: []*schema.Column{RolesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -65,6 +71,8 @@ var (
 	// PoliceStationsColumns holds the columns for the "police_stations" table.
 	PoliceStationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
 		{Name: "location", Type: field.TypeJSON, Nullable: true, SchemaType: map[string]string{"postgres": "geometry(Point)"}},
 		{Name: "code", Type: field.TypeString, Unique: true},
@@ -79,7 +87,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "police_stations_police_stations_child_stations",
-				Columns:    []*schema.Column{PoliceStationsColumns[5]},
+				Columns:    []*schema.Column{PoliceStationsColumns[7]},
 				RefColumns: []*schema.Column{PoliceStationsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -88,6 +96,8 @@ var (
 	// RolesColumns holds the columns for the "roles" table.
 	RolesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
 	}
 	// RolesTable holds the schema information for the "roles" table.
@@ -99,14 +109,15 @@ var (
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString},
 		{Name: "phone", Type: field.TypeString, Nullable: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "active", Type: field.TypeBool, Default: true},
 		{Name: "police_station_users", Type: field.TypeInt, Nullable: true},
-		{Name: "role_users", Type: field.TypeInt, Nullable: true},
+		{Name: "role_id", Type: field.TypeInt, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -116,13 +127,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "users_police_stations_users",
-				Columns:    []*schema.Column{UsersColumns[7]},
+				Columns:    []*schema.Column{UsersColumns[8]},
 				RefColumns: []*schema.Column{PoliceStationsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "users_roles_users",
-				Columns:    []*schema.Column{UsersColumns[8]},
+				Columns:    []*schema.Column{UsersColumns[9]},
 				RefColumns: []*schema.Column{RolesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

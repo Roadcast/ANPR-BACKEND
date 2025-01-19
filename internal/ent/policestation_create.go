@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/user"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -20,6 +21,34 @@ type PoliceStationCreate struct {
 	mutation *PoliceStationMutation
 	hooks    []Hook
 	conflict []sql.ConflictOption
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (psc *PoliceStationCreate) SetCreatedAt(t time.Time) *PoliceStationCreate {
+	psc.mutation.SetCreatedAt(t)
+	return psc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (psc *PoliceStationCreate) SetNillableCreatedAt(t *time.Time) *PoliceStationCreate {
+	if t != nil {
+		psc.SetCreatedAt(*t)
+	}
+	return psc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (psc *PoliceStationCreate) SetUpdatedAt(t time.Time) *PoliceStationCreate {
+	psc.mutation.SetUpdatedAt(t)
+	return psc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (psc *PoliceStationCreate) SetNillableUpdatedAt(t *time.Time) *PoliceStationCreate {
+	if t != nil {
+		psc.SetUpdatedAt(*t)
+	}
+	return psc
 }
 
 // SetName sets the "name" field.
@@ -43,6 +72,12 @@ func (psc *PoliceStationCreate) SetCode(s string) *PoliceStationCreate {
 // SetIdentifier sets the "identifier" field.
 func (psc *PoliceStationCreate) SetIdentifier(s string) *PoliceStationCreate {
 	psc.mutation.SetIdentifier(s)
+	return psc
+}
+
+// SetID sets the "id" field.
+func (psc *PoliceStationCreate) SetID(i int) *PoliceStationCreate {
+	psc.mutation.SetID(i)
 	return psc
 }
 
@@ -102,6 +137,7 @@ func (psc *PoliceStationCreate) Mutation() *PoliceStationMutation {
 
 // Save creates the PoliceStation in the database.
 func (psc *PoliceStationCreate) Save(ctx context.Context) (*PoliceStation, error) {
+	psc.defaults()
 	return withHooks(ctx, psc.sqlSave, psc.mutation, psc.hooks)
 }
 
@@ -127,8 +163,26 @@ func (psc *PoliceStationCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (psc *PoliceStationCreate) defaults() {
+	if _, ok := psc.mutation.CreatedAt(); !ok {
+		v := policestation.DefaultCreatedAt()
+		psc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := psc.mutation.UpdatedAt(); !ok {
+		v := policestation.DefaultUpdatedAt()
+		psc.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (psc *PoliceStationCreate) check() error {
+	if _, ok := psc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "PoliceStation.created_at"`)}
+	}
+	if _, ok := psc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "PoliceStation.updated_at"`)}
+	}
 	if _, ok := psc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "PoliceStation.name"`)}
 	}
@@ -167,8 +221,10 @@ func (psc *PoliceStationCreate) sqlSave(ctx context.Context) (*PoliceStation, er
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int(id)
+	}
 	psc.mutation.id = &_node.ID
 	psc.mutation.done = true
 	return _node, nil
@@ -180,6 +236,18 @@ func (psc *PoliceStationCreate) createSpec() (*PoliceStation, *sqlgraph.CreateSp
 		_spec = sqlgraph.NewCreateSpec(policestation.Table, sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt))
 	)
 	_spec.OnConflict = psc.conflict
+	if id, ok := psc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
+	if value, ok := psc.mutation.CreatedAt(); ok {
+		_spec.SetField(policestation.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := psc.mutation.UpdatedAt(); ok {
+		_spec.SetField(policestation.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if value, ok := psc.mutation.Name(); ok {
 		_spec.SetField(policestation.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -252,7 +320,7 @@ func (psc *PoliceStationCreate) createSpec() (*PoliceStation, *sqlgraph.CreateSp
 // of the `INSERT` statement. For example:
 //
 //	client.PoliceStation.Create().
-//		SetName(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -261,7 +329,7 @@ func (psc *PoliceStationCreate) createSpec() (*PoliceStation, *sqlgraph.CreateSp
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.PoliceStationUpsert) {
-//			SetName(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (psc *PoliceStationCreate) OnConflict(opts ...sql.ConflictOption) *PoliceStationUpsertOne {
@@ -296,6 +364,18 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *PoliceStationUpsert) SetUpdatedAt(v time.Time) *PoliceStationUpsert {
+	u.Set(policestation.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *PoliceStationUpsert) UpdateUpdatedAt() *PoliceStationUpsert {
+	u.SetExcluded(policestation.FieldUpdatedAt)
+	return u
+}
 
 // SetName sets the "name" field.
 func (u *PoliceStationUpsert) SetName(v string) *PoliceStationUpsert {
@@ -351,16 +431,27 @@ func (u *PoliceStationUpsert) UpdateIdentifier() *PoliceStationUpsert {
 	return u
 }
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.PoliceStation.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(policestation.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 func (u *PoliceStationUpsertOne) UpdateNewValues() *PoliceStationUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(policestation.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(policestation.FieldCreatedAt)
+		}
+	}))
 	return u
 }
 
@@ -389,6 +480,20 @@ func (u *PoliceStationUpsertOne) Update(set func(*PoliceStationUpsert)) *PoliceS
 		set(&PoliceStationUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *PoliceStationUpsertOne) SetUpdatedAt(v time.Time) *PoliceStationUpsertOne {
+	return u.Update(func(s *PoliceStationUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *PoliceStationUpsertOne) UpdateUpdatedAt() *PoliceStationUpsertOne {
+	return u.Update(func(s *PoliceStationUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetName sets the "name" field.
@@ -506,6 +611,7 @@ func (pscb *PoliceStationCreateBulk) Save(ctx context.Context) ([]*PoliceStation
 	for i := range pscb.builders {
 		func(i int, root context.Context) {
 			builder := pscb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PoliceStationMutation)
 				if !ok {
@@ -533,7 +639,7 @@ func (pscb *PoliceStationCreateBulk) Save(ctx context.Context) ([]*PoliceStation
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = int(id)
 				}
@@ -588,7 +694,7 @@ func (pscb *PoliceStationCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.PoliceStationUpsert) {
-//			SetName(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (pscb *PoliceStationCreateBulk) OnConflict(opts ...sql.ConflictOption) *PoliceStationUpsertBulk {
@@ -623,10 +729,23 @@ type PoliceStationUpsertBulk struct {
 //	client.PoliceStation.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(policestation.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 func (u *PoliceStationUpsertBulk) UpdateNewValues() *PoliceStationUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(policestation.FieldID)
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(policestation.FieldCreatedAt)
+			}
+		}
+	}))
 	return u
 }
 
@@ -655,6 +774,20 @@ func (u *PoliceStationUpsertBulk) Update(set func(*PoliceStationUpsert)) *Police
 		set(&PoliceStationUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *PoliceStationUpsertBulk) SetUpdatedAt(v time.Time) *PoliceStationUpsertBulk {
+	return u.Update(func(s *PoliceStationUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *PoliceStationUpsertBulk) UpdateUpdatedAt() *PoliceStationUpsertBulk {
+	return u.Update(func(s *PoliceStationUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetName sets the "name" field.

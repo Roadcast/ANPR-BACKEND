@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go-ent-project/internal/ent/car"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -19,6 +20,34 @@ type CarCreate struct {
 	mutation *CarMutation
 	hooks    []Hook
 	conflict []sql.ConflictOption
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (cc *CarCreate) SetCreatedAt(t time.Time) *CarCreate {
+	cc.mutation.SetCreatedAt(t)
+	return cc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (cc *CarCreate) SetNillableCreatedAt(t *time.Time) *CarCreate {
+	if t != nil {
+		cc.SetCreatedAt(*t)
+	}
+	return cc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (cc *CarCreate) SetUpdatedAt(t time.Time) *CarCreate {
+	cc.mutation.SetUpdatedAt(t)
+	return cc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (cc *CarCreate) SetNillableUpdatedAt(t *time.Time) *CarCreate {
+	if t != nil {
+		cc.SetUpdatedAt(*t)
+	}
+	return cc
 }
 
 // SetMake sets the "make" field.
@@ -51,6 +80,12 @@ func (cc *CarCreate) SetColor(s string) *CarCreate {
 	return cc
 }
 
+// SetID sets the "id" field.
+func (cc *CarCreate) SetID(i int) *CarCreate {
+	cc.mutation.SetID(i)
+	return cc
+}
+
 // Mutation returns the CarMutation object of the builder.
 func (cc *CarCreate) Mutation() *CarMutation {
 	return cc.mutation
@@ -58,6 +93,7 @@ func (cc *CarCreate) Mutation() *CarMutation {
 
 // Save creates the Car in the database.
 func (cc *CarCreate) Save(ctx context.Context) (*Car, error) {
+	cc.defaults()
 	return withHooks(ctx, cc.sqlSave, cc.mutation, cc.hooks)
 }
 
@@ -83,8 +119,26 @@ func (cc *CarCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (cc *CarCreate) defaults() {
+	if _, ok := cc.mutation.CreatedAt(); !ok {
+		v := car.DefaultCreatedAt()
+		cc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := cc.mutation.UpdatedAt(); !ok {
+		v := car.DefaultUpdatedAt()
+		cc.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (cc *CarCreate) check() error {
+	if _, ok := cc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Car.created_at"`)}
+	}
+	if _, ok := cc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Car.updated_at"`)}
+	}
 	if _, ok := cc.mutation.Make(); !ok {
 		return &ValidationError{Name: "make", err: errors.New(`ent: missing required field "Car.make"`)}
 	}
@@ -139,8 +193,10 @@ func (cc *CarCreate) sqlSave(ctx context.Context) (*Car, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int(id)
+	}
 	cc.mutation.id = &_node.ID
 	cc.mutation.done = true
 	return _node, nil
@@ -152,6 +208,18 @@ func (cc *CarCreate) createSpec() (*Car, *sqlgraph.CreateSpec) {
 		_spec = sqlgraph.NewCreateSpec(car.Table, sqlgraph.NewFieldSpec(car.FieldID, field.TypeInt))
 	)
 	_spec.OnConflict = cc.conflict
+	if id, ok := cc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
+	if value, ok := cc.mutation.CreatedAt(); ok {
+		_spec.SetField(car.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := cc.mutation.UpdatedAt(); ok {
+		_spec.SetField(car.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if value, ok := cc.mutation.Make(); ok {
 		_spec.SetField(car.FieldMake, field.TypeString, value)
 		_node.Make = value
@@ -179,7 +247,7 @@ func (cc *CarCreate) createSpec() (*Car, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.Car.Create().
-//		SetMake(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -188,7 +256,7 @@ func (cc *CarCreate) createSpec() (*Car, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.CarUpsert) {
-//			SetMake(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (cc *CarCreate) OnConflict(opts ...sql.ConflictOption) *CarUpsertOne {
@@ -223,6 +291,18 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *CarUpsert) SetUpdatedAt(v time.Time) *CarUpsert {
+	u.Set(car.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *CarUpsert) UpdateUpdatedAt() *CarUpsert {
+	u.SetExcluded(car.FieldUpdatedAt)
+	return u
+}
 
 // SetMake sets the "make" field.
 func (u *CarUpsert) SetMake(v string) *CarUpsert {
@@ -290,16 +370,27 @@ func (u *CarUpsert) UpdateColor() *CarUpsert {
 	return u
 }
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.Car.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(car.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 func (u *CarUpsertOne) UpdateNewValues() *CarUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(car.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(car.FieldCreatedAt)
+		}
+	}))
 	return u
 }
 
@@ -328,6 +419,20 @@ func (u *CarUpsertOne) Update(set func(*CarUpsert)) *CarUpsertOne {
 		set(&CarUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *CarUpsertOne) SetUpdatedAt(v time.Time) *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *CarUpsertOne) UpdateUpdatedAt() *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetMake sets the "make" field.
@@ -459,6 +564,7 @@ func (ccb *CarCreateBulk) Save(ctx context.Context) ([]*Car, error) {
 	for i := range ccb.builders {
 		func(i int, root context.Context) {
 			builder := ccb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*CarMutation)
 				if !ok {
@@ -486,7 +592,7 @@ func (ccb *CarCreateBulk) Save(ctx context.Context) ([]*Car, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = int(id)
 				}
@@ -541,7 +647,7 @@ func (ccb *CarCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.CarUpsert) {
-//			SetMake(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (ccb *CarCreateBulk) OnConflict(opts ...sql.ConflictOption) *CarUpsertBulk {
@@ -576,10 +682,23 @@ type CarUpsertBulk struct {
 //	client.Car.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(car.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 func (u *CarUpsertBulk) UpdateNewValues() *CarUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(car.FieldID)
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(car.FieldCreatedAt)
+			}
+		}
+	}))
 	return u
 }
 
@@ -608,6 +727,20 @@ func (u *CarUpsertBulk) Update(set func(*CarUpsert)) *CarUpsertBulk {
 		set(&CarUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *CarUpsertBulk) SetUpdatedAt(v time.Time) *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *CarUpsertBulk) UpdateUpdatedAt() *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetMake sets the "make" field.

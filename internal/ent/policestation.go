@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"go-ent-project/internal/ent/policestation"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -17,6 +18,10 @@ type PoliceStation struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Location holds the value of the "location" field.
@@ -90,6 +95,8 @@ func (*PoliceStation) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case policestation.FieldName, policestation.FieldCode, policestation.FieldIdentifier:
 			values[i] = new(sql.NullString)
+		case policestation.FieldCreatedAt, policestation.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		case policestation.ForeignKeys[0]: // police_station_child_stations
 			values[i] = new(sql.NullInt64)
 		default:
@@ -113,6 +120,18 @@ func (ps *PoliceStation) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			ps.ID = int(value.Int64)
+		case policestation.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				ps.CreatedAt = value.Time
+			}
+		case policestation.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				ps.UpdatedAt = value.Time
+			}
 		case policestation.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -197,6 +216,12 @@ func (ps *PoliceStation) String() string {
 	var builder strings.Builder
 	builder.WriteString("PoliceStation(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", ps.ID))
+	builder.WriteString("created_at=")
+	builder.WriteString(ps.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(ps.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(ps.Name)
 	builder.WriteString(", ")

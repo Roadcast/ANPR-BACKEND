@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"go-ent-project/internal/ent/car"
 	"go-ent-project/internal/ent/predicate"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -24,6 +25,12 @@ type CarUpdate struct {
 // Where appends a list predicates to the CarUpdate builder.
 func (cu *CarUpdate) Where(ps ...predicate.Car) *CarUpdate {
 	cu.mutation.Where(ps...)
+	return cu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (cu *CarUpdate) SetUpdatedAt(t time.Time) *CarUpdate {
+	cu.mutation.SetUpdatedAt(t)
 	return cu
 }
 
@@ -111,6 +118,7 @@ func (cu *CarUpdate) Mutation() *CarMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (cu *CarUpdate) Save(ctx context.Context) (int, error) {
+	cu.defaults()
 	return withHooks(ctx, cu.sqlSave, cu.mutation, cu.hooks)
 }
 
@@ -133,6 +141,14 @@ func (cu *CarUpdate) Exec(ctx context.Context) error {
 func (cu *CarUpdate) ExecX(ctx context.Context) {
 	if err := cu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (cu *CarUpdate) defaults() {
+	if _, ok := cu.mutation.UpdatedAt(); !ok {
+		v := car.UpdateDefaultUpdatedAt()
+		cu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -178,6 +194,9 @@ func (cu *CarUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := cu.mutation.UpdatedAt(); ok {
+		_spec.SetField(car.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := cu.mutation.Make(); ok {
 		_spec.SetField(car.FieldMake, field.TypeString, value)
 	}
@@ -214,6 +233,12 @@ type CarUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *CarMutation
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (cuo *CarUpdateOne) SetUpdatedAt(t time.Time) *CarUpdateOne {
+	cuo.mutation.SetUpdatedAt(t)
+	return cuo
 }
 
 // SetMake sets the "make" field.
@@ -313,6 +338,7 @@ func (cuo *CarUpdateOne) Select(field string, fields ...string) *CarUpdateOne {
 
 // Save executes the query and returns the updated Car entity.
 func (cuo *CarUpdateOne) Save(ctx context.Context) (*Car, error) {
+	cuo.defaults()
 	return withHooks(ctx, cuo.sqlSave, cuo.mutation, cuo.hooks)
 }
 
@@ -335,6 +361,14 @@ func (cuo *CarUpdateOne) Exec(ctx context.Context) error {
 func (cuo *CarUpdateOne) ExecX(ctx context.Context) {
 	if err := cuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (cuo *CarUpdateOne) defaults() {
+	if _, ok := cuo.mutation.UpdatedAt(); !ok {
+		v := car.UpdateDefaultUpdatedAt()
+		cuo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -396,6 +430,9 @@ func (cuo *CarUpdateOne) sqlSave(ctx context.Context) (_node *Car, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := cuo.mutation.UpdatedAt(); ok {
+		_spec.SetField(car.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := cuo.mutation.Make(); ok {
 		_spec.SetField(car.FieldMake, field.TypeString, value)

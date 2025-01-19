@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go-ent-project/internal/ent/camera"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -19,6 +20,34 @@ type CameraCreate struct {
 	mutation *CameraMutation
 	hooks    []Hook
 	conflict []sql.ConflictOption
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (cc *CameraCreate) SetCreatedAt(t time.Time) *CameraCreate {
+	cc.mutation.SetCreatedAt(t)
+	return cc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (cc *CameraCreate) SetNillableCreatedAt(t *time.Time) *CameraCreate {
+	if t != nil {
+		cc.SetCreatedAt(*t)
+	}
+	return cc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (cc *CameraCreate) SetUpdatedAt(t time.Time) *CameraCreate {
+	cc.mutation.SetUpdatedAt(t)
+	return cc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (cc *CameraCreate) SetNillableUpdatedAt(t *time.Time) *CameraCreate {
+	if t != nil {
+		cc.SetUpdatedAt(*t)
+	}
+	return cc
 }
 
 // SetName sets the "name" field.
@@ -59,6 +88,12 @@ func (cc *CameraCreate) SetNillableActive(b *bool) *CameraCreate {
 	return cc
 }
 
+// SetID sets the "id" field.
+func (cc *CameraCreate) SetID(i int) *CameraCreate {
+	cc.mutation.SetID(i)
+	return cc
+}
+
 // Mutation returns the CameraMutation object of the builder.
 func (cc *CameraCreate) Mutation() *CameraMutation {
 	return cc.mutation
@@ -94,6 +129,14 @@ func (cc *CameraCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (cc *CameraCreate) defaults() {
+	if _, ok := cc.mutation.CreatedAt(); !ok {
+		v := camera.DefaultCreatedAt()
+		cc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := cc.mutation.UpdatedAt(); !ok {
+		v := camera.DefaultUpdatedAt()
+		cc.mutation.SetUpdatedAt(v)
+	}
 	if _, ok := cc.mutation.Active(); !ok {
 		v := camera.DefaultActive
 		cc.mutation.SetActive(v)
@@ -102,6 +145,12 @@ func (cc *CameraCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (cc *CameraCreate) check() error {
+	if _, ok := cc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Camera.created_at"`)}
+	}
+	if _, ok := cc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Camera.updated_at"`)}
+	}
 	if _, ok := cc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Camera.name"`)}
 	}
@@ -146,8 +195,10 @@ func (cc *CameraCreate) sqlSave(ctx context.Context) (*Camera, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int(id)
+	}
 	cc.mutation.id = &_node.ID
 	cc.mutation.done = true
 	return _node, nil
@@ -159,6 +210,18 @@ func (cc *CameraCreate) createSpec() (*Camera, *sqlgraph.CreateSpec) {
 		_spec = sqlgraph.NewCreateSpec(camera.Table, sqlgraph.NewFieldSpec(camera.FieldID, field.TypeInt))
 	)
 	_spec.OnConflict = cc.conflict
+	if id, ok := cc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
+	if value, ok := cc.mutation.CreatedAt(); ok {
+		_spec.SetField(camera.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := cc.mutation.UpdatedAt(); ok {
+		_spec.SetField(camera.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if value, ok := cc.mutation.Name(); ok {
 		_spec.SetField(camera.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -186,7 +249,7 @@ func (cc *CameraCreate) createSpec() (*Camera, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.Camera.Create().
-//		SetName(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -195,7 +258,7 @@ func (cc *CameraCreate) createSpec() (*Camera, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.CameraUpsert) {
-//			SetName(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (cc *CameraCreate) OnConflict(opts ...sql.ConflictOption) *CameraUpsertOne {
@@ -230,6 +293,18 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *CameraUpsert) SetUpdatedAt(v time.Time) *CameraUpsert {
+	u.Set(camera.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *CameraUpsert) UpdateUpdatedAt() *CameraUpsert {
+	u.SetExcluded(camera.FieldUpdatedAt)
+	return u
+}
 
 // SetName sets the "name" field.
 func (u *CameraUpsert) SetName(v string) *CameraUpsert {
@@ -291,16 +366,27 @@ func (u *CameraUpsert) UpdateActive() *CameraUpsert {
 	return u
 }
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.Camera.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(camera.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 func (u *CameraUpsertOne) UpdateNewValues() *CameraUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(camera.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(camera.FieldCreatedAt)
+		}
+	}))
 	return u
 }
 
@@ -329,6 +415,20 @@ func (u *CameraUpsertOne) Update(set func(*CameraUpsert)) *CameraUpsertOne {
 		set(&CameraUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *CameraUpsertOne) SetUpdatedAt(v time.Time) *CameraUpsertOne {
+	return u.Update(func(s *CameraUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *CameraUpsertOne) UpdateUpdatedAt() *CameraUpsertOne {
+	return u.Update(func(s *CameraUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetName sets the "name" field.
@@ -481,7 +581,7 @@ func (ccb *CameraCreateBulk) Save(ctx context.Context) ([]*Camera, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = int(id)
 				}
@@ -536,7 +636,7 @@ func (ccb *CameraCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.CameraUpsert) {
-//			SetName(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (ccb *CameraCreateBulk) OnConflict(opts ...sql.ConflictOption) *CameraUpsertBulk {
@@ -571,10 +671,23 @@ type CameraUpsertBulk struct {
 //	client.Camera.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(camera.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 func (u *CameraUpsertBulk) UpdateNewValues() *CameraUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(camera.FieldID)
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(camera.FieldCreatedAt)
+			}
+		}
+	}))
 	return u
 }
 
@@ -603,6 +716,20 @@ func (u *CameraUpsertBulk) Update(set func(*CameraUpsert)) *CameraUpsertBulk {
 		set(&CameraUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *CameraUpsertBulk) SetUpdatedAt(v time.Time) *CameraUpsertBulk {
+	return u.Update(func(s *CameraUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *CameraUpsertBulk) UpdateUpdatedAt() *CameraUpsertBulk {
+	return u.Update(func(s *CameraUpsert) {
+		s.UpdateUpdatedAt()
+	})
 }
 
 // SetName sets the "name" field.
