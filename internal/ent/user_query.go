@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"go-ent-project/internal/ent/predicate"
 	"go-ent-project/internal/ent/role"
@@ -367,12 +366,6 @@ func (uq *UserQuery) prepareQuery(ctx context.Context) error {
 			return err
 		}
 		uq.sql = prev
-	}
-	if user.Policy == nil {
-		return errors.New("ent: uninitialized user.Policy (forgotten import ent/runtime?)")
-	}
-	if err := user.Policy.EvalQuery(ctx, uq); err != nil {
-		return err
 	}
 	return nil
 }
