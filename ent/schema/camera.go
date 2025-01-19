@@ -4,11 +4,19 @@ import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+	"go-ent-project/utils/base"
 )
 
 // Camera holds the schema definition for the Camera entity.
 type Camera struct {
 	ent.Schema
+}
+
+// Mixin adds the base mixin to the schema.
+func (Camera) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		base.BMixin{},
+	}
 }
 
 // Fields of the Camera.
@@ -44,9 +52,4 @@ func (Camera) Fields() []ent.Field {
 			Default(true).
 			Annotations(),
 	}
-}
-
-// Edges of the Camera.
-func (Camera) Edges() []ent.Edge {
-	return nil
 }

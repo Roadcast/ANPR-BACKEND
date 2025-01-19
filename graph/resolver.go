@@ -1,5 +1,7 @@
 package graph
 
+// THIS CODE WILL BE UPDATED WITH SCHEMA CHANGES. PREVIOUS IMPLEMENTATION FOR SCHEMA CHANGES WILL BE KEPT IN THE COMMENT SECTION. IMPLEMENTATION FOR UNCHANGED SCHEMA WILL BE KEPT.
+
 import (
 	"encoding/base64"
 	"entgo.io/contrib/entgql"
@@ -8,7 +10,6 @@ import (
 	"strconv"
 )
 
-// Resolver struct for dependency injection
 type Resolver struct {
 	Client *ent.Client
 }
@@ -29,7 +30,6 @@ func DecodeCursor(cursor string) (int, error) {
 
 	return value, nil
 }
-
 func convertCursorToString[T any](cursor *entgql.Cursor[T]) *string {
 	str := fmt.Sprintf("%v", cursor.ID)
 	// Encode the value as Base64

@@ -14,10 +14,13 @@ import (
 	"go-ent-project/config"
 	"go-ent-project/graph"
 	"go-ent-project/internal/ent"
+	redisDB "go-ent-project/utils/redis"
 	"log"
 	"net/http"
 	"os"
 )
+
+import _ "go-ent-project/internal/ent/runtime"
 
 const defaultPort = "8080"
 
@@ -44,6 +47,7 @@ func main() {
 	//		log.Fatalf("failed to close database: %v", err)
 	//	}
 	//}(postgresDB)
+	redisDB.Initialize()
 	println("dbURL: ", dbURL)
 	// Run migrations
 	//db.RunMigrations(dbURL, "./migrations")

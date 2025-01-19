@@ -5,11 +5,19 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"go-ent-project/utils/base"
 )
 
 // PoliceStation holds the schema definition for the PoliceStation entity.
 type PoliceStation struct {
 	ent.Schema
+}
+
+// Mixin adds the base mixin to the schema.
+func (PoliceStation) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		base.BMixin{},
+	}
 }
 
 // Fields of the PoliceStation.

@@ -3,11 +3,19 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+	"go-ent-project/utils/base"
 )
 
 // Car holds the schema definition for the Car entity.
 type Car struct {
 	ent.Schema
+}
+
+// Mixin adds the base mixin to the schema.
+func (Car) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		base.BMixin{},
+	}
 }
 
 // Fields of the Car.
@@ -17,7 +25,7 @@ func (Car) Fields() []ent.Field {
 		field.String("make").
 			NotEmpty().
 			Annotations(
-				// Expose in GraphQL
+			// Expose in GraphQL
 			),
 
 		// Model of the car

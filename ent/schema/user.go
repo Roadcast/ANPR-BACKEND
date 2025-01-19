@@ -5,11 +5,20 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	hook2 "go-ent-project/ent/hooks"
+	privacy2 "go-ent-project/ent/privacy"
+	"go-ent-project/utils/base"
 )
 
 // User holds the schema definition for the User entity.
 type User struct {
 	ent.Schema
+}
+
+func (User) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		base.BMixin{},
+	}
 }
 
 // Fields of the User.
@@ -38,24 +47,30 @@ func (User) Fields() []ent.Field {
 			Annotations(
 			// Expose this field in GraphQL
 			),
-		field.Time("created_at").
-			Immutable().
-			Annotations(
-				entgql.OrderField("CREATED_AT"), // Adds ordering support
-			),
-		field.Time("updated_at").
-			Annotations(),
+		field.Bool("active").Default(true).Annotations(),
+		field.Int("role_id").Optional().Annotations(),
 	}
 }
 
-// Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
+		// Role edge: a user can have one role
 		edge.From("role", Role.Type).
 			Ref("users").
 			Unique().
+			Field("role_id").
 			Annotations(
-				entgql.Bind(), // Binds this edge to GraphQL
+			// Binds this edge to GraphQL
 			),
 	}
+}
+
+// Hooks of the User.
+func (User) Hooks() []ent.Hook {
+	return hook2.MakeHooks()
+}
+
+// Policy defines the privacy policy of the User schema.
+func (User) Policy() ent.Policy {
+	return privacy2.UserPolicy
 }

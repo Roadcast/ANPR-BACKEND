@@ -1,64 +1,42 @@
-package mixin
+package base
 
 import (
-	"entgo.io/ent/schema"
-	"fmt"
-	"time"
-
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/mixin"
+	"time"
 )
 
-// BaseMixin defines fields and behaviors common to all schemas.
-type BaseMixin struct {
-	ent.Mixin
+type BMixin struct {
+	mixin.Schema
 }
 
-// Fields adds `id`, `created_at`, and `updated_at` fields to the schema.
-func (BaseMixin) Fields() []ent.Field {
+func (BMixin) Fields() []ent.Field {
 	return []ent.Field{
+		// Primary key
 		field.Int("id").
 			Unique().
 			Immutable().
-			Comment("Primary key"),
+			Annotations(entgql.OrderField("ID")),
 
+		// CreatedAt timestamp
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable().
-			Comment("Timestamp when the entity was created"),
+			Annotations(),
 
+		// UpdatedAt timestamp
 		field.Time("updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now).
-			Comment("Timestamp when the entity was last updated"),
+			Annotations(),
 	}
 }
 
-func (BaseMixin) Annotations() []schema.Annotation {
-	fmt.Println("BaseMixin Annotations() called")
-	return nil
-}
-
-func (BaseMixin) Edges() []ent.Edge {
-	return nil
-}
-
-// Indexes returns no indexes by default.
-func (BaseMixin) Indexes() []ent.Index {
-	return nil
-}
-
-// Hooks explicitly returns nil, indicating no hooks are applied by the mixin.
-func (BaseMixin) Hooks() []ent.Hook {
-	return nil
-}
-
-// Interceptors explicitly returns nil, indicating no interceptors are applied by the mixin.
-func (BaseMixin) Interceptors() []ent.Interceptor {
-	return nil
-}
-
-// Policy explicitly returns nil, indicating no policies are applied by the mixin.
-func (BaseMixin) Policy() ent.Policy {
-	return nil
-}
+//func (BMixin) Annotations() []schema.Annotation {
+//	return []schema.Annotation{
+//
+//		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
+//	}
+//}

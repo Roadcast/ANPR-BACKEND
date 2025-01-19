@@ -1,6 +1,7 @@
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
   - graph/*.graphql
+  - graph/**/*.graphql
   - internal/ent/*.graphql
 
 # Where should the generated server code go?
@@ -175,7 +176,7 @@ models:
   Camera:
     model:
       - go-ent-project/internal/ent.Camera
-      -
+
   # Map WhereInput types for multiple entities
   PoliceStationWhereInput:
     model:
