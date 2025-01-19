@@ -2,20 +2,20 @@ package privacy
 
 import (
 	"context"
-	"entgo.io/ent"
 	"entgo.io/ent/entql"
 	"fmt"
 	ent2 "go-ent-project/internal/ent"
 	"go-ent-project/internal/ent/privacy"
-)
+	"go-ent-project/utils/constant"
 
-type contextKey string
+	"entgo.io/ent"
+)
 
 // AllowIfBypass checks if privacy should be bypassed.
 func AllowIfBypass() privacy.QueryRule {
 	return privacy.QueryRuleFunc(func(ctx context.Context, q ent.Query) error {
 		fmt.Printf("AllowIfBypass %T\n", q)
-		if bypass, ok := ctx.Value(contextKey("bypass_privacy")).(bool); ok && bypass {
+		if bypass, ok := ctx.Value(constant.BypassPrivacyKey).(bool); ok && bypass {
 			fmt.Printf("AllowIfBypass %T\n", bypass)
 			return privacy.Allow
 		}
@@ -82,7 +82,7 @@ func DenyRoleChange() privacy.MutationRule {
 // DenyRoleChange ensures that only admins can update the `role` field.
 func AllowMutationByPass() privacy.MutationRule {
 	return privacy.MutationRuleFunc(func(ctx context.Context, q ent.Mutation) error {
-		if bypass, ok := ctx.Value(contextKey("")).(bool); ok && bypass {
+		if bypass, ok := ctx.Value(constant.BypassPrivacyKey).(bool); ok && bypass {
 			return privacy.Allow
 		}
 		return privacy.Skip
