@@ -8,8 +8,10 @@ import (
 	"context"
 	"fmt"
 	"go-ent-project/graph/model"
+	"go-ent-project/internal/ent"
 	"go-ent-project/internal/ent/user"
 	"go-ent-project/utils/auth"
+	"go-ent-project/utils/constant"
 	"go-ent-project/utils/middleware"
 	"time"
 )
@@ -17,14 +19,14 @@ import (
 // Login is the resolver for the login field.
 func (r *mutationResolver) Login(ctx context.Context, email string, password string) (*model.LoginResponse, error) {
 	// Fetch user by email
+	ctx = context.WithValue(ctx, constant.BypassPrivacyKey, true)
 	authUser, err := r.Client.User.Query().Where(user.EmailEQ(email)).Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("invalid email or password")
+		return nil, fmt.Errorf("invalid email")
 	}
-
 	// Validate password (assuming passwords are hashed)
 	if !auth.ValidatePassword(password, authUser.Password) {
-		return nil, fmt.Errorf("invalid email or password")
+		return nil, fmt.Errorf("invalid password")
 	}
 
 	// Generate access and refresh tokens
@@ -86,6 +88,18 @@ func (r *mutationResolver) RefreshToken(ctx context.Context, refreshToken string
 		AccessToken:  accessToken,
 		RefreshToken: newRefreshToken,
 	}, nil
+}
+
+// GetMe is the resolver for the getMe field.
+func (r *queryResolver) GetMe(ctx context.Context) (*ent.User, error) {
+	authUser, ok := ctx.Value(constant.UserCtxKey).(ent.User)
+	fmt.Printf("User: %v\n", authUser)
+	if !ok {
+		fmt.Printf("User not found in context\n")
+		return nil, fmt.Errorf("failed to fetch user from context")
+	}
+
+	return &authUser, nil
 }
 
 // Mutation returns MutationResolver implementation.

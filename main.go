@@ -14,6 +14,7 @@ import (
 	"go-ent-project/config"
 	"go-ent-project/graph"
 	"go-ent-project/internal/ent"
+	"go-ent-project/utils/middleware"
 	redisDB "go-ent-project/utils/redis"
 	"log"
 	"net/http"
@@ -74,7 +75,7 @@ func main() {
 	})
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	http.Handle("/query", middleware.AuthMiddleware(client)(srv))
 
 	corsHandler := handlers.CORS(
 		handlers.AllowedOrigins([]string{"*"}),

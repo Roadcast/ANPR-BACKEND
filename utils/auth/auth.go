@@ -99,7 +99,7 @@ func ValidateTokenWithDB(ctx context.Context, tokenString string, db *ent.Client
 	}
 
 	// Compute hash of current database values
-	hashInput := fmt.Sprintf("%s|%s|%t", user.Role, user.Password, user.Active)
+	hashInput := fmt.Sprintf("%d|%s|%t", user.RoleID, user.Password, user.Active)
 	expectedHash := GenerateMD5(hashInput)
 
 	// Compare hashes

@@ -4,6 +4,7 @@ import (
 	"context"
 	"entgo.io/ent"
 	"errors"
+	"fmt"
 	ent2 "go-ent-project/internal/ent"
 	"go-ent-project/internal/ent/hook"
 	"golang.org/x/crypto/bcrypt"
@@ -11,13 +12,15 @@ import (
 
 func HashPasswordHook() ent.Hook {
 	return func(next ent.Mutator) ent.Mutator {
+		fmt.Printf("HashPasswordHook\n")
 		return hook.UserFunc(func(ctx context.Context, mutation *ent2.UserMutation) (ent.Value, error) {
 			// Placeholder for mutation logic
 			if mutation == nil {
+				fmt.Printf("HashPasswordHook mutation is nil\n")
 				return nil, errors.New("mutation is nil")
 			}
-
 			if password, exists := mutation.Password(); exists {
+				fmt.Printf("HashPasswordHook password exists\n")
 				hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 				if err != nil {
 					return nil, err

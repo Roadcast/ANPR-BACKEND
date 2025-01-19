@@ -3,6 +3,7 @@
 package runtime
 
 import (
+	"context"
 	"go-ent-project/ent/schema"
 	"go-ent-project/internal/ent/camera"
 	"go-ent-project/internal/ent/car"
@@ -11,6 +12,9 @@ import (
 	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
 	"time"
+
+	"entgo.io/ent"
+	"entgo.io/ent/privacy"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -165,8 +169,18 @@ func init() {
 	// role.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	role.NameValidator = roleDescName.Validators[0].(func(string) error)
 	userMixin := schema.User{}.Mixin()
+	user.Policy = privacy.NewPolicies(schema.User{})
+	user.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := user.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
 	userHooks := schema.User{}.Hooks()
-	user.Hooks[0] = userHooks[0]
+
+	user.Hooks[1] = userHooks[0]
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0
 	userFields := schema.User{}.Fields()

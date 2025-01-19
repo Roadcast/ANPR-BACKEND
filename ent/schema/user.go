@@ -5,8 +5,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	hook2 "go-ent-project/ent/hooks"
-	privacy2 "go-ent-project/ent/privacy"
+	hook "go-ent-project/ent/hooks"
+	"go-ent-project/ent/privacy"
 	"go-ent-project/utils/base"
 )
 
@@ -66,9 +66,9 @@ func (User) Edges() []ent.Edge {
 }
 
 func (User) Hooks() []ent.Hook {
-	return hook2.MakeHooks()
+	return hook.MakeHooks()
 }
 
 func (User) Policy() ent.Policy {
-	return privacy2.UserPolicy
+	return privacy.UserPolicy
 }
