@@ -7,6 +7,7 @@ import (
 
 	"go-ent-project/internal/ent"
 
+	"entgo.io/ent/entql"
 	"entgo.io/ent/privacy"
 )
 
@@ -252,4 +253,75 @@ func (f UserMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) 
 		return f(ctx, m)
 	}
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.UserMutation", m)
+}
+
+type (
+	// Filter is the interface that wraps the Where function
+	// for filtering nodes in queries and mutations.
+	Filter interface {
+		// Where applies a filter on the executed query/mutation.
+		Where(entql.P)
+	}
+
+	// The FilterFunc type is an adapter that allows the use of ordinary
+	// functions as filters for query and mutation types.
+	FilterFunc func(context.Context, Filter) error
+)
+
+// EvalQuery calls f(ctx, q) if the query implements the Filter interface, otherwise it is denied.
+func (f FilterFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	fr, err := queryFilter(q)
+	if err != nil {
+		return err
+	}
+	return f(ctx, fr)
+}
+
+// EvalMutation calls f(ctx, q) if the mutation implements the Filter interface, otherwise it is denied.
+func (f FilterFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	fr, err := mutationFilter(m)
+	if err != nil {
+		return err
+	}
+	return f(ctx, fr)
+}
+
+var _ QueryMutationRule = FilterFunc(nil)
+
+func queryFilter(q ent.Query) (Filter, error) {
+	switch q := q.(type) {
+	case *ent.CameraQuery:
+		return q.Filter(), nil
+	case *ent.CarQuery:
+		return q.Filter(), nil
+	case *ent.PermissionQuery:
+		return q.Filter(), nil
+	case *ent.PoliceStationQuery:
+		return q.Filter(), nil
+	case *ent.RoleQuery:
+		return q.Filter(), nil
+	case *ent.UserQuery:
+		return q.Filter(), nil
+	default:
+		return nil, Denyf("ent/privacy: unexpected query type %T for query filter", q)
+	}
+}
+
+func mutationFilter(m ent.Mutation) (Filter, error) {
+	switch m := m.(type) {
+	case *ent.CameraMutation:
+		return m.Filter(), nil
+	case *ent.CarMutation:
+		return m.Filter(), nil
+	case *ent.PermissionMutation:
+		return m.Filter(), nil
+	case *ent.PoliceStationMutation:
+		return m.Filter(), nil
+	case *ent.RoleMutation:
+		return m.Filter(), nil
+	case *ent.UserMutation:
+		return m.Filter(), nil
+	default:
+		return nil, Denyf("ent/privacy: unexpected mutation type %T for mutation filter", m)
+	}
 }

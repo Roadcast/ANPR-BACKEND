@@ -13,6 +13,7 @@ import (
 	"math"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -27,8 +28,8 @@ type RoleQuery struct {
 	predicates           []predicate.Role
 	withPermissions      *PermissionQuery
 	withUsers            *UserQuery
-	modifiers            []func(*sql.Selector)
 	loadTotal            []func(context.Context, []*Role) error
+	modifiers            []func(*sql.Selector)
 	withNamedPermissions map[string]*PermissionQuery
 	withNamedUsers       map[string]*UserQuery
 	// intermediate query (i.e. traversal path).
@@ -447,7 +448,12 @@ func (rq *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, e
 	if query := rq.withUsers; query != nil {
 		if err := rq.loadUsers(ctx, query, nodes,
 			func(n *Role) { n.Edges.Users = []*User{} },
-			func(n *Role, e *User) { n.Edges.Users = append(n.Edges.Users, e) }); err != nil {
+			func(n *Role, e *User) {
+				n.Edges.Users = append(n.Edges.Users, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Role = n
+				}
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -461,7 +467,12 @@ func (rq *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, e
 	for name, query := range rq.withNamedUsers {
 		if err := rq.loadUsers(ctx, query, nodes,
 			func(n *Role) { n.appendNamedUsers(name) },
-			func(n *Role, e *User) { n.appendNamedUsers(name, e) }); err != nil {
+			func(n *Role, e *User) {
+				n.appendNamedUsers(name, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Role = n
+				}
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -603,6 +614,9 @@ func (rq *RoleQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if rq.ctx.Unique != nil && *rq.ctx.Unique {
 		selector.Distinct()
 	}
+	for _, m := range rq.modifiers {
+		m(selector)
+	}
 	for _, p := range rq.predicates {
 		p(selector)
 	}
@@ -618,6 +632,32 @@ func (rq *RoleQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (rq *RoleQuery) ForUpdate(opts ...sql.LockOption) *RoleQuery {
+	if rq.driver.Dialect() == dialect.Postgres {
+		rq.Unique(false)
+	}
+	rq.modifiers = append(rq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return rq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (rq *RoleQuery) ForShare(opts ...sql.LockOption) *RoleQuery {
+	if rq.driver.Dialect() == dialect.Postgres {
+		rq.Unique(false)
+	}
+	rq.modifiers = append(rq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return rq
 }
 
 // WithNamedPermissions tells the query-builder to eager-load the nodes that are connected to the "permissions"

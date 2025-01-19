@@ -12,6 +12,7 @@ import (
 	"math"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -28,8 +29,8 @@ type PoliceStationQuery struct {
 	withParentStation      *PoliceStationQuery
 	withChildStations      *PoliceStationQuery
 	withFKs                bool
-	modifiers              []func(*sql.Selector)
 	loadTotal              []func(context.Context, []*PoliceStation) error
+	modifiers              []func(*sql.Selector)
 	withNamedUsers         map[string]*UserQuery
 	withNamedChildStations map[string]*PoliceStationQuery
 	// intermediate query (i.e. traversal path).
@@ -496,7 +497,12 @@ func (psq *PoliceStationQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	if query := psq.withChildStations; query != nil {
 		if err := psq.loadChildStations(ctx, query, nodes,
 			func(n *PoliceStation) { n.Edges.ChildStations = []*PoliceStation{} },
-			func(n *PoliceStation, e *PoliceStation) { n.Edges.ChildStations = append(n.Edges.ChildStations, e) }); err != nil {
+			func(n *PoliceStation, e *PoliceStation) {
+				n.Edges.ChildStations = append(n.Edges.ChildStations, e)
+				if !e.Edges.loadedTypes[1] {
+					e.Edges.ParentStation = n
+				}
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -510,7 +516,12 @@ func (psq *PoliceStationQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	for name, query := range psq.withNamedChildStations {
 		if err := psq.loadChildStations(ctx, query, nodes,
 			func(n *PoliceStation) { n.appendNamedChildStations(name) },
-			func(n *PoliceStation, e *PoliceStation) { n.appendNamedChildStations(name, e) }); err != nil {
+			func(n *PoliceStation, e *PoliceStation) {
+				n.appendNamedChildStations(name, e)
+				if !e.Edges.loadedTypes[1] {
+					e.Edges.ParentStation = n
+				}
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -684,6 +695,9 @@ func (psq *PoliceStationQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if psq.ctx.Unique != nil && *psq.ctx.Unique {
 		selector.Distinct()
 	}
+	for _, m := range psq.modifiers {
+		m(selector)
+	}
 	for _, p := range psq.predicates {
 		p(selector)
 	}
@@ -699,6 +713,32 @@ func (psq *PoliceStationQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (psq *PoliceStationQuery) ForUpdate(opts ...sql.LockOption) *PoliceStationQuery {
+	if psq.driver.Dialect() == dialect.Postgres {
+		psq.Unique(false)
+	}
+	psq.modifiers = append(psq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return psq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (psq *PoliceStationQuery) ForShare(opts ...sql.LockOption) *PoliceStationQuery {
+	if psq.driver.Dialect() == dialect.Postgres {
+		psq.Unique(false)
+	}
+	psq.modifiers = append(psq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return psq
 }
 
 // WithNamedUsers tells the query-builder to eager-load the nodes that are connected to the "users"

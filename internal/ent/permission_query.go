@@ -10,6 +10,7 @@ import (
 	"math"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -23,8 +24,8 @@ type PermissionQuery struct {
 	inters     []Interceptor
 	predicates []predicate.Permission
 	withFKs    bool
-	modifiers  []func(*sql.Selector)
 	loadTotal  []func(context.Context, []*Permission) error
+	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -437,6 +438,9 @@ func (pq *PermissionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if pq.ctx.Unique != nil && *pq.ctx.Unique {
 		selector.Distinct()
 	}
+	for _, m := range pq.modifiers {
+		m(selector)
+	}
 	for _, p := range pq.predicates {
 		p(selector)
 	}
@@ -452,6 +456,32 @@ func (pq *PermissionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (pq *PermissionQuery) ForUpdate(opts ...sql.LockOption) *PermissionQuery {
+	if pq.driver.Dialect() == dialect.Postgres {
+		pq.Unique(false)
+	}
+	pq.modifiers = append(pq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return pq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (pq *PermissionQuery) ForShare(opts ...sql.LockOption) *PermissionQuery {
+	if pq.driver.Dialect() == dialect.Postgres {
+		pq.Unique(false)
+	}
+	pq.modifiers = append(pq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return pq
 }
 
 // PermissionGroupBy is the group-by builder for Permission entities.
