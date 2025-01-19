@@ -2,10 +2,10 @@ package privacy
 
 import (
 	"context"
-	"entgo.io/ent/entql"
 	"fmt"
 	ent2 "go-ent-project/internal/ent"
-	"go-ent-project/internal/ent/privacy"
+	privacy "go-ent-project/internal/ent/privacy"
+	user2 "go-ent-project/internal/ent/user"
 	"go-ent-project/utils/constant"
 
 	"entgo.io/ent"
@@ -25,30 +25,19 @@ func AllowIfBypass() privacy.QueryRule {
 }
 
 // FilterTenantRule is a query/mutation rule that filters out entities that are not in the tenant.
-func FilterTenantRule() privacy.QueryMutationRule {
+func FilterTenantRule() privacy.UserQueryRuleFunc {
 	// TenantsFilter is an interface to wrap WhereHasTenantWith()
-	// predicate that is used by both `Group` and `User` schemas.
-	type UserFiler interface {
-		WhereUserID(entql.IntP)
+	return func(ctx context.Context, q *ent2.UserQuery) error {
+		// Check if the user is an admin
+		//user, ok := ctx.Value("user").(ent2.User)
+		//if !ok || user.RoleID == 1 {
+		//	return privacy.Allow
+		//}
+
+		// Filter out users that do not belong to the tenant
+		q.Where(user2.IDEQ(3))
+		return privacy.Allow
 	}
-	return privacy.FilterFunc(func(ctx context.Context, f privacy.Filter) error {
-		fmt.Printf("FilterTenantRule %T\n", f)
-		fmt.Printf("FilterTenantRule %T\n", ctx)
-		user, ok := ctx.Value("user").(ent2.User)
-		tid := user.ID
-		if !ok {
-			fmt.Printf("FilterTenantRule %T\n", user)
-			return privacy.Denyf("missing tenant information in viewer")
-		}
-		tf, ok := f.(UserFiler)
-		if !ok {
-			return privacy.Denyf("unexpected filter type %T", f)
-		}
-		// Make sure that a tenant reads only entities that have an edge to it.
-		tf.WhereUserID(entql.IntEQ(tid))
-		// Skip to the next privacy rule (equivalent to return nil).
-		return privacy.Skip
-	})
 }
 
 // AllowIfAdminOrManager ensures admins and managers can perform certain actions.
