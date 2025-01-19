@@ -8,17 +8,6 @@ import (
 	"entgo.io/ent/privacy"
 )
 
-// AllowIfAdmin ensures only admin users can perform certain actions.
-func AllowIfAdmin() privacy.MutationRule {
-	return privacy.MutationRuleFunc(func(ctx context.Context, m ent.Mutation) error {
-		user, ok := ctx.Value("user").(ent2.User)
-		if !ok || user.RoleID != 1 {
-			return privacy.Denyf("only admins can perform this action")
-		}
-		return privacy.Allow
-	})
-}
-
 // AllowIfAdminOrManager ensures admins and managers can perform certain actions.
 func AllowIfAdminOrManager() privacy.MutationRule {
 	return privacy.MutationRuleFunc(func(ctx context.Context, m ent.Mutation) error {

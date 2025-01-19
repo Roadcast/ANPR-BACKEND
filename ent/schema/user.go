@@ -5,8 +5,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	hook2 "go-ent-project/ent/hooks"
-	privacy2 "go-ent-project/ent/privacy"
 	"go-ent-project/utils/base"
 )
 
@@ -65,12 +63,10 @@ func (User) Edges() []ent.Edge {
 	}
 }
 
-// Hooks of the User.
-func (User) Hooks() []ent.Hook {
-	return hook2.MakeHooks()
-}
+//func (User) Hooks() []ent.Hook {
+//	return hook2.MakeHooks()
+//}
 
-// Policy defines the privacy policy of the User schema.
-func (User) Policy() ent.Policy {
-	return privacy2.UserPolicy
-}
+//func (User) Policy() ent.Policy {
+//	return privacy2.UserPolicy
+//}
