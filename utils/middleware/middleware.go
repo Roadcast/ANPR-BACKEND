@@ -39,8 +39,14 @@ func AuthMiddleware(client *ent.Client) func(http.Handler) http.Handler {
 			fmt.Printf("User: %v\n", authUser)
 			// Attach user to the context
 
-			ctx = context.WithValue(ctx, constant.UserCtxKey, authUser)
+			ctx = context.WithValue(ctx, constant.UserCtxKey, ent.User{
+				ID:     authUser.ID,
+				RoleID: authUser.RoleID,
+				Active: authUser.Active,
+				Name:   authUser.Name,
+			})
 			ctx = context.WithValue(ctx, constant.TokenContextKey, token)
+			ctx = context.WithValue(ctx, constant.BypassPrivacyKey, false)
 			// Proceed with the next handler
 			a := ctx.Value(constant.UserCtxKey)
 			fmt.Printf("User: %v\n", a)

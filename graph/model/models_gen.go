@@ -170,6 +170,11 @@ type RefreshTokenResponse struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
+type UserConnection struct {
+	PageInfo *PageInfo   `json:"pageInfo"`
+	Edges    []*ent.User `json:"edges"`
+}
+
 // Properties by which Camera connections can be ordered.
 type CameraOrderField string
 
