@@ -14,6 +14,7 @@ import (
 	"go-ent-project/config"
 	"go-ent-project/graph"
 	"go-ent-project/internal/ent"
+	"go-ent-project/utils/celery"
 	"go-ent-project/utils/middleware"
 	redisDB "go-ent-project/utils/redis"
 	"log"
@@ -83,6 +84,8 @@ func main() {
 		handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}),
 	)
 
+	celery.Initialize()
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, corsHandler(http.DefaultServeMux)))
+	celery.ShutDown()
 }
