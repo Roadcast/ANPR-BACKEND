@@ -10,6 +10,7 @@ import (
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
+	"go-ent-project/internal/ent/vehicledata"
 
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
@@ -778,6 +779,185 @@ func newUserPaginateArgs(rv map[string]any) *userPaginateArgs {
 	}
 	if v, ok := rv[whereField].(*UserWhereInput); ok {
 		args.opts = append(args.opts, WithUserFilter(v.Filter))
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (vd *VehicleDataQuery) CollectFields(ctx context.Context, satisfies ...string) (*VehicleDataQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return vd, nil
+	}
+	if err := vd.collectField(ctx, false, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return vd, nil
+}
+
+func (vd *VehicleDataQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(vehicledata.Columns))
+		selectedFields = []string{vehicledata.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+		case "createdAt":
+			if _, ok := fieldSeen[vehicledata.FieldCreatedAt]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldCreatedAt)
+				fieldSeen[vehicledata.FieldCreatedAt] = struct{}{}
+			}
+		case "updatedAt":
+			if _, ok := fieldSeen[vehicledata.FieldUpdatedAt]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldUpdatedAt)
+				fieldSeen[vehicledata.FieldUpdatedAt] = struct{}{}
+			}
+		case "plateBoundingBox":
+			if _, ok := fieldSeen[vehicledata.FieldPlateBoundingBox]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldPlateBoundingBox)
+				fieldSeen[vehicledata.FieldPlateBoundingBox] = struct{}{}
+			}
+		case "plateChannel":
+			if _, ok := fieldSeen[vehicledata.FieldPlateChannel]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldPlateChannel)
+				fieldSeen[vehicledata.FieldPlateChannel] = struct{}{}
+			}
+		case "plateIsExist":
+			if _, ok := fieldSeen[vehicledata.FieldPlateIsExist]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldPlateIsExist)
+				fieldSeen[vehicledata.FieldPlateIsExist] = struct{}{}
+			}
+		case "plateColor":
+			if _, ok := fieldSeen[vehicledata.FieldPlateColor]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldPlateColor)
+				fieldSeen[vehicledata.FieldPlateColor] = struct{}{}
+			}
+		case "plateNumber":
+			if _, ok := fieldSeen[vehicledata.FieldPlateNumber]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldPlateNumber)
+				fieldSeen[vehicledata.FieldPlateNumber] = struct{}{}
+			}
+		case "plateType":
+			if _, ok := fieldSeen[vehicledata.FieldPlateType]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldPlateType)
+				fieldSeen[vehicledata.FieldPlateType] = struct{}{}
+			}
+		case "plateRegion":
+			if _, ok := fieldSeen[vehicledata.FieldPlateRegion]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldPlateRegion)
+				fieldSeen[vehicledata.FieldPlateRegion] = struct{}{}
+			}
+		case "plateUploadNum":
+			if _, ok := fieldSeen[vehicledata.FieldPlateUploadNum]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldPlateUploadNum)
+				fieldSeen[vehicledata.FieldPlateUploadNum] = struct{}{}
+			}
+		case "snapAllowUser":
+			if _, ok := fieldSeen[vehicledata.FieldSnapAllowUser]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldSnapAllowUser)
+				fieldSeen[vehicledata.FieldSnapAllowUser] = struct{}{}
+			}
+		case "snapAllowUserEndTime":
+			if _, ok := fieldSeen[vehicledata.FieldSnapAllowUserEndTime]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldSnapAllowUserEndTime)
+				fieldSeen[vehicledata.FieldSnapAllowUserEndTime] = struct{}{}
+			}
+		case "snapDefenceCode":
+			if _, ok := fieldSeen[vehicledata.FieldSnapDefenceCode]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldSnapDefenceCode)
+				fieldSeen[vehicledata.FieldSnapDefenceCode] = struct{}{}
+			}
+		case "snapDeviceID":
+			if _, ok := fieldSeen[vehicledata.FieldSnapDeviceID]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldSnapDeviceID)
+				fieldSeen[vehicledata.FieldSnapDeviceID] = struct{}{}
+			}
+		case "snapInCarPeopleNum":
+			if _, ok := fieldSeen[vehicledata.FieldSnapInCarPeopleNum]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldSnapInCarPeopleNum)
+				fieldSeen[vehicledata.FieldSnapInCarPeopleNum] = struct{}{}
+			}
+		case "snapLanNo":
+			if _, ok := fieldSeen[vehicledata.FieldSnapLanNo]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldSnapLanNo)
+				fieldSeen[vehicledata.FieldSnapLanNo] = struct{}{}
+			}
+		case "snapOpenStrobe":
+			if _, ok := fieldSeen[vehicledata.FieldSnapOpenStrobe]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldSnapOpenStrobe)
+				fieldSeen[vehicledata.FieldSnapOpenStrobe] = struct{}{}
+			}
+		case "vehicleBoundingBox":
+			if _, ok := fieldSeen[vehicledata.FieldVehicleBoundingBox]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldVehicleBoundingBox)
+				fieldSeen[vehicledata.FieldVehicleBoundingBox] = struct{}{}
+			}
+		case "vehicleSeries":
+			if _, ok := fieldSeen[vehicledata.FieldVehicleSeries]; !ok {
+				selectedFields = append(selectedFields, vehicledata.FieldVehicleSeries)
+				fieldSeen[vehicledata.FieldVehicleSeries] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		vd.Select(selectedFields...)
+	}
+	return nil
+}
+
+type vehicledataPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []VehicleDataPaginateOption
+}
+
+func newVehicleDataPaginateArgs(rv map[string]any) *vehicledataPaginateArgs {
+	args := &vehicledataPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]any:
+			var (
+				err1, err2 error
+				order      = &VehicleDataOrder{Field: &VehicleDataOrderField{}, Direction: entgql.OrderDirectionAsc}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithVehicleDataOrder(order))
+			}
+		case *VehicleDataOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithVehicleDataOrder(v))
+			}
+		}
+	}
+	if v, ok := rv[whereField].(*VehicleDataWhereInput); ok {
+		args.opts = append(args.opts, WithVehicleDataFilter(v.Filter))
 	}
 	return args
 }

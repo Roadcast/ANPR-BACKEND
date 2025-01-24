@@ -5,8 +5,10 @@ import (
 	"entgo.io/ent"
 	"errors"
 	"fmt"
+	"go-ent-project/ent/background_tasks"
 	ent2 "go-ent-project/internal/ent"
 	"go-ent-project/internal/ent/hook"
+	"go-ent-project/utils/celery"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -32,28 +34,29 @@ func HashPasswordHook() ent.Hook {
 	}
 }
 
-//func SendEmailToUserHook() ent.Hook {
-//	return func(next ent.Mutator) ent.Mutator {
-//
-//		return hook.UserFunc(func(ctx context.Context, mutation *ent2.UserMutation) (ent.Value, error) {
-//			// Placeholder for mutation logic
-//			userID, _ := mutation.ID()
-//			email, _ := mutation.Email()
-//			params := &background_tasks.UserNotificationParams{
-//				UserID:  userID,
-//				Message: fmt.Sprintf("Welcome to our platform!"),
-//				Email:   email,
-//			}
-//			celery.ExecuteTask(background_tasks.SendEmailToUserHook, params, 3)
-//			return next.Mutate(ctx, mutation)
-//		})
-//	}
-//}
+func SendEmailToUserHook() ent.Hook {
+	return func(next ent.Mutator) ent.Mutator {
+		fmt.Printf("SendEmailToUserHook\n")
+		return hook.UserFunc(func(ctx context.Context, mutation *ent2.UserMutation) (ent.Value, error) {
+			// Placeholder for mutation logic
+			userID, _ := mutation.ID()
+			email, _ := mutation.Email()
+			params := &background_tasks.UserNotificationParams{
+				UserID:  userID,
+				Message: fmt.Sprintf("Welcome to our platform!"),
+				Email:   email,
+			}
+			celery.ExecuteTask(background_tasks.SendEmailToUserHook, params, 3)
+			return next.Mutate(ctx, mutation)
+		})
+	}
+}
 
 func MakeHooks() []ent.Hook {
 
 	return []ent.Hook{
-		hook.On(HashPasswordHook(), ent.OpCreate|ent.OpUpdate),
-		//hook.On(SendEmailToUserHook(), ent.OpCreate),
+		hook.On(HashPasswordHook(), ent.OpCreate),
+
+		hook.On(SendEmailToUserHook(), ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne),
 	}
 }

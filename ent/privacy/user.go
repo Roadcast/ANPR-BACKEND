@@ -29,13 +29,13 @@ func FilterTenantRule() privacy.UserQueryRuleFunc {
 	// TenantsFilter is an interface to wrap WhereHasTenantWith()
 	return func(ctx context.Context, q *ent2.UserQuery) error {
 		// Check if the user is an admin
-		//user, ok := ctx.Value("user").(ent2.User)
-		//if !ok || user.RoleID == 1 {
-		//	return privacy.Allow
-		//}
+		user, ok := ctx.Value("user").(ent2.User)
+		if !ok {
+			return privacy.Deny
+		}
 
 		// Filter out users that do not belong to the tenant
-		q.Where(user2.IDEQ(3))
+		q.Where(user2.IDEQ(user.ID))
 		return privacy.Allow
 	}
 }

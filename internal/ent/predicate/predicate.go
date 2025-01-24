@@ -23,3 +23,6 @@ type Role func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
+
+// VehicleData is the predicate function for vehicledata builders.
+type VehicleData func(*sql.Selector)

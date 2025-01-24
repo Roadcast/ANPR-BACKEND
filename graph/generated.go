@@ -87,9 +87,10 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		Login        func(childComplexity int, email string, password string) int
-		Logout       func(childComplexity int) int
-		RefreshToken func(childComplexity int, refreshToken string) int
+		Login              func(childComplexity int, email string, password string) int
+		Logout             func(childComplexity int) int
+		RefreshToken       func(childComplexity int, refreshToken string) int
+		UpdateUserPassword func(childComplexity int, userID string, password string) int
 	}
 
 	PageInfo struct {
@@ -167,12 +168,36 @@ type ComplexityRoot struct {
 		Edges    func(childComplexity int) int
 		PageInfo func(childComplexity int) int
 	}
+
+	VehicleData struct {
+		CreatedAt            func(childComplexity int) int
+		ID                   func(childComplexity int) int
+		PlateBoundingBox     func(childComplexity int) int
+		PlateChannel         func(childComplexity int) int
+		PlateColor           func(childComplexity int) int
+		PlateIsExist         func(childComplexity int) int
+		PlateNumber          func(childComplexity int) int
+		PlateRegion          func(childComplexity int) int
+		PlateType            func(childComplexity int) int
+		PlateUploadNum       func(childComplexity int) int
+		SnapAllowUser        func(childComplexity int) int
+		SnapAllowUserEndTime func(childComplexity int) int
+		SnapDefenceCode      func(childComplexity int) int
+		SnapDeviceID         func(childComplexity int) int
+		SnapInCarPeopleNum   func(childComplexity int) int
+		SnapLanNo            func(childComplexity int) int
+		SnapOpenStrobe       func(childComplexity int) int
+		UpdatedAt            func(childComplexity int) int
+		VehicleBoundingBox   func(childComplexity int) int
+		VehicleSeries        func(childComplexity int) int
+	}
 }
 
 type MutationResolver interface {
 	Login(ctx context.Context, email string, password string) (*model.LoginResponse, error)
 	Logout(ctx context.Context) (bool, error)
 	RefreshToken(ctx context.Context, refreshToken string) (*model.RefreshTokenResponse, error)
+	UpdateUserPassword(ctx context.Context, userID string, password string) (*ent.User, error)
 }
 type QueryResolver interface {
 	Node(ctx context.Context, id string) (ent.Noder, error)
@@ -393,6 +418,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.RefreshToken(childComplexity, args["refreshToken"].(string)), true
+
+	case "Mutation.update_user_password":
+		if e.complexity.Mutation.UpdateUserPassword == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_update_user_password_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateUserPassword(childComplexity, args["user_id"].(string), args["password"].(string)), true
 
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
@@ -762,6 +799,146 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.UserConnection.PageInfo(childComplexity), true
 
+	case "VehicleData.createdAt":
+		if e.complexity.VehicleData.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.CreatedAt(childComplexity), true
+
+	case "VehicleData.id":
+		if e.complexity.VehicleData.ID == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.ID(childComplexity), true
+
+	case "VehicleData.plateBoundingBox":
+		if e.complexity.VehicleData.PlateBoundingBox == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.PlateBoundingBox(childComplexity), true
+
+	case "VehicleData.plateChannel":
+		if e.complexity.VehicleData.PlateChannel == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.PlateChannel(childComplexity), true
+
+	case "VehicleData.plateColor":
+		if e.complexity.VehicleData.PlateColor == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.PlateColor(childComplexity), true
+
+	case "VehicleData.plateIsExist":
+		if e.complexity.VehicleData.PlateIsExist == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.PlateIsExist(childComplexity), true
+
+	case "VehicleData.plateNumber":
+		if e.complexity.VehicleData.PlateNumber == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.PlateNumber(childComplexity), true
+
+	case "VehicleData.plateRegion":
+		if e.complexity.VehicleData.PlateRegion == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.PlateRegion(childComplexity), true
+
+	case "VehicleData.plateType":
+		if e.complexity.VehicleData.PlateType == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.PlateType(childComplexity), true
+
+	case "VehicleData.plateUploadNum":
+		if e.complexity.VehicleData.PlateUploadNum == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.PlateUploadNum(childComplexity), true
+
+	case "VehicleData.snapAllowUser":
+		if e.complexity.VehicleData.SnapAllowUser == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.SnapAllowUser(childComplexity), true
+
+	case "VehicleData.snapAllowUserEndTime":
+		if e.complexity.VehicleData.SnapAllowUserEndTime == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.SnapAllowUserEndTime(childComplexity), true
+
+	case "VehicleData.snapDefenceCode":
+		if e.complexity.VehicleData.SnapDefenceCode == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.SnapDefenceCode(childComplexity), true
+
+	case "VehicleData.snapDeviceID":
+		if e.complexity.VehicleData.SnapDeviceID == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.SnapDeviceID(childComplexity), true
+
+	case "VehicleData.snapInCarPeopleNum":
+		if e.complexity.VehicleData.SnapInCarPeopleNum == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.SnapInCarPeopleNum(childComplexity), true
+
+	case "VehicleData.snapLanNo":
+		if e.complexity.VehicleData.SnapLanNo == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.SnapLanNo(childComplexity), true
+
+	case "VehicleData.snapOpenStrobe":
+		if e.complexity.VehicleData.SnapOpenStrobe == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.SnapOpenStrobe(childComplexity), true
+
+	case "VehicleData.updatedAt":
+		if e.complexity.VehicleData.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.UpdatedAt(childComplexity), true
+
+	case "VehicleData.vehicleBoundingBox":
+		if e.complexity.VehicleData.VehicleBoundingBox == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.VehicleBoundingBox(childComplexity), true
+
+	case "VehicleData.vehicleSeries":
+		if e.complexity.VehicleData.VehicleSeries == nil {
+			break
+		}
+
+		return e.complexity.VehicleData.VehicleSeries(childComplexity), true
+
 	}
 	return 0, false
 }
@@ -782,6 +959,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputRoleWhereInput,
 		ec.unmarshalInputUserOrder,
 		ec.unmarshalInputUserWhereInput,
+		ec.unmarshalInputVehicleDataOrder,
+		ec.unmarshalInputVehicleDataWhereInput,
 	)
 	first := true
 
@@ -878,7 +1057,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
-//go:embed "schemas/base.graphql" "schemas/login.graphql"
+//go:embed "schemas/base.graphql" "schemas/login.graphql" "schemas/user.graphql"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -892,6 +1071,7 @@ func sourceData(filename string) string {
 var sources = []*ast.Source{
 	{Name: "schemas/base.graphql", Input: sourceData("schemas/base.graphql"), BuiltIn: false},
 	{Name: "schemas/login.graphql", Input: sourceData("schemas/login.graphql"), BuiltIn: false},
+	{Name: "schemas/user.graphql", Input: sourceData("schemas/user.graphql"), BuiltIn: false},
 	{Name: "../internal/ent/auto-schema.graphql", Input: `directive @goField(forceResolver: Boolean, name: String, omittable: Boolean) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 directive @goModel(model: String, models: [String!], forceGenerate: Boolean) on OBJECT | INPUT_OBJECT | SCALAR | ENUM | INTERFACE | UNION
 type Camera implements Node {
@@ -1725,6 +1905,357 @@ input UserWhereInput {
   hasRole: Boolean
   hasRoleWith: [RoleWhereInput!]
 }
+type VehicleData implements Node {
+  id: ID!
+  createdAt: Time!
+  updatedAt: Time!
+  """
+  Bounding box coordinates of the plate
+  """
+  plateBoundingBox: [Int!]
+  """
+  Channel of the plate
+  """
+  plateChannel: Int
+  """
+  Indicates whether the plate exists
+  """
+  plateIsExist: Boolean
+  """
+  Color of the plate
+  """
+  plateColor: String
+  """
+  Number on the plate
+  """
+  plateNumber: String
+  """
+  Type of the plate
+  """
+  plateType: String
+  """
+  Region of the plate
+  """
+  plateRegion: String
+  """
+  Upload number of the plate
+  """
+  plateUploadNum: Int
+  """
+  Indicates if user interaction is allowed
+  """
+  snapAllowUser: Boolean
+  """
+  End time for user interaction allowance
+  """
+  snapAllowUserEndTime: String
+  """
+  Defence code
+  """
+  snapDefenceCode: String
+  """
+  Device ID
+  """
+  snapDeviceID: String
+  """
+  Number of people in the car
+  """
+  snapInCarPeopleNum: Int
+  """
+  LAN number
+  """
+  snapLanNo: Int
+  """
+  Indicates if strobe is open
+  """
+  snapOpenStrobe: Boolean
+  """
+  Bounding box coordinates of the vehicle
+  """
+  vehicleBoundingBox: [Int!]
+  """
+  Vehicle series
+  """
+  vehicleSeries: String
+}
+"""
+Ordering options for VehicleData connections
+"""
+input VehicleDataOrder {
+  """
+  The ordering direction.
+  """
+  direction: OrderDirection! = ASC
+  """
+  The field by which to order VehicleDataSlice.
+  """
+  field: VehicleDataOrderField!
+}
+"""
+Properties by which VehicleData connections can be ordered.
+"""
+enum VehicleDataOrderField {
+  ID
+}
+"""
+VehicleDataWhereInput is used for filtering VehicleData objects.
+Input was generated by ent.
+"""
+input VehicleDataWhereInput {
+  not: VehicleDataWhereInput
+  and: [VehicleDataWhereInput!]
+  or: [VehicleDataWhereInput!]
+  """
+  id field predicates
+  """
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """
+  updated_at field predicates
+  """
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  """
+  plate_channel field predicates
+  """
+  plateChannel: Int
+  plateChannelNEQ: Int
+  plateChannelIn: [Int!]
+  plateChannelNotIn: [Int!]
+  plateChannelGT: Int
+  plateChannelGTE: Int
+  plateChannelLT: Int
+  plateChannelLTE: Int
+  plateChannelIsNil: Boolean
+  plateChannelNotNil: Boolean
+  """
+  plate_is_exist field predicates
+  """
+  plateIsExist: Boolean
+  plateIsExistNEQ: Boolean
+  plateIsExistIsNil: Boolean
+  plateIsExistNotNil: Boolean
+  """
+  plate_color field predicates
+  """
+  plateColor: String
+  plateColorNEQ: String
+  plateColorIn: [String!]
+  plateColorNotIn: [String!]
+  plateColorGT: String
+  plateColorGTE: String
+  plateColorLT: String
+  plateColorLTE: String
+  plateColorContains: String
+  plateColorHasPrefix: String
+  plateColorHasSuffix: String
+  plateColorIsNil: Boolean
+  plateColorNotNil: Boolean
+  plateColorEqualFold: String
+  plateColorContainsFold: String
+  """
+  plate_number field predicates
+  """
+  plateNumber: String
+  plateNumberNEQ: String
+  plateNumberIn: [String!]
+  plateNumberNotIn: [String!]
+  plateNumberGT: String
+  plateNumberGTE: String
+  plateNumberLT: String
+  plateNumberLTE: String
+  plateNumberContains: String
+  plateNumberHasPrefix: String
+  plateNumberHasSuffix: String
+  plateNumberIsNil: Boolean
+  plateNumberNotNil: Boolean
+  plateNumberEqualFold: String
+  plateNumberContainsFold: String
+  """
+  plate_type field predicates
+  """
+  plateType: String
+  plateTypeNEQ: String
+  plateTypeIn: [String!]
+  plateTypeNotIn: [String!]
+  plateTypeGT: String
+  plateTypeGTE: String
+  plateTypeLT: String
+  plateTypeLTE: String
+  plateTypeContains: String
+  plateTypeHasPrefix: String
+  plateTypeHasSuffix: String
+  plateTypeIsNil: Boolean
+  plateTypeNotNil: Boolean
+  plateTypeEqualFold: String
+  plateTypeContainsFold: String
+  """
+  plate_region field predicates
+  """
+  plateRegion: String
+  plateRegionNEQ: String
+  plateRegionIn: [String!]
+  plateRegionNotIn: [String!]
+  plateRegionGT: String
+  plateRegionGTE: String
+  plateRegionLT: String
+  plateRegionLTE: String
+  plateRegionContains: String
+  plateRegionHasPrefix: String
+  plateRegionHasSuffix: String
+  plateRegionIsNil: Boolean
+  plateRegionNotNil: Boolean
+  plateRegionEqualFold: String
+  plateRegionContainsFold: String
+  """
+  plate_upload_num field predicates
+  """
+  plateUploadNum: Int
+  plateUploadNumNEQ: Int
+  plateUploadNumIn: [Int!]
+  plateUploadNumNotIn: [Int!]
+  plateUploadNumGT: Int
+  plateUploadNumGTE: Int
+  plateUploadNumLT: Int
+  plateUploadNumLTE: Int
+  plateUploadNumIsNil: Boolean
+  plateUploadNumNotNil: Boolean
+  """
+  snap_allow_user field predicates
+  """
+  snapAllowUser: Boolean
+  snapAllowUserNEQ: Boolean
+  snapAllowUserIsNil: Boolean
+  snapAllowUserNotNil: Boolean
+  """
+  snap_allow_user_end_time field predicates
+  """
+  snapAllowUserEndTime: String
+  snapAllowUserEndTimeNEQ: String
+  snapAllowUserEndTimeIn: [String!]
+  snapAllowUserEndTimeNotIn: [String!]
+  snapAllowUserEndTimeGT: String
+  snapAllowUserEndTimeGTE: String
+  snapAllowUserEndTimeLT: String
+  snapAllowUserEndTimeLTE: String
+  snapAllowUserEndTimeContains: String
+  snapAllowUserEndTimeHasPrefix: String
+  snapAllowUserEndTimeHasSuffix: String
+  snapAllowUserEndTimeIsNil: Boolean
+  snapAllowUserEndTimeNotNil: Boolean
+  snapAllowUserEndTimeEqualFold: String
+  snapAllowUserEndTimeContainsFold: String
+  """
+  snap_defence_code field predicates
+  """
+  snapDefenceCode: String
+  snapDefenceCodeNEQ: String
+  snapDefenceCodeIn: [String!]
+  snapDefenceCodeNotIn: [String!]
+  snapDefenceCodeGT: String
+  snapDefenceCodeGTE: String
+  snapDefenceCodeLT: String
+  snapDefenceCodeLTE: String
+  snapDefenceCodeContains: String
+  snapDefenceCodeHasPrefix: String
+  snapDefenceCodeHasSuffix: String
+  snapDefenceCodeIsNil: Boolean
+  snapDefenceCodeNotNil: Boolean
+  snapDefenceCodeEqualFold: String
+  snapDefenceCodeContainsFold: String
+  """
+  snap_device_id field predicates
+  """
+  snapDeviceID: String
+  snapDeviceIDNEQ: String
+  snapDeviceIDIn: [String!]
+  snapDeviceIDNotIn: [String!]
+  snapDeviceIDGT: String
+  snapDeviceIDGTE: String
+  snapDeviceIDLT: String
+  snapDeviceIDLTE: String
+  snapDeviceIDContains: String
+  snapDeviceIDHasPrefix: String
+  snapDeviceIDHasSuffix: String
+  snapDeviceIDIsNil: Boolean
+  snapDeviceIDNotNil: Boolean
+  snapDeviceIDEqualFold: String
+  snapDeviceIDContainsFold: String
+  """
+  snap_in_car_people_num field predicates
+  """
+  snapInCarPeopleNum: Int
+  snapInCarPeopleNumNEQ: Int
+  snapInCarPeopleNumIn: [Int!]
+  snapInCarPeopleNumNotIn: [Int!]
+  snapInCarPeopleNumGT: Int
+  snapInCarPeopleNumGTE: Int
+  snapInCarPeopleNumLT: Int
+  snapInCarPeopleNumLTE: Int
+  snapInCarPeopleNumIsNil: Boolean
+  snapInCarPeopleNumNotNil: Boolean
+  """
+  snap_lan_no field predicates
+  """
+  snapLanNo: Int
+  snapLanNoNEQ: Int
+  snapLanNoIn: [Int!]
+  snapLanNoNotIn: [Int!]
+  snapLanNoGT: Int
+  snapLanNoGTE: Int
+  snapLanNoLT: Int
+  snapLanNoLTE: Int
+  snapLanNoIsNil: Boolean
+  snapLanNoNotNil: Boolean
+  """
+  snap_open_strobe field predicates
+  """
+  snapOpenStrobe: Boolean
+  snapOpenStrobeNEQ: Boolean
+  snapOpenStrobeIsNil: Boolean
+  snapOpenStrobeNotNil: Boolean
+  """
+  vehicle_series field predicates
+  """
+  vehicleSeries: String
+  vehicleSeriesNEQ: String
+  vehicleSeriesIn: [String!]
+  vehicleSeriesNotIn: [String!]
+  vehicleSeriesGT: String
+  vehicleSeriesGTE: String
+  vehicleSeriesLT: String
+  vehicleSeriesLTE: String
+  vehicleSeriesContains: String
+  vehicleSeriesHasPrefix: String
+  vehicleSeriesHasSuffix: String
+  vehicleSeriesIsNil: Boolean
+  vehicleSeriesNotNil: Boolean
+  vehicleSeriesEqualFold: String
+  vehicleSeriesContainsFold: String
+}
 `, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -1790,6 +2321,47 @@ func (ec *executionContext) field_Mutation_refreshToken_argsRefreshToken(
 ) (string, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("refreshToken"))
 	if tmp, ok := rawArgs["refreshToken"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_update_user_password_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_update_user_password_argsUserID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["user_id"] = arg0
+	arg1, err := ec.field_Mutation_update_user_password_argsPassword(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["password"] = arg1
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_update_user_password_argsUserID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("user_id"))
+	if tmp, ok := rawArgs["user_id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_update_user_password_argsPassword(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
+	if tmp, ok := rawArgs["password"]; ok {
 		return ec.unmarshalNString2string(ctx, tmp)
 	}
 
@@ -3327,6 +3899,78 @@ func (ec *executionContext) fieldContext_Mutation_refreshToken(ctx context.Conte
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_refreshToken_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_update_user_password(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_update_user_password(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateUserPassword(rctx, fc.Args["user_id"].(string), fc.Args["password"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.User)
+	fc.Result = res
+	return ec.marshalOUser2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_update_user_password(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_User_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_User_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "phone":
+				return ec.fieldContext_User_phone(ctx, field)
+			case "active":
+				return ec.fieldContext_User_active(ctx, field)
+			case "roleID":
+				return ec.fieldContext_User_roleID(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_update_user_password_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -5848,6 +6492,835 @@ func (ec *executionContext) fieldContext_UserConnection_edges(_ context.Context,
 				return ec.fieldContext_User_role(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_id(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_plateBoundingBox(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_plateBoundingBox(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PlateBoundingBox, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]int32)
+	fc.Result = res
+	return ec.marshalOInt2ᚕint32ᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_plateBoundingBox(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_plateChannel(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_plateChannel(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PlateChannel, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int32)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_plateChannel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_plateIsExist(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_plateIsExist(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PlateIsExist, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_plateIsExist(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_plateColor(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_plateColor(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PlateColor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_plateColor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_plateNumber(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_plateNumber(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PlateNumber, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_plateNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_plateType(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_plateType(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PlateType, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_plateType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_plateRegion(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_plateRegion(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PlateRegion, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_plateRegion(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_plateUploadNum(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_plateUploadNum(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PlateUploadNum, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int32)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_plateUploadNum(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_snapAllowUser(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_snapAllowUser(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SnapAllowUser, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_snapAllowUser(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_snapAllowUserEndTime(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_snapAllowUserEndTime(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SnapAllowUserEndTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_snapAllowUserEndTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_snapDefenceCode(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_snapDefenceCode(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SnapDefenceCode, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_snapDefenceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_snapDeviceID(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_snapDeviceID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SnapDeviceID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_snapDeviceID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_snapInCarPeopleNum(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_snapInCarPeopleNum(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SnapInCarPeopleNum, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int32)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_snapInCarPeopleNum(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_snapLanNo(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_snapLanNo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SnapLanNo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int32)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint32(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_snapLanNo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_snapOpenStrobe(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_snapOpenStrobe(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SnapOpenStrobe, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	fc.Result = res
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_snapOpenStrobe(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_vehicleBoundingBox(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_vehicleBoundingBox(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VehicleBoundingBox, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]int32)
+	fc.Result = res
+	return ec.marshalOInt2ᚕint32ᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_vehicleBoundingBox(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VehicleData_vehicleSeries(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VehicleData_vehicleSeries(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VehicleSeries, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VehicleData_vehicleSeries(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VehicleData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -10773,6 +12246,1457 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputVehicleDataOrder(ctx context.Context, obj any) (model.VehicleDataOrder, error) {
+	var it model.VehicleDataOrder
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	if _, present := asMap["direction"]; !present {
+		asMap["direction"] = "ASC"
+	}
+
+	fieldsInOrder := [...]string{"direction", "field"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "direction":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
+			data, err := ec.unmarshalNOrderDirection2goᚑentᚑprojectᚋgraphᚋmodelᚐOrderDirection(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Direction = data
+		case "field":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
+			data, err := ec.unmarshalNVehicleDataOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataOrderField(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Field = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Context, obj any) (model.VehicleDataWhereInput, error) {
+	var it model.VehicleDataWhereInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "plateChannel", "plateChannelNEQ", "plateChannelIn", "plateChannelNotIn", "plateChannelGT", "plateChannelGTE", "plateChannelLT", "plateChannelLTE", "plateChannelIsNil", "plateChannelNotNil", "plateIsExist", "plateIsExistNEQ", "plateIsExistIsNil", "plateIsExistNotNil", "plateColor", "plateColorNEQ", "plateColorIn", "plateColorNotIn", "plateColorGT", "plateColorGTE", "plateColorLT", "plateColorLTE", "plateColorContains", "plateColorHasPrefix", "plateColorHasSuffix", "plateColorIsNil", "plateColorNotNil", "plateColorEqualFold", "plateColorContainsFold", "plateNumber", "plateNumberNEQ", "plateNumberIn", "plateNumberNotIn", "plateNumberGT", "plateNumberGTE", "plateNumberLT", "plateNumberLTE", "plateNumberContains", "plateNumberHasPrefix", "plateNumberHasSuffix", "plateNumberIsNil", "plateNumberNotNil", "plateNumberEqualFold", "plateNumberContainsFold", "plateType", "plateTypeNEQ", "plateTypeIn", "plateTypeNotIn", "plateTypeGT", "plateTypeGTE", "plateTypeLT", "plateTypeLTE", "plateTypeContains", "plateTypeHasPrefix", "plateTypeHasSuffix", "plateTypeIsNil", "plateTypeNotNil", "plateTypeEqualFold", "plateTypeContainsFold", "plateRegion", "plateRegionNEQ", "plateRegionIn", "plateRegionNotIn", "plateRegionGT", "plateRegionGTE", "plateRegionLT", "plateRegionLTE", "plateRegionContains", "plateRegionHasPrefix", "plateRegionHasSuffix", "plateRegionIsNil", "plateRegionNotNil", "plateRegionEqualFold", "plateRegionContainsFold", "plateUploadNum", "plateUploadNumNEQ", "plateUploadNumIn", "plateUploadNumNotIn", "plateUploadNumGT", "plateUploadNumGTE", "plateUploadNumLT", "plateUploadNumLTE", "plateUploadNumIsNil", "plateUploadNumNotNil", "snapAllowUser", "snapAllowUserNEQ", "snapAllowUserIsNil", "snapAllowUserNotNil", "snapAllowUserEndTime", "snapAllowUserEndTimeNEQ", "snapAllowUserEndTimeIn", "snapAllowUserEndTimeNotIn", "snapAllowUserEndTimeGT", "snapAllowUserEndTimeGTE", "snapAllowUserEndTimeLT", "snapAllowUserEndTimeLTE", "snapAllowUserEndTimeContains", "snapAllowUserEndTimeHasPrefix", "snapAllowUserEndTimeHasSuffix", "snapAllowUserEndTimeIsNil", "snapAllowUserEndTimeNotNil", "snapAllowUserEndTimeEqualFold", "snapAllowUserEndTimeContainsFold", "snapDefenceCode", "snapDefenceCodeNEQ", "snapDefenceCodeIn", "snapDefenceCodeNotIn", "snapDefenceCodeGT", "snapDefenceCodeGTE", "snapDefenceCodeLT", "snapDefenceCodeLTE", "snapDefenceCodeContains", "snapDefenceCodeHasPrefix", "snapDefenceCodeHasSuffix", "snapDefenceCodeIsNil", "snapDefenceCodeNotNil", "snapDefenceCodeEqualFold", "snapDefenceCodeContainsFold", "snapDeviceID", "snapDeviceIDNEQ", "snapDeviceIDIn", "snapDeviceIDNotIn", "snapDeviceIDGT", "snapDeviceIDGTE", "snapDeviceIDLT", "snapDeviceIDLTE", "snapDeviceIDContains", "snapDeviceIDHasPrefix", "snapDeviceIDHasSuffix", "snapDeviceIDIsNil", "snapDeviceIDNotNil", "snapDeviceIDEqualFold", "snapDeviceIDContainsFold", "snapInCarPeopleNum", "snapInCarPeopleNumNEQ", "snapInCarPeopleNumIn", "snapInCarPeopleNumNotIn", "snapInCarPeopleNumGT", "snapInCarPeopleNumGTE", "snapInCarPeopleNumLT", "snapInCarPeopleNumLTE", "snapInCarPeopleNumIsNil", "snapInCarPeopleNumNotNil", "snapLanNo", "snapLanNoNEQ", "snapLanNoIn", "snapLanNoNotIn", "snapLanNoGT", "snapLanNoGTE", "snapLanNoLT", "snapLanNoLTE", "snapLanNoIsNil", "snapLanNoNotNil", "snapOpenStrobe", "snapOpenStrobeNEQ", "snapOpenStrobeIsNil", "snapOpenStrobeNotNil", "vehicleSeries", "vehicleSeriesNEQ", "vehicleSeriesIn", "vehicleSeriesNotIn", "vehicleSeriesGT", "vehicleSeriesGTE", "vehicleSeriesLT", "vehicleSeriesLTE", "vehicleSeriesContains", "vehicleSeriesHasPrefix", "vehicleSeriesHasSuffix", "vehicleSeriesIsNil", "vehicleSeriesNotNil", "vehicleSeriesEqualFold", "vehicleSeriesContainsFold"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "not":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			data, err := ec.unmarshalOVehicleDataWhereInput2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Not = data
+		case "and":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			data, err := ec.unmarshalOVehicleDataWhereInput2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.And = data
+		case "or":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			data, err := ec.unmarshalOVehicleDataWhereInput2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Or = data
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "idNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDNeq = data
+		case "idIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDIn = data
+		case "idNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDNotIn = data
+		case "idGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDGt = data
+		case "idGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDGte = data
+		case "idLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDLt = data
+		case "idLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IDLte = data
+		case "createdAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
+		case "createdAtNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNeq = data
+		case "createdAtIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			data, err := ec.unmarshalOTime2ᚕᚖtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtIn = data
+		case "createdAtNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			data, err := ec.unmarshalOTime2ᚕᚖtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNotIn = data
+		case "createdAtGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGt = data
+		case "createdAtGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGte = data
+		case "createdAtLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLt = data
+		case "createdAtLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLte = data
+		case "updatedAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdatedAt = data
+		case "updatedAtNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdatedAtNeq = data
+		case "updatedAtIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtIn"))
+			data, err := ec.unmarshalOTime2ᚕᚖtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdatedAtIn = data
+		case "updatedAtNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNotIn"))
+			data, err := ec.unmarshalOTime2ᚕᚖtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdatedAtNotIn = data
+		case "updatedAtGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdatedAtGt = data
+		case "updatedAtGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdatedAtGte = data
+		case "updatedAtLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdatedAtLt = data
+		case "updatedAtLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdatedAtLte = data
+		case "plateChannel":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannel"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateChannel = data
+		case "plateChannelNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelNEQ"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateChannelNeq = data
+		case "plateChannelIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelIn"))
+			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateChannelIn = data
+		case "plateChannelNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelNotIn"))
+			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateChannelNotIn = data
+		case "plateChannelGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelGT"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateChannelGt = data
+		case "plateChannelGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelGTE"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateChannelGte = data
+		case "plateChannelLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelLT"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateChannelLt = data
+		case "plateChannelLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelLTE"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateChannelLte = data
+		case "plateChannelIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateChannelIsNil = data
+		case "plateChannelNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateChannelNotNil = data
+		case "plateIsExist":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateIsExist"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateIsExist = data
+		case "plateIsExistNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateIsExistNEQ"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateIsExistNeq = data
+		case "plateIsExistIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateIsExistIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateIsExistIsNil = data
+		case "plateIsExistNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateIsExistNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateIsExistNotNil = data
+		case "plateColor":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColor"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColor = data
+		case "plateColorNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColorNeq = data
+		case "plateColorIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColorIn = data
+		case "plateColorNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColorNotIn = data
+		case "plateColorGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColorGt = data
+		case "plateColorGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColorGte = data
+		case "plateColorLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColorLt = data
+		case "plateColorLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColorLte = data
+		case "plateColorContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColorContains = data
+		case "plateColorHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColorHasPrefix = data
+		case "plateColorHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColorHasSuffix = data
+		case "plateColorIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColorIsNil = data
+		case "plateColorNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColorNotNil = data
+		case "plateColorEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColorEqualFold = data
+		case "plateColorContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateColorContainsFold = data
+		case "plateNumber":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumber"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumber = data
+		case "plateNumberNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumberNeq = data
+		case "plateNumberIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumberIn = data
+		case "plateNumberNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumberNotIn = data
+		case "plateNumberGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumberGt = data
+		case "plateNumberGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumberGte = data
+		case "plateNumberLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumberLt = data
+		case "plateNumberLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumberLte = data
+		case "plateNumberContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumberContains = data
+		case "plateNumberHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumberHasPrefix = data
+		case "plateNumberHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumberHasSuffix = data
+		case "plateNumberIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumberIsNil = data
+		case "plateNumberNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumberNotNil = data
+		case "plateNumberEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumberEqualFold = data
+		case "plateNumberContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateNumberContainsFold = data
+		case "plateType":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateType"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateType = data
+		case "plateTypeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateTypeNeq = data
+		case "plateTypeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateTypeIn = data
+		case "plateTypeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateTypeNotIn = data
+		case "plateTypeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateTypeGt = data
+		case "plateTypeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateTypeGte = data
+		case "plateTypeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateTypeLt = data
+		case "plateTypeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateTypeLte = data
+		case "plateTypeContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateTypeContains = data
+		case "plateTypeHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateTypeHasPrefix = data
+		case "plateTypeHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateTypeHasSuffix = data
+		case "plateTypeIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateTypeIsNil = data
+		case "plateTypeNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateTypeNotNil = data
+		case "plateTypeEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateTypeEqualFold = data
+		case "plateTypeContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateTypeContainsFold = data
+		case "plateRegion":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegion"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegion = data
+		case "plateRegionNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegionNeq = data
+		case "plateRegionIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegionIn = data
+		case "plateRegionNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegionNotIn = data
+		case "plateRegionGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegionGt = data
+		case "plateRegionGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegionGte = data
+		case "plateRegionLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegionLt = data
+		case "plateRegionLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegionLte = data
+		case "plateRegionContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegionContains = data
+		case "plateRegionHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegionHasPrefix = data
+		case "plateRegionHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegionHasSuffix = data
+		case "plateRegionIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegionIsNil = data
+		case "plateRegionNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegionNotNil = data
+		case "plateRegionEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegionEqualFold = data
+		case "plateRegionContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateRegionContainsFold = data
+		case "plateUploadNum":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNum"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateUploadNum = data
+		case "plateUploadNumNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumNEQ"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateUploadNumNeq = data
+		case "plateUploadNumIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumIn"))
+			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateUploadNumIn = data
+		case "plateUploadNumNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumNotIn"))
+			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateUploadNumNotIn = data
+		case "plateUploadNumGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumGT"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateUploadNumGt = data
+		case "plateUploadNumGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumGTE"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateUploadNumGte = data
+		case "plateUploadNumLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumLT"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateUploadNumLt = data
+		case "plateUploadNumLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumLTE"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateUploadNumLte = data
+		case "plateUploadNumIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateUploadNumIsNil = data
+		case "plateUploadNumNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateUploadNumNotNil = data
+		case "snapAllowUser":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUser"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUser = data
+		case "snapAllowUserNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserNEQ"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserNeq = data
+		case "snapAllowUserIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserIsNil = data
+		case "snapAllowUserNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserNotNil = data
+		case "snapAllowUserEndTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTime"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTime = data
+		case "snapAllowUserEndTimeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTimeNeq = data
+		case "snapAllowUserEndTimeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTimeIn = data
+		case "snapAllowUserEndTimeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTimeNotIn = data
+		case "snapAllowUserEndTimeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTimeGt = data
+		case "snapAllowUserEndTimeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTimeGte = data
+		case "snapAllowUserEndTimeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTimeLt = data
+		case "snapAllowUserEndTimeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTimeLte = data
+		case "snapAllowUserEndTimeContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTimeContains = data
+		case "snapAllowUserEndTimeHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTimeHasPrefix = data
+		case "snapAllowUserEndTimeHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTimeHasSuffix = data
+		case "snapAllowUserEndTimeIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTimeIsNil = data
+		case "snapAllowUserEndTimeNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTimeNotNil = data
+		case "snapAllowUserEndTimeEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTimeEqualFold = data
+		case "snapAllowUserEndTimeContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAllowUserEndTimeContainsFold = data
+		case "snapDefenceCode":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCode"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCode = data
+		case "snapDefenceCodeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCodeNeq = data
+		case "snapDefenceCodeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCodeIn = data
+		case "snapDefenceCodeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCodeNotIn = data
+		case "snapDefenceCodeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCodeGt = data
+		case "snapDefenceCodeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCodeGte = data
+		case "snapDefenceCodeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCodeLt = data
+		case "snapDefenceCodeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCodeLte = data
+		case "snapDefenceCodeContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCodeContains = data
+		case "snapDefenceCodeHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCodeHasPrefix = data
+		case "snapDefenceCodeHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCodeHasSuffix = data
+		case "snapDefenceCodeIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCodeIsNil = data
+		case "snapDefenceCodeNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCodeNotNil = data
+		case "snapDefenceCodeEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCodeEqualFold = data
+		case "snapDefenceCodeContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDefenceCodeContainsFold = data
+		case "snapDeviceID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceID"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceID = data
+		case "snapDeviceIDNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceIdneq = data
+		case "snapDeviceIDIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceIDIn = data
+		case "snapDeviceIDNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceIDNotIn = data
+		case "snapDeviceIDGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceIdgt = data
+		case "snapDeviceIDGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceIdgte = data
+		case "snapDeviceIDLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceIdlt = data
+		case "snapDeviceIDLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceIdlte = data
+		case "snapDeviceIDContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceIDContains = data
+		case "snapDeviceIDHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceIDHasPrefix = data
+		case "snapDeviceIDHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceIDHasSuffix = data
+		case "snapDeviceIDIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceIDIsNil = data
+		case "snapDeviceIDNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceIDNotNil = data
+		case "snapDeviceIDEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceIDEqualFold = data
+		case "snapDeviceIDContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDeviceIDContainsFold = data
+		case "snapInCarPeopleNum":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNum"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapInCarPeopleNum = data
+		case "snapInCarPeopleNumNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumNEQ"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapInCarPeopleNumNeq = data
+		case "snapInCarPeopleNumIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumIn"))
+			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapInCarPeopleNumIn = data
+		case "snapInCarPeopleNumNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumNotIn"))
+			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapInCarPeopleNumNotIn = data
+		case "snapInCarPeopleNumGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumGT"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapInCarPeopleNumGt = data
+		case "snapInCarPeopleNumGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumGTE"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapInCarPeopleNumGte = data
+		case "snapInCarPeopleNumLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumLT"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapInCarPeopleNumLt = data
+		case "snapInCarPeopleNumLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumLTE"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapInCarPeopleNumLte = data
+		case "snapInCarPeopleNumIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapInCarPeopleNumIsNil = data
+		case "snapInCarPeopleNumNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapInCarPeopleNumNotNil = data
+		case "snapLanNo":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNo"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapLanNo = data
+		case "snapLanNoNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoNEQ"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapLanNoNeq = data
+		case "snapLanNoIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoIn"))
+			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapLanNoIn = data
+		case "snapLanNoNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoNotIn"))
+			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapLanNoNotIn = data
+		case "snapLanNoGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoGT"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapLanNoGt = data
+		case "snapLanNoGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoGTE"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapLanNoGte = data
+		case "snapLanNoLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoLT"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapLanNoLt = data
+		case "snapLanNoLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoLTE"))
+			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapLanNoLte = data
+		case "snapLanNoIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapLanNoIsNil = data
+		case "snapLanNoNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapLanNoNotNil = data
+		case "snapOpenStrobe":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapOpenStrobe"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapOpenStrobe = data
+		case "snapOpenStrobeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapOpenStrobeNEQ"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapOpenStrobeNeq = data
+		case "snapOpenStrobeIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapOpenStrobeIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapOpenStrobeIsNil = data
+		case "snapOpenStrobeNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapOpenStrobeNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapOpenStrobeNotNil = data
+		case "vehicleSeries":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeries"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeries = data
+		case "vehicleSeriesNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeriesNeq = data
+		case "vehicleSeriesIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeriesIn = data
+		case "vehicleSeriesNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeriesNotIn = data
+		case "vehicleSeriesGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeriesGt = data
+		case "vehicleSeriesGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeriesGte = data
+		case "vehicleSeriesLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeriesLt = data
+		case "vehicleSeriesLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeriesLte = data
+		case "vehicleSeriesContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeriesContains = data
+		case "vehicleSeriesHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeriesHasPrefix = data
+		case "vehicleSeriesHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeriesHasSuffix = data
+		case "vehicleSeriesIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesIsNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeriesIsNil = data
+		case "vehicleSeriesNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesNotNil"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeriesNotNil = data
+		case "vehicleSeriesEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeriesEqualFold = data
+		case "vehicleSeriesContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSeriesContainsFold = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -10813,6 +13737,13 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._User(ctx, sel, obj)
+	case model.VehicleData:
+		return ec._VehicleData(ctx, sel, &obj)
+	case *model.VehicleData:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._VehicleData(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
 	}
@@ -11098,6 +14029,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "update_user_password":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_update_user_password(ctx, field)
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -11917,6 +14852,89 @@ func (ec *executionContext) _UserConnection(ctx context.Context, sel ast.Selecti
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var vehicleDataImplementors = []string{"VehicleData", "Node"}
+
+func (ec *executionContext) _VehicleData(ctx context.Context, sel ast.SelectionSet, obj *model.VehicleData) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, vehicleDataImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("VehicleData")
+		case "id":
+			out.Values[i] = ec._VehicleData_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._VehicleData_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updatedAt":
+			out.Values[i] = ec._VehicleData_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "plateBoundingBox":
+			out.Values[i] = ec._VehicleData_plateBoundingBox(ctx, field, obj)
+		case "plateChannel":
+			out.Values[i] = ec._VehicleData_plateChannel(ctx, field, obj)
+		case "plateIsExist":
+			out.Values[i] = ec._VehicleData_plateIsExist(ctx, field, obj)
+		case "plateColor":
+			out.Values[i] = ec._VehicleData_plateColor(ctx, field, obj)
+		case "plateNumber":
+			out.Values[i] = ec._VehicleData_plateNumber(ctx, field, obj)
+		case "plateType":
+			out.Values[i] = ec._VehicleData_plateType(ctx, field, obj)
+		case "plateRegion":
+			out.Values[i] = ec._VehicleData_plateRegion(ctx, field, obj)
+		case "plateUploadNum":
+			out.Values[i] = ec._VehicleData_plateUploadNum(ctx, field, obj)
+		case "snapAllowUser":
+			out.Values[i] = ec._VehicleData_snapAllowUser(ctx, field, obj)
+		case "snapAllowUserEndTime":
+			out.Values[i] = ec._VehicleData_snapAllowUserEndTime(ctx, field, obj)
+		case "snapDefenceCode":
+			out.Values[i] = ec._VehicleData_snapDefenceCode(ctx, field, obj)
+		case "snapDeviceID":
+			out.Values[i] = ec._VehicleData_snapDeviceID(ctx, field, obj)
+		case "snapInCarPeopleNum":
+			out.Values[i] = ec._VehicleData_snapInCarPeopleNum(ctx, field, obj)
+		case "snapLanNo":
+			out.Values[i] = ec._VehicleData_snapLanNo(ctx, field, obj)
+		case "snapOpenStrobe":
+			out.Values[i] = ec._VehicleData_snapOpenStrobe(ctx, field, obj)
+		case "vehicleBoundingBox":
+			out.Values[i] = ec._VehicleData_vehicleBoundingBox(ctx, field, obj)
+		case "vehicleSeries":
+			out.Values[i] = ec._VehicleData_vehicleSeries(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -12793,6 +15811,21 @@ func (ec *executionContext) marshalNUserOrderField2goᚑentᚑprojectᚋgraphᚋ
 
 func (ec *executionContext) unmarshalNUserWhereInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUserWhereInput(ctx context.Context, v any) (*ent.UserWhereInput, error) {
 	res, err := ec.unmarshalInputUserWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNVehicleDataOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataOrderField(ctx context.Context, v any) (model.VehicleDataOrderField, error) {
+	var res model.VehicleDataOrderField
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNVehicleDataOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataOrderField(ctx context.Context, sel ast.SelectionSet, v model.VehicleDataOrderField) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNVehicleDataWhereInput2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataWhereInput(ctx context.Context, v any) (*model.VehicleDataWhereInput, error) {
+	res, err := ec.unmarshalInputVehicleDataWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -13800,6 +16833,34 @@ func (ec *executionContext) unmarshalOUserWhereInput2ᚖgoᚑentᚑprojectᚋint
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputUserWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOVehicleDataWhereInput2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataWhereInputᚄ(ctx context.Context, v any) ([]*model.VehicleDataWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]*model.VehicleDataWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNVehicleDataWhereInput2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOVehicleDataWhereInput2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataWhereInput(ctx context.Context, v any) (*model.VehicleDataWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputVehicleDataWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 

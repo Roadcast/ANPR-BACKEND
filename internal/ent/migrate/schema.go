@@ -139,6 +139,35 @@ var (
 			},
 		},
 	}
+	// VehicleDataColumns holds the columns for the "vehicle_data" table.
+	VehicleDataColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "plate_bounding_box", Type: field.TypeJSON, Nullable: true},
+		{Name: "plate_channel", Type: field.TypeInt, Nullable: true},
+		{Name: "plate_is_exist", Type: field.TypeBool, Nullable: true},
+		{Name: "plate_color", Type: field.TypeString, Nullable: true},
+		{Name: "plate_number", Type: field.TypeString, Nullable: true},
+		{Name: "plate_type", Type: field.TypeString, Nullable: true},
+		{Name: "plate_region", Type: field.TypeString, Nullable: true},
+		{Name: "plate_upload_num", Type: field.TypeInt, Nullable: true},
+		{Name: "snap_allow_user", Type: field.TypeBool, Nullable: true},
+		{Name: "snap_allow_user_end_time", Type: field.TypeString, Nullable: true},
+		{Name: "snap_defence_code", Type: field.TypeString, Nullable: true},
+		{Name: "snap_device_id", Type: field.TypeString, Nullable: true},
+		{Name: "snap_in_car_people_num", Type: field.TypeInt, Nullable: true},
+		{Name: "snap_lan_no", Type: field.TypeInt, Nullable: true},
+		{Name: "snap_open_strobe", Type: field.TypeBool, Nullable: true},
+		{Name: "vehicle_bounding_box", Type: field.TypeJSON, Nullable: true},
+		{Name: "vehicle_series", Type: field.TypeString, Nullable: true},
+	}
+	// VehicleDataTable holds the schema information for the "vehicle_data" table.
+	VehicleDataTable = &schema.Table{
+		Name:       "vehicle_data",
+		Columns:    VehicleDataColumns,
+		PrimaryKey: []*schema.Column{VehicleDataColumns[0]},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		CamerasTable,
@@ -147,6 +176,7 @@ var (
 		PoliceStationsTable,
 		RolesTable,
 		UsersTable,
+		VehicleDataTable,
 	}
 )
 

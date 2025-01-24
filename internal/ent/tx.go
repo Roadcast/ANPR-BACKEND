@@ -24,6 +24,8 @@ type Tx struct {
 	Role *RoleClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
+	// VehicleData is the client for interacting with the VehicleData builders.
+	VehicleData *VehicleDataClient
 
 	// lazily loaded.
 	client     *Client
@@ -161,6 +163,7 @@ func (tx *Tx) init() {
 	tx.PoliceStation = NewPoliceStationClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.User = NewUserClient(tx.config)
+	tx.VehicleData = NewVehicleDataClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

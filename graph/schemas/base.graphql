@@ -24,6 +24,7 @@ extend type Query {
         last: Int,
         orderBy: CameraOrder
     ): CameraConnection!
+
 }
 
 type PoliceStationConnection {

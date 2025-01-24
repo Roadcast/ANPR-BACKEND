@@ -12,6 +12,7 @@ import (
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
+	"go-ent-project/internal/ent/vehicledata"
 	"reflect"
 	"sync"
 
@@ -84,6 +85,7 @@ func checkColumn(table, column string) error {
 			policestation.Table: policestation.ValidColumn,
 			role.Table:          role.ValidColumn,
 			user.Table:          user.ValidColumn,
+			vehicledata.Table:   vehicledata.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

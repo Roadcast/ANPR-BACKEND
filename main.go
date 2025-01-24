@@ -24,7 +24,7 @@ import (
 
 import _ "go-ent-project/internal/ent/runtime"
 
-const defaultPort = "8080"
+const defaultPort = "8000"
 
 func main() {
 	// Load .env file
@@ -85,7 +85,8 @@ func main() {
 	)
 
 	celery.Initialize()
+	defer celery.ShutDown()
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, corsHandler(http.DefaultServeMux)))
-	celery.ShutDown()
+
 }

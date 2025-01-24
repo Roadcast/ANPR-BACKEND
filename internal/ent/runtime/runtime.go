@@ -11,6 +11,7 @@ import (
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
+	"go-ent-project/internal/ent/vehicledata"
 	"time"
 
 	"entgo.io/ent"
@@ -181,6 +182,8 @@ func init() {
 	userHooks := schema.User{}.Hooks()
 
 	user.Hooks[1] = userHooks[0]
+
+	user.Hooks[2] = userHooks[1]
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0
 	userFields := schema.User{}.Fields()
@@ -211,6 +214,21 @@ func init() {
 	userDescActive := userFields[4].Descriptor()
 	// user.DefaultActive holds the default value on creation for the active field.
 	user.DefaultActive = userDescActive.Default.(bool)
+	vehicledataMixin := schema.VehicleData{}.Mixin()
+	vehicledataMixinFields0 := vehicledataMixin[0].Fields()
+	_ = vehicledataMixinFields0
+	vehicledataFields := schema.VehicleData{}.Fields()
+	_ = vehicledataFields
+	// vehicledataDescCreatedAt is the schema descriptor for created_at field.
+	vehicledataDescCreatedAt := vehicledataMixinFields0[1].Descriptor()
+	// vehicledata.DefaultCreatedAt holds the default value on creation for the created_at field.
+	vehicledata.DefaultCreatedAt = vehicledataDescCreatedAt.Default.(func() time.Time)
+	// vehicledataDescUpdatedAt is the schema descriptor for updated_at field.
+	vehicledataDescUpdatedAt := vehicledataMixinFields0[2].Descriptor()
+	// vehicledata.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	vehicledata.DefaultUpdatedAt = vehicledataDescUpdatedAt.Default.(func() time.Time)
+	// vehicledata.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	vehicledata.UpdateDefaultUpdatedAt = vehicledataDescUpdatedAt.UpdateDefault.(func() time.Time)
 }
 
 const (

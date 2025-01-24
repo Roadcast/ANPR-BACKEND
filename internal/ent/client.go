@@ -17,6 +17,7 @@ import (
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
+	"go-ent-project/internal/ent/vehicledata"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -41,6 +42,8 @@ type Client struct {
 	Role *RoleClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
+	// VehicleData is the client for interacting with the VehicleData builders.
+	VehicleData *VehicleDataClient
 	// additional fields for node api
 	tables tables
 }
@@ -60,6 +63,7 @@ func (c *Client) init() {
 	c.PoliceStation = NewPoliceStationClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.User = NewUserClient(c.config)
+	c.VehicleData = NewVehicleDataClient(c.config)
 }
 
 type (
@@ -158,6 +162,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		PoliceStation: NewPoliceStationClient(cfg),
 		Role:          NewRoleClient(cfg),
 		User:          NewUserClient(cfg),
+		VehicleData:   NewVehicleDataClient(cfg),
 	}, nil
 }
 
@@ -183,6 +188,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		PoliceStation: NewPoliceStationClient(cfg),
 		Role:          NewRoleClient(cfg),
 		User:          NewUserClient(cfg),
+		VehicleData:   NewVehicleDataClient(cfg),
 	}, nil
 }
 
@@ -212,7 +218,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Camera, c.Car, c.Permission, c.PoliceStation, c.Role, c.User,
+		c.Camera, c.Car, c.Permission, c.PoliceStation, c.Role, c.User, c.VehicleData,
 	} {
 		n.Use(hooks...)
 	}
@@ -222,7 +228,7 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Camera, c.Car, c.Permission, c.PoliceStation, c.Role, c.User,
+		c.Camera, c.Car, c.Permission, c.PoliceStation, c.Role, c.User, c.VehicleData,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -243,6 +249,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Role.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
+	case *VehicleDataMutation:
+		return c.VehicleData.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -1143,12 +1151,146 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 	}
 }
 
+// VehicleDataClient is a client for the VehicleData schema.
+type VehicleDataClient struct {
+	config
+}
+
+// NewVehicleDataClient returns a client for the VehicleData from the given config.
+func NewVehicleDataClient(c config) *VehicleDataClient {
+	return &VehicleDataClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `vehicledata.Hooks(f(g(h())))`.
+func (c *VehicleDataClient) Use(hooks ...Hook) {
+	c.hooks.VehicleData = append(c.hooks.VehicleData, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `vehicledata.Intercept(f(g(h())))`.
+func (c *VehicleDataClient) Intercept(interceptors ...Interceptor) {
+	c.inters.VehicleData = append(c.inters.VehicleData, interceptors...)
+}
+
+// Create returns a builder for creating a VehicleData entity.
+func (c *VehicleDataClient) Create() *VehicleDataCreate {
+	mutation := newVehicleDataMutation(c.config, OpCreate)
+	return &VehicleDataCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of VehicleData entities.
+func (c *VehicleDataClient) CreateBulk(builders ...*VehicleDataCreate) *VehicleDataCreateBulk {
+	return &VehicleDataCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *VehicleDataClient) MapCreateBulk(slice any, setFunc func(*VehicleDataCreate, int)) *VehicleDataCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &VehicleDataCreateBulk{err: fmt.Errorf("calling to VehicleDataClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*VehicleDataCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &VehicleDataCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for VehicleData.
+func (c *VehicleDataClient) Update() *VehicleDataUpdate {
+	mutation := newVehicleDataMutation(c.config, OpUpdate)
+	return &VehicleDataUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *VehicleDataClient) UpdateOne(vd *VehicleData) *VehicleDataUpdateOne {
+	mutation := newVehicleDataMutation(c.config, OpUpdateOne, withVehicleData(vd))
+	return &VehicleDataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *VehicleDataClient) UpdateOneID(id int) *VehicleDataUpdateOne {
+	mutation := newVehicleDataMutation(c.config, OpUpdateOne, withVehicleDataID(id))
+	return &VehicleDataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for VehicleData.
+func (c *VehicleDataClient) Delete() *VehicleDataDelete {
+	mutation := newVehicleDataMutation(c.config, OpDelete)
+	return &VehicleDataDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *VehicleDataClient) DeleteOne(vd *VehicleData) *VehicleDataDeleteOne {
+	return c.DeleteOneID(vd.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *VehicleDataClient) DeleteOneID(id int) *VehicleDataDeleteOne {
+	builder := c.Delete().Where(vehicledata.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &VehicleDataDeleteOne{builder}
+}
+
+// Query returns a query builder for VehicleData.
+func (c *VehicleDataClient) Query() *VehicleDataQuery {
+	return &VehicleDataQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeVehicleData},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a VehicleData entity by its id.
+func (c *VehicleDataClient) Get(ctx context.Context, id int) (*VehicleData, error) {
+	return c.Query().Where(vehicledata.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *VehicleDataClient) GetX(ctx context.Context, id int) *VehicleData {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *VehicleDataClient) Hooks() []Hook {
+	return c.hooks.VehicleData
+}
+
+// Interceptors returns the client interceptors.
+func (c *VehicleDataClient) Interceptors() []Interceptor {
+	return c.inters.VehicleData
+}
+
+func (c *VehicleDataClient) mutate(ctx context.Context, m *VehicleDataMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&VehicleDataCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&VehicleDataUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&VehicleDataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&VehicleDataDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown VehicleData mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Camera, Car, Permission, PoliceStation, Role, User []ent.Hook
+		Camera, Car, Permission, PoliceStation, Role, User, VehicleData []ent.Hook
 	}
 	inters struct {
-		Camera, Car, Permission, PoliceStation, Role, User []ent.Interceptor
+		Camera, Car, Permission, PoliceStation, Role, User,
+		VehicleData []ent.Interceptor
 	}
 )

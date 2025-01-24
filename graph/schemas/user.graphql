@@ -1,0 +1,6 @@
+extend type Mutation {
+    update_user_password(
+        user_id: ID!,
+        password: String!
+    ): User
+}

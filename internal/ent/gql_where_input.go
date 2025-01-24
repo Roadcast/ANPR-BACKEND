@@ -12,6 +12,7 @@ import (
 	"go-ent-project/internal/ent/predicate"
 	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
+	"go-ent-project/internal/ent/vehicledata"
 	"time"
 )
 
@@ -2288,5 +2289,915 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 		return predicates[0], nil
 	default:
 		return user.And(predicates...), nil
+	}
+}
+
+// VehicleDataWhereInput represents a where input for filtering VehicleData queries.
+type VehicleDataWhereInput struct {
+	Predicates []predicate.VehicleData  `json:"-"`
+	Not        *VehicleDataWhereInput   `json:"not,omitempty"`
+	Or         []*VehicleDataWhereInput `json:"or,omitempty"`
+	And        []*VehicleDataWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *int  `json:"id,omitempty"`
+	IDNEQ   *int  `json:"idNEQ,omitempty"`
+	IDIn    []int `json:"idIn,omitempty"`
+	IDNotIn []int `json:"idNotIn,omitempty"`
+	IDGT    *int  `json:"idGT,omitempty"`
+	IDGTE   *int  `json:"idGTE,omitempty"`
+	IDLT    *int  `json:"idLT,omitempty"`
+	IDLTE   *int  `json:"idLTE,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "plate_channel" field predicates.
+	PlateChannel       *int  `json:"plateChannel,omitempty"`
+	PlateChannelNEQ    *int  `json:"plateChannelNEQ,omitempty"`
+	PlateChannelIn     []int `json:"plateChannelIn,omitempty"`
+	PlateChannelNotIn  []int `json:"plateChannelNotIn,omitempty"`
+	PlateChannelGT     *int  `json:"plateChannelGT,omitempty"`
+	PlateChannelGTE    *int  `json:"plateChannelGTE,omitempty"`
+	PlateChannelLT     *int  `json:"plateChannelLT,omitempty"`
+	PlateChannelLTE    *int  `json:"plateChannelLTE,omitempty"`
+	PlateChannelIsNil  bool  `json:"plateChannelIsNil,omitempty"`
+	PlateChannelNotNil bool  `json:"plateChannelNotNil,omitempty"`
+
+	// "plate_is_exist" field predicates.
+	PlateIsExist       *bool `json:"plateIsExist,omitempty"`
+	PlateIsExistNEQ    *bool `json:"plateIsExistNEQ,omitempty"`
+	PlateIsExistIsNil  bool  `json:"plateIsExistIsNil,omitempty"`
+	PlateIsExistNotNil bool  `json:"plateIsExistNotNil,omitempty"`
+
+	// "plate_color" field predicates.
+	PlateColor             *string  `json:"plateColor,omitempty"`
+	PlateColorNEQ          *string  `json:"plateColorNEQ,omitempty"`
+	PlateColorIn           []string `json:"plateColorIn,omitempty"`
+	PlateColorNotIn        []string `json:"plateColorNotIn,omitempty"`
+	PlateColorGT           *string  `json:"plateColorGT,omitempty"`
+	PlateColorGTE          *string  `json:"plateColorGTE,omitempty"`
+	PlateColorLT           *string  `json:"plateColorLT,omitempty"`
+	PlateColorLTE          *string  `json:"plateColorLTE,omitempty"`
+	PlateColorContains     *string  `json:"plateColorContains,omitempty"`
+	PlateColorHasPrefix    *string  `json:"plateColorHasPrefix,omitempty"`
+	PlateColorHasSuffix    *string  `json:"plateColorHasSuffix,omitempty"`
+	PlateColorIsNil        bool     `json:"plateColorIsNil,omitempty"`
+	PlateColorNotNil       bool     `json:"plateColorNotNil,omitempty"`
+	PlateColorEqualFold    *string  `json:"plateColorEqualFold,omitempty"`
+	PlateColorContainsFold *string  `json:"plateColorContainsFold,omitempty"`
+
+	// "plate_number" field predicates.
+	PlateNumber             *string  `json:"plateNumber,omitempty"`
+	PlateNumberNEQ          *string  `json:"plateNumberNEQ,omitempty"`
+	PlateNumberIn           []string `json:"plateNumberIn,omitempty"`
+	PlateNumberNotIn        []string `json:"plateNumberNotIn,omitempty"`
+	PlateNumberGT           *string  `json:"plateNumberGT,omitempty"`
+	PlateNumberGTE          *string  `json:"plateNumberGTE,omitempty"`
+	PlateNumberLT           *string  `json:"plateNumberLT,omitempty"`
+	PlateNumberLTE          *string  `json:"plateNumberLTE,omitempty"`
+	PlateNumberContains     *string  `json:"plateNumberContains,omitempty"`
+	PlateNumberHasPrefix    *string  `json:"plateNumberHasPrefix,omitempty"`
+	PlateNumberHasSuffix    *string  `json:"plateNumberHasSuffix,omitempty"`
+	PlateNumberIsNil        bool     `json:"plateNumberIsNil,omitempty"`
+	PlateNumberNotNil       bool     `json:"plateNumberNotNil,omitempty"`
+	PlateNumberEqualFold    *string  `json:"plateNumberEqualFold,omitempty"`
+	PlateNumberContainsFold *string  `json:"plateNumberContainsFold,omitempty"`
+
+	// "plate_type" field predicates.
+	PlateType             *string  `json:"plateType,omitempty"`
+	PlateTypeNEQ          *string  `json:"plateTypeNEQ,omitempty"`
+	PlateTypeIn           []string `json:"plateTypeIn,omitempty"`
+	PlateTypeNotIn        []string `json:"plateTypeNotIn,omitempty"`
+	PlateTypeGT           *string  `json:"plateTypeGT,omitempty"`
+	PlateTypeGTE          *string  `json:"plateTypeGTE,omitempty"`
+	PlateTypeLT           *string  `json:"plateTypeLT,omitempty"`
+	PlateTypeLTE          *string  `json:"plateTypeLTE,omitempty"`
+	PlateTypeContains     *string  `json:"plateTypeContains,omitempty"`
+	PlateTypeHasPrefix    *string  `json:"plateTypeHasPrefix,omitempty"`
+	PlateTypeHasSuffix    *string  `json:"plateTypeHasSuffix,omitempty"`
+	PlateTypeIsNil        bool     `json:"plateTypeIsNil,omitempty"`
+	PlateTypeNotNil       bool     `json:"plateTypeNotNil,omitempty"`
+	PlateTypeEqualFold    *string  `json:"plateTypeEqualFold,omitempty"`
+	PlateTypeContainsFold *string  `json:"plateTypeContainsFold,omitempty"`
+
+	// "plate_region" field predicates.
+	PlateRegion             *string  `json:"plateRegion,omitempty"`
+	PlateRegionNEQ          *string  `json:"plateRegionNEQ,omitempty"`
+	PlateRegionIn           []string `json:"plateRegionIn,omitempty"`
+	PlateRegionNotIn        []string `json:"plateRegionNotIn,omitempty"`
+	PlateRegionGT           *string  `json:"plateRegionGT,omitempty"`
+	PlateRegionGTE          *string  `json:"plateRegionGTE,omitempty"`
+	PlateRegionLT           *string  `json:"plateRegionLT,omitempty"`
+	PlateRegionLTE          *string  `json:"plateRegionLTE,omitempty"`
+	PlateRegionContains     *string  `json:"plateRegionContains,omitempty"`
+	PlateRegionHasPrefix    *string  `json:"plateRegionHasPrefix,omitempty"`
+	PlateRegionHasSuffix    *string  `json:"plateRegionHasSuffix,omitempty"`
+	PlateRegionIsNil        bool     `json:"plateRegionIsNil,omitempty"`
+	PlateRegionNotNil       bool     `json:"plateRegionNotNil,omitempty"`
+	PlateRegionEqualFold    *string  `json:"plateRegionEqualFold,omitempty"`
+	PlateRegionContainsFold *string  `json:"plateRegionContainsFold,omitempty"`
+
+	// "plate_upload_num" field predicates.
+	PlateUploadNum       *int  `json:"plateUploadNum,omitempty"`
+	PlateUploadNumNEQ    *int  `json:"plateUploadNumNEQ,omitempty"`
+	PlateUploadNumIn     []int `json:"plateUploadNumIn,omitempty"`
+	PlateUploadNumNotIn  []int `json:"plateUploadNumNotIn,omitempty"`
+	PlateUploadNumGT     *int  `json:"plateUploadNumGT,omitempty"`
+	PlateUploadNumGTE    *int  `json:"plateUploadNumGTE,omitempty"`
+	PlateUploadNumLT     *int  `json:"plateUploadNumLT,omitempty"`
+	PlateUploadNumLTE    *int  `json:"plateUploadNumLTE,omitempty"`
+	PlateUploadNumIsNil  bool  `json:"plateUploadNumIsNil,omitempty"`
+	PlateUploadNumNotNil bool  `json:"plateUploadNumNotNil,omitempty"`
+
+	// "snap_allow_user" field predicates.
+	SnapAllowUser       *bool `json:"snapAllowUser,omitempty"`
+	SnapAllowUserNEQ    *bool `json:"snapAllowUserNEQ,omitempty"`
+	SnapAllowUserIsNil  bool  `json:"snapAllowUserIsNil,omitempty"`
+	SnapAllowUserNotNil bool  `json:"snapAllowUserNotNil,omitempty"`
+
+	// "snap_allow_user_end_time" field predicates.
+	SnapAllowUserEndTime             *string  `json:"snapAllowUserEndTime,omitempty"`
+	SnapAllowUserEndTimeNEQ          *string  `json:"snapAllowUserEndTimeNEQ,omitempty"`
+	SnapAllowUserEndTimeIn           []string `json:"snapAllowUserEndTimeIn,omitempty"`
+	SnapAllowUserEndTimeNotIn        []string `json:"snapAllowUserEndTimeNotIn,omitempty"`
+	SnapAllowUserEndTimeGT           *string  `json:"snapAllowUserEndTimeGT,omitempty"`
+	SnapAllowUserEndTimeGTE          *string  `json:"snapAllowUserEndTimeGTE,omitempty"`
+	SnapAllowUserEndTimeLT           *string  `json:"snapAllowUserEndTimeLT,omitempty"`
+	SnapAllowUserEndTimeLTE          *string  `json:"snapAllowUserEndTimeLTE,omitempty"`
+	SnapAllowUserEndTimeContains     *string  `json:"snapAllowUserEndTimeContains,omitempty"`
+	SnapAllowUserEndTimeHasPrefix    *string  `json:"snapAllowUserEndTimeHasPrefix,omitempty"`
+	SnapAllowUserEndTimeHasSuffix    *string  `json:"snapAllowUserEndTimeHasSuffix,omitempty"`
+	SnapAllowUserEndTimeIsNil        bool     `json:"snapAllowUserEndTimeIsNil,omitempty"`
+	SnapAllowUserEndTimeNotNil       bool     `json:"snapAllowUserEndTimeNotNil,omitempty"`
+	SnapAllowUserEndTimeEqualFold    *string  `json:"snapAllowUserEndTimeEqualFold,omitempty"`
+	SnapAllowUserEndTimeContainsFold *string  `json:"snapAllowUserEndTimeContainsFold,omitempty"`
+
+	// "snap_defence_code" field predicates.
+	SnapDefenceCode             *string  `json:"snapDefenceCode,omitempty"`
+	SnapDefenceCodeNEQ          *string  `json:"snapDefenceCodeNEQ,omitempty"`
+	SnapDefenceCodeIn           []string `json:"snapDefenceCodeIn,omitempty"`
+	SnapDefenceCodeNotIn        []string `json:"snapDefenceCodeNotIn,omitempty"`
+	SnapDefenceCodeGT           *string  `json:"snapDefenceCodeGT,omitempty"`
+	SnapDefenceCodeGTE          *string  `json:"snapDefenceCodeGTE,omitempty"`
+	SnapDefenceCodeLT           *string  `json:"snapDefenceCodeLT,omitempty"`
+	SnapDefenceCodeLTE          *string  `json:"snapDefenceCodeLTE,omitempty"`
+	SnapDefenceCodeContains     *string  `json:"snapDefenceCodeContains,omitempty"`
+	SnapDefenceCodeHasPrefix    *string  `json:"snapDefenceCodeHasPrefix,omitempty"`
+	SnapDefenceCodeHasSuffix    *string  `json:"snapDefenceCodeHasSuffix,omitempty"`
+	SnapDefenceCodeIsNil        bool     `json:"snapDefenceCodeIsNil,omitempty"`
+	SnapDefenceCodeNotNil       bool     `json:"snapDefenceCodeNotNil,omitempty"`
+	SnapDefenceCodeEqualFold    *string  `json:"snapDefenceCodeEqualFold,omitempty"`
+	SnapDefenceCodeContainsFold *string  `json:"snapDefenceCodeContainsFold,omitempty"`
+
+	// "snap_device_id" field predicates.
+	SnapDeviceID             *string  `json:"snapDeviceID,omitempty"`
+	SnapDeviceIDNEQ          *string  `json:"snapDeviceIDNEQ,omitempty"`
+	SnapDeviceIDIn           []string `json:"snapDeviceIDIn,omitempty"`
+	SnapDeviceIDNotIn        []string `json:"snapDeviceIDNotIn,omitempty"`
+	SnapDeviceIDGT           *string  `json:"snapDeviceIDGT,omitempty"`
+	SnapDeviceIDGTE          *string  `json:"snapDeviceIDGTE,omitempty"`
+	SnapDeviceIDLT           *string  `json:"snapDeviceIDLT,omitempty"`
+	SnapDeviceIDLTE          *string  `json:"snapDeviceIDLTE,omitempty"`
+	SnapDeviceIDContains     *string  `json:"snapDeviceIDContains,omitempty"`
+	SnapDeviceIDHasPrefix    *string  `json:"snapDeviceIDHasPrefix,omitempty"`
+	SnapDeviceIDHasSuffix    *string  `json:"snapDeviceIDHasSuffix,omitempty"`
+	SnapDeviceIDIsNil        bool     `json:"snapDeviceIDIsNil,omitempty"`
+	SnapDeviceIDNotNil       bool     `json:"snapDeviceIDNotNil,omitempty"`
+	SnapDeviceIDEqualFold    *string  `json:"snapDeviceIDEqualFold,omitempty"`
+	SnapDeviceIDContainsFold *string  `json:"snapDeviceIDContainsFold,omitempty"`
+
+	// "snap_in_car_people_num" field predicates.
+	SnapInCarPeopleNum       *int  `json:"snapInCarPeopleNum,omitempty"`
+	SnapInCarPeopleNumNEQ    *int  `json:"snapInCarPeopleNumNEQ,omitempty"`
+	SnapInCarPeopleNumIn     []int `json:"snapInCarPeopleNumIn,omitempty"`
+	SnapInCarPeopleNumNotIn  []int `json:"snapInCarPeopleNumNotIn,omitempty"`
+	SnapInCarPeopleNumGT     *int  `json:"snapInCarPeopleNumGT,omitempty"`
+	SnapInCarPeopleNumGTE    *int  `json:"snapInCarPeopleNumGTE,omitempty"`
+	SnapInCarPeopleNumLT     *int  `json:"snapInCarPeopleNumLT,omitempty"`
+	SnapInCarPeopleNumLTE    *int  `json:"snapInCarPeopleNumLTE,omitempty"`
+	SnapInCarPeopleNumIsNil  bool  `json:"snapInCarPeopleNumIsNil,omitempty"`
+	SnapInCarPeopleNumNotNil bool  `json:"snapInCarPeopleNumNotNil,omitempty"`
+
+	// "snap_lan_no" field predicates.
+	SnapLanNo       *int  `json:"snapLanNo,omitempty"`
+	SnapLanNoNEQ    *int  `json:"snapLanNoNEQ,omitempty"`
+	SnapLanNoIn     []int `json:"snapLanNoIn,omitempty"`
+	SnapLanNoNotIn  []int `json:"snapLanNoNotIn,omitempty"`
+	SnapLanNoGT     *int  `json:"snapLanNoGT,omitempty"`
+	SnapLanNoGTE    *int  `json:"snapLanNoGTE,omitempty"`
+	SnapLanNoLT     *int  `json:"snapLanNoLT,omitempty"`
+	SnapLanNoLTE    *int  `json:"snapLanNoLTE,omitempty"`
+	SnapLanNoIsNil  bool  `json:"snapLanNoIsNil,omitempty"`
+	SnapLanNoNotNil bool  `json:"snapLanNoNotNil,omitempty"`
+
+	// "snap_open_strobe" field predicates.
+	SnapOpenStrobe       *bool `json:"snapOpenStrobe,omitempty"`
+	SnapOpenStrobeNEQ    *bool `json:"snapOpenStrobeNEQ,omitempty"`
+	SnapOpenStrobeIsNil  bool  `json:"snapOpenStrobeIsNil,omitempty"`
+	SnapOpenStrobeNotNil bool  `json:"snapOpenStrobeNotNil,omitempty"`
+
+	// "vehicle_series" field predicates.
+	VehicleSeries             *string  `json:"vehicleSeries,omitempty"`
+	VehicleSeriesNEQ          *string  `json:"vehicleSeriesNEQ,omitempty"`
+	VehicleSeriesIn           []string `json:"vehicleSeriesIn,omitempty"`
+	VehicleSeriesNotIn        []string `json:"vehicleSeriesNotIn,omitempty"`
+	VehicleSeriesGT           *string  `json:"vehicleSeriesGT,omitempty"`
+	VehicleSeriesGTE          *string  `json:"vehicleSeriesGTE,omitempty"`
+	VehicleSeriesLT           *string  `json:"vehicleSeriesLT,omitempty"`
+	VehicleSeriesLTE          *string  `json:"vehicleSeriesLTE,omitempty"`
+	VehicleSeriesContains     *string  `json:"vehicleSeriesContains,omitempty"`
+	VehicleSeriesHasPrefix    *string  `json:"vehicleSeriesHasPrefix,omitempty"`
+	VehicleSeriesHasSuffix    *string  `json:"vehicleSeriesHasSuffix,omitempty"`
+	VehicleSeriesIsNil        bool     `json:"vehicleSeriesIsNil,omitempty"`
+	VehicleSeriesNotNil       bool     `json:"vehicleSeriesNotNil,omitempty"`
+	VehicleSeriesEqualFold    *string  `json:"vehicleSeriesEqualFold,omitempty"`
+	VehicleSeriesContainsFold *string  `json:"vehicleSeriesContainsFold,omitempty"`
+}
+
+// AddPredicates adds custom predicates to the where input to be used during the filtering phase.
+func (i *VehicleDataWhereInput) AddPredicates(predicates ...predicate.VehicleData) {
+	i.Predicates = append(i.Predicates, predicates...)
+}
+
+// Filter applies the VehicleDataWhereInput filter on the VehicleDataQuery builder.
+func (i *VehicleDataWhereInput) Filter(q *VehicleDataQuery) (*VehicleDataQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		if err == ErrEmptyVehicleDataWhereInput {
+			return q, nil
+		}
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// ErrEmptyVehicleDataWhereInput is returned in case the VehicleDataWhereInput is empty.
+var ErrEmptyVehicleDataWhereInput = errors.New("ent: empty predicate VehicleDataWhereInput")
+
+// P returns a predicate for filtering vehicledataslice.
+// An error is returned if the input is empty or invalid.
+func (i *VehicleDataWhereInput) P() (predicate.VehicleData, error) {
+	var predicates []predicate.VehicleData
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'not'", err)
+		}
+		predicates = append(predicates, vehicledata.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'or'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.VehicleData, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'or'", err)
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, vehicledata.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, fmt.Errorf("%w: field 'and'", err)
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.VehicleData, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'and'", err)
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, vehicledata.And(and...))
+	}
+	predicates = append(predicates, i.Predicates...)
+	if i.ID != nil {
+		predicates = append(predicates, vehicledata.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, vehicledata.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, vehicledata.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, vehicledata.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, vehicledata.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, vehicledata.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, vehicledata.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, vehicledata.IDLTE(*i.IDLTE))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, vehicledata.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, vehicledata.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, vehicledata.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, vehicledata.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, vehicledata.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, vehicledata.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, vehicledata.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, vehicledata.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, vehicledata.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, vehicledata.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, vehicledata.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, vehicledata.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, vehicledata.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, vehicledata.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, vehicledata.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, vehicledata.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+	if i.PlateChannel != nil {
+		predicates = append(predicates, vehicledata.PlateChannelEQ(*i.PlateChannel))
+	}
+	if i.PlateChannelNEQ != nil {
+		predicates = append(predicates, vehicledata.PlateChannelNEQ(*i.PlateChannelNEQ))
+	}
+	if len(i.PlateChannelIn) > 0 {
+		predicates = append(predicates, vehicledata.PlateChannelIn(i.PlateChannelIn...))
+	}
+	if len(i.PlateChannelNotIn) > 0 {
+		predicates = append(predicates, vehicledata.PlateChannelNotIn(i.PlateChannelNotIn...))
+	}
+	if i.PlateChannelGT != nil {
+		predicates = append(predicates, vehicledata.PlateChannelGT(*i.PlateChannelGT))
+	}
+	if i.PlateChannelGTE != nil {
+		predicates = append(predicates, vehicledata.PlateChannelGTE(*i.PlateChannelGTE))
+	}
+	if i.PlateChannelLT != nil {
+		predicates = append(predicates, vehicledata.PlateChannelLT(*i.PlateChannelLT))
+	}
+	if i.PlateChannelLTE != nil {
+		predicates = append(predicates, vehicledata.PlateChannelLTE(*i.PlateChannelLTE))
+	}
+	if i.PlateChannelIsNil {
+		predicates = append(predicates, vehicledata.PlateChannelIsNil())
+	}
+	if i.PlateChannelNotNil {
+		predicates = append(predicates, vehicledata.PlateChannelNotNil())
+	}
+	if i.PlateIsExist != nil {
+		predicates = append(predicates, vehicledata.PlateIsExistEQ(*i.PlateIsExist))
+	}
+	if i.PlateIsExistNEQ != nil {
+		predicates = append(predicates, vehicledata.PlateIsExistNEQ(*i.PlateIsExistNEQ))
+	}
+	if i.PlateIsExistIsNil {
+		predicates = append(predicates, vehicledata.PlateIsExistIsNil())
+	}
+	if i.PlateIsExistNotNil {
+		predicates = append(predicates, vehicledata.PlateIsExistNotNil())
+	}
+	if i.PlateColor != nil {
+		predicates = append(predicates, vehicledata.PlateColorEQ(*i.PlateColor))
+	}
+	if i.PlateColorNEQ != nil {
+		predicates = append(predicates, vehicledata.PlateColorNEQ(*i.PlateColorNEQ))
+	}
+	if len(i.PlateColorIn) > 0 {
+		predicates = append(predicates, vehicledata.PlateColorIn(i.PlateColorIn...))
+	}
+	if len(i.PlateColorNotIn) > 0 {
+		predicates = append(predicates, vehicledata.PlateColorNotIn(i.PlateColorNotIn...))
+	}
+	if i.PlateColorGT != nil {
+		predicates = append(predicates, vehicledata.PlateColorGT(*i.PlateColorGT))
+	}
+	if i.PlateColorGTE != nil {
+		predicates = append(predicates, vehicledata.PlateColorGTE(*i.PlateColorGTE))
+	}
+	if i.PlateColorLT != nil {
+		predicates = append(predicates, vehicledata.PlateColorLT(*i.PlateColorLT))
+	}
+	if i.PlateColorLTE != nil {
+		predicates = append(predicates, vehicledata.PlateColorLTE(*i.PlateColorLTE))
+	}
+	if i.PlateColorContains != nil {
+		predicates = append(predicates, vehicledata.PlateColorContains(*i.PlateColorContains))
+	}
+	if i.PlateColorHasPrefix != nil {
+		predicates = append(predicates, vehicledata.PlateColorHasPrefix(*i.PlateColorHasPrefix))
+	}
+	if i.PlateColorHasSuffix != nil {
+		predicates = append(predicates, vehicledata.PlateColorHasSuffix(*i.PlateColorHasSuffix))
+	}
+	if i.PlateColorIsNil {
+		predicates = append(predicates, vehicledata.PlateColorIsNil())
+	}
+	if i.PlateColorNotNil {
+		predicates = append(predicates, vehicledata.PlateColorNotNil())
+	}
+	if i.PlateColorEqualFold != nil {
+		predicates = append(predicates, vehicledata.PlateColorEqualFold(*i.PlateColorEqualFold))
+	}
+	if i.PlateColorContainsFold != nil {
+		predicates = append(predicates, vehicledata.PlateColorContainsFold(*i.PlateColorContainsFold))
+	}
+	if i.PlateNumber != nil {
+		predicates = append(predicates, vehicledata.PlateNumberEQ(*i.PlateNumber))
+	}
+	if i.PlateNumberNEQ != nil {
+		predicates = append(predicates, vehicledata.PlateNumberNEQ(*i.PlateNumberNEQ))
+	}
+	if len(i.PlateNumberIn) > 0 {
+		predicates = append(predicates, vehicledata.PlateNumberIn(i.PlateNumberIn...))
+	}
+	if len(i.PlateNumberNotIn) > 0 {
+		predicates = append(predicates, vehicledata.PlateNumberNotIn(i.PlateNumberNotIn...))
+	}
+	if i.PlateNumberGT != nil {
+		predicates = append(predicates, vehicledata.PlateNumberGT(*i.PlateNumberGT))
+	}
+	if i.PlateNumberGTE != nil {
+		predicates = append(predicates, vehicledata.PlateNumberGTE(*i.PlateNumberGTE))
+	}
+	if i.PlateNumberLT != nil {
+		predicates = append(predicates, vehicledata.PlateNumberLT(*i.PlateNumberLT))
+	}
+	if i.PlateNumberLTE != nil {
+		predicates = append(predicates, vehicledata.PlateNumberLTE(*i.PlateNumberLTE))
+	}
+	if i.PlateNumberContains != nil {
+		predicates = append(predicates, vehicledata.PlateNumberContains(*i.PlateNumberContains))
+	}
+	if i.PlateNumberHasPrefix != nil {
+		predicates = append(predicates, vehicledata.PlateNumberHasPrefix(*i.PlateNumberHasPrefix))
+	}
+	if i.PlateNumberHasSuffix != nil {
+		predicates = append(predicates, vehicledata.PlateNumberHasSuffix(*i.PlateNumberHasSuffix))
+	}
+	if i.PlateNumberIsNil {
+		predicates = append(predicates, vehicledata.PlateNumberIsNil())
+	}
+	if i.PlateNumberNotNil {
+		predicates = append(predicates, vehicledata.PlateNumberNotNil())
+	}
+	if i.PlateNumberEqualFold != nil {
+		predicates = append(predicates, vehicledata.PlateNumberEqualFold(*i.PlateNumberEqualFold))
+	}
+	if i.PlateNumberContainsFold != nil {
+		predicates = append(predicates, vehicledata.PlateNumberContainsFold(*i.PlateNumberContainsFold))
+	}
+	if i.PlateType != nil {
+		predicates = append(predicates, vehicledata.PlateTypeEQ(*i.PlateType))
+	}
+	if i.PlateTypeNEQ != nil {
+		predicates = append(predicates, vehicledata.PlateTypeNEQ(*i.PlateTypeNEQ))
+	}
+	if len(i.PlateTypeIn) > 0 {
+		predicates = append(predicates, vehicledata.PlateTypeIn(i.PlateTypeIn...))
+	}
+	if len(i.PlateTypeNotIn) > 0 {
+		predicates = append(predicates, vehicledata.PlateTypeNotIn(i.PlateTypeNotIn...))
+	}
+	if i.PlateTypeGT != nil {
+		predicates = append(predicates, vehicledata.PlateTypeGT(*i.PlateTypeGT))
+	}
+	if i.PlateTypeGTE != nil {
+		predicates = append(predicates, vehicledata.PlateTypeGTE(*i.PlateTypeGTE))
+	}
+	if i.PlateTypeLT != nil {
+		predicates = append(predicates, vehicledata.PlateTypeLT(*i.PlateTypeLT))
+	}
+	if i.PlateTypeLTE != nil {
+		predicates = append(predicates, vehicledata.PlateTypeLTE(*i.PlateTypeLTE))
+	}
+	if i.PlateTypeContains != nil {
+		predicates = append(predicates, vehicledata.PlateTypeContains(*i.PlateTypeContains))
+	}
+	if i.PlateTypeHasPrefix != nil {
+		predicates = append(predicates, vehicledata.PlateTypeHasPrefix(*i.PlateTypeHasPrefix))
+	}
+	if i.PlateTypeHasSuffix != nil {
+		predicates = append(predicates, vehicledata.PlateTypeHasSuffix(*i.PlateTypeHasSuffix))
+	}
+	if i.PlateTypeIsNil {
+		predicates = append(predicates, vehicledata.PlateTypeIsNil())
+	}
+	if i.PlateTypeNotNil {
+		predicates = append(predicates, vehicledata.PlateTypeNotNil())
+	}
+	if i.PlateTypeEqualFold != nil {
+		predicates = append(predicates, vehicledata.PlateTypeEqualFold(*i.PlateTypeEqualFold))
+	}
+	if i.PlateTypeContainsFold != nil {
+		predicates = append(predicates, vehicledata.PlateTypeContainsFold(*i.PlateTypeContainsFold))
+	}
+	if i.PlateRegion != nil {
+		predicates = append(predicates, vehicledata.PlateRegionEQ(*i.PlateRegion))
+	}
+	if i.PlateRegionNEQ != nil {
+		predicates = append(predicates, vehicledata.PlateRegionNEQ(*i.PlateRegionNEQ))
+	}
+	if len(i.PlateRegionIn) > 0 {
+		predicates = append(predicates, vehicledata.PlateRegionIn(i.PlateRegionIn...))
+	}
+	if len(i.PlateRegionNotIn) > 0 {
+		predicates = append(predicates, vehicledata.PlateRegionNotIn(i.PlateRegionNotIn...))
+	}
+	if i.PlateRegionGT != nil {
+		predicates = append(predicates, vehicledata.PlateRegionGT(*i.PlateRegionGT))
+	}
+	if i.PlateRegionGTE != nil {
+		predicates = append(predicates, vehicledata.PlateRegionGTE(*i.PlateRegionGTE))
+	}
+	if i.PlateRegionLT != nil {
+		predicates = append(predicates, vehicledata.PlateRegionLT(*i.PlateRegionLT))
+	}
+	if i.PlateRegionLTE != nil {
+		predicates = append(predicates, vehicledata.PlateRegionLTE(*i.PlateRegionLTE))
+	}
+	if i.PlateRegionContains != nil {
+		predicates = append(predicates, vehicledata.PlateRegionContains(*i.PlateRegionContains))
+	}
+	if i.PlateRegionHasPrefix != nil {
+		predicates = append(predicates, vehicledata.PlateRegionHasPrefix(*i.PlateRegionHasPrefix))
+	}
+	if i.PlateRegionHasSuffix != nil {
+		predicates = append(predicates, vehicledata.PlateRegionHasSuffix(*i.PlateRegionHasSuffix))
+	}
+	if i.PlateRegionIsNil {
+		predicates = append(predicates, vehicledata.PlateRegionIsNil())
+	}
+	if i.PlateRegionNotNil {
+		predicates = append(predicates, vehicledata.PlateRegionNotNil())
+	}
+	if i.PlateRegionEqualFold != nil {
+		predicates = append(predicates, vehicledata.PlateRegionEqualFold(*i.PlateRegionEqualFold))
+	}
+	if i.PlateRegionContainsFold != nil {
+		predicates = append(predicates, vehicledata.PlateRegionContainsFold(*i.PlateRegionContainsFold))
+	}
+	if i.PlateUploadNum != nil {
+		predicates = append(predicates, vehicledata.PlateUploadNumEQ(*i.PlateUploadNum))
+	}
+	if i.PlateUploadNumNEQ != nil {
+		predicates = append(predicates, vehicledata.PlateUploadNumNEQ(*i.PlateUploadNumNEQ))
+	}
+	if len(i.PlateUploadNumIn) > 0 {
+		predicates = append(predicates, vehicledata.PlateUploadNumIn(i.PlateUploadNumIn...))
+	}
+	if len(i.PlateUploadNumNotIn) > 0 {
+		predicates = append(predicates, vehicledata.PlateUploadNumNotIn(i.PlateUploadNumNotIn...))
+	}
+	if i.PlateUploadNumGT != nil {
+		predicates = append(predicates, vehicledata.PlateUploadNumGT(*i.PlateUploadNumGT))
+	}
+	if i.PlateUploadNumGTE != nil {
+		predicates = append(predicates, vehicledata.PlateUploadNumGTE(*i.PlateUploadNumGTE))
+	}
+	if i.PlateUploadNumLT != nil {
+		predicates = append(predicates, vehicledata.PlateUploadNumLT(*i.PlateUploadNumLT))
+	}
+	if i.PlateUploadNumLTE != nil {
+		predicates = append(predicates, vehicledata.PlateUploadNumLTE(*i.PlateUploadNumLTE))
+	}
+	if i.PlateUploadNumIsNil {
+		predicates = append(predicates, vehicledata.PlateUploadNumIsNil())
+	}
+	if i.PlateUploadNumNotNil {
+		predicates = append(predicates, vehicledata.PlateUploadNumNotNil())
+	}
+	if i.SnapAllowUser != nil {
+		predicates = append(predicates, vehicledata.SnapAllowUserEQ(*i.SnapAllowUser))
+	}
+	if i.SnapAllowUserNEQ != nil {
+		predicates = append(predicates, vehicledata.SnapAllowUserNEQ(*i.SnapAllowUserNEQ))
+	}
+	if i.SnapAllowUserIsNil {
+		predicates = append(predicates, vehicledata.SnapAllowUserIsNil())
+	}
+	if i.SnapAllowUserNotNil {
+		predicates = append(predicates, vehicledata.SnapAllowUserNotNil())
+	}
+	if i.SnapAllowUserEndTime != nil {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeEQ(*i.SnapAllowUserEndTime))
+	}
+	if i.SnapAllowUserEndTimeNEQ != nil {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeNEQ(*i.SnapAllowUserEndTimeNEQ))
+	}
+	if len(i.SnapAllowUserEndTimeIn) > 0 {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeIn(i.SnapAllowUserEndTimeIn...))
+	}
+	if len(i.SnapAllowUserEndTimeNotIn) > 0 {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeNotIn(i.SnapAllowUserEndTimeNotIn...))
+	}
+	if i.SnapAllowUserEndTimeGT != nil {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeGT(*i.SnapAllowUserEndTimeGT))
+	}
+	if i.SnapAllowUserEndTimeGTE != nil {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeGTE(*i.SnapAllowUserEndTimeGTE))
+	}
+	if i.SnapAllowUserEndTimeLT != nil {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeLT(*i.SnapAllowUserEndTimeLT))
+	}
+	if i.SnapAllowUserEndTimeLTE != nil {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeLTE(*i.SnapAllowUserEndTimeLTE))
+	}
+	if i.SnapAllowUserEndTimeContains != nil {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeContains(*i.SnapAllowUserEndTimeContains))
+	}
+	if i.SnapAllowUserEndTimeHasPrefix != nil {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeHasPrefix(*i.SnapAllowUserEndTimeHasPrefix))
+	}
+	if i.SnapAllowUserEndTimeHasSuffix != nil {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeHasSuffix(*i.SnapAllowUserEndTimeHasSuffix))
+	}
+	if i.SnapAllowUserEndTimeIsNil {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeIsNil())
+	}
+	if i.SnapAllowUserEndTimeNotNil {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeNotNil())
+	}
+	if i.SnapAllowUserEndTimeEqualFold != nil {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeEqualFold(*i.SnapAllowUserEndTimeEqualFold))
+	}
+	if i.SnapAllowUserEndTimeContainsFold != nil {
+		predicates = append(predicates, vehicledata.SnapAllowUserEndTimeContainsFold(*i.SnapAllowUserEndTimeContainsFold))
+	}
+	if i.SnapDefenceCode != nil {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeEQ(*i.SnapDefenceCode))
+	}
+	if i.SnapDefenceCodeNEQ != nil {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeNEQ(*i.SnapDefenceCodeNEQ))
+	}
+	if len(i.SnapDefenceCodeIn) > 0 {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeIn(i.SnapDefenceCodeIn...))
+	}
+	if len(i.SnapDefenceCodeNotIn) > 0 {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeNotIn(i.SnapDefenceCodeNotIn...))
+	}
+	if i.SnapDefenceCodeGT != nil {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeGT(*i.SnapDefenceCodeGT))
+	}
+	if i.SnapDefenceCodeGTE != nil {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeGTE(*i.SnapDefenceCodeGTE))
+	}
+	if i.SnapDefenceCodeLT != nil {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeLT(*i.SnapDefenceCodeLT))
+	}
+	if i.SnapDefenceCodeLTE != nil {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeLTE(*i.SnapDefenceCodeLTE))
+	}
+	if i.SnapDefenceCodeContains != nil {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeContains(*i.SnapDefenceCodeContains))
+	}
+	if i.SnapDefenceCodeHasPrefix != nil {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeHasPrefix(*i.SnapDefenceCodeHasPrefix))
+	}
+	if i.SnapDefenceCodeHasSuffix != nil {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeHasSuffix(*i.SnapDefenceCodeHasSuffix))
+	}
+	if i.SnapDefenceCodeIsNil {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeIsNil())
+	}
+	if i.SnapDefenceCodeNotNil {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeNotNil())
+	}
+	if i.SnapDefenceCodeEqualFold != nil {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeEqualFold(*i.SnapDefenceCodeEqualFold))
+	}
+	if i.SnapDefenceCodeContainsFold != nil {
+		predicates = append(predicates, vehicledata.SnapDefenceCodeContainsFold(*i.SnapDefenceCodeContainsFold))
+	}
+	if i.SnapDeviceID != nil {
+		predicates = append(predicates, vehicledata.SnapDeviceIDEQ(*i.SnapDeviceID))
+	}
+	if i.SnapDeviceIDNEQ != nil {
+		predicates = append(predicates, vehicledata.SnapDeviceIDNEQ(*i.SnapDeviceIDNEQ))
+	}
+	if len(i.SnapDeviceIDIn) > 0 {
+		predicates = append(predicates, vehicledata.SnapDeviceIDIn(i.SnapDeviceIDIn...))
+	}
+	if len(i.SnapDeviceIDNotIn) > 0 {
+		predicates = append(predicates, vehicledata.SnapDeviceIDNotIn(i.SnapDeviceIDNotIn...))
+	}
+	if i.SnapDeviceIDGT != nil {
+		predicates = append(predicates, vehicledata.SnapDeviceIDGT(*i.SnapDeviceIDGT))
+	}
+	if i.SnapDeviceIDGTE != nil {
+		predicates = append(predicates, vehicledata.SnapDeviceIDGTE(*i.SnapDeviceIDGTE))
+	}
+	if i.SnapDeviceIDLT != nil {
+		predicates = append(predicates, vehicledata.SnapDeviceIDLT(*i.SnapDeviceIDLT))
+	}
+	if i.SnapDeviceIDLTE != nil {
+		predicates = append(predicates, vehicledata.SnapDeviceIDLTE(*i.SnapDeviceIDLTE))
+	}
+	if i.SnapDeviceIDContains != nil {
+		predicates = append(predicates, vehicledata.SnapDeviceIDContains(*i.SnapDeviceIDContains))
+	}
+	if i.SnapDeviceIDHasPrefix != nil {
+		predicates = append(predicates, vehicledata.SnapDeviceIDHasPrefix(*i.SnapDeviceIDHasPrefix))
+	}
+	if i.SnapDeviceIDHasSuffix != nil {
+		predicates = append(predicates, vehicledata.SnapDeviceIDHasSuffix(*i.SnapDeviceIDHasSuffix))
+	}
+	if i.SnapDeviceIDIsNil {
+		predicates = append(predicates, vehicledata.SnapDeviceIDIsNil())
+	}
+	if i.SnapDeviceIDNotNil {
+		predicates = append(predicates, vehicledata.SnapDeviceIDNotNil())
+	}
+	if i.SnapDeviceIDEqualFold != nil {
+		predicates = append(predicates, vehicledata.SnapDeviceIDEqualFold(*i.SnapDeviceIDEqualFold))
+	}
+	if i.SnapDeviceIDContainsFold != nil {
+		predicates = append(predicates, vehicledata.SnapDeviceIDContainsFold(*i.SnapDeviceIDContainsFold))
+	}
+	if i.SnapInCarPeopleNum != nil {
+		predicates = append(predicates, vehicledata.SnapInCarPeopleNumEQ(*i.SnapInCarPeopleNum))
+	}
+	if i.SnapInCarPeopleNumNEQ != nil {
+		predicates = append(predicates, vehicledata.SnapInCarPeopleNumNEQ(*i.SnapInCarPeopleNumNEQ))
+	}
+	if len(i.SnapInCarPeopleNumIn) > 0 {
+		predicates = append(predicates, vehicledata.SnapInCarPeopleNumIn(i.SnapInCarPeopleNumIn...))
+	}
+	if len(i.SnapInCarPeopleNumNotIn) > 0 {
+		predicates = append(predicates, vehicledata.SnapInCarPeopleNumNotIn(i.SnapInCarPeopleNumNotIn...))
+	}
+	if i.SnapInCarPeopleNumGT != nil {
+		predicates = append(predicates, vehicledata.SnapInCarPeopleNumGT(*i.SnapInCarPeopleNumGT))
+	}
+	if i.SnapInCarPeopleNumGTE != nil {
+		predicates = append(predicates, vehicledata.SnapInCarPeopleNumGTE(*i.SnapInCarPeopleNumGTE))
+	}
+	if i.SnapInCarPeopleNumLT != nil {
+		predicates = append(predicates, vehicledata.SnapInCarPeopleNumLT(*i.SnapInCarPeopleNumLT))
+	}
+	if i.SnapInCarPeopleNumLTE != nil {
+		predicates = append(predicates, vehicledata.SnapInCarPeopleNumLTE(*i.SnapInCarPeopleNumLTE))
+	}
+	if i.SnapInCarPeopleNumIsNil {
+		predicates = append(predicates, vehicledata.SnapInCarPeopleNumIsNil())
+	}
+	if i.SnapInCarPeopleNumNotNil {
+		predicates = append(predicates, vehicledata.SnapInCarPeopleNumNotNil())
+	}
+	if i.SnapLanNo != nil {
+		predicates = append(predicates, vehicledata.SnapLanNoEQ(*i.SnapLanNo))
+	}
+	if i.SnapLanNoNEQ != nil {
+		predicates = append(predicates, vehicledata.SnapLanNoNEQ(*i.SnapLanNoNEQ))
+	}
+	if len(i.SnapLanNoIn) > 0 {
+		predicates = append(predicates, vehicledata.SnapLanNoIn(i.SnapLanNoIn...))
+	}
+	if len(i.SnapLanNoNotIn) > 0 {
+		predicates = append(predicates, vehicledata.SnapLanNoNotIn(i.SnapLanNoNotIn...))
+	}
+	if i.SnapLanNoGT != nil {
+		predicates = append(predicates, vehicledata.SnapLanNoGT(*i.SnapLanNoGT))
+	}
+	if i.SnapLanNoGTE != nil {
+		predicates = append(predicates, vehicledata.SnapLanNoGTE(*i.SnapLanNoGTE))
+	}
+	if i.SnapLanNoLT != nil {
+		predicates = append(predicates, vehicledata.SnapLanNoLT(*i.SnapLanNoLT))
+	}
+	if i.SnapLanNoLTE != nil {
+		predicates = append(predicates, vehicledata.SnapLanNoLTE(*i.SnapLanNoLTE))
+	}
+	if i.SnapLanNoIsNil {
+		predicates = append(predicates, vehicledata.SnapLanNoIsNil())
+	}
+	if i.SnapLanNoNotNil {
+		predicates = append(predicates, vehicledata.SnapLanNoNotNil())
+	}
+	if i.SnapOpenStrobe != nil {
+		predicates = append(predicates, vehicledata.SnapOpenStrobeEQ(*i.SnapOpenStrobe))
+	}
+	if i.SnapOpenStrobeNEQ != nil {
+		predicates = append(predicates, vehicledata.SnapOpenStrobeNEQ(*i.SnapOpenStrobeNEQ))
+	}
+	if i.SnapOpenStrobeIsNil {
+		predicates = append(predicates, vehicledata.SnapOpenStrobeIsNil())
+	}
+	if i.SnapOpenStrobeNotNil {
+		predicates = append(predicates, vehicledata.SnapOpenStrobeNotNil())
+	}
+	if i.VehicleSeries != nil {
+		predicates = append(predicates, vehicledata.VehicleSeriesEQ(*i.VehicleSeries))
+	}
+	if i.VehicleSeriesNEQ != nil {
+		predicates = append(predicates, vehicledata.VehicleSeriesNEQ(*i.VehicleSeriesNEQ))
+	}
+	if len(i.VehicleSeriesIn) > 0 {
+		predicates = append(predicates, vehicledata.VehicleSeriesIn(i.VehicleSeriesIn...))
+	}
+	if len(i.VehicleSeriesNotIn) > 0 {
+		predicates = append(predicates, vehicledata.VehicleSeriesNotIn(i.VehicleSeriesNotIn...))
+	}
+	if i.VehicleSeriesGT != nil {
+		predicates = append(predicates, vehicledata.VehicleSeriesGT(*i.VehicleSeriesGT))
+	}
+	if i.VehicleSeriesGTE != nil {
+		predicates = append(predicates, vehicledata.VehicleSeriesGTE(*i.VehicleSeriesGTE))
+	}
+	if i.VehicleSeriesLT != nil {
+		predicates = append(predicates, vehicledata.VehicleSeriesLT(*i.VehicleSeriesLT))
+	}
+	if i.VehicleSeriesLTE != nil {
+		predicates = append(predicates, vehicledata.VehicleSeriesLTE(*i.VehicleSeriesLTE))
+	}
+	if i.VehicleSeriesContains != nil {
+		predicates = append(predicates, vehicledata.VehicleSeriesContains(*i.VehicleSeriesContains))
+	}
+	if i.VehicleSeriesHasPrefix != nil {
+		predicates = append(predicates, vehicledata.VehicleSeriesHasPrefix(*i.VehicleSeriesHasPrefix))
+	}
+	if i.VehicleSeriesHasSuffix != nil {
+		predicates = append(predicates, vehicledata.VehicleSeriesHasSuffix(*i.VehicleSeriesHasSuffix))
+	}
+	if i.VehicleSeriesIsNil {
+		predicates = append(predicates, vehicledata.VehicleSeriesIsNil())
+	}
+	if i.VehicleSeriesNotNil {
+		predicates = append(predicates, vehicledata.VehicleSeriesNotNil())
+	}
+	if i.VehicleSeriesEqualFold != nil {
+		predicates = append(predicates, vehicledata.VehicleSeriesEqualFold(*i.VehicleSeriesEqualFold))
+	}
+	if i.VehicleSeriesContainsFold != nil {
+		predicates = append(predicates, vehicledata.VehicleSeriesContainsFold(*i.VehicleSeriesContainsFold))
+	}
+
+	switch len(predicates) {
+	case 0:
+		return nil, ErrEmptyVehicleDataWhereInput
+	case 1:
+		return predicates[0], nil
+	default:
+		return vehicledata.And(predicates...), nil
 	}
 }
