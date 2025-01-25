@@ -120,7 +120,7 @@ call_argument_directives_with_null: true
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
-  - "go-ent-project/internal/ent/user"
+  - "go-ent-project/internal/ent"
 
 # This section declares type mapping between the GraphQL and go type systems
 #
@@ -151,62 +151,9 @@ models:
   # do not need to worry about interoperability and only expect small numbers.
   Int:
     model:
+      - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int32
   Int64:
     model:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
-  Node:
-    model:
-      - go-ent-project/internal/ent.Noder
-
-  # Map ent types for multiple entities
-  PoliceStation:
-    model:
-      - go-ent-project/internal/ent.PoliceStation
-  User:
-    model:
-      - go-ent-project/internal/ent.User
-  Role:
-    model:
-      - go-ent-project/internal/ent.Role
-  Permission:
-    model:
-      - go-ent-project/internal/ent.Permission
-  Camera:
-    model:
-      - go-ent-project/internal/ent.Camera
-
-  # Map WhereInput types for multiple entities
-  PoliceStationWhereInput:
-    model:
-      - go-ent-project/internal/ent.PoliceStationWhereInput
-  UserWhereInput:
-    model:
-      - go-ent-project/internal/ent.UserWhereInput
-  RoleWhereInput:
-    model:
-      - go-ent-project/internal/ent.RoleWhereInput
-  PermissionWhereInput:
-    model:
-      - go-ent-project/internal/ent.PermissionWhereInput
-  CameraWhereInput:
-    model:
-      - go-ent-project/internal/ent.CameraWhereInput
-
-  # Map Order types for multiple entities
-  PoliceStationOrder:
-    model:
-      - go-ent-project/internal/ent.PoliceStationOrder
-  UserOrder:
-    model:
-      - go-ent-project/internal/ent.UserOrder
-  RoleOrder:
-    model:
-      - go-ent-project/internal/ent.RoleOrder
-  PermissionOrder:
-    model:
-      - go-ent-project/internal/ent.PermissionOrder
-  CameraOrder:
-    model:
-      - go-ent-project/internal/ent.CameraOrder

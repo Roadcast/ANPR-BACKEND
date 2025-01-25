@@ -7,7 +7,6 @@ package graph
 import (
 	"context"
 	"fmt"
-	"go-ent-project/graph/model"
 	"go-ent-project/internal/ent"
 )
 
@@ -21,79 +20,7 @@ func (r *queryResolver) Nodes(ctx context.Context, ids []string) ([]ent.Noder, e
 	panic(fmt.Errorf("not implemented: Nodes - nodes"))
 }
 
-// Direction is the resolver for the direction field.
-func (r *cameraOrderResolver) Direction(ctx context.Context, obj *ent.CameraOrder, data model.OrderDirection) error {
-	panic(fmt.Errorf("not implemented: Direction - direction"))
-}
-
-// Field is the resolver for the field field.
-func (r *cameraOrderResolver) Field(ctx context.Context, obj *ent.CameraOrder, data model.CameraOrderField) error {
-	panic(fmt.Errorf("not implemented: Field - field"))
-}
-
-// Direction is the resolver for the direction field.
-func (r *permissionOrderResolver) Direction(ctx context.Context, obj *ent.PermissionOrder, data model.OrderDirection) error {
-	panic(fmt.Errorf("not implemented: Direction - direction"))
-}
-
-// Field is the resolver for the field field.
-func (r *permissionOrderResolver) Field(ctx context.Context, obj *ent.PermissionOrder, data model.PermissionOrderField) error {
-	panic(fmt.Errorf("not implemented: Field - field"))
-}
-
-// Direction is the resolver for the direction field.
-func (r *policeStationOrderResolver) Direction(ctx context.Context, obj *ent.PoliceStationOrder, data model.OrderDirection) error {
-	panic(fmt.Errorf("not implemented: Direction - direction"))
-}
-
-// Field is the resolver for the field field.
-func (r *policeStationOrderResolver) Field(ctx context.Context, obj *ent.PoliceStationOrder, data model.PoliceStationOrderField) error {
-	panic(fmt.Errorf("not implemented: Field - field"))
-}
-
-// Direction is the resolver for the direction field.
-func (r *roleOrderResolver) Direction(ctx context.Context, obj *ent.RoleOrder, data model.OrderDirection) error {
-	panic(fmt.Errorf("not implemented: Direction - direction"))
-}
-
-// Field is the resolver for the field field.
-func (r *roleOrderResolver) Field(ctx context.Context, obj *ent.RoleOrder, data model.RoleOrderField) error {
-	panic(fmt.Errorf("not implemented: Field - field"))
-}
-
-// Direction is the resolver for the direction field.
-func (r *userOrderResolver) Direction(ctx context.Context, obj *ent.UserOrder, data model.OrderDirection) error {
-	panic(fmt.Errorf("not implemented: Direction - direction"))
-}
-
-// Field is the resolver for the field field.
-func (r *userOrderResolver) Field(ctx context.Context, obj *ent.UserOrder, data model.UserOrderField) error {
-	panic(fmt.Errorf("not implemented: Field - field"))
-}
-
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
-// CameraOrder returns CameraOrderResolver implementation.
-func (r *Resolver) CameraOrder() CameraOrderResolver { return &cameraOrderResolver{r} }
-
-// PermissionOrder returns PermissionOrderResolver implementation.
-func (r *Resolver) PermissionOrder() PermissionOrderResolver { return &permissionOrderResolver{r} }
-
-// PoliceStationOrder returns PoliceStationOrderResolver implementation.
-func (r *Resolver) PoliceStationOrder() PoliceStationOrderResolver {
-	return &policeStationOrderResolver{r}
-}
-
-// RoleOrder returns RoleOrderResolver implementation.
-func (r *Resolver) RoleOrder() RoleOrderResolver { return &roleOrderResolver{r} }
-
-// UserOrder returns UserOrderResolver implementation.
-func (r *Resolver) UserOrder() UserOrderResolver { return &userOrderResolver{r} }
-
 type queryResolver struct{ *Resolver }
-type cameraOrderResolver struct{ *Resolver }
-type permissionOrderResolver struct{ *Resolver }
-type policeStationOrderResolver struct{ *Resolver }
-type roleOrderResolver struct{ *Resolver }
-type userOrderResolver struct{ *Resolver }

@@ -41,3 +41,4 @@ type UserConnection {
     pageInfo: PageInfo!
     edges: [User]!
 }
+

@@ -15,6 +15,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	gqlparser "github.com/vektah/gqlparser/v2"
@@ -41,13 +42,11 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	CameraConnection() CameraConnectionResolver
 	Mutation() MutationResolver
+	PoliceStationConnection() PoliceStationConnectionResolver
 	Query() QueryResolver
-	CameraOrder() CameraOrderResolver
-	PermissionOrder() PermissionOrderResolver
-	PoliceStationOrder() PoliceStationOrderResolver
-	RoleOrder() RoleOrderResolver
-	UserOrder() UserOrderResolver
+	UserConnection() UserConnectionResolver
 }
 
 type DirectiveRoot struct {
@@ -130,10 +129,10 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		GetCameras        func(childComplexity int, where *ent.CameraWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.CameraOrder) int
+		GetCameras        func(childComplexity int, where *ent.CameraWhereInput, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.CameraOrder) int
 		GetMe             func(childComplexity int) int
-		GetPoliceStations func(childComplexity int, where *ent.PoliceStationWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.PoliceStationOrder) int
-		GetUsers          func(childComplexity int, where *ent.UserWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.UserOrder) int
+		GetPoliceStations func(childComplexity int, where *ent.PoliceStationWhereInput, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.PoliceStationOrder) int
+		GetUsers          func(childComplexity int, where *ent.UserWhereInput, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.UserOrder) int
 		Node              func(childComplexity int, id string) int
 		Nodes             func(childComplexity int, ids []string) int
 	}
@@ -193,40 +192,28 @@ type ComplexityRoot struct {
 	}
 }
 
+type CameraConnectionResolver interface {
+	Edges(ctx context.Context, obj *ent.CameraConnection) ([]*ent.Camera, error)
+}
 type MutationResolver interface {
 	Login(ctx context.Context, email string, password string) (*model.LoginResponse, error)
 	Logout(ctx context.Context) (bool, error)
 	RefreshToken(ctx context.Context, refreshToken string) (*model.RefreshTokenResponse, error)
 	UpdateUserPassword(ctx context.Context, userID string, password string) (*ent.User, error)
 }
+type PoliceStationConnectionResolver interface {
+	Edges(ctx context.Context, obj *ent.PoliceStationConnection) ([]*ent.PoliceStation, error)
+}
 type QueryResolver interface {
 	Node(ctx context.Context, id string) (ent.Noder, error)
 	Nodes(ctx context.Context, ids []string) ([]ent.Noder, error)
-	GetUsers(ctx context.Context, where *ent.UserWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.UserOrder) (*model.UserConnection, error)
-	GetPoliceStations(ctx context.Context, where *ent.PoliceStationWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.PoliceStationOrder) (*model.PoliceStationConnection, error)
-	GetCameras(ctx context.Context, where *ent.CameraWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.CameraOrder) (*model.CameraConnection, error)
+	GetUsers(ctx context.Context, where *ent.UserWhereInput, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.UserOrder) (*ent.UserConnection, error)
+	GetPoliceStations(ctx context.Context, where *ent.PoliceStationWhereInput, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.PoliceStationOrder) (*ent.PoliceStationConnection, error)
+	GetCameras(ctx context.Context, where *ent.CameraWhereInput, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.CameraOrder) (*ent.CameraConnection, error)
 	GetMe(ctx context.Context) (*ent.User, error)
 }
-
-type CameraOrderResolver interface {
-	Direction(ctx context.Context, obj *ent.CameraOrder, data model.OrderDirection) error
-	Field(ctx context.Context, obj *ent.CameraOrder, data model.CameraOrderField) error
-}
-type PermissionOrderResolver interface {
-	Direction(ctx context.Context, obj *ent.PermissionOrder, data model.OrderDirection) error
-	Field(ctx context.Context, obj *ent.PermissionOrder, data model.PermissionOrderField) error
-}
-type PoliceStationOrderResolver interface {
-	Direction(ctx context.Context, obj *ent.PoliceStationOrder, data model.OrderDirection) error
-	Field(ctx context.Context, obj *ent.PoliceStationOrder, data model.PoliceStationOrderField) error
-}
-type RoleOrderResolver interface {
-	Direction(ctx context.Context, obj *ent.RoleOrder, data model.OrderDirection) error
-	Field(ctx context.Context, obj *ent.RoleOrder, data model.RoleOrderField) error
-}
-type UserOrderResolver interface {
-	Direction(ctx context.Context, obj *ent.UserOrder, data model.OrderDirection) error
-	Field(ctx context.Context, obj *ent.UserOrder, data model.UserOrderField) error
+type UserConnectionResolver interface {
+	Edges(ctx context.Context, obj *ent.UserConnection) ([]*ent.User, error)
 }
 
 type executableSchema struct {
@@ -609,7 +596,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetCameras(childComplexity, args["where"].(*ent.CameraWhereInput), args["after"].(*string), args["first"].(*int32), args["before"].(*string), args["last"].(*int32), args["orderBy"].(*ent.CameraOrder)), true
+		return e.complexity.Query.GetCameras(childComplexity, args["where"].(*ent.CameraWhereInput), args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["orderBy"].(*ent.CameraOrder)), true
 
 	case "Query.getMe":
 		if e.complexity.Query.GetMe == nil {
@@ -628,7 +615,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetPoliceStations(childComplexity, args["where"].(*ent.PoliceStationWhereInput), args["after"].(*string), args["first"].(*int32), args["before"].(*string), args["last"].(*int32), args["orderBy"].(*ent.PoliceStationOrder)), true
+		return e.complexity.Query.GetPoliceStations(childComplexity, args["where"].(*ent.PoliceStationWhereInput), args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["orderBy"].(*ent.PoliceStationOrder)), true
 
 	case "Query.getUsers":
 		if e.complexity.Query.GetUsers == nil {
@@ -640,7 +627,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetUsers(childComplexity, args["where"].(*ent.UserWhereInput), args["after"].(*string), args["first"].(*int32), args["before"].(*string), args["last"].(*int32), args["orderBy"].(*ent.UserOrder)), true
+		return e.complexity.Query.GetUsers(childComplexity, args["where"].(*ent.UserWhereInput), args["after"].(*entgql.Cursor[int]), args["first"].(*int), args["before"].(*entgql.Cursor[int]), args["last"].(*int), args["orderBy"].(*ent.UserOrder)), true
 
 	case "Query.node":
 		if e.complexity.Query.Node == nil {
@@ -2443,52 +2430,52 @@ func (ec *executionContext) field_Query_getCameras_argsWhere(
 func (ec *executionContext) field_Query_getCameras_argsAfter(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (*string, error) {
+) (*entgql.Cursor[int], error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
 	if tmp, ok := rawArgs["after"]; ok {
-		return ec.unmarshalOCursor2ᚖstring(ctx, tmp)
+		return ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
 	}
 
-	var zeroVal *string
+	var zeroVal *entgql.Cursor[int]
 	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_getCameras_argsFirst(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (*int32, error) {
+) (*int, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
 	if tmp, ok := rawArgs["first"]; ok {
-		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+		return ec.unmarshalOInt2ᚖint(ctx, tmp)
 	}
 
-	var zeroVal *int32
+	var zeroVal *int
 	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_getCameras_argsBefore(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (*string, error) {
+) (*entgql.Cursor[int], error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
 	if tmp, ok := rawArgs["before"]; ok {
-		return ec.unmarshalOCursor2ᚖstring(ctx, tmp)
+		return ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
 	}
 
-	var zeroVal *string
+	var zeroVal *entgql.Cursor[int]
 	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_getCameras_argsLast(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (*int32, error) {
+) (*int, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
 	if tmp, ok := rawArgs["last"]; ok {
-		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+		return ec.unmarshalOInt2ᚖint(ctx, tmp)
 	}
 
-	var zeroVal *int32
+	var zeroVal *int
 	return zeroVal, nil
 }
 
@@ -2556,52 +2543,52 @@ func (ec *executionContext) field_Query_getPoliceStations_argsWhere(
 func (ec *executionContext) field_Query_getPoliceStations_argsAfter(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (*string, error) {
+) (*entgql.Cursor[int], error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
 	if tmp, ok := rawArgs["after"]; ok {
-		return ec.unmarshalOCursor2ᚖstring(ctx, tmp)
+		return ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
 	}
 
-	var zeroVal *string
+	var zeroVal *entgql.Cursor[int]
 	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_getPoliceStations_argsFirst(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (*int32, error) {
+) (*int, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
 	if tmp, ok := rawArgs["first"]; ok {
-		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+		return ec.unmarshalOInt2ᚖint(ctx, tmp)
 	}
 
-	var zeroVal *int32
+	var zeroVal *int
 	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_getPoliceStations_argsBefore(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (*string, error) {
+) (*entgql.Cursor[int], error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
 	if tmp, ok := rawArgs["before"]; ok {
-		return ec.unmarshalOCursor2ᚖstring(ctx, tmp)
+		return ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
 	}
 
-	var zeroVal *string
+	var zeroVal *entgql.Cursor[int]
 	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_getPoliceStations_argsLast(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (*int32, error) {
+) (*int, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
 	if tmp, ok := rawArgs["last"]; ok {
-		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+		return ec.unmarshalOInt2ᚖint(ctx, tmp)
 	}
 
-	var zeroVal *int32
+	var zeroVal *int
 	return zeroVal, nil
 }
 
@@ -2669,52 +2656,52 @@ func (ec *executionContext) field_Query_getUsers_argsWhere(
 func (ec *executionContext) field_Query_getUsers_argsAfter(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (*string, error) {
+) (*entgql.Cursor[int], error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
 	if tmp, ok := rawArgs["after"]; ok {
-		return ec.unmarshalOCursor2ᚖstring(ctx, tmp)
+		return ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
 	}
 
-	var zeroVal *string
+	var zeroVal *entgql.Cursor[int]
 	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_getUsers_argsFirst(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (*int32, error) {
+) (*int, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
 	if tmp, ok := rawArgs["first"]; ok {
-		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+		return ec.unmarshalOInt2ᚖint(ctx, tmp)
 	}
 
-	var zeroVal *int32
+	var zeroVal *int
 	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_getUsers_argsBefore(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (*string, error) {
+) (*entgql.Cursor[int], error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
 	if tmp, ok := rawArgs["before"]; ok {
-		return ec.unmarshalOCursor2ᚖstring(ctx, tmp)
+		return ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
 	}
 
-	var zeroVal *string
+	var zeroVal *entgql.Cursor[int]
 	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_getUsers_argsLast(
 	ctx context.Context,
 	rawArgs map[string]any,
-) (*int32, error) {
+) (*int, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
 	if tmp, ok := rawArgs["last"]; ok {
-		return ec.unmarshalOInt2ᚖint32(ctx, tmp)
+		return ec.unmarshalOInt2ᚖint(ctx, tmp)
 	}
 
-	var zeroVal *int32
+	var zeroVal *int
 	return zeroVal, nil
 }
 
@@ -3183,7 +3170,7 @@ func (ec *executionContext) fieldContext_Camera_active(_ context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _CameraConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.CameraConnection) (ret graphql.Marshaler) {
+func (ec *executionContext) _CameraConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.CameraConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CameraConnection_pageInfo(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3209,9 +3196,9 @@ func (ec *executionContext) _CameraConnection_pageInfo(ctx context.Context, fiel
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.PageInfo)
+	res := resTmp.(entgql.PageInfo[int])
 	fc.Result = res
-	return ec.marshalNPageInfo2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐPageInfo(ctx, field.Selections, res)
+	return ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_CameraConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3237,7 +3224,7 @@ func (ec *executionContext) fieldContext_CameraConnection_pageInfo(_ context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _CameraConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.CameraConnection) (ret graphql.Marshaler) {
+func (ec *executionContext) _CameraConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.CameraConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CameraConnection_edges(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3251,7 +3238,7 @@ func (ec *executionContext) _CameraConnection_edges(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Edges, nil
+		return ec.resolvers.CameraConnection().Edges(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3272,8 +3259,8 @@ func (ec *executionContext) fieldContext_CameraConnection_edges(_ context.Contex
 	fc = &graphql.FieldContext{
 		Object:     "CameraConnection",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -3299,7 +3286,7 @@ func (ec *executionContext) fieldContext_CameraConnection_edges(_ context.Contex
 	return fc, nil
 }
 
-func (ec *executionContext) _Car_id(ctx context.Context, field graphql.CollectedField, obj *model.Car) (ret graphql.Marshaler) {
+func (ec *executionContext) _Car_id(ctx context.Context, field graphql.CollectedField, obj *ent.Car) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Car_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3325,9 +3312,9 @@ func (ec *executionContext) _Car_id(ctx context.Context, field graphql.Collected
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Car_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3343,7 +3330,7 @@ func (ec *executionContext) fieldContext_Car_id(_ context.Context, field graphql
 	return fc, nil
 }
 
-func (ec *executionContext) _Car_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Car) (ret graphql.Marshaler) {
+func (ec *executionContext) _Car_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.Car) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Car_createdAt(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3387,7 +3374,7 @@ func (ec *executionContext) fieldContext_Car_createdAt(_ context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Car_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.Car) (ret graphql.Marshaler) {
+func (ec *executionContext) _Car_updatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.Car) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Car_updatedAt(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3431,7 +3418,7 @@ func (ec *executionContext) fieldContext_Car_updatedAt(_ context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Car_make(ctx context.Context, field graphql.CollectedField, obj *model.Car) (ret graphql.Marshaler) {
+func (ec *executionContext) _Car_make(ctx context.Context, field graphql.CollectedField, obj *ent.Car) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Car_make(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3475,7 +3462,7 @@ func (ec *executionContext) fieldContext_Car_make(_ context.Context, field graph
 	return fc, nil
 }
 
-func (ec *executionContext) _Car_model(ctx context.Context, field graphql.CollectedField, obj *model.Car) (ret graphql.Marshaler) {
+func (ec *executionContext) _Car_model(ctx context.Context, field graphql.CollectedField, obj *ent.Car) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Car_model(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3519,7 +3506,7 @@ func (ec *executionContext) fieldContext_Car_model(_ context.Context, field grap
 	return fc, nil
 }
 
-func (ec *executionContext) _Car_year(ctx context.Context, field graphql.CollectedField, obj *model.Car) (ret graphql.Marshaler) {
+func (ec *executionContext) _Car_year(ctx context.Context, field graphql.CollectedField, obj *ent.Car) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Car_year(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3545,9 +3532,9 @@ func (ec *executionContext) _Car_year(ctx context.Context, field graphql.Collect
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int32)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNInt2int32(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Car_year(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3563,7 +3550,7 @@ func (ec *executionContext) fieldContext_Car_year(_ context.Context, field graph
 	return fc, nil
 }
 
-func (ec *executionContext) _Car_registration(ctx context.Context, field graphql.CollectedField, obj *model.Car) (ret graphql.Marshaler) {
+func (ec *executionContext) _Car_registration(ctx context.Context, field graphql.CollectedField, obj *ent.Car) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Car_registration(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3607,7 +3594,7 @@ func (ec *executionContext) fieldContext_Car_registration(_ context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Car_color(ctx context.Context, field graphql.CollectedField, obj *model.Car) (ret graphql.Marshaler) {
+func (ec *executionContext) _Car_color(ctx context.Context, field graphql.CollectedField, obj *ent.Car) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Car_color(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3977,7 +3964,7 @@ func (ec *executionContext) fieldContext_Mutation_update_user_password(ctx conte
 	return fc, nil
 }
 
-func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[int]) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_hasNextPage(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4021,7 +4008,7 @@ func (ec *executionContext) fieldContext_PageInfo_hasNextPage(_ context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _PageInfo_hasPreviousPage(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+func (ec *executionContext) _PageInfo_hasPreviousPage(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[int]) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4065,7 +4052,7 @@ func (ec *executionContext) fieldContext_PageInfo_hasPreviousPage(_ context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _PageInfo_startCursor(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+func (ec *executionContext) _PageInfo_startCursor(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[int]) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_startCursor(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4088,9 +4075,9 @@ func (ec *executionContext) _PageInfo_startCursor(ctx context.Context, field gra
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*entgql.Cursor[int])
 	fc.Result = res
-	return ec.marshalOCursor2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_PageInfo_startCursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4106,7 +4093,7 @@ func (ec *executionContext) fieldContext_PageInfo_startCursor(_ context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[int]) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_endCursor(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4129,9 +4116,9 @@ func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graph
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*entgql.Cursor[int])
 	fc.Result = res
-	return ec.marshalOCursor2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_PageInfo_endCursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4991,7 +4978,7 @@ func (ec *executionContext) fieldContext_PoliceStation_childStations(_ context.C
 	return fc, nil
 }
 
-func (ec *executionContext) _PoliceStationConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.PoliceStationConnection) (ret graphql.Marshaler) {
+func (ec *executionContext) _PoliceStationConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.PoliceStationConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PoliceStationConnection_pageInfo(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -5017,9 +5004,9 @@ func (ec *executionContext) _PoliceStationConnection_pageInfo(ctx context.Contex
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.PageInfo)
+	res := resTmp.(entgql.PageInfo[int])
 	fc.Result = res
-	return ec.marshalNPageInfo2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐPageInfo(ctx, field.Selections, res)
+	return ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_PoliceStationConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5045,7 +5032,7 @@ func (ec *executionContext) fieldContext_PoliceStationConnection_pageInfo(_ cont
 	return fc, nil
 }
 
-func (ec *executionContext) _PoliceStationConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.PoliceStationConnection) (ret graphql.Marshaler) {
+func (ec *executionContext) _PoliceStationConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.PoliceStationConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PoliceStationConnection_edges(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -5059,7 +5046,7 @@ func (ec *executionContext) _PoliceStationConnection_edges(ctx context.Context, 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Edges, nil
+		return ec.resolvers.PoliceStationConnection().Edges(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5080,8 +5067,8 @@ func (ec *executionContext) fieldContext_PoliceStationConnection_edges(_ context
 	fc = &graphql.FieldContext{
 		Object:     "PoliceStationConnection",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -5232,7 +5219,7 @@ func (ec *executionContext) _Query_getUsers(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetUsers(rctx, fc.Args["where"].(*ent.UserWhereInput), fc.Args["after"].(*string), fc.Args["first"].(*int32), fc.Args["before"].(*string), fc.Args["last"].(*int32), fc.Args["orderBy"].(*ent.UserOrder))
+		return ec.resolvers.Query().GetUsers(rctx, fc.Args["where"].(*ent.UserWhereInput), fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.UserOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5244,9 +5231,9 @@ func (ec *executionContext) _Query_getUsers(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.UserConnection)
+	res := resTmp.(*ent.UserConnection)
 	fc.Result = res
-	return ec.marshalNUserConnection2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐUserConnection(ctx, field.Selections, res)
+	return ec.marshalNUserConnection2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUserConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getUsers(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5293,7 +5280,7 @@ func (ec *executionContext) _Query_getPoliceStations(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetPoliceStations(rctx, fc.Args["where"].(*ent.PoliceStationWhereInput), fc.Args["after"].(*string), fc.Args["first"].(*int32), fc.Args["before"].(*string), fc.Args["last"].(*int32), fc.Args["orderBy"].(*ent.PoliceStationOrder))
+		return ec.resolvers.Query().GetPoliceStations(rctx, fc.Args["where"].(*ent.PoliceStationWhereInput), fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.PoliceStationOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5305,9 +5292,9 @@ func (ec *executionContext) _Query_getPoliceStations(ctx context.Context, field 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.PoliceStationConnection)
+	res := resTmp.(*ent.PoliceStationConnection)
 	fc.Result = res
-	return ec.marshalNPoliceStationConnection2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐPoliceStationConnection(ctx, field.Selections, res)
+	return ec.marshalNPoliceStationConnection2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStationConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getPoliceStations(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5354,7 +5341,7 @@ func (ec *executionContext) _Query_getCameras(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetCameras(rctx, fc.Args["where"].(*ent.CameraWhereInput), fc.Args["after"].(*string), fc.Args["first"].(*int32), fc.Args["before"].(*string), fc.Args["last"].(*int32), fc.Args["orderBy"].(*ent.CameraOrder))
+		return ec.resolvers.Query().GetCameras(rctx, fc.Args["where"].(*ent.CameraWhereInput), fc.Args["after"].(*entgql.Cursor[int]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[int]), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.CameraOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5366,9 +5353,9 @@ func (ec *executionContext) _Query_getCameras(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.CameraConnection)
+	res := resTmp.(*ent.CameraConnection)
 	fc.Result = res
-	return ec.marshalNCameraConnection2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐCameraConnection(ctx, field.Selections, res)
+	return ec.marshalNCameraConnection2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCameraConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getCameras(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6379,7 +6366,7 @@ func (ec *executionContext) fieldContext_User_role(_ context.Context, field grap
 	return fc, nil
 }
 
-func (ec *executionContext) _UserConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.UserConnection) (ret graphql.Marshaler) {
+func (ec *executionContext) _UserConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.UserConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_UserConnection_pageInfo(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6405,9 +6392,9 @@ func (ec *executionContext) _UserConnection_pageInfo(ctx context.Context, field 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.PageInfo)
+	res := resTmp.(entgql.PageInfo[int])
 	fc.Result = res
-	return ec.marshalNPageInfo2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐPageInfo(ctx, field.Selections, res)
+	return ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_UserConnection_pageInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6433,7 +6420,7 @@ func (ec *executionContext) fieldContext_UserConnection_pageInfo(_ context.Conte
 	return fc, nil
 }
 
-func (ec *executionContext) _UserConnection_edges(ctx context.Context, field graphql.CollectedField, obj *model.UserConnection) (ret graphql.Marshaler) {
+func (ec *executionContext) _UserConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.UserConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_UserConnection_edges(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6447,7 +6434,7 @@ func (ec *executionContext) _UserConnection_edges(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Edges, nil
+		return ec.resolvers.UserConnection().Edges(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6468,8 +6455,8 @@ func (ec *executionContext) fieldContext_UserConnection_edges(_ context.Context,
 	fc = &graphql.FieldContext{
 		Object:     "UserConnection",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -6497,7 +6484,7 @@ func (ec *executionContext) fieldContext_UserConnection_edges(_ context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_id(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_id(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6523,9 +6510,9 @@ func (ec *executionContext) _VehicleData_id(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6541,7 +6528,7 @@ func (ec *executionContext) fieldContext_VehicleData_id(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_createdAt(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6585,7 +6572,7 @@ func (ec *executionContext) fieldContext_VehicleData_createdAt(_ context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_updatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_updatedAt(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6629,7 +6616,7 @@ func (ec *executionContext) fieldContext_VehicleData_updatedAt(_ context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_plateBoundingBox(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_plateBoundingBox(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_plateBoundingBox(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6652,9 +6639,9 @@ func (ec *executionContext) _VehicleData_plateBoundingBox(ctx context.Context, f
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]int32)
+	res := resTmp.([]int)
 	fc.Result = res
-	return ec.marshalOInt2ᚕint32ᚄ(ctx, field.Selections, res)
+	return ec.marshalOInt2ᚕintᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_plateBoundingBox(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6670,7 +6657,7 @@ func (ec *executionContext) fieldContext_VehicleData_plateBoundingBox(_ context.
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_plateChannel(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_plateChannel(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_plateChannel(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6693,9 +6680,9 @@ func (ec *executionContext) _VehicleData_plateChannel(ctx context.Context, field
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*int32)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalOInt2ᚖint32(ctx, field.Selections, res)
+	return ec.marshalOInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_plateChannel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6711,7 +6698,7 @@ func (ec *executionContext) fieldContext_VehicleData_plateChannel(_ context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_plateIsExist(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_plateIsExist(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_plateIsExist(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6734,9 +6721,9 @@ func (ec *executionContext) _VehicleData_plateIsExist(ctx context.Context, field
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*bool)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_plateIsExist(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6752,7 +6739,7 @@ func (ec *executionContext) fieldContext_VehicleData_plateIsExist(_ context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_plateColor(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_plateColor(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_plateColor(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6775,9 +6762,9 @@ func (ec *executionContext) _VehicleData_plateColor(ctx context.Context, field g
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_plateColor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6793,7 +6780,7 @@ func (ec *executionContext) fieldContext_VehicleData_plateColor(_ context.Contex
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_plateNumber(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_plateNumber(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_plateNumber(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6816,9 +6803,9 @@ func (ec *executionContext) _VehicleData_plateNumber(ctx context.Context, field 
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_plateNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6834,7 +6821,7 @@ func (ec *executionContext) fieldContext_VehicleData_plateNumber(_ context.Conte
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_plateType(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_plateType(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_plateType(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6857,9 +6844,9 @@ func (ec *executionContext) _VehicleData_plateType(ctx context.Context, field gr
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_plateType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6875,7 +6862,7 @@ func (ec *executionContext) fieldContext_VehicleData_plateType(_ context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_plateRegion(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_plateRegion(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_plateRegion(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6898,9 +6885,9 @@ func (ec *executionContext) _VehicleData_plateRegion(ctx context.Context, field 
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_plateRegion(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6916,7 +6903,7 @@ func (ec *executionContext) fieldContext_VehicleData_plateRegion(_ context.Conte
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_plateUploadNum(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_plateUploadNum(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_plateUploadNum(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6939,9 +6926,9 @@ func (ec *executionContext) _VehicleData_plateUploadNum(ctx context.Context, fie
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*int32)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalOInt2ᚖint32(ctx, field.Selections, res)
+	return ec.marshalOInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_plateUploadNum(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6957,7 +6944,7 @@ func (ec *executionContext) fieldContext_VehicleData_plateUploadNum(_ context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_snapAllowUser(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_snapAllowUser(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_snapAllowUser(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6980,9 +6967,9 @@ func (ec *executionContext) _VehicleData_snapAllowUser(ctx context.Context, fiel
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*bool)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_snapAllowUser(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6998,7 +6985,7 @@ func (ec *executionContext) fieldContext_VehicleData_snapAllowUser(_ context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_snapAllowUserEndTime(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_snapAllowUserEndTime(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_snapAllowUserEndTime(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7021,9 +7008,9 @@ func (ec *executionContext) _VehicleData_snapAllowUserEndTime(ctx context.Contex
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_snapAllowUserEndTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7039,7 +7026,7 @@ func (ec *executionContext) fieldContext_VehicleData_snapAllowUserEndTime(_ cont
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_snapDefenceCode(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_snapDefenceCode(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_snapDefenceCode(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7062,9 +7049,9 @@ func (ec *executionContext) _VehicleData_snapDefenceCode(ctx context.Context, fi
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_snapDefenceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7080,7 +7067,7 @@ func (ec *executionContext) fieldContext_VehicleData_snapDefenceCode(_ context.C
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_snapDeviceID(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_snapDeviceID(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_snapDeviceID(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7103,9 +7090,9 @@ func (ec *executionContext) _VehicleData_snapDeviceID(ctx context.Context, field
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_snapDeviceID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7121,7 +7108,7 @@ func (ec *executionContext) fieldContext_VehicleData_snapDeviceID(_ context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_snapInCarPeopleNum(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_snapInCarPeopleNum(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_snapInCarPeopleNum(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7144,9 +7131,9 @@ func (ec *executionContext) _VehicleData_snapInCarPeopleNum(ctx context.Context,
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*int32)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalOInt2ᚖint32(ctx, field.Selections, res)
+	return ec.marshalOInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_snapInCarPeopleNum(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7162,7 +7149,7 @@ func (ec *executionContext) fieldContext_VehicleData_snapInCarPeopleNum(_ contex
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_snapLanNo(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_snapLanNo(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_snapLanNo(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7185,9 +7172,9 @@ func (ec *executionContext) _VehicleData_snapLanNo(ctx context.Context, field gr
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*int32)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalOInt2ᚖint32(ctx, field.Selections, res)
+	return ec.marshalOInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_snapLanNo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7203,7 +7190,7 @@ func (ec *executionContext) fieldContext_VehicleData_snapLanNo(_ context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_snapOpenStrobe(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_snapOpenStrobe(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_snapOpenStrobe(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7226,9 +7213,9 @@ func (ec *executionContext) _VehicleData_snapOpenStrobe(ctx context.Context, fie
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*bool)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_snapOpenStrobe(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7244,7 +7231,7 @@ func (ec *executionContext) fieldContext_VehicleData_snapOpenStrobe(_ context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_vehicleBoundingBox(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_vehicleBoundingBox(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_vehicleBoundingBox(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7267,9 +7254,9 @@ func (ec *executionContext) _VehicleData_vehicleBoundingBox(ctx context.Context,
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]int32)
+	res := resTmp.([]int)
 	fc.Result = res
-	return ec.marshalOInt2ᚕint32ᚄ(ctx, field.Selections, res)
+	return ec.marshalOInt2ᚕintᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_vehicleBoundingBox(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7285,7 +7272,7 @@ func (ec *executionContext) fieldContext_VehicleData_vehicleBoundingBox(_ contex
 	return fc, nil
 }
 
-func (ec *executionContext) _VehicleData_vehicleSeries(ctx context.Context, field graphql.CollectedField, obj *model.VehicleData) (ret graphql.Marshaler) {
+func (ec *executionContext) _VehicleData_vehicleSeries(ctx context.Context, field graphql.CollectedField, obj *ent.VehicleData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VehicleData_vehicleSeries(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -7308,9 +7295,9 @@ func (ec *executionContext) _VehicleData_vehicleSeries(ctx context.Context, fiel
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_VehicleData_vehicleSeries(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -9119,22 +9106,18 @@ func (ec *executionContext) unmarshalInputCameraOrder(ctx context.Context, obj a
 		switch k {
 		case "direction":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
-			data, err := ec.unmarshalNOrderDirection2goᚑentᚑprojectᚋgraphᚋmodelᚐOrderDirection(ctx, v)
+			data, err := ec.unmarshalNOrderDirection2entgoᚗioᚋcontribᚋentgqlᚐOrderDirection(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			if err = ec.resolvers.CameraOrder().Direction(ctx, &it, data); err != nil {
-				return it, err
-			}
+			it.Direction = data
 		case "field":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
-			data, err := ec.unmarshalNCameraOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐCameraOrderField(ctx, v)
+			data, err := ec.unmarshalNCameraOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCameraOrderField(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			if err = ec.resolvers.CameraOrder().Field(ctx, &it, data); err != nil {
-				return it, err
-			}
+			it.Field = data
 		}
 	}
 
@@ -9637,8 +9620,8 @@ func (ec *executionContext) unmarshalInputCameraWhereInput(ctx context.Context, 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCarOrder(ctx context.Context, obj any) (model.CarOrder, error) {
-	var it model.CarOrder
+func (ec *executionContext) unmarshalInputCarOrder(ctx context.Context, obj any) (ent.CarOrder, error) {
+	var it ent.CarOrder
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -9657,14 +9640,14 @@ func (ec *executionContext) unmarshalInputCarOrder(ctx context.Context, obj any)
 		switch k {
 		case "direction":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
-			data, err := ec.unmarshalNOrderDirection2goᚑentᚑprojectᚋgraphᚋmodelᚐOrderDirection(ctx, v)
+			data, err := ec.unmarshalNOrderDirection2entgoᚗioᚋcontribᚋentgqlᚐOrderDirection(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Direction = data
 		case "field":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
-			data, err := ec.unmarshalNCarOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐCarOrderField(ctx, v)
+			data, err := ec.unmarshalNCarOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCarOrderField(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9675,8 +9658,8 @@ func (ec *executionContext) unmarshalInputCarOrder(ctx context.Context, obj any)
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj any) (model.CarWhereInput, error) {
-	var it model.CarWhereInput
+func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj any) (ent.CarWhereInput, error) {
+	var it ent.CarWhereInput
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -9691,81 +9674,81 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 		switch k {
 		case "not":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
-			data, err := ec.unmarshalOCarWhereInput2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐCarWhereInput(ctx, v)
+			data, err := ec.unmarshalOCarWhereInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCarWhereInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Not = data
 		case "and":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
-			data, err := ec.unmarshalOCarWhereInput2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐCarWhereInputᚄ(ctx, v)
+			data, err := ec.unmarshalOCarWhereInput2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐCarWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.And = data
 		case "or":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
-			data, err := ec.unmarshalOCarWhereInput2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐCarWhereInputᚄ(ctx, v)
+			data, err := ec.unmarshalOCarWhereInput2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐCarWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Or = data
 		case "id":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.ID = data
 		case "idNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNeq = data
+			it.IDNEQ = data
 		case "idIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.IDIn = data
 		case "idNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.IDNotIn = data
 		case "idGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGt = data
+			it.IDGT = data
 		case "idGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGte = data
+			it.IDGTE = data
 		case "idLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLt = data
+			it.IDLT = data
 		case "idLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLte = data
+			it.IDLTE = data
 		case "createdAt":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
@@ -9779,17 +9762,17 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-			it.CreatedAtNeq = data
+			it.CreatedAtNEQ = data
 		case "createdAtIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
-			data, err := ec.unmarshalOTime2ᚕᚖtimeᚐTimeᚄ(ctx, v)
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.CreatedAtIn = data
 		case "createdAtNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
-			data, err := ec.unmarshalOTime2ᚕᚖtimeᚐTimeᚄ(ctx, v)
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9800,28 +9783,28 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-			it.CreatedAtGt = data
+			it.CreatedAtGT = data
 		case "createdAtGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.CreatedAtGte = data
+			it.CreatedAtGTE = data
 		case "createdAtLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.CreatedAtLt = data
+			it.CreatedAtLT = data
 		case "createdAtLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.CreatedAtLte = data
+			it.CreatedAtLTE = data
 		case "updatedAt":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
@@ -9835,17 +9818,17 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-			it.UpdatedAtNeq = data
+			it.UpdatedAtNEQ = data
 		case "updatedAtIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtIn"))
-			data, err := ec.unmarshalOTime2ᚕᚖtimeᚐTimeᚄ(ctx, v)
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.UpdatedAtIn = data
 		case "updatedAtNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNotIn"))
-			data, err := ec.unmarshalOTime2ᚕᚖtimeᚐTimeᚄ(ctx, v)
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9856,28 +9839,28 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-			it.UpdatedAtGt = data
+			it.UpdatedAtGT = data
 		case "updatedAtGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGTE"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.UpdatedAtGte = data
+			it.UpdatedAtGTE = data
 		case "updatedAtLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLT"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.UpdatedAtLt = data
+			it.UpdatedAtLT = data
 		case "updatedAtLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLTE"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.UpdatedAtLte = data
+			it.UpdatedAtLTE = data
 		case "make":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("make"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -9891,7 +9874,7 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-			it.MakeNeq = data
+			it.MakeNEQ = data
 		case "makeIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("makeIn"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
@@ -9912,28 +9895,28 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-			it.MakeGt = data
+			it.MakeGT = data
 		case "makeGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("makeGTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.MakeGte = data
+			it.MakeGTE = data
 		case "makeLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("makeLT"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.MakeLt = data
+			it.MakeLT = data
 		case "makeLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("makeLTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.MakeLte = data
+			it.MakeLTE = data
 		case "makeContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("makeContains"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -9982,7 +9965,7 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-			it.ModelNeq = data
+			it.ModelNEQ = data
 		case "modelIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("modelIn"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
@@ -10003,28 +9986,28 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-			it.ModelGt = data
+			it.ModelGT = data
 		case "modelGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("modelGTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ModelGte = data
+			it.ModelGTE = data
 		case "modelLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("modelLT"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ModelLt = data
+			it.ModelLT = data
 		case "modelLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("modelLTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ModelLte = data
+			it.ModelLTE = data
 		case "modelContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("modelContains"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -10062,60 +10045,60 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 			it.ModelContainsFold = data
 		case "year":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("year"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Year = data
 		case "yearNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("yearNEQ"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.YearNeq = data
+			it.YearNEQ = data
 		case "yearIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("yearIn"))
-			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.YearIn = data
 		case "yearNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("yearNotIn"))
-			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.YearNotIn = data
 		case "yearGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("yearGT"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.YearGt = data
+			it.YearGT = data
 		case "yearGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("yearGTE"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.YearGte = data
+			it.YearGTE = data
 		case "yearLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("yearLT"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.YearLt = data
+			it.YearLT = data
 		case "yearLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("yearLTE"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.YearLte = data
+			it.YearLTE = data
 		case "registration":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("registration"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -10129,7 +10112,7 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-			it.RegistrationNeq = data
+			it.RegistrationNEQ = data
 		case "registrationIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("registrationIn"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
@@ -10150,28 +10133,28 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-			it.RegistrationGt = data
+			it.RegistrationGT = data
 		case "registrationGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("registrationGTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.RegistrationGte = data
+			it.RegistrationGTE = data
 		case "registrationLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("registrationLT"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.RegistrationLt = data
+			it.RegistrationLT = data
 		case "registrationLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("registrationLTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.RegistrationLte = data
+			it.RegistrationLTE = data
 		case "registrationContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("registrationContains"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -10220,7 +10203,7 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-			it.ColorNeq = data
+			it.ColorNEQ = data
 		case "colorIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorIn"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
@@ -10241,28 +10224,28 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-			it.ColorGt = data
+			it.ColorGT = data
 		case "colorGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorGTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ColorGte = data
+			it.ColorGTE = data
 		case "colorLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorLT"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ColorLt = data
+			it.ColorLT = data
 		case "colorLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorLTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ColorLte = data
+			it.ColorLTE = data
 		case "colorContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorContains"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -10324,22 +10307,18 @@ func (ec *executionContext) unmarshalInputPermissionOrder(ctx context.Context, o
 		switch k {
 		case "direction":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
-			data, err := ec.unmarshalNOrderDirection2goᚑentᚑprojectᚋgraphᚋmodelᚐOrderDirection(ctx, v)
+			data, err := ec.unmarshalNOrderDirection2entgoᚗioᚋcontribᚋentgqlᚐOrderDirection(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			if err = ec.resolvers.PermissionOrder().Direction(ctx, &it, data); err != nil {
-				return it, err
-			}
+			it.Direction = data
 		case "field":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
-			data, err := ec.unmarshalNPermissionOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐPermissionOrderField(ctx, v)
+			data, err := ec.unmarshalNPermissionOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPermissionOrderField(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			if err = ec.resolvers.PermissionOrder().Field(ctx, &it, data); err != nil {
-				return it, err
-			}
+			it.Field = data
 		}
 	}
 
@@ -10722,22 +10701,18 @@ func (ec *executionContext) unmarshalInputPoliceStationOrder(ctx context.Context
 		switch k {
 		case "direction":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
-			data, err := ec.unmarshalNOrderDirection2goᚑentᚑprojectᚋgraphᚋmodelᚐOrderDirection(ctx, v)
+			data, err := ec.unmarshalNOrderDirection2entgoᚗioᚋcontribᚋentgqlᚐOrderDirection(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			if err = ec.resolvers.PoliceStationOrder().Direction(ctx, &it, data); err != nil {
-				return it, err
-			}
+			it.Direction = data
 		case "field":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
-			data, err := ec.unmarshalNPoliceStationOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐPoliceStationOrderField(ctx, v)
+			data, err := ec.unmarshalNPoliceStationOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStationOrderField(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			if err = ec.resolvers.PoliceStationOrder().Field(ctx, &it, data); err != nil {
-				return it, err
-			}
+			it.Field = data
 		}
 	}
 
@@ -11288,22 +11263,18 @@ func (ec *executionContext) unmarshalInputRoleOrder(ctx context.Context, obj any
 		switch k {
 		case "direction":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
-			data, err := ec.unmarshalNOrderDirection2goᚑentᚑprojectᚋgraphᚋmodelᚐOrderDirection(ctx, v)
+			data, err := ec.unmarshalNOrderDirection2entgoᚗioᚋcontribᚋentgqlᚐOrderDirection(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			if err = ec.resolvers.RoleOrder().Direction(ctx, &it, data); err != nil {
-				return it, err
-			}
+			it.Direction = data
 		case "field":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
-			data, err := ec.unmarshalNRoleOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐRoleOrderField(ctx, v)
+			data, err := ec.unmarshalNRoleOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐRoleOrderField(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			if err = ec.resolvers.RoleOrder().Field(ctx, &it, data); err != nil {
-				return it, err
-			}
+			it.Field = data
 		}
 	}
 
@@ -11658,22 +11629,18 @@ func (ec *executionContext) unmarshalInputUserOrder(ctx context.Context, obj any
 		switch k {
 		case "direction":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
-			data, err := ec.unmarshalNOrderDirection2goᚑentᚑprojectᚋgraphᚋmodelᚐOrderDirection(ctx, v)
+			data, err := ec.unmarshalNOrderDirection2entgoᚗioᚋcontribᚋentgqlᚐOrderDirection(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			if err = ec.resolvers.UserOrder().Direction(ctx, &it, data); err != nil {
-				return it, err
-			}
+			it.Direction = data
 		case "field":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
-			data, err := ec.unmarshalNUserOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐUserOrderField(ctx, v)
+			data, err := ec.unmarshalNUserOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUserOrderField(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			if err = ec.resolvers.UserOrder().Field(ctx, &it, data); err != nil {
-				return it, err
-			}
+			it.Field = data
 		}
 	}
 
@@ -12246,8 +12213,8 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputVehicleDataOrder(ctx context.Context, obj any) (model.VehicleDataOrder, error) {
-	var it model.VehicleDataOrder
+func (ec *executionContext) unmarshalInputVehicleDataOrder(ctx context.Context, obj any) (ent.VehicleDataOrder, error) {
+	var it ent.VehicleDataOrder
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -12266,14 +12233,14 @@ func (ec *executionContext) unmarshalInputVehicleDataOrder(ctx context.Context, 
 		switch k {
 		case "direction":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
-			data, err := ec.unmarshalNOrderDirection2goᚑentᚑprojectᚋgraphᚋmodelᚐOrderDirection(ctx, v)
+			data, err := ec.unmarshalNOrderDirection2entgoᚗioᚋcontribᚋentgqlᚐOrderDirection(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Direction = data
 		case "field":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
-			data, err := ec.unmarshalNVehicleDataOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataOrderField(ctx, v)
+			data, err := ec.unmarshalNVehicleDataOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐVehicleDataOrderField(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12284,8 +12251,8 @@ func (ec *executionContext) unmarshalInputVehicleDataOrder(ctx context.Context, 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Context, obj any) (model.VehicleDataWhereInput, error) {
-	var it model.VehicleDataWhereInput
+func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Context, obj any) (ent.VehicleDataWhereInput, error) {
+	var it ent.VehicleDataWhereInput
 	asMap := map[string]any{}
 	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
@@ -12300,81 +12267,81 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 		switch k {
 		case "not":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
-			data, err := ec.unmarshalOVehicleDataWhereInput2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataWhereInput(ctx, v)
+			data, err := ec.unmarshalOVehicleDataWhereInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐVehicleDataWhereInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Not = data
 		case "and":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
-			data, err := ec.unmarshalOVehicleDataWhereInput2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataWhereInputᚄ(ctx, v)
+			data, err := ec.unmarshalOVehicleDataWhereInput2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐVehicleDataWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.And = data
 		case "or":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
-			data, err := ec.unmarshalOVehicleDataWhereInput2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataWhereInputᚄ(ctx, v)
+			data, err := ec.unmarshalOVehicleDataWhereInput2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐVehicleDataWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Or = data
 		case "id":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.ID = data
 		case "idNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDNeq = data
+			it.IDNEQ = data
 		case "idIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.IDIn = data
 		case "idNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			data, err := ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOID2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.IDNotIn = data
 		case "idGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGt = data
+			it.IDGT = data
 		case "idGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDGte = data
+			it.IDGTE = data
 		case "idLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLt = data
+			it.IDLT = data
 		case "idLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOID2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.IDLte = data
+			it.IDLTE = data
 		case "createdAt":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
@@ -12388,17 +12355,17 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.CreatedAtNeq = data
+			it.CreatedAtNEQ = data
 		case "createdAtIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
-			data, err := ec.unmarshalOTime2ᚕᚖtimeᚐTimeᚄ(ctx, v)
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.CreatedAtIn = data
 		case "createdAtNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
-			data, err := ec.unmarshalOTime2ᚕᚖtimeᚐTimeᚄ(ctx, v)
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12409,28 +12376,28 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.CreatedAtGt = data
+			it.CreatedAtGT = data
 		case "createdAtGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.CreatedAtGte = data
+			it.CreatedAtGTE = data
 		case "createdAtLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.CreatedAtLt = data
+			it.CreatedAtLT = data
 		case "createdAtLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.CreatedAtLte = data
+			it.CreatedAtLTE = data
 		case "updatedAt":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
@@ -12444,17 +12411,17 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.UpdatedAtNeq = data
+			it.UpdatedAtNEQ = data
 		case "updatedAtIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtIn"))
-			data, err := ec.unmarshalOTime2ᚕᚖtimeᚐTimeᚄ(ctx, v)
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.UpdatedAtIn = data
 		case "updatedAtNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNotIn"))
-			data, err := ec.unmarshalOTime2ᚕᚖtimeᚐTimeᚄ(ctx, v)
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12465,94 +12432,94 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.UpdatedAtGt = data
+			it.UpdatedAtGT = data
 		case "updatedAtGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGTE"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.UpdatedAtGte = data
+			it.UpdatedAtGTE = data
 		case "updatedAtLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLT"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.UpdatedAtLt = data
+			it.UpdatedAtLT = data
 		case "updatedAtLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLTE"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.UpdatedAtLte = data
+			it.UpdatedAtLTE = data
 		case "plateChannel":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannel"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.PlateChannel = data
 		case "plateChannelNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelNEQ"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateChannelNeq = data
+			it.PlateChannelNEQ = data
 		case "plateChannelIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelIn"))
-			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.PlateChannelIn = data
 		case "plateChannelNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelNotIn"))
-			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.PlateChannelNotIn = data
 		case "plateChannelGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelGT"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateChannelGt = data
+			it.PlateChannelGT = data
 		case "plateChannelGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelGTE"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateChannelGte = data
+			it.PlateChannelGTE = data
 		case "plateChannelLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelLT"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateChannelLt = data
+			it.PlateChannelLT = data
 		case "plateChannelLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelLTE"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateChannelLte = data
+			it.PlateChannelLTE = data
 		case "plateChannelIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.PlateChannelIsNil = data
 		case "plateChannelNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannelNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12570,17 +12537,17 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.PlateIsExistNeq = data
+			it.PlateIsExistNEQ = data
 		case "plateIsExistIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateIsExistIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.PlateIsExistIsNil = data
 		case "plateIsExistNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateIsExistNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12598,7 +12565,7 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.PlateColorNeq = data
+			it.PlateColorNEQ = data
 		case "plateColorIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorIn"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
@@ -12619,28 +12586,28 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.PlateColorGt = data
+			it.PlateColorGT = data
 		case "plateColorGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorGTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateColorGte = data
+			it.PlateColorGTE = data
 		case "plateColorLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorLT"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateColorLt = data
+			it.PlateColorLT = data
 		case "plateColorLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorLTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateColorLte = data
+			it.PlateColorLTE = data
 		case "plateColorContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorContains"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -12664,14 +12631,14 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			it.PlateColorHasSuffix = data
 		case "plateColorIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.PlateColorIsNil = data
 		case "plateColorNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateColorNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12703,7 +12670,7 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.PlateNumberNeq = data
+			it.PlateNumberNEQ = data
 		case "plateNumberIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberIn"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
@@ -12724,28 +12691,28 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.PlateNumberGt = data
+			it.PlateNumberGT = data
 		case "plateNumberGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberGTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateNumberGte = data
+			it.PlateNumberGTE = data
 		case "plateNumberLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberLT"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateNumberLt = data
+			it.PlateNumberLT = data
 		case "plateNumberLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberLTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateNumberLte = data
+			it.PlateNumberLTE = data
 		case "plateNumberContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberContains"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -12769,14 +12736,14 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			it.PlateNumberHasSuffix = data
 		case "plateNumberIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.PlateNumberIsNil = data
 		case "plateNumberNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateNumberNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12808,7 +12775,7 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.PlateTypeNeq = data
+			it.PlateTypeNEQ = data
 		case "plateTypeIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeIn"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
@@ -12829,28 +12796,28 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.PlateTypeGt = data
+			it.PlateTypeGT = data
 		case "plateTypeGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeGTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateTypeGte = data
+			it.PlateTypeGTE = data
 		case "plateTypeLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeLT"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateTypeLt = data
+			it.PlateTypeLT = data
 		case "plateTypeLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeLTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateTypeLte = data
+			it.PlateTypeLTE = data
 		case "plateTypeContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeContains"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -12874,14 +12841,14 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			it.PlateTypeHasSuffix = data
 		case "plateTypeIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.PlateTypeIsNil = data
 		case "plateTypeNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateTypeNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12913,7 +12880,7 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.PlateRegionNeq = data
+			it.PlateRegionNEQ = data
 		case "plateRegionIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionIn"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
@@ -12934,28 +12901,28 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.PlateRegionGt = data
+			it.PlateRegionGT = data
 		case "plateRegionGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionGTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateRegionGte = data
+			it.PlateRegionGTE = data
 		case "plateRegionLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionLT"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateRegionLt = data
+			it.PlateRegionLT = data
 		case "plateRegionLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionLTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateRegionLte = data
+			it.PlateRegionLTE = data
 		case "plateRegionContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionContains"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -12979,14 +12946,14 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			it.PlateRegionHasSuffix = data
 		case "plateRegionIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.PlateRegionIsNil = data
 		case "plateRegionNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateRegionNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -13007,70 +12974,70 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			it.PlateRegionContainsFold = data
 		case "plateUploadNum":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNum"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.PlateUploadNum = data
 		case "plateUploadNumNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumNEQ"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateUploadNumNeq = data
+			it.PlateUploadNumNEQ = data
 		case "plateUploadNumIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumIn"))
-			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.PlateUploadNumIn = data
 		case "plateUploadNumNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumNotIn"))
-			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.PlateUploadNumNotIn = data
 		case "plateUploadNumGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumGT"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateUploadNumGt = data
+			it.PlateUploadNumGT = data
 		case "plateUploadNumGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumGTE"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateUploadNumGte = data
+			it.PlateUploadNumGTE = data
 		case "plateUploadNumLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumLT"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateUploadNumLt = data
+			it.PlateUploadNumLT = data
 		case "plateUploadNumLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumLTE"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.PlateUploadNumLte = data
+			it.PlateUploadNumLTE = data
 		case "plateUploadNumIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.PlateUploadNumIsNil = data
 		case "plateUploadNumNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateUploadNumNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -13088,17 +13055,17 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.SnapAllowUserNeq = data
+			it.SnapAllowUserNEQ = data
 		case "snapAllowUserIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.SnapAllowUserIsNil = data
 		case "snapAllowUserNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -13116,7 +13083,7 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.SnapAllowUserEndTimeNeq = data
+			it.SnapAllowUserEndTimeNEQ = data
 		case "snapAllowUserEndTimeIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeIn"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
@@ -13137,28 +13104,28 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.SnapAllowUserEndTimeGt = data
+			it.SnapAllowUserEndTimeGT = data
 		case "snapAllowUserEndTimeGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeGTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapAllowUserEndTimeGte = data
+			it.SnapAllowUserEndTimeGTE = data
 		case "snapAllowUserEndTimeLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeLT"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapAllowUserEndTimeLt = data
+			it.SnapAllowUserEndTimeLT = data
 		case "snapAllowUserEndTimeLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeLTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapAllowUserEndTimeLte = data
+			it.SnapAllowUserEndTimeLTE = data
 		case "snapAllowUserEndTimeContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeContains"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -13182,14 +13149,14 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			it.SnapAllowUserEndTimeHasSuffix = data
 		case "snapAllowUserEndTimeIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.SnapAllowUserEndTimeIsNil = data
 		case "snapAllowUserEndTimeNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUserEndTimeNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -13221,7 +13188,7 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.SnapDefenceCodeNeq = data
+			it.SnapDefenceCodeNEQ = data
 		case "snapDefenceCodeIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeIn"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
@@ -13242,28 +13209,28 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.SnapDefenceCodeGt = data
+			it.SnapDefenceCodeGT = data
 		case "snapDefenceCodeGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeGTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapDefenceCodeGte = data
+			it.SnapDefenceCodeGTE = data
 		case "snapDefenceCodeLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeLT"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapDefenceCodeLt = data
+			it.SnapDefenceCodeLT = data
 		case "snapDefenceCodeLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeLTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapDefenceCodeLte = data
+			it.SnapDefenceCodeLTE = data
 		case "snapDefenceCodeContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeContains"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -13287,14 +13254,14 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			it.SnapDefenceCodeHasSuffix = data
 		case "snapDefenceCodeIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.SnapDefenceCodeIsNil = data
 		case "snapDefenceCodeNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCodeNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -13326,7 +13293,7 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.SnapDeviceIdneq = data
+			it.SnapDeviceIDNEQ = data
 		case "snapDeviceIDIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDIn"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
@@ -13347,28 +13314,28 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.SnapDeviceIdgt = data
+			it.SnapDeviceIDGT = data
 		case "snapDeviceIDGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDGTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapDeviceIdgte = data
+			it.SnapDeviceIDGTE = data
 		case "snapDeviceIDLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDLT"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapDeviceIdlt = data
+			it.SnapDeviceIDLT = data
 		case "snapDeviceIDLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDLTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapDeviceIdlte = data
+			it.SnapDeviceIDLTE = data
 		case "snapDeviceIDContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDContains"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -13392,14 +13359,14 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			it.SnapDeviceIDHasSuffix = data
 		case "snapDeviceIDIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.SnapDeviceIDIsNil = data
 		case "snapDeviceIDNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDeviceIDNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -13420,140 +13387,140 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			it.SnapDeviceIDContainsFold = data
 		case "snapInCarPeopleNum":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNum"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.SnapInCarPeopleNum = data
 		case "snapInCarPeopleNumNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumNEQ"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapInCarPeopleNumNeq = data
+			it.SnapInCarPeopleNumNEQ = data
 		case "snapInCarPeopleNumIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumIn"))
-			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.SnapInCarPeopleNumIn = data
 		case "snapInCarPeopleNumNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumNotIn"))
-			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.SnapInCarPeopleNumNotIn = data
 		case "snapInCarPeopleNumGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumGT"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapInCarPeopleNumGt = data
+			it.SnapInCarPeopleNumGT = data
 		case "snapInCarPeopleNumGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumGTE"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapInCarPeopleNumGte = data
+			it.SnapInCarPeopleNumGTE = data
 		case "snapInCarPeopleNumLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumLT"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapInCarPeopleNumLt = data
+			it.SnapInCarPeopleNumLT = data
 		case "snapInCarPeopleNumLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumLTE"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapInCarPeopleNumLte = data
+			it.SnapInCarPeopleNumLTE = data
 		case "snapInCarPeopleNumIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.SnapInCarPeopleNumIsNil = data
 		case "snapInCarPeopleNumNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNumNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.SnapInCarPeopleNumNotNil = data
 		case "snapLanNo":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNo"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.SnapLanNo = data
 		case "snapLanNoNEQ":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoNEQ"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapLanNoNeq = data
+			it.SnapLanNoNEQ = data
 		case "snapLanNoIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoIn"))
-			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.SnapLanNoIn = data
 		case "snapLanNoNotIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoNotIn"))
-			data, err := ec.unmarshalOInt2ᚕint32ᚄ(ctx, v)
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.SnapLanNoNotIn = data
 		case "snapLanNoGT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoGT"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapLanNoGt = data
+			it.SnapLanNoGT = data
 		case "snapLanNoGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoGTE"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapLanNoGte = data
+			it.SnapLanNoGTE = data
 		case "snapLanNoLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoLT"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapLanNoLt = data
+			it.SnapLanNoLT = data
 		case "snapLanNoLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoLTE"))
-			data, err := ec.unmarshalOInt2ᚖint32(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SnapLanNoLte = data
+			it.SnapLanNoLTE = data
 		case "snapLanNoIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.SnapLanNoIsNil = data
 		case "snapLanNoNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapLanNoNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -13571,17 +13538,17 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.SnapOpenStrobeNeq = data
+			it.SnapOpenStrobeNEQ = data
 		case "snapOpenStrobeIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapOpenStrobeIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.SnapOpenStrobeIsNil = data
 		case "snapOpenStrobeNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapOpenStrobeNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -13599,7 +13566,7 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.VehicleSeriesNeq = data
+			it.VehicleSeriesNEQ = data
 		case "vehicleSeriesIn":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesIn"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
@@ -13620,28 +13587,28 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-			it.VehicleSeriesGt = data
+			it.VehicleSeriesGT = data
 		case "vehicleSeriesGTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesGTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.VehicleSeriesGte = data
+			it.VehicleSeriesGTE = data
 		case "vehicleSeriesLT":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesLT"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.VehicleSeriesLt = data
+			it.VehicleSeriesLT = data
 		case "vehicleSeriesLTE":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesLTE"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.VehicleSeriesLte = data
+			it.VehicleSeriesLTE = data
 		case "vehicleSeriesContains":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesContains"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -13665,14 +13632,14 @@ func (ec *executionContext) unmarshalInputVehicleDataWhereInput(ctx context.Cont
 			it.VehicleSeriesHasSuffix = data
 		case "vehicleSeriesIsNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesIsNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.VehicleSeriesIsNil = data
 		case "vehicleSeriesNotNil":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeriesNotNil"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -13710,9 +13677,7 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._Camera(ctx, sel, obj)
-	case model.Car:
-		return ec._Car(ctx, sel, &obj)
-	case *model.Car:
+	case *ent.Car:
 		if obj == nil {
 			return graphql.Null
 		}
@@ -13737,9 +13702,7 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._User(ctx, sel, obj)
-	case model.VehicleData:
-		return ec._VehicleData(ctx, sel, &obj)
-	case *model.VehicleData:
+	case *ent.VehicleData:
 		if obj == nil {
 			return graphql.Null
 		}
@@ -13829,7 +13792,7 @@ func (ec *executionContext) _Camera(ctx context.Context, sel ast.SelectionSet, o
 
 var cameraConnectionImplementors = []string{"CameraConnection"}
 
-func (ec *executionContext) _CameraConnection(ctx context.Context, sel ast.SelectionSet, obj *model.CameraConnection) graphql.Marshaler {
+func (ec *executionContext) _CameraConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.CameraConnection) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, cameraConnectionImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -13841,13 +13804,44 @@ func (ec *executionContext) _CameraConnection(ctx context.Context, sel ast.Selec
 		case "pageInfo":
 			out.Values[i] = ec._CameraConnection_pageInfo(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "edges":
-			out.Values[i] = ec._CameraConnection_edges(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._CameraConnection_edges(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -13873,7 +13867,7 @@ func (ec *executionContext) _CameraConnection(ctx context.Context, sel ast.Selec
 
 var carImplementors = []string{"Car", "Node"}
 
-func (ec *executionContext) _Car(ctx context.Context, sel ast.SelectionSet, obj *model.Car) graphql.Marshaler {
+func (ec *executionContext) _Car(ctx context.Context, sel ast.SelectionSet, obj *ent.Car) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, carImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -14058,7 +14052,7 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 var pageInfoImplementors = []string{"PageInfo"}
 
-func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet, obj *model.PageInfo) graphql.Marshaler {
+func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet, obj *entgql.PageInfo[int]) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, pageInfoImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -14345,7 +14339,7 @@ func (ec *executionContext) _PoliceStation(ctx context.Context, sel ast.Selectio
 
 var policeStationConnectionImplementors = []string{"PoliceStationConnection"}
 
-func (ec *executionContext) _PoliceStationConnection(ctx context.Context, sel ast.SelectionSet, obj *model.PoliceStationConnection) graphql.Marshaler {
+func (ec *executionContext) _PoliceStationConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.PoliceStationConnection) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, policeStationConnectionImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -14357,13 +14351,44 @@ func (ec *executionContext) _PoliceStationConnection(ctx context.Context, sel as
 		case "pageInfo":
 			out.Values[i] = ec._PoliceStationConnection_pageInfo(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "edges":
-			out.Values[i] = ec._PoliceStationConnection_edges(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._PoliceStationConnection_edges(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -14833,7 +14858,7 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 
 var userConnectionImplementors = []string{"UserConnection"}
 
-func (ec *executionContext) _UserConnection(ctx context.Context, sel ast.SelectionSet, obj *model.UserConnection) graphql.Marshaler {
+func (ec *executionContext) _UserConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.UserConnection) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, userConnectionImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -14845,13 +14870,44 @@ func (ec *executionContext) _UserConnection(ctx context.Context, sel ast.Selecti
 		case "pageInfo":
 			out.Values[i] = ec._UserConnection_pageInfo(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "edges":
-			out.Values[i] = ec._UserConnection_edges(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._UserConnection_edges(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -14877,7 +14933,7 @@ func (ec *executionContext) _UserConnection(ctx context.Context, sel ast.Selecti
 
 var vehicleDataImplementors = []string{"VehicleData", "Node"}
 
-func (ec *executionContext) _VehicleData(ctx context.Context, sel ast.SelectionSet, obj *model.VehicleData) graphql.Marshaler {
+func (ec *executionContext) _VehicleData(ctx context.Context, sel ast.SelectionSet, obj *ent.VehicleData) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, vehicleDataImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -15337,11 +15393,11 @@ func (ec *executionContext) marshalNCamera2ᚕᚖgoᚑentᚑprojectᚋinternal�
 	return ret
 }
 
-func (ec *executionContext) marshalNCameraConnection2goᚑentᚑprojectᚋgraphᚋmodelᚐCameraConnection(ctx context.Context, sel ast.SelectionSet, v model.CameraConnection) graphql.Marshaler {
+func (ec *executionContext) marshalNCameraConnection2goᚑentᚑprojectᚋinternalᚋentᚐCameraConnection(ctx context.Context, sel ast.SelectionSet, v ent.CameraConnection) graphql.Marshaler {
 	return ec._CameraConnection(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCameraConnection2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐCameraConnection(ctx context.Context, sel ast.SelectionSet, v *model.CameraConnection) graphql.Marshaler {
+func (ec *executionContext) marshalNCameraConnection2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCameraConnection(ctx context.Context, sel ast.SelectionSet, v *ent.CameraConnection) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -15351,13 +15407,19 @@ func (ec *executionContext) marshalNCameraConnection2ᚖgoᚑentᚑprojectᚋgra
 	return ec._CameraConnection(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNCameraOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐCameraOrderField(ctx context.Context, v any) (model.CameraOrderField, error) {
-	var res model.CameraOrderField
+func (ec *executionContext) unmarshalNCameraOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCameraOrderField(ctx context.Context, v any) (*ent.CameraOrderField, error) {
+	var res = new(ent.CameraOrderField)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNCameraOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐCameraOrderField(ctx context.Context, sel ast.SelectionSet, v model.CameraOrderField) graphql.Marshaler {
+func (ec *executionContext) marshalNCameraOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCameraOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.CameraOrderField) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
 	return v
 }
 
@@ -15366,17 +15428,23 @@ func (ec *executionContext) unmarshalNCameraWhereInput2ᚖgoᚑentᚑprojectᚋi
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCarOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐCarOrderField(ctx context.Context, v any) (model.CarOrderField, error) {
-	var res model.CarOrderField
+func (ec *executionContext) unmarshalNCarOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCarOrderField(ctx context.Context, v any) (*ent.CarOrderField, error) {
+	var res = new(ent.CarOrderField)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNCarOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐCarOrderField(ctx context.Context, sel ast.SelectionSet, v model.CarOrderField) graphql.Marshaler {
+func (ec *executionContext) marshalNCarOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCarOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.CarOrderField) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
 	return v
 }
 
-func (ec *executionContext) unmarshalNCarWhereInput2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐCarWhereInput(ctx context.Context, v any) (*model.CarWhereInput, error) {
+func (ec *executionContext) unmarshalNCarWhereInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCarWhereInput(ctx context.Context, v any) (*ent.CarWhereInput, error) {
 	res, err := ec.unmarshalInputCarWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
@@ -15443,13 +15511,13 @@ func (ec *executionContext) marshalNID2ᚕstringᚄ(ctx context.Context, sel ast
 	return ret
 }
 
-func (ec *executionContext) unmarshalNInt2int32(ctx context.Context, v any) (int32, error) {
-	res, err := graphql.UnmarshalInt32(v)
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v any) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNInt2int32(ctx context.Context, sel ast.SelectionSet, v int32) graphql.Marshaler {
-	res := graphql.MarshalInt32(v)
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -15531,24 +15599,18 @@ func (ec *executionContext) marshalNNode2ᚕgoᚑentᚑprojectᚋinternalᚋent�
 	return ret
 }
 
-func (ec *executionContext) unmarshalNOrderDirection2goᚑentᚑprojectᚋgraphᚋmodelᚐOrderDirection(ctx context.Context, v any) (model.OrderDirection, error) {
-	var res model.OrderDirection
+func (ec *executionContext) unmarshalNOrderDirection2entgoᚗioᚋcontribᚋentgqlᚐOrderDirection(ctx context.Context, v any) (entgql.OrderDirection, error) {
+	var res entgql.OrderDirection
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNOrderDirection2goᚑentᚑprojectᚋgraphᚋmodelᚐOrderDirection(ctx context.Context, sel ast.SelectionSet, v model.OrderDirection) graphql.Marshaler {
+func (ec *executionContext) marshalNOrderDirection2entgoᚗioᚋcontribᚋentgqlᚐOrderDirection(ctx context.Context, sel ast.SelectionSet, v entgql.OrderDirection) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) marshalNPageInfo2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v *model.PageInfo) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._PageInfo(ctx, sel, v)
+func (ec *executionContext) marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v entgql.PageInfo[int]) graphql.Marshaler {
+	return ec._PageInfo(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNPermission2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPermission(ctx context.Context, sel ast.SelectionSet, v *ent.Permission) graphql.Marshaler {
@@ -15561,13 +15623,19 @@ func (ec *executionContext) marshalNPermission2ᚖgoᚑentᚑprojectᚋinternal�
 	return ec._Permission(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNPermissionOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐPermissionOrderField(ctx context.Context, v any) (model.PermissionOrderField, error) {
-	var res model.PermissionOrderField
+func (ec *executionContext) unmarshalNPermissionOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPermissionOrderField(ctx context.Context, v any) (*ent.PermissionOrderField, error) {
+	var res = new(ent.PermissionOrderField)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNPermissionOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐPermissionOrderField(ctx context.Context, sel ast.SelectionSet, v model.PermissionOrderField) graphql.Marshaler {
+func (ec *executionContext) marshalNPermissionOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPermissionOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.PermissionOrderField) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
 	return v
 }
 
@@ -15624,11 +15692,11 @@ func (ec *executionContext) marshalNPoliceStation2ᚖgoᚑentᚑprojectᚋintern
 	return ec._PoliceStation(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPoliceStationConnection2goᚑentᚑprojectᚋgraphᚋmodelᚐPoliceStationConnection(ctx context.Context, sel ast.SelectionSet, v model.PoliceStationConnection) graphql.Marshaler {
+func (ec *executionContext) marshalNPoliceStationConnection2goᚑentᚑprojectᚋinternalᚋentᚐPoliceStationConnection(ctx context.Context, sel ast.SelectionSet, v ent.PoliceStationConnection) graphql.Marshaler {
 	return ec._PoliceStationConnection(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPoliceStationConnection2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐPoliceStationConnection(ctx context.Context, sel ast.SelectionSet, v *model.PoliceStationConnection) graphql.Marshaler {
+func (ec *executionContext) marshalNPoliceStationConnection2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStationConnection(ctx context.Context, sel ast.SelectionSet, v *ent.PoliceStationConnection) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -15638,13 +15706,19 @@ func (ec *executionContext) marshalNPoliceStationConnection2ᚖgoᚑentᚑprojec
 	return ec._PoliceStationConnection(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNPoliceStationOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐPoliceStationOrderField(ctx context.Context, v any) (model.PoliceStationOrderField, error) {
-	var res model.PoliceStationOrderField
+func (ec *executionContext) unmarshalNPoliceStationOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStationOrderField(ctx context.Context, v any) (*ent.PoliceStationOrderField, error) {
+	var res = new(ent.PoliceStationOrderField)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNPoliceStationOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐPoliceStationOrderField(ctx context.Context, sel ast.SelectionSet, v model.PoliceStationOrderField) graphql.Marshaler {
+func (ec *executionContext) marshalNPoliceStationOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStationOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.PoliceStationOrderField) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
 	return v
 }
 
@@ -15667,13 +15741,19 @@ func (ec *executionContext) marshalNRefreshTokenResponse2ᚖgoᚑentᚑproject�
 	return ec._RefreshTokenResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNRoleOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐRoleOrderField(ctx context.Context, v any) (model.RoleOrderField, error) {
-	var res model.RoleOrderField
+func (ec *executionContext) unmarshalNRoleOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐRoleOrderField(ctx context.Context, v any) (*ent.RoleOrderField, error) {
+	var res = new(ent.RoleOrderField)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNRoleOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐRoleOrderField(ctx context.Context, sel ast.SelectionSet, v model.RoleOrderField) graphql.Marshaler {
+func (ec *executionContext) marshalNRoleOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐRoleOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.RoleOrderField) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
 	return v
 }
 
@@ -15704,27 +15784,6 @@ func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v an
 
 func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
 	res := graphql.MarshalTime(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-	}
-	return res
-}
-
-func (ec *executionContext) unmarshalNTime2ᚖtimeᚐTime(ctx context.Context, v any) (*time.Time, error) {
-	res, err := graphql.UnmarshalTime(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	res := graphql.MarshalTime(*v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -15785,11 +15844,11 @@ func (ec *executionContext) marshalNUser2ᚖgoᚑentᚑprojectᚋinternalᚋent�
 	return ec._User(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNUserConnection2goᚑentᚑprojectᚋgraphᚋmodelᚐUserConnection(ctx context.Context, sel ast.SelectionSet, v model.UserConnection) graphql.Marshaler {
+func (ec *executionContext) marshalNUserConnection2goᚑentᚑprojectᚋinternalᚋentᚐUserConnection(ctx context.Context, sel ast.SelectionSet, v ent.UserConnection) graphql.Marshaler {
 	return ec._UserConnection(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUserConnection2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐUserConnection(ctx context.Context, sel ast.SelectionSet, v *model.UserConnection) graphql.Marshaler {
+func (ec *executionContext) marshalNUserConnection2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUserConnection(ctx context.Context, sel ast.SelectionSet, v *ent.UserConnection) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -15799,13 +15858,19 @@ func (ec *executionContext) marshalNUserConnection2ᚖgoᚑentᚑprojectᚋgraph
 	return ec._UserConnection(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNUserOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐUserOrderField(ctx context.Context, v any) (model.UserOrderField, error) {
-	var res model.UserOrderField
+func (ec *executionContext) unmarshalNUserOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUserOrderField(ctx context.Context, v any) (*ent.UserOrderField, error) {
+	var res = new(ent.UserOrderField)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNUserOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐUserOrderField(ctx context.Context, sel ast.SelectionSet, v model.UserOrderField) graphql.Marshaler {
+func (ec *executionContext) marshalNUserOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUserOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.UserOrderField) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
 	return v
 }
 
@@ -15814,17 +15879,23 @@ func (ec *executionContext) unmarshalNUserWhereInput2ᚖgoᚑentᚑprojectᚋint
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNVehicleDataOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataOrderField(ctx context.Context, v any) (model.VehicleDataOrderField, error) {
-	var res model.VehicleDataOrderField
+func (ec *executionContext) unmarshalNVehicleDataOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐVehicleDataOrderField(ctx context.Context, v any) (*ent.VehicleDataOrderField, error) {
+	var res = new(ent.VehicleDataOrderField)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNVehicleDataOrderField2goᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataOrderField(ctx context.Context, sel ast.SelectionSet, v model.VehicleDataOrderField) graphql.Marshaler {
+func (ec *executionContext) marshalNVehicleDataOrderField2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐVehicleDataOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.VehicleDataOrderField) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
 	return v
 }
 
-func (ec *executionContext) unmarshalNVehicleDataWhereInput2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataWhereInput(ctx context.Context, v any) (*model.VehicleDataWhereInput, error) {
+func (ec *executionContext) unmarshalNVehicleDataWhereInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐVehicleDataWhereInput(ctx context.Context, v any) (*ent.VehicleDataWhereInput, error) {
 	res, err := ec.unmarshalInputVehicleDataWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
@@ -16151,7 +16222,7 @@ func (ec *executionContext) unmarshalOCameraWhereInput2ᚖgoᚑentᚑprojectᚋi
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOCarWhereInput2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐCarWhereInputᚄ(ctx context.Context, v any) ([]*model.CarWhereInput, error) {
+func (ec *executionContext) unmarshalOCarWhereInput2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐCarWhereInputᚄ(ctx context.Context, v any) ([]*ent.CarWhereInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -16160,10 +16231,10 @@ func (ec *executionContext) unmarshalOCarWhereInput2ᚕᚖgoᚑentᚑprojectᚋg
 		vSlice = graphql.CoerceList(v)
 	}
 	var err error
-	res := make([]*model.CarWhereInput, len(vSlice))
+	res := make([]*ent.CarWhereInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNCarWhereInput2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐCarWhereInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNCarWhereInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCarWhereInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -16171,7 +16242,7 @@ func (ec *executionContext) unmarshalOCarWhereInput2ᚕᚖgoᚑentᚑprojectᚋg
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalOCarWhereInput2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐCarWhereInput(ctx context.Context, v any) (*model.CarWhereInput, error) {
+func (ec *executionContext) unmarshalOCarWhereInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCarWhereInput(ctx context.Context, v any) (*ent.CarWhereInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -16179,20 +16250,20 @@ func (ec *executionContext) unmarshalOCarWhereInput2ᚖgoᚑentᚑprojectᚋgrap
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOCursor2ᚖstring(ctx context.Context, v any) (*string, error) {
+func (ec *executionContext) unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, v any) (*entgql.Cursor[int], error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := graphql.UnmarshalString(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	var res = new(entgql.Cursor[int])
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOCursor2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+func (ec *executionContext) marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, sel ast.SelectionSet, v *entgql.Cursor[int]) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	res := graphql.MarshalString(*v)
-	return res
+	return v
 }
 
 func (ec *executionContext) unmarshalOID2int(ctx context.Context, v any) (int, error) {
@@ -16243,44 +16314,6 @@ func (ec *executionContext) marshalOID2ᚕintᚄ(ctx context.Context, sel ast.Se
 	return ret
 }
 
-func (ec *executionContext) unmarshalOID2ᚕstringᚄ(ctx context.Context, v any) ([]string, error) {
-	if v == nil {
-		return nil, nil
-	}
-	var vSlice []any
-	if v != nil {
-		vSlice = graphql.CoerceList(v)
-	}
-	var err error
-	res := make([]string, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNID2string(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) marshalOID2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	for i := range v {
-		ret[i] = ec.marshalNID2string(ctx, sel, v[i])
-	}
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
 func (ec *executionContext) unmarshalOID2ᚖint(ctx context.Context, v any) (*int, error) {
 	if v == nil {
 		return nil, nil
@@ -16297,23 +16330,17 @@ func (ec *executionContext) marshalOID2ᚖint(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) unmarshalOID2ᚖstring(ctx context.Context, v any) (*string, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := graphql.UnmarshalID(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+func (ec *executionContext) unmarshalOInt2int(ctx context.Context, v any) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	res := graphql.MarshalID(*v)
+func (ec *executionContext) marshalOInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
 	return res
 }
 
-func (ec *executionContext) unmarshalOInt2ᚕint32ᚄ(ctx context.Context, v any) ([]int32, error) {
+func (ec *executionContext) unmarshalOInt2ᚕintᚄ(ctx context.Context, v any) ([]int, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -16322,10 +16349,10 @@ func (ec *executionContext) unmarshalOInt2ᚕint32ᚄ(ctx context.Context, v any
 		vSlice = graphql.CoerceList(v)
 	}
 	var err error
-	res := make([]int32, len(vSlice))
+	res := make([]int, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNInt2int32(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNInt2int(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -16333,13 +16360,13 @@ func (ec *executionContext) unmarshalOInt2ᚕint32ᚄ(ctx context.Context, v any
 	return res, nil
 }
 
-func (ec *executionContext) marshalOInt2ᚕint32ᚄ(ctx context.Context, sel ast.SelectionSet, v []int32) graphql.Marshaler {
+func (ec *executionContext) marshalOInt2ᚕintᚄ(ctx context.Context, sel ast.SelectionSet, v []int) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	ret := make(graphql.Array, len(v))
 	for i := range v {
-		ret[i] = ec.marshalNInt2int32(ctx, sel, v[i])
+		ret[i] = ec.marshalNInt2int(ctx, sel, v[i])
 	}
 
 	for _, e := range ret {
@@ -16351,19 +16378,19 @@ func (ec *executionContext) marshalOInt2ᚕint32ᚄ(ctx context.Context, sel ast
 	return ret
 }
 
-func (ec *executionContext) unmarshalOInt2ᚖint32(ctx context.Context, v any) (*int32, error) {
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v any) (*int, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := graphql.UnmarshalInt32(v)
+	res, err := graphql.UnmarshalInt(v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOInt2ᚖint32(ctx context.Context, sel ast.SelectionSet, v *int32) graphql.Marshaler {
+func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	res := graphql.MarshalInt32(*v)
+	res := graphql.MarshalInt(*v)
 	return res
 }
 
@@ -16692,44 +16719,6 @@ func (ec *executionContext) marshalOTime2ᚕtimeᚐTimeᚄ(ctx context.Context, 
 	return ret
 }
 
-func (ec *executionContext) unmarshalOTime2ᚕᚖtimeᚐTimeᚄ(ctx context.Context, v any) ([]*time.Time, error) {
-	if v == nil {
-		return nil, nil
-	}
-	var vSlice []any
-	if v != nil {
-		vSlice = graphql.CoerceList(v)
-	}
-	var err error
-	res := make([]*time.Time, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNTime2ᚖtimeᚐTime(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) marshalOTime2ᚕᚖtimeᚐTimeᚄ(ctx context.Context, sel ast.SelectionSet, v []*time.Time) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	for i := range v {
-		ret[i] = ec.marshalNTime2ᚖtimeᚐTime(ctx, sel, v[i])
-	}
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
 func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v any) (*time.Time, error) {
 	if v == nil {
 		return nil, nil
@@ -16836,7 +16825,7 @@ func (ec *executionContext) unmarshalOUserWhereInput2ᚖgoᚑentᚑprojectᚋint
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOVehicleDataWhereInput2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataWhereInputᚄ(ctx context.Context, v any) ([]*model.VehicleDataWhereInput, error) {
+func (ec *executionContext) unmarshalOVehicleDataWhereInput2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐVehicleDataWhereInputᚄ(ctx context.Context, v any) ([]*ent.VehicleDataWhereInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -16845,10 +16834,10 @@ func (ec *executionContext) unmarshalOVehicleDataWhereInput2ᚕᚖgoᚑentᚑpro
 		vSlice = graphql.CoerceList(v)
 	}
 	var err error
-	res := make([]*model.VehicleDataWhereInput, len(vSlice))
+	res := make([]*ent.VehicleDataWhereInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNVehicleDataWhereInput2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataWhereInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNVehicleDataWhereInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐVehicleDataWhereInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -16856,7 +16845,7 @@ func (ec *executionContext) unmarshalOVehicleDataWhereInput2ᚕᚖgoᚑentᚑpro
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalOVehicleDataWhereInput2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐVehicleDataWhereInput(ctx context.Context, v any) (*model.VehicleDataWhereInput, error) {
+func (ec *executionContext) unmarshalOVehicleDataWhereInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐVehicleDataWhereInput(ctx context.Context, v any) (*ent.VehicleDataWhereInput, error) {
 	if v == nil {
 		return nil, nil
 	}

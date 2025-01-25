@@ -7,137 +7,56 @@ package graph
 import (
 	"context"
 	"fmt"
-	"go-ent-project/graph/model"
 	"go-ent-project/internal/ent"
 
 	"entgo.io/contrib/entgql"
 )
 
+// Edges is the resolver for the edges field.
+func (r *cameraConnectionResolver) Edges(ctx context.Context, obj *ent.CameraConnection) ([]*ent.Camera, error) {
+	panic(fmt.Errorf("not implemented: Edges - edges"))
+}
+
+// Edges is the resolver for the edges field.
+func (r *policeStationConnectionResolver) Edges(ctx context.Context, obj *ent.PoliceStationConnection) ([]*ent.PoliceStation, error) {
+	panic(fmt.Errorf("not implemented: Edges - edges"))
+}
+
 // GetUsers is the resolver for the getUsers field.
-func (r *queryResolver) GetUsers(ctx context.Context, where *ent.UserWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.UserOrder) (*model.UserConnection, error) {
-	var afterCursor, beforeCursor *entgql.Cursor[int]
-	if after != nil {
-		cursor, err := DecodeCursor(*after)
-		if err != nil {
-			return nil, fmt.Errorf("invalid 'after' cursor: %v", err)
-		}
-		afterCursor = &entgql.Cursor[int]{Value: cursor}
-	}
+func (r *queryResolver) GetUsers(ctx context.Context, where *ent.UserWhereInput, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.UserOrder) (*ent.UserConnection, error) {
+	paginate, _ := r.Client.User.Query().Paginate(ctx, after, first, before, last, ent.WithUserFilter(where.Filter), ent.WithUserOrder(orderBy))
 
-	if before != nil {
-		cursor, err := DecodeCursor(*before)
-		if err != nil {
-			return nil, fmt.Errorf("invalid 'before' cursor: %v", err)
-		}
-		beforeCursor = &entgql.Cursor[int]{Value: cursor}
-	}
-
-	var firstInt, lastInt *int
-	if first != nil {
-		val := int(*first)
-		firstInt = &val
-	}
-	if last != nil {
-		val := int(*last)
-		lastInt = &val
-	}
-	query := r.Client.User.Query()
-
-	// Apply `where` filters if provided
-	if where != nil {
-		var err error
-		query, err = where.Filter(query)
-		if err != nil {
-			return nil, fmt.Errorf("failed to apply filters: %v", err)
-		}
-	}
-
-	paginate, err := query.Paginate(ctx, afterCursor, firstInt, beforeCursor, lastInt, ent.WithUserOrder(orderBy))
-	if err != nil {
-		return nil, err
-	}
-	var data []*ent.User
-	for _, node := range paginate.Edges {
-		data = append(data, node.Node)
-	}
-
-	startCursor := convertCursorToString(paginate.PageInfo.StartCursor)
-	endCursor := convertCursorToString(paginate.PageInfo.EndCursor)
-
-	return &model.UserConnection{
-		PageInfo: &model.PageInfo{ // PageInfo struct
-			HasNextPage:     paginate.PageInfo.HasNextPage,
-			HasPreviousPage: paginate.PageInfo.HasPreviousPage,
-			StartCursor:     startCursor,
-			EndCursor:       endCursor,
-		},
-		Edges: data,
-	}, nil
+	return paginate, nil
 }
 
 // GetPoliceStations is the resolver for the getPoliceStations field.
-func (r *queryResolver) GetPoliceStations(ctx context.Context, where *ent.PoliceStationWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.PoliceStationOrder) (*model.PoliceStationConnection, error) {
-	var afterCursor, beforeCursor *entgql.Cursor[int]
-	if after != nil {
-		cursor, err := DecodeCursor(*after)
-		if err != nil {
-			return nil, fmt.Errorf("invalid 'after' cursor: %v", err)
-		}
-		afterCursor = &entgql.Cursor[int]{Value: cursor}
-	}
+func (r *queryResolver) GetPoliceStations(ctx context.Context, where *ent.PoliceStationWhereInput, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.PoliceStationOrder) (*ent.PoliceStationConnection, error) {
+	paginate, _ := r.Client.PoliceStation.Query().Paginate(ctx, after, first, before, last, ent.WithPoliceStationFilter(where.Filter), ent.WithPoliceStationOrder(orderBy))
 
-	if before != nil {
-		cursor, err := DecodeCursor(*before)
-		if err != nil {
-			return nil, fmt.Errorf("invalid 'before' cursor: %v", err)
-		}
-		beforeCursor = &entgql.Cursor[int]{Value: cursor}
-	}
-
-	var firstInt, lastInt *int
-	if first != nil {
-		val := int(*first)
-		firstInt = &val
-	}
-	if last != nil {
-		val := int(*last)
-		lastInt = &val
-	}
-	query := r.Client.PoliceStation.Query()
-
-	// Apply `where` filters if provided
-	if where != nil {
-		var err error
-		query, err = where.Filter(query)
-		if err != nil {
-			return nil, fmt.Errorf("failed to apply filters: %v", err)
-		}
-	}
-
-	paginate, err := query.Paginate(ctx, afterCursor, firstInt, beforeCursor, lastInt, ent.WithPoliceStationOrder(orderBy))
-	if err != nil {
-		return nil, err
-	}
-	var data []*ent.PoliceStation
-	for _, node := range paginate.Edges {
-		data = append(data, node.Node)
-	}
-
-	startCursor := convertCursorToString(paginate.PageInfo.StartCursor)
-	endCursor := convertCursorToString(paginate.PageInfo.EndCursor)
-
-	return &model.PoliceStationConnection{
-		PageInfo: &model.PageInfo{ // PageInfo struct
-			HasNextPage:     paginate.PageInfo.HasNextPage,
-			HasPreviousPage: paginate.PageInfo.HasPreviousPage,
-			StartCursor:     startCursor,
-			EndCursor:       endCursor,
-		},
-		Edges: data,
-	}, nil
+	return paginate, nil
 }
 
 // GetCameras is the resolver for the getCameras field.
-func (r *queryResolver) GetCameras(ctx context.Context, where *ent.CameraWhereInput, after *string, first *int32, before *string, last *int32, orderBy *ent.CameraOrder) (*model.CameraConnection, error) {
+func (r *queryResolver) GetCameras(ctx context.Context, where *ent.CameraWhereInput, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy *ent.CameraOrder) (*ent.CameraConnection, error) {
 	panic(fmt.Errorf("not implemented: GetCameras - getCameras"))
 }
+
+// Edges is the resolver for the edges field.
+func (r *userConnectionResolver) Edges(ctx context.Context, obj *ent.UserConnection) ([]*ent.User, error) {
+	panic(fmt.Errorf("not implemented: Edges - edges"))
+}
+
+// CameraConnection returns CameraConnectionResolver implementation.
+func (r *Resolver) CameraConnection() CameraConnectionResolver { return &cameraConnectionResolver{r} }
+
+// PoliceStationConnection returns PoliceStationConnectionResolver implementation.
+func (r *Resolver) PoliceStationConnection() PoliceStationConnectionResolver {
+	return &policeStationConnectionResolver{r}
+}
+
+// UserConnection returns UserConnectionResolver implementation.
+func (r *Resolver) UserConnection() UserConnectionResolver { return &userConnectionResolver{r} }
+
+type cameraConnectionResolver struct{ *Resolver }
+type policeStationConnectionResolver struct{ *Resolver }
+type userConnectionResolver struct{ *Resolver }
