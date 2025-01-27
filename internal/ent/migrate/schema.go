@@ -116,28 +116,14 @@ var (
 		{Name: "password", Type: field.TypeString},
 		{Name: "phone", Type: field.TypeString, Nullable: true},
 		{Name: "active", Type: field.TypeBool, Default: true},
-		{Name: "police_station_users", Type: field.TypeInt, Nullable: true},
 		{Name: "role_id", Type: field.TypeInt},
+		{Name: "police_station_id", Type: field.TypeInt},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
 		Name:       "users",
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "users_police_stations_users",
-				Columns:    []*schema.Column{UsersColumns[8]},
-				RefColumns: []*schema.Column{PoliceStationsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "users_roles_users",
-				Columns:    []*schema.Column{UsersColumns[9]},
-				RefColumns: []*schema.Column{RolesColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
 	}
 	// VehicleDataColumns holds the columns for the "vehicle_data" table.
 	VehicleDataColumns = []*schema.Column{
@@ -168,6 +154,56 @@ var (
 		Columns:    VehicleDataColumns,
 		PrimaryKey: []*schema.Column{VehicleDataColumns[0]},
 	}
+	// PoliceStationUsersColumns holds the columns for the "police_station_users" table.
+	PoliceStationUsersColumns = []*schema.Column{
+		{Name: "police_station_id", Type: field.TypeInt},
+		{Name: "user_id", Type: field.TypeInt},
+	}
+	// PoliceStationUsersTable holds the schema information for the "police_station_users" table.
+	PoliceStationUsersTable = &schema.Table{
+		Name:       "police_station_users",
+		Columns:    PoliceStationUsersColumns,
+		PrimaryKey: []*schema.Column{PoliceStationUsersColumns[0], PoliceStationUsersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "police_station_users_police_station_id",
+				Columns:    []*schema.Column{PoliceStationUsersColumns[0]},
+				RefColumns: []*schema.Column{PoliceStationsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "police_station_users_user_id",
+				Columns:    []*schema.Column{PoliceStationUsersColumns[1]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// RoleUsersColumns holds the columns for the "role_users" table.
+	RoleUsersColumns = []*schema.Column{
+		{Name: "role_id", Type: field.TypeInt},
+		{Name: "user_id", Type: field.TypeInt},
+	}
+	// RoleUsersTable holds the schema information for the "role_users" table.
+	RoleUsersTable = &schema.Table{
+		Name:       "role_users",
+		Columns:    RoleUsersColumns,
+		PrimaryKey: []*schema.Column{RoleUsersColumns[0], RoleUsersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "role_users_role_id",
+				Columns:    []*schema.Column{RoleUsersColumns[0]},
+				RefColumns: []*schema.Column{RolesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "role_users_user_id",
+				Columns:    []*schema.Column{RoleUsersColumns[1]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		CamerasTable,
@@ -177,12 +213,16 @@ var (
 		RolesTable,
 		UsersTable,
 		VehicleDataTable,
+		PoliceStationUsersTable,
+		RoleUsersTable,
 	}
 )
 
 func init() {
 	PermissionsTable.ForeignKeys[0].RefTable = RolesTable
 	PoliceStationsTable.ForeignKeys[0].RefTable = PoliceStationsTable
-	UsersTable.ForeignKeys[0].RefTable = PoliceStationsTable
-	UsersTable.ForeignKeys[1].RefTable = RolesTable
+	PoliceStationUsersTable.ForeignKeys[0].RefTable = PoliceStationsTable
+	PoliceStationUsersTable.ForeignKeys[1].RefTable = UsersTable
+	RoleUsersTable.ForeignKeys[0].RefTable = RolesTable
+	RoleUsersTable.ForeignKeys[1].RefTable = UsersTable
 }

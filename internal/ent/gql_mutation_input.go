@@ -452,14 +452,17 @@ func (c *RoleUpdateOne) SetInput(i UpdateRoleInput) *RoleUpdateOne {
 
 // CreateUserInput represents a mutation input for creating users.
 type CreateUserInput struct {
-	CreatedAt *time.Time
-	UpdatedAt *time.Time
-	Name      string
-	Email     string
-	Password  string
-	Phone     *string
-	Active    *bool
-	RoleID    int
+	CreatedAt        *time.Time
+	UpdatedAt        *time.Time
+	Name             string
+	Email            string
+	Password         string
+	Phone            *string
+	Active           *bool
+	RoleID           int
+	PoliceStationID  int
+	RoleIDs          []int
+	PoliceStationIDs []int
 }
 
 // Mutate applies the CreateUserInput on the UserMutation builder.
@@ -480,6 +483,13 @@ func (i *CreateUserInput) Mutate(m *UserMutation) {
 		m.SetActive(*v)
 	}
 	m.SetRoleID(i.RoleID)
+	m.SetPoliceStationID(i.PoliceStationID)
+	if v := i.RoleIDs; len(v) > 0 {
+		m.AddRoleIDs(v...)
+	}
+	if v := i.PoliceStationIDs; len(v) > 0 {
+		m.AddPoliceStationIDs(v...)
+	}
 }
 
 // SetInput applies the change-set in the CreateUserInput on the UserCreate builder.
@@ -490,14 +500,19 @@ func (c *UserCreate) SetInput(i CreateUserInput) *UserCreate {
 
 // UpdateUserInput represents a mutation input for updating users.
 type UpdateUserInput struct {
-	UpdatedAt  *time.Time
-	Name       *string
-	Email      *string
-	Password   *string
-	ClearPhone bool
-	Phone      *string
-	Active     *bool
-	RoleID     *int
+	UpdatedAt              *time.Time
+	Name                   *string
+	Email                  *string
+	Password               *string
+	ClearPhone             bool
+	Phone                  *string
+	Active                 *bool
+	RoleID                 *int
+	PoliceStationID        *int
+	AddRoleIDs             []int
+	RemoveRoleIDs          []int
+	AddPoliceStationIDs    []int
+	RemovePoliceStationIDs []int
 }
 
 // Mutate applies the UpdateUserInput on the UserMutation builder.
@@ -525,6 +540,21 @@ func (i *UpdateUserInput) Mutate(m *UserMutation) {
 	}
 	if v := i.RoleID; v != nil {
 		m.SetRoleID(*v)
+	}
+	if v := i.PoliceStationID; v != nil {
+		m.SetPoliceStationID(*v)
+	}
+	if v := i.AddRoleIDs; len(v) > 0 {
+		m.AddRoleIDs(v...)
+	}
+	if v := i.RemoveRoleIDs; len(v) > 0 {
+		m.RemoveRoleIDs(v...)
+	}
+	if v := i.AddPoliceStationIDs; len(v) > 0 {
+		m.AddPoliceStationIDs(v...)
+	}
+	if v := i.RemovePoliceStationIDs; len(v) > 0 {
+		m.RemovePoliceStationIDs(v...)
 	}
 }
 

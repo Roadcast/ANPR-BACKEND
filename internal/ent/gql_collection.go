@@ -707,14 +707,25 @@ func (u *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *graph
 				path  = append(path, alias)
 				query = (&RoleClient{config: u.config}).Query()
 			)
-			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, roleImplementors)...); err != nil {
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, roleImplementors)...); err != nil {
 				return err
 			}
-			u.withRole = query
-			if _, ok := fieldSeen[user.FieldRoleID]; !ok {
-				selectedFields = append(selectedFields, user.FieldRoleID)
-				fieldSeen[user.FieldRoleID] = struct{}{}
+			u.WithNamedRole(alias, func(wq *RoleQuery) {
+				*wq = *query
+			})
+
+		case "policeStation":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&PoliceStationClient{config: u.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, policestationImplementors)...); err != nil {
+				return err
 			}
+			u.WithNamedPoliceStation(alias, func(wq *PoliceStationQuery) {
+				*wq = *query
+			})
 		case "createdAt":
 			if _, ok := fieldSeen[user.FieldCreatedAt]; !ok {
 				selectedFields = append(selectedFields, user.FieldCreatedAt)
@@ -749,6 +760,11 @@ func (u *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *graph
 			if _, ok := fieldSeen[user.FieldRoleID]; !ok {
 				selectedFields = append(selectedFields, user.FieldRoleID)
 				fieldSeen[user.FieldRoleID] = struct{}{}
+			}
+		case "policeStationID":
+			if _, ok := fieldSeen[user.FieldPoliceStationID]; !ok {
+				selectedFields = append(selectedFields, user.FieldPoliceStationID)
+				fieldSeen[user.FieldPoliceStationID] = struct{}{}
 			}
 		case "id":
 		case "__typename":

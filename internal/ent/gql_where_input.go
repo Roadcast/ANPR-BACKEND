@@ -1926,10 +1926,28 @@ type UserWhereInput struct {
 	RoleIDNEQ   *int  `json:"roleIDNEQ,omitempty"`
 	RoleIDIn    []int `json:"roleIDIn,omitempty"`
 	RoleIDNotIn []int `json:"roleIDNotIn,omitempty"`
+	RoleIDGT    *int  `json:"roleIDGT,omitempty"`
+	RoleIDGTE   *int  `json:"roleIDGTE,omitempty"`
+	RoleIDLT    *int  `json:"roleIDLT,omitempty"`
+	RoleIDLTE   *int  `json:"roleIDLTE,omitempty"`
+
+	// "police_station_id" field predicates.
+	PoliceStationID      *int  `json:"policeStationID,omitempty"`
+	PoliceStationIDNEQ   *int  `json:"policeStationIDNEQ,omitempty"`
+	PoliceStationIDIn    []int `json:"policeStationIDIn,omitempty"`
+	PoliceStationIDNotIn []int `json:"policeStationIDNotIn,omitempty"`
+	PoliceStationIDGT    *int  `json:"policeStationIDGT,omitempty"`
+	PoliceStationIDGTE   *int  `json:"policeStationIDGTE,omitempty"`
+	PoliceStationIDLT    *int  `json:"policeStationIDLT,omitempty"`
+	PoliceStationIDLTE   *int  `json:"policeStationIDLTE,omitempty"`
 
 	// "role" edge predicates.
 	HasRole     *bool             `json:"hasRole,omitempty"`
 	HasRoleWith []*RoleWhereInput `json:"hasRoleWith,omitempty"`
+
+	// "police_station" edge predicates.
+	HasPoliceStation     *bool                      `json:"hasPoliceStation,omitempty"`
+	HasPoliceStationWith []*PoliceStationWhereInput `json:"hasPoliceStationWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -2255,6 +2273,42 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	if len(i.RoleIDNotIn) > 0 {
 		predicates = append(predicates, user.RoleIDNotIn(i.RoleIDNotIn...))
 	}
+	if i.RoleIDGT != nil {
+		predicates = append(predicates, user.RoleIDGT(*i.RoleIDGT))
+	}
+	if i.RoleIDGTE != nil {
+		predicates = append(predicates, user.RoleIDGTE(*i.RoleIDGTE))
+	}
+	if i.RoleIDLT != nil {
+		predicates = append(predicates, user.RoleIDLT(*i.RoleIDLT))
+	}
+	if i.RoleIDLTE != nil {
+		predicates = append(predicates, user.RoleIDLTE(*i.RoleIDLTE))
+	}
+	if i.PoliceStationID != nil {
+		predicates = append(predicates, user.PoliceStationIDEQ(*i.PoliceStationID))
+	}
+	if i.PoliceStationIDNEQ != nil {
+		predicates = append(predicates, user.PoliceStationIDNEQ(*i.PoliceStationIDNEQ))
+	}
+	if len(i.PoliceStationIDIn) > 0 {
+		predicates = append(predicates, user.PoliceStationIDIn(i.PoliceStationIDIn...))
+	}
+	if len(i.PoliceStationIDNotIn) > 0 {
+		predicates = append(predicates, user.PoliceStationIDNotIn(i.PoliceStationIDNotIn...))
+	}
+	if i.PoliceStationIDGT != nil {
+		predicates = append(predicates, user.PoliceStationIDGT(*i.PoliceStationIDGT))
+	}
+	if i.PoliceStationIDGTE != nil {
+		predicates = append(predicates, user.PoliceStationIDGTE(*i.PoliceStationIDGTE))
+	}
+	if i.PoliceStationIDLT != nil {
+		predicates = append(predicates, user.PoliceStationIDLT(*i.PoliceStationIDLT))
+	}
+	if i.PoliceStationIDLTE != nil {
+		predicates = append(predicates, user.PoliceStationIDLTE(*i.PoliceStationIDLTE))
+	}
 
 	if i.HasRole != nil {
 		p := user.HasRole()
@@ -2273,6 +2327,24 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, user.HasRoleWith(with...))
+	}
+	if i.HasPoliceStation != nil {
+		p := user.HasPoliceStation()
+		if !*i.HasPoliceStation {
+			p = user.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasPoliceStationWith) > 0 {
+		with := make([]predicate.PoliceStation, 0, len(i.HasPoliceStationWith))
+		for _, w := range i.HasPoliceStationWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasPoliceStationWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, user.HasPoliceStationWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

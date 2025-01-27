@@ -1,2 +1,16 @@
 directive @refetchable(queryName: String!) on FIELD
 directive @connection(key: String!, filters: [String!]) on FIELD
+
+#fragment UserListPagination_users on UserConnection {
+#    edges {
+#        node {
+#            id
+#            name
+#            email
+#        }
+#    }
+#    pageInfo {
+#        hasNextPage
+#        endCursor
+#    }
+#}

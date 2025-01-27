@@ -31,17 +31,24 @@ const (
 	FieldActive = "active"
 	// FieldRoleID holds the string denoting the role_id field in the database.
 	FieldRoleID = "role_id"
+	// FieldPoliceStationID holds the string denoting the police_station_id field in the database.
+	FieldPoliceStationID = "police_station_id"
 	// EdgeRole holds the string denoting the role edge name in mutations.
 	EdgeRole = "role"
+	// EdgePoliceStation holds the string denoting the police_station edge name in mutations.
+	EdgePoliceStation = "police_station"
 	// Table holds the table name of the user in the database.
 	Table = "users"
-	// RoleTable is the table that holds the role relation/edge.
-	RoleTable = "users"
+	// RoleTable is the table that holds the role relation/edge. The primary key declared below.
+	RoleTable = "role_users"
 	// RoleInverseTable is the table name for the Role entity.
 	// It exists in this package in order to avoid circular dependency with the "role" package.
 	RoleInverseTable = "roles"
-	// RoleColumn is the table column denoting the role relation/edge.
-	RoleColumn = "role_id"
+	// PoliceStationTable is the table that holds the police_station relation/edge. The primary key declared below.
+	PoliceStationTable = "police_station_users"
+	// PoliceStationInverseTable is the table name for the PoliceStation entity.
+	// It exists in this package in order to avoid circular dependency with the "policestation" package.
+	PoliceStationInverseTable = "police_stations"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -55,23 +62,22 @@ var Columns = []string{
 	FieldPhone,
 	FieldActive,
 	FieldRoleID,
+	FieldPoliceStationID,
 }
 
-// ForeignKeys holds the SQL foreign-keys that are owned by the "users"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"police_station_users",
-}
+var (
+	// RolePrimaryKey and RoleColumn2 are the table columns denoting the
+	// primary key for the role relation (M2M).
+	RolePrimaryKey = []string{"role_id", "user_id"}
+	// PoliceStationPrimaryKey and PoliceStationColumn2 are the table columns denoting the
+	// primary key for the police_station relation (M2M).
+	PoliceStationPrimaryKey = []string{"police_station_id", "user_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -150,16 +156,49 @@ func ByRoleID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRoleID, opts...).ToFunc()
 }
 
-// ByRoleField orders the results by role field.
-func ByRoleField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByPoliceStationID orders the results by the police_station_id field.
+func ByPoliceStationID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPoliceStationID, opts...).ToFunc()
+}
+
+// ByRoleCount orders the results by role count.
+func ByRoleCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newRoleStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborsCount(s, newRoleStep(), opts...)
+	}
+}
+
+// ByRole orders the results by role terms.
+func ByRole(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRoleStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByPoliceStationCount orders the results by police_station count.
+func ByPoliceStationCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPoliceStationStep(), opts...)
+	}
+}
+
+// ByPoliceStation orders the results by police_station terms.
+func ByPoliceStation(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPoliceStationStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newRoleStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RoleInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, RoleTable, RoleColumn),
+		sqlgraph.Edge(sqlgraph.M2M, true, RoleTable, RolePrimaryKey...),
+	)
+}
+func newPoliceStationStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PoliceStationInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, PoliceStationTable, PoliceStationPrimaryKey...),
 	)
 }

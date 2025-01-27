@@ -4,7 +4,6 @@ package ent
 
 import (
 	"fmt"
-	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
 	"strings"
 	"time"
@@ -34,33 +33,46 @@ type User struct {
 	Active bool `json:"active,omitempty"`
 	// RoleID holds the value of the "role_id" field.
 	RoleID int `json:"role_id,omitempty"`
+	// PoliceStationID holds the value of the "police_station_id" field.
+	PoliceStationID int `json:"police_station_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
-	Edges                UserEdges `json:"edges"`
-	police_station_users *int
-	selectValues         sql.SelectValues
+	Edges        UserEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // UserEdges holds the relations/edges for other nodes in the graph.
 type UserEdges struct {
 	// Role holds the value of the role edge.
-	Role *Role `json:"role,omitempty"`
+	Role []*Role `json:"role,omitempty"`
+	// PoliceStation holds the value of the police_station edge.
+	PoliceStation []*PoliceStation `json:"police_station,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 	// totalCount holds the count of the edges above.
-	totalCount [1]map[string]int
+	totalCount [2]map[string]int
+
+	namedRole          map[string][]*Role
+	namedPoliceStation map[string][]*PoliceStation
 }
 
 // RoleOrErr returns the Role value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e UserEdges) RoleOrErr() (*Role, error) {
-	if e.Role != nil {
+// was not loaded in eager-loading.
+func (e UserEdges) RoleOrErr() ([]*Role, error) {
+	if e.loadedTypes[0] {
 		return e.Role, nil
-	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: role.Label}
 	}
 	return nil, &NotLoadedError{edge: "role"}
+}
+
+// PoliceStationOrErr returns the PoliceStation value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) PoliceStationOrErr() ([]*PoliceStation, error) {
+	if e.loadedTypes[1] {
+		return e.PoliceStation, nil
+	}
+	return nil, &NotLoadedError{edge: "police_station"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -70,14 +82,12 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldActive:
 			values[i] = new(sql.NullBool)
-		case user.FieldID, user.FieldRoleID:
+		case user.FieldID, user.FieldRoleID, user.FieldPoliceStationID:
 			values[i] = new(sql.NullInt64)
 		case user.FieldName, user.FieldEmail, user.FieldPassword, user.FieldPhone:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt, user.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case user.ForeignKeys[0]: // police_station_users
-			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -147,12 +157,11 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.RoleID = int(value.Int64)
 			}
-		case user.ForeignKeys[0]:
+		case user.FieldPoliceStationID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field police_station_users", value)
+				return fmt.Errorf("unexpected type %T for field police_station_id", values[i])
 			} else if value.Valid {
-				u.police_station_users = new(int)
-				*u.police_station_users = int(value.Int64)
+				u.PoliceStationID = int(value.Int64)
 			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
@@ -170,6 +179,11 @@ func (u *User) Value(name string) (ent.Value, error) {
 // QueryRole queries the "role" edge of the User entity.
 func (u *User) QueryRole() *RoleQuery {
 	return NewUserClient(u.config).QueryRole(u)
+}
+
+// QueryPoliceStation queries the "police_station" edge of the User entity.
+func (u *User) QueryPoliceStation() *PoliceStationQuery {
+	return NewUserClient(u.config).QueryPoliceStation(u)
 }
 
 // Update returns a builder for updating this User.
@@ -217,8 +231,59 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("role_id=")
 	builder.WriteString(fmt.Sprintf("%v", u.RoleID))
+	builder.WriteString(", ")
+	builder.WriteString("police_station_id=")
+	builder.WriteString(fmt.Sprintf("%v", u.PoliceStationID))
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedRole returns the Role named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (u *User) NamedRole(name string) ([]*Role, error) {
+	if u.Edges.namedRole == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := u.Edges.namedRole[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (u *User) appendNamedRole(name string, edges ...*Role) {
+	if u.Edges.namedRole == nil {
+		u.Edges.namedRole = make(map[string][]*Role)
+	}
+	if len(edges) == 0 {
+		u.Edges.namedRole[name] = []*Role{}
+	} else {
+		u.Edges.namedRole[name] = append(u.Edges.namedRole[name], edges...)
+	}
+}
+
+// NamedPoliceStation returns the PoliceStation named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (u *User) NamedPoliceStation(name string) ([]*PoliceStation, error) {
+	if u.Edges.namedPoliceStation == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := u.Edges.namedPoliceStation[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (u *User) appendNamedPoliceStation(name string, edges ...*PoliceStation) {
+	if u.Edges.namedPoliceStation == nil {
+		u.Edges.namedPoliceStation = make(map[string][]*PoliceStation)
+	}
+	if len(edges) == 0 {
+		u.Edges.namedPoliceStation[name] = []*PoliceStation{}
+	} else {
+		u.Edges.namedPoliceStation[name] = append(u.Edges.namedPoliceStation[name], edges...)
+	}
 }
 
 // Users is a parsable slice of User.

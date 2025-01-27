@@ -266,10 +266,10 @@ func (psc *PoliceStationCreate) createSpec() (*PoliceStation, *sqlgraph.CreateSp
 	}
 	if nodes := psc.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: []string{policestation.UsersColumn},
+			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),

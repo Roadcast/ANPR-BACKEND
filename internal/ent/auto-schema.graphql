@@ -408,7 +408,10 @@ input CreateUserInput {
   password: String!
   phone: String
   active: Boolean
-  roleID: ID!
+  roleID: Int!
+  policeStationID: Int!
+  roleIDs: [ID!]!
+  policeStationIDs: [ID!]!
 }
 """
 CreateVehicleDataInput is used for create VehicleData object.
@@ -1292,7 +1295,12 @@ input UpdateUserInput {
   phone: String
   clearPhone: Boolean
   active: Boolean
-  roleID: ID
+  roleID: Int
+  policeStationID: Int
+  addRoleIDs: [ID!]
+  removeRoleIDs: [ID!]
+  addPoliceStationIDs: [ID!]
+  removePoliceStationIDs: [ID!]
 }
 """
 UpdateVehicleDataInput is used for update VehicleData object.
@@ -1396,8 +1404,10 @@ type User implements Node {
   email: String!
   phone: String
   active: Boolean!
-  roleID: ID!
-  role: Role!
+  roleID: Int!
+  policeStationID: Int!
+  role: [Role!]!
+  policeStation: [PoliceStation!]!
 }
 """
 A connection to a list of items.
@@ -1549,15 +1559,35 @@ input UserWhereInput {
   """
   role_id field predicates
   """
-  roleID: ID
-  roleIDNEQ: ID
-  roleIDIn: [ID!]
-  roleIDNotIn: [ID!]
+  roleID: Int
+  roleIDNEQ: Int
+  roleIDIn: [Int!]
+  roleIDNotIn: [Int!]
+  roleIDGT: Int
+  roleIDGTE: Int
+  roleIDLT: Int
+  roleIDLTE: Int
+  """
+  police_station_id field predicates
+  """
+  policeStationID: Int
+  policeStationIDNEQ: Int
+  policeStationIDIn: [Int!]
+  policeStationIDNotIn: [Int!]
+  policeStationIDGT: Int
+  policeStationIDGTE: Int
+  policeStationIDLT: Int
+  policeStationIDLTE: Int
   """
   role edge predicates
   """
   hasRole: Boolean
   hasRoleWith: [RoleWhereInput!]
+  """
+  police_station edge predicates
+  """
+  hasPoliceStation: Boolean
+  hasPoliceStationWith: [PoliceStationWhereInput!]
 }
 type VehicleData implements Node {
   id: ID!

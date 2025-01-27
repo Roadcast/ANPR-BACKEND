@@ -64,10 +64,26 @@ func (r *Role) Users(ctx context.Context) (result []*User, err error) {
 	return result, err
 }
 
-func (u *User) Role(ctx context.Context) (*Role, error) {
-	result, err := u.Edges.RoleOrErr()
+func (u *User) Role(ctx context.Context) (result []*Role, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = u.NamedRole(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = u.Edges.RoleOrErr()
+	}
 	if IsNotLoaded(err) {
-		result, err = u.QueryRole().Only(ctx)
+		result, err = u.QueryRole().All(ctx)
+	}
+	return result, err
+}
+
+func (u *User) PoliceStation(ctx context.Context) (result []*PoliceStation, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = u.NamedPoliceStation(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = u.Edges.PoliceStationOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = u.QueryPoliceStation().All(ctx)
 	}
 	return result, err
 }

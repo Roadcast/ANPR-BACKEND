@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
 	"time"
@@ -103,15 +104,46 @@ func (uc *UserCreate) SetRoleID(i int) *UserCreate {
 	return uc
 }
 
+// SetPoliceStationID sets the "police_station_id" field.
+func (uc *UserCreate) SetPoliceStationID(i int) *UserCreate {
+	uc.mutation.SetPoliceStationID(i)
+	return uc
+}
+
 // SetID sets the "id" field.
 func (uc *UserCreate) SetID(i int) *UserCreate {
 	uc.mutation.SetID(i)
 	return uc
 }
 
-// SetRole sets the "role" edge to the Role entity.
-func (uc *UserCreate) SetRole(r *Role) *UserCreate {
-	return uc.SetRoleID(r.ID)
+// AddRoleIDs adds the "role" edge to the Role entity by IDs.
+func (uc *UserCreate) AddRoleIDs(ids ...int) *UserCreate {
+	uc.mutation.AddRoleIDs(ids...)
+	return uc
+}
+
+// AddRole adds the "role" edges to the Role entity.
+func (uc *UserCreate) AddRole(r ...*Role) *UserCreate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uc.AddRoleIDs(ids...)
+}
+
+// AddPoliceStationIDs adds the "police_station" edge to the PoliceStation entity by IDs.
+func (uc *UserCreate) AddPoliceStationIDs(ids ...int) *UserCreate {
+	uc.mutation.AddPoliceStationIDs(ids...)
+	return uc
+}
+
+// AddPoliceStation adds the "police_station" edges to the PoliceStation entity.
+func (uc *UserCreate) AddPoliceStation(p ...*PoliceStation) *UserCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uc.AddPoliceStationIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -210,8 +242,14 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.RoleID(); !ok {
 		return &ValidationError{Name: "role_id", err: errors.New(`ent: missing required field "User.role_id"`)}
 	}
+	if _, ok := uc.mutation.PoliceStationID(); !ok {
+		return &ValidationError{Name: "police_station_id", err: errors.New(`ent: missing required field "User.police_station_id"`)}
+	}
 	if len(uc.mutation.RoleIDs()) == 0 {
 		return &ValidationError{Name: "role", err: errors.New(`ent: missing required edge "User.role"`)}
+	}
+	if len(uc.mutation.PoliceStationIDs()) == 0 {
+		return &ValidationError{Name: "police_station", err: errors.New(`ent: missing required edge "User.police_station"`)}
 	}
 	return nil
 }
@@ -274,12 +312,20 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldActive, field.TypeBool, value)
 		_node.Active = value
 	}
+	if value, ok := uc.mutation.RoleID(); ok {
+		_spec.SetField(user.FieldRoleID, field.TypeInt, value)
+		_node.RoleID = value
+	}
+	if value, ok := uc.mutation.PoliceStationID(); ok {
+		_spec.SetField(user.FieldPoliceStationID, field.TypeInt, value)
+		_node.PoliceStationID = value
+	}
 	if nodes := uc.mutation.RoleIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.M2M,
 			Inverse: true,
 			Table:   user.RoleTable,
-			Columns: []string{user.RoleColumn},
+			Columns: user.RolePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
@@ -288,7 +334,22 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.RoleID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.PoliceStationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PoliceStationTable,
+			Columns: user.PoliceStationPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -430,6 +491,30 @@ func (u *UserUpsert) SetRoleID(v int) *UserUpsert {
 // UpdateRoleID sets the "role_id" field to the value that was provided on create.
 func (u *UserUpsert) UpdateRoleID() *UserUpsert {
 	u.SetExcluded(user.FieldRoleID)
+	return u
+}
+
+// AddRoleID adds v to the "role_id" field.
+func (u *UserUpsert) AddRoleID(v int) *UserUpsert {
+	u.Add(user.FieldRoleID, v)
+	return u
+}
+
+// SetPoliceStationID sets the "police_station_id" field.
+func (u *UserUpsert) SetPoliceStationID(v int) *UserUpsert {
+	u.Set(user.FieldPoliceStationID, v)
+	return u
+}
+
+// UpdatePoliceStationID sets the "police_station_id" field to the value that was provided on create.
+func (u *UserUpsert) UpdatePoliceStationID() *UserUpsert {
+	u.SetExcluded(user.FieldPoliceStationID)
+	return u
+}
+
+// AddPoliceStationID adds v to the "police_station_id" field.
+func (u *UserUpsert) AddPoliceStationID(v int) *UserUpsert {
+	u.Add(user.FieldPoliceStationID, v)
 	return u
 }
 
@@ -582,10 +667,38 @@ func (u *UserUpsertOne) SetRoleID(v int) *UserUpsertOne {
 	})
 }
 
+// AddRoleID adds v to the "role_id" field.
+func (u *UserUpsertOne) AddRoleID(v int) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.AddRoleID(v)
+	})
+}
+
 // UpdateRoleID sets the "role_id" field to the value that was provided on create.
 func (u *UserUpsertOne) UpdateRoleID() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateRoleID()
+	})
+}
+
+// SetPoliceStationID sets the "police_station_id" field.
+func (u *UserUpsertOne) SetPoliceStationID(v int) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetPoliceStationID(v)
+	})
+}
+
+// AddPoliceStationID adds v to the "police_station_id" field.
+func (u *UserUpsertOne) AddPoliceStationID(v int) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.AddPoliceStationID(v)
+	})
+}
+
+// UpdatePoliceStationID sets the "police_station_id" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdatePoliceStationID() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdatePoliceStationID()
 	})
 }
 
@@ -904,10 +1017,38 @@ func (u *UserUpsertBulk) SetRoleID(v int) *UserUpsertBulk {
 	})
 }
 
+// AddRoleID adds v to the "role_id" field.
+func (u *UserUpsertBulk) AddRoleID(v int) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.AddRoleID(v)
+	})
+}
+
 // UpdateRoleID sets the "role_id" field to the value that was provided on create.
 func (u *UserUpsertBulk) UpdateRoleID() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateRoleID()
+	})
+}
+
+// SetPoliceStationID sets the "police_station_id" field.
+func (u *UserUpsertBulk) SetPoliceStationID(v int) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetPoliceStationID(v)
+	})
+}
+
+// AddPoliceStationID adds v to the "police_station_id" field.
+func (u *UserUpsertBulk) AddPoliceStationID(v int) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.AddPoliceStationID(v)
+	})
+}
+
+// UpdatePoliceStationID sets the "police_station_id" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdatePoliceStationID() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdatePoliceStationID()
 	})
 }
 

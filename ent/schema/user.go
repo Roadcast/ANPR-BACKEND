@@ -49,20 +49,20 @@ func (User) Fields() []ent.Field {
 			),
 		field.Bool("active").Default(true).Annotations(),
 		field.Int("role_id").Annotations(),
+		field.Int("police_station_id").Annotations(),
 	}
 }
 
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		// Role edge: a user can have one role
 		edge.From("role", Role.Type).
 			Ref("users").
-			Field("role_id").
-			Unique().Required().
-			Annotations(
-			// Binds this edge to GraphQL
-
-			),
+			Required().
+			Annotations(),
+		edge.From("police_station", PoliceStation.Type).
+			Ref("users").
+			Required().
+			Annotations(),
 	}
 }
 

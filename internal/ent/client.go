@@ -771,7 +771,7 @@ func (c *PoliceStationClient) QueryUsers(ps *PoliceStation) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(policestation.Table, policestation.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, policestation.UsersTable, policestation.UsersColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, policestation.UsersTable, policestation.UsersPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(ps.driver.Dialect(), step)
 		return fromV, nil
@@ -968,7 +968,7 @@ func (c *RoleClient) QueryUsers(r *Role) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(role.Table, role.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, role.UsersTable, role.UsersColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, role.UsersTable, role.UsersPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
@@ -1117,7 +1117,23 @@ func (c *UserClient) QueryRole(u *User) *RoleQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(role.Table, role.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, user.RoleTable, user.RoleColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, user.RoleTable, user.RolePrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPoliceStation queries the police_station edge of a User.
+func (c *UserClient) QueryPoliceStation(u *User) *PoliceStationQuery {
+	query := (&PoliceStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(policestation.Table, policestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, user.PoliceStationTable, user.PoliceStationPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

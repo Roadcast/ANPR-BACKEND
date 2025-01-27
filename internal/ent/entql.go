@@ -127,14 +127,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "User",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			user.FieldCreatedAt: {Type: field.TypeTime, Column: user.FieldCreatedAt},
-			user.FieldUpdatedAt: {Type: field.TypeTime, Column: user.FieldUpdatedAt},
-			user.FieldName:      {Type: field.TypeString, Column: user.FieldName},
-			user.FieldEmail:     {Type: field.TypeString, Column: user.FieldEmail},
-			user.FieldPassword:  {Type: field.TypeString, Column: user.FieldPassword},
-			user.FieldPhone:     {Type: field.TypeString, Column: user.FieldPhone},
-			user.FieldActive:    {Type: field.TypeBool, Column: user.FieldActive},
-			user.FieldRoleID:    {Type: field.TypeInt, Column: user.FieldRoleID},
+			user.FieldCreatedAt:       {Type: field.TypeTime, Column: user.FieldCreatedAt},
+			user.FieldUpdatedAt:       {Type: field.TypeTime, Column: user.FieldUpdatedAt},
+			user.FieldName:            {Type: field.TypeString, Column: user.FieldName},
+			user.FieldEmail:           {Type: field.TypeString, Column: user.FieldEmail},
+			user.FieldPassword:        {Type: field.TypeString, Column: user.FieldPassword},
+			user.FieldPhone:           {Type: field.TypeString, Column: user.FieldPhone},
+			user.FieldActive:          {Type: field.TypeBool, Column: user.FieldActive},
+			user.FieldRoleID:          {Type: field.TypeInt, Column: user.FieldRoleID},
+			user.FieldPoliceStationID: {Type: field.TypeInt, Column: user.FieldPoliceStationID},
 		},
 	}
 	graph.Nodes[6] = &sqlgraph.Node{
@@ -172,10 +173,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 	graph.MustAddE(
 		"users",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: []string{policestation.UsersColumn},
+			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 		},
 		"PoliceStation",
@@ -220,10 +221,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 	graph.MustAddE(
 		"users",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   role.UsersTable,
-			Columns: []string{role.UsersColumn},
+			Columns: role.UsersPrimaryKey,
 			Bidi:    false,
 		},
 		"Role",
@@ -232,14 +233,26 @@ var schemaGraph = func() *sqlgraph.Schema {
 	graph.MustAddE(
 		"role",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.M2M,
 			Inverse: true,
 			Table:   user.RoleTable,
-			Columns: []string{user.RoleColumn},
+			Columns: user.RolePrimaryKey,
 			Bidi:    false,
 		},
 		"User",
 		"Role",
+	)
+	graph.MustAddE(
+		"police_station",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   user.PoliceStationTable,
+			Columns: user.PoliceStationPrimaryKey,
+			Bidi:    false,
+		},
+		"User",
+		"PoliceStation",
 	)
 	return graph
 }()
@@ -750,6 +763,11 @@ func (f *UserFilter) WhereRoleID(p entql.IntP) {
 	f.Where(p.Field(user.FieldRoleID))
 }
 
+// WherePoliceStationID applies the entql int predicate on the police_station_id field.
+func (f *UserFilter) WherePoliceStationID(p entql.IntP) {
+	f.Where(p.Field(user.FieldPoliceStationID))
+}
+
 // WhereHasRole applies a predicate to check if query has an edge role.
 func (f *UserFilter) WhereHasRole() {
 	f.Where(entql.HasEdge("role"))
@@ -758,6 +776,20 @@ func (f *UserFilter) WhereHasRole() {
 // WhereHasRoleWith applies a predicate to check if query has an edge role with a given conditions (other predicates).
 func (f *UserFilter) WhereHasRoleWith(preds ...predicate.Role) {
 	f.Where(entql.HasEdgeWith("role", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasPoliceStation applies a predicate to check if query has an edge police_station.
+func (f *UserFilter) WhereHasPoliceStation() {
+	f.Where(entql.HasEdge("police_station"))
+}
+
+// WhereHasPoliceStationWith applies a predicate to check if query has an edge police_station with a given conditions (other predicates).
+func (f *UserFilter) WhereHasPoliceStationWith(preds ...predicate.PoliceStation) {
+	f.Where(entql.HasEdgeWith("police_station", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

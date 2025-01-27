@@ -279,10 +279,10 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if psu.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: []string{policestation.UsersColumn},
+			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -292,10 +292,10 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if nodes := psu.mutation.RemovedUsersIDs(); len(nodes) > 0 && !psu.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: []string{policestation.UsersColumn},
+			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -308,10 +308,10 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if nodes := psu.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: []string{policestation.UsersColumn},
+			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -696,10 +696,10 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 	}
 	if psuo.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: []string{policestation.UsersColumn},
+			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -709,10 +709,10 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 	}
 	if nodes := psuo.mutation.RemovedUsersIDs(); len(nodes) > 0 && !psuo.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: []string{policestation.UsersColumn},
+			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -725,10 +725,10 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 	}
 	if nodes := psuo.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: []string{policestation.UsersColumn},
+			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),

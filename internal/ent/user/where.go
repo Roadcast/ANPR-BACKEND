@@ -95,6 +95,11 @@ func RoleID(v int) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldRoleID, v))
 }
 
+// PoliceStationID applies equality check predicate on the "police_station_id" field. It's identical to PoliceStationIDEQ.
+func PoliceStationID(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPoliceStationID, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))
@@ -475,12 +480,72 @@ func RoleIDNotIn(vs ...int) predicate.User {
 	return predicate.User(sql.FieldNotIn(FieldRoleID, vs...))
 }
 
+// RoleIDGT applies the GT predicate on the "role_id" field.
+func RoleIDGT(v int) predicate.User {
+	return predicate.User(sql.FieldGT(FieldRoleID, v))
+}
+
+// RoleIDGTE applies the GTE predicate on the "role_id" field.
+func RoleIDGTE(v int) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldRoleID, v))
+}
+
+// RoleIDLT applies the LT predicate on the "role_id" field.
+func RoleIDLT(v int) predicate.User {
+	return predicate.User(sql.FieldLT(FieldRoleID, v))
+}
+
+// RoleIDLTE applies the LTE predicate on the "role_id" field.
+func RoleIDLTE(v int) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldRoleID, v))
+}
+
+// PoliceStationIDEQ applies the EQ predicate on the "police_station_id" field.
+func PoliceStationIDEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPoliceStationID, v))
+}
+
+// PoliceStationIDNEQ applies the NEQ predicate on the "police_station_id" field.
+func PoliceStationIDNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldPoliceStationID, v))
+}
+
+// PoliceStationIDIn applies the In predicate on the "police_station_id" field.
+func PoliceStationIDIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldPoliceStationID, vs...))
+}
+
+// PoliceStationIDNotIn applies the NotIn predicate on the "police_station_id" field.
+func PoliceStationIDNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldPoliceStationID, vs...))
+}
+
+// PoliceStationIDGT applies the GT predicate on the "police_station_id" field.
+func PoliceStationIDGT(v int) predicate.User {
+	return predicate.User(sql.FieldGT(FieldPoliceStationID, v))
+}
+
+// PoliceStationIDGTE applies the GTE predicate on the "police_station_id" field.
+func PoliceStationIDGTE(v int) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldPoliceStationID, v))
+}
+
+// PoliceStationIDLT applies the LT predicate on the "police_station_id" field.
+func PoliceStationIDLT(v int) predicate.User {
+	return predicate.User(sql.FieldLT(FieldPoliceStationID, v))
+}
+
+// PoliceStationIDLTE applies the LTE predicate on the "police_station_id" field.
+func PoliceStationIDLTE(v int) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldPoliceStationID, v))
+}
+
 // HasRole applies the HasEdge predicate on the "role" edge.
 func HasRole() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, RoleTable, RoleColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, RoleTable, RolePrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -490,6 +555,29 @@ func HasRole() predicate.User {
 func HasRoleWith(preds ...predicate.Role) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := newRoleStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPoliceStation applies the HasEdge predicate on the "police_station" edge.
+func HasPoliceStation() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, PoliceStationTable, PoliceStationPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPoliceStationWith applies the HasEdge predicate on the "police_station" edge with a given conditions (other predicates).
+func HasPoliceStationWith(preds ...predicate.PoliceStation) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newPoliceStationStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
