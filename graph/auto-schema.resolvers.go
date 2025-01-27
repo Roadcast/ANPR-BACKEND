@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 	"go-ent-project/internal/ent"
+
+	"entgo.io/contrib/entgql"
 )
 
 // Node is the resolver for the node field.
@@ -18,6 +20,41 @@ func (r *queryResolver) Node(ctx context.Context, id string) (ent.Noder, error) 
 // Nodes is the resolver for the nodes field.
 func (r *queryResolver) Nodes(ctx context.Context, ids []string) ([]ent.Noder, error) {
 	panic(fmt.Errorf("not implemented: Nodes - nodes"))
+}
+
+// Cameras is the resolver for the cameras field.
+func (r *queryResolver) Cameras(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.CameraOrder, where *ent.CameraWhereInput) (*ent.CameraConnection, error) {
+	panic(fmt.Errorf("not implemented: Cameras - cameras"))
+}
+
+// Cars is the resolver for the cars field.
+func (r *queryResolver) Cars(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.CarOrder, where *ent.CarWhereInput) (*ent.CarConnection, error) {
+	panic(fmt.Errorf("not implemented: Cars - cars"))
+}
+
+// Permissions is the resolver for the permissions field.
+func (r *queryResolver) Permissions(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.PermissionOrder, where *ent.PermissionWhereInput) (*ent.PermissionConnection, error) {
+	panic(fmt.Errorf("not implemented: Permissions - permissions"))
+}
+
+// PoliceStations is the resolver for the policeStations field.
+func (r *queryResolver) PoliceStations(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.PoliceStationOrder, where *ent.PoliceStationWhereInput) (*ent.PoliceStationConnection, error) {
+	panic(fmt.Errorf("not implemented: PoliceStations - policeStations"))
+}
+
+// Roles is the resolver for the roles field.
+func (r *queryResolver) Roles(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.RoleOrder, where *ent.RoleWhereInput) (*ent.RoleConnection, error) {
+	panic(fmt.Errorf("not implemented: Roles - roles"))
+}
+
+// Users is the resolver for the users field.
+func (r *queryResolver) Users(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.UserOrder, where *ent.UserWhereInput) (*ent.UserConnection, error) {
+	panic(fmt.Errorf("not implemented: Users - users"))
+}
+
+// VehicleDataSlice is the resolver for the vehicleDataSlice field.
+func (r *queryResolver) VehicleDataSlice(ctx context.Context, after *entgql.Cursor[int], first *int, before *entgql.Cursor[int], last *int, orderBy []*ent.VehicleDataOrder, where *ent.VehicleDataWhereInput) (*ent.VehicleDataConnection, error) {
+	panic(fmt.Errorf("not implemented: VehicleDataSlice - vehicleDataSlice"))
 }
 
 // Query returns QueryResolver implementation.

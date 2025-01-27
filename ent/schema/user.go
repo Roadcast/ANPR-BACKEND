@@ -57,10 +57,11 @@ func (User) Edges() []ent.Edge {
 		// Role edge: a user can have one role
 		edge.From("role", Role.Type).
 			Ref("users").
-			Unique().
 			Field("role_id").
+			Unique().
 			Annotations(
 			// Binds this edge to GraphQL
+
 			),
 	}
 }

@@ -1,0 +1,12 @@
+{{ define "query" }}
+type Query {
+  users(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: [UserOrder!]
+    where: UserWhereInput
+  ): UserConnection @refetchable(queryName: "UserListPaginationQuery")
+}
+{{ end }}

@@ -109,24 +109,30 @@ func newCameraPaginateArgs(rv map[string]any) *cameraPaginateArgs {
 	}
 	if v, ok := rv[orderByField]; ok {
 		switch v := v.(type) {
-		case map[string]any:
-			var (
-				err1, err2 error
-				order      = &CameraOrder{Field: &CameraOrderField{}, Direction: entgql.OrderDirectionAsc}
-			)
-			if d, ok := v[directionField]; ok {
-				err1 = order.Direction.UnmarshalGQL(d)
+		case []*CameraOrder:
+			args.opts = append(args.opts, WithCameraOrder(v))
+		case []any:
+			var orders []*CameraOrder
+			for i := range v {
+				mv, ok := v[i].(map[string]any)
+				if !ok {
+					continue
+				}
+				var (
+					err1, err2 error
+					order      = &CameraOrder{Field: &CameraOrderField{}, Direction: entgql.OrderDirectionAsc}
+				)
+				if d, ok := mv[directionField]; ok {
+					err1 = order.Direction.UnmarshalGQL(d)
+				}
+				if f, ok := mv[fieldField]; ok {
+					err2 = order.Field.UnmarshalGQL(f)
+				}
+				if err1 == nil && err2 == nil {
+					orders = append(orders, order)
+				}
 			}
-			if f, ok := v[fieldField]; ok {
-				err2 = order.Field.UnmarshalGQL(f)
-			}
-			if err1 == nil && err2 == nil {
-				args.opts = append(args.opts, WithCameraOrder(order))
-			}
-		case *CameraOrder:
-			if v != nil {
-				args.opts = append(args.opts, WithCameraOrder(v))
-			}
+			args.opts = append(args.opts, WithCameraOrder(orders))
 		}
 	}
 	if v, ok := rv[whereField].(*CameraWhereInput); ok {
@@ -228,24 +234,30 @@ func newCarPaginateArgs(rv map[string]any) *carPaginateArgs {
 	}
 	if v, ok := rv[orderByField]; ok {
 		switch v := v.(type) {
-		case map[string]any:
-			var (
-				err1, err2 error
-				order      = &CarOrder{Field: &CarOrderField{}, Direction: entgql.OrderDirectionAsc}
-			)
-			if d, ok := v[directionField]; ok {
-				err1 = order.Direction.UnmarshalGQL(d)
+		case []*CarOrder:
+			args.opts = append(args.opts, WithCarOrder(v))
+		case []any:
+			var orders []*CarOrder
+			for i := range v {
+				mv, ok := v[i].(map[string]any)
+				if !ok {
+					continue
+				}
+				var (
+					err1, err2 error
+					order      = &CarOrder{Field: &CarOrderField{}, Direction: entgql.OrderDirectionAsc}
+				)
+				if d, ok := mv[directionField]; ok {
+					err1 = order.Direction.UnmarshalGQL(d)
+				}
+				if f, ok := mv[fieldField]; ok {
+					err2 = order.Field.UnmarshalGQL(f)
+				}
+				if err1 == nil && err2 == nil {
+					orders = append(orders, order)
+				}
 			}
-			if f, ok := v[fieldField]; ok {
-				err2 = order.Field.UnmarshalGQL(f)
-			}
-			if err1 == nil && err2 == nil {
-				args.opts = append(args.opts, WithCarOrder(order))
-			}
-		case *CarOrder:
-			if v != nil {
-				args.opts = append(args.opts, WithCarOrder(v))
-			}
+			args.opts = append(args.opts, WithCarOrder(orders))
 		}
 	}
 	if v, ok := rv[whereField].(*CarWhereInput); ok {
@@ -347,24 +359,30 @@ func newPermissionPaginateArgs(rv map[string]any) *permissionPaginateArgs {
 	}
 	if v, ok := rv[orderByField]; ok {
 		switch v := v.(type) {
-		case map[string]any:
-			var (
-				err1, err2 error
-				order      = &PermissionOrder{Field: &PermissionOrderField{}, Direction: entgql.OrderDirectionAsc}
-			)
-			if d, ok := v[directionField]; ok {
-				err1 = order.Direction.UnmarshalGQL(d)
+		case []*PermissionOrder:
+			args.opts = append(args.opts, WithPermissionOrder(v))
+		case []any:
+			var orders []*PermissionOrder
+			for i := range v {
+				mv, ok := v[i].(map[string]any)
+				if !ok {
+					continue
+				}
+				var (
+					err1, err2 error
+					order      = &PermissionOrder{Field: &PermissionOrderField{}, Direction: entgql.OrderDirectionAsc}
+				)
+				if d, ok := mv[directionField]; ok {
+					err1 = order.Direction.UnmarshalGQL(d)
+				}
+				if f, ok := mv[fieldField]; ok {
+					err2 = order.Field.UnmarshalGQL(f)
+				}
+				if err1 == nil && err2 == nil {
+					orders = append(orders, order)
+				}
 			}
-			if f, ok := v[fieldField]; ok {
-				err2 = order.Field.UnmarshalGQL(f)
-			}
-			if err1 == nil && err2 == nil {
-				args.opts = append(args.opts, WithPermissionOrder(order))
-			}
-		case *PermissionOrder:
-			if v != nil {
-				args.opts = append(args.opts, WithPermissionOrder(v))
-			}
+			args.opts = append(args.opts, WithPermissionOrder(orders))
 		}
 	}
 	if v, ok := rv[whereField].(*PermissionWhereInput); ok {
@@ -498,24 +516,30 @@ func newPoliceStationPaginateArgs(rv map[string]any) *policestationPaginateArgs 
 	}
 	if v, ok := rv[orderByField]; ok {
 		switch v := v.(type) {
-		case map[string]any:
-			var (
-				err1, err2 error
-				order      = &PoliceStationOrder{Field: &PoliceStationOrderField{}, Direction: entgql.OrderDirectionAsc}
-			)
-			if d, ok := v[directionField]; ok {
-				err1 = order.Direction.UnmarshalGQL(d)
+		case []*PoliceStationOrder:
+			args.opts = append(args.opts, WithPoliceStationOrder(v))
+		case []any:
+			var orders []*PoliceStationOrder
+			for i := range v {
+				mv, ok := v[i].(map[string]any)
+				if !ok {
+					continue
+				}
+				var (
+					err1, err2 error
+					order      = &PoliceStationOrder{Field: &PoliceStationOrderField{}, Direction: entgql.OrderDirectionAsc}
+				)
+				if d, ok := mv[directionField]; ok {
+					err1 = order.Direction.UnmarshalGQL(d)
+				}
+				if f, ok := mv[fieldField]; ok {
+					err2 = order.Field.UnmarshalGQL(f)
+				}
+				if err1 == nil && err2 == nil {
+					orders = append(orders, order)
+				}
 			}
-			if f, ok := v[fieldField]; ok {
-				err2 = order.Field.UnmarshalGQL(f)
-			}
-			if err1 == nil && err2 == nil {
-				args.opts = append(args.opts, WithPoliceStationOrder(order))
-			}
-		case *PoliceStationOrder:
-			if v != nil {
-				args.opts = append(args.opts, WithPoliceStationOrder(v))
-			}
+			args.opts = append(args.opts, WithPoliceStationOrder(orders))
 		}
 	}
 	if v, ok := rv[whereField].(*PoliceStationWhereInput); ok {
@@ -623,24 +647,30 @@ func newRolePaginateArgs(rv map[string]any) *rolePaginateArgs {
 	}
 	if v, ok := rv[orderByField]; ok {
 		switch v := v.(type) {
-		case map[string]any:
-			var (
-				err1, err2 error
-				order      = &RoleOrder{Field: &RoleOrderField{}, Direction: entgql.OrderDirectionAsc}
-			)
-			if d, ok := v[directionField]; ok {
-				err1 = order.Direction.UnmarshalGQL(d)
+		case []*RoleOrder:
+			args.opts = append(args.opts, WithRoleOrder(v))
+		case []any:
+			var orders []*RoleOrder
+			for i := range v {
+				mv, ok := v[i].(map[string]any)
+				if !ok {
+					continue
+				}
+				var (
+					err1, err2 error
+					order      = &RoleOrder{Field: &RoleOrderField{}, Direction: entgql.OrderDirectionAsc}
+				)
+				if d, ok := mv[directionField]; ok {
+					err1 = order.Direction.UnmarshalGQL(d)
+				}
+				if f, ok := mv[fieldField]; ok {
+					err2 = order.Field.UnmarshalGQL(f)
+				}
+				if err1 == nil && err2 == nil {
+					orders = append(orders, order)
+				}
 			}
-			if f, ok := v[fieldField]; ok {
-				err2 = order.Field.UnmarshalGQL(f)
-			}
-			if err1 == nil && err2 == nil {
-				args.opts = append(args.opts, WithRoleOrder(order))
-			}
-		case *RoleOrder:
-			if v != nil {
-				args.opts = append(args.opts, WithRoleOrder(v))
-			}
+			args.opts = append(args.opts, WithRoleOrder(orders))
 		}
 	}
 	if v, ok := rv[whereField].(*RoleWhereInput); ok {
@@ -757,24 +787,30 @@ func newUserPaginateArgs(rv map[string]any) *userPaginateArgs {
 	}
 	if v, ok := rv[orderByField]; ok {
 		switch v := v.(type) {
-		case map[string]any:
-			var (
-				err1, err2 error
-				order      = &UserOrder{Field: &UserOrderField{}, Direction: entgql.OrderDirectionAsc}
-			)
-			if d, ok := v[directionField]; ok {
-				err1 = order.Direction.UnmarshalGQL(d)
+		case []*UserOrder:
+			args.opts = append(args.opts, WithUserOrder(v))
+		case []any:
+			var orders []*UserOrder
+			for i := range v {
+				mv, ok := v[i].(map[string]any)
+				if !ok {
+					continue
+				}
+				var (
+					err1, err2 error
+					order      = &UserOrder{Field: &UserOrderField{}, Direction: entgql.OrderDirectionAsc}
+				)
+				if d, ok := mv[directionField]; ok {
+					err1 = order.Direction.UnmarshalGQL(d)
+				}
+				if f, ok := mv[fieldField]; ok {
+					err2 = order.Field.UnmarshalGQL(f)
+				}
+				if err1 == nil && err2 == nil {
+					orders = append(orders, order)
+				}
 			}
-			if f, ok := v[fieldField]; ok {
-				err2 = order.Field.UnmarshalGQL(f)
-			}
-			if err1 == nil && err2 == nil {
-				args.opts = append(args.opts, WithUserOrder(order))
-			}
-		case *UserOrder:
-			if v != nil {
-				args.opts = append(args.opts, WithUserOrder(v))
-			}
+			args.opts = append(args.opts, WithUserOrder(orders))
 		}
 	}
 	if v, ok := rv[whereField].(*UserWhereInput); ok {
@@ -936,24 +972,30 @@ func newVehicleDataPaginateArgs(rv map[string]any) *vehicledataPaginateArgs {
 	}
 	if v, ok := rv[orderByField]; ok {
 		switch v := v.(type) {
-		case map[string]any:
-			var (
-				err1, err2 error
-				order      = &VehicleDataOrder{Field: &VehicleDataOrderField{}, Direction: entgql.OrderDirectionAsc}
-			)
-			if d, ok := v[directionField]; ok {
-				err1 = order.Direction.UnmarshalGQL(d)
+		case []*VehicleDataOrder:
+			args.opts = append(args.opts, WithVehicleDataOrder(v))
+		case []any:
+			var orders []*VehicleDataOrder
+			for i := range v {
+				mv, ok := v[i].(map[string]any)
+				if !ok {
+					continue
+				}
+				var (
+					err1, err2 error
+					order      = &VehicleDataOrder{Field: &VehicleDataOrderField{}, Direction: entgql.OrderDirectionAsc}
+				)
+				if d, ok := mv[directionField]; ok {
+					err1 = order.Direction.UnmarshalGQL(d)
+				}
+				if f, ok := mv[fieldField]; ok {
+					err2 = order.Field.UnmarshalGQL(f)
+				}
+				if err1 == nil && err2 == nil {
+					orders = append(orders, order)
+				}
 			}
-			if f, ok := v[fieldField]; ok {
-				err2 = order.Field.UnmarshalGQL(f)
-			}
-			if err1 == nil && err2 == nil {
-				args.opts = append(args.opts, WithVehicleDataOrder(order))
-			}
-		case *VehicleDataOrder:
-			if v != nil {
-				args.opts = append(args.opts, WithVehicleDataOrder(v))
-			}
+			args.opts = append(args.opts, WithVehicleDataOrder(orders))
 		}
 	}
 	if v, ok := rv[whereField].(*VehicleDataWhereInput); ok {

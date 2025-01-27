@@ -3,6 +3,7 @@ package base
 import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
 	"time"
@@ -34,9 +35,11 @@ func (BMixin) Fields() []ent.Field {
 	}
 }
 
-//func (BMixin) Annotations() []schema.Annotation {
-//	return []schema.Annotation{
-//
-//		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
-//	}
-//}
+func (BMixin) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entgql.QueryField(),
+		entgql.RelayConnection(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
+		entgql.MultiOrder(),
+	}
+}

@@ -13,6 +13,7 @@ func main() {
 	ex, err := entgql.NewExtension(
 		entgql.WithWhereInputs(true),
 		entgql.WithWhereFilters(true),
+		entgql.WithRelaySpec(true),
 		entgql.WithSchemaGenerator(),
 		entgql.WithSchemaPath("./internal/ent/auto-schema.graphql"),
 		entgql.WithConfigPath("gqlgen.yml"),
@@ -24,7 +25,7 @@ func main() {
 	log.Printf("Generating Ent code")
 	opts := []entc.Option{
 		entc.Extensions(ex),
-		entc.FeatureNames("privacy", "schema/snapshot", "sql/upsert"),
+		entc.FeatureNames("privacy", "schema/snapshot", "sql/upsert", "entql", "namedges", "bidiedges", "sql/lock", "sql/upsert", "entgql"),
 	}
 
 	// Generate Ent code from the root schema directory (it will pick subdirectories automatically)
