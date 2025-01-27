@@ -69,5 +69,5 @@ func (u *User) Role(ctx context.Context) (*Role, error) {
 	if IsNotLoaded(err) {
 		result, err = u.QueryRole().Only(ctx)
 	}
-	return result, MaskNotFound(err)
+	return result, err
 }

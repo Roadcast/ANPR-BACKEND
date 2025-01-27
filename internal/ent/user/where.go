@@ -475,16 +475,6 @@ func RoleIDNotIn(vs ...int) predicate.User {
 	return predicate.User(sql.FieldNotIn(FieldRoleID, vs...))
 }
 
-// RoleIDIsNil applies the IsNil predicate on the "role_id" field.
-func RoleIDIsNil() predicate.User {
-	return predicate.User(sql.FieldIsNull(FieldRoleID))
-}
-
-// RoleIDNotNil applies the NotNil predicate on the "role_id" field.
-func RoleIDNotNil() predicate.User {
-	return predicate.User(sql.FieldNotNull(FieldRoleID))
-}
-
 // HasRole applies the HasEdge predicate on the "role" edge.
 func HasRole() predicate.User {
 	return predicate.User(func(s *sql.Selector) {

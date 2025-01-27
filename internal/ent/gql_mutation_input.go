@@ -459,7 +459,7 @@ type CreateUserInput struct {
 	Password  string
 	Phone     *string
 	Active    *bool
-	RoleID    *int
+	RoleID    int
 }
 
 // Mutate applies the CreateUserInput on the UserMutation builder.
@@ -479,9 +479,7 @@ func (i *CreateUserInput) Mutate(m *UserMutation) {
 	if v := i.Active; v != nil {
 		m.SetActive(*v)
 	}
-	if v := i.RoleID; v != nil {
-		m.SetRoleID(*v)
-	}
+	m.SetRoleID(i.RoleID)
 }
 
 // SetInput applies the change-set in the CreateUserInput on the UserCreate builder.
@@ -499,7 +497,6 @@ type UpdateUserInput struct {
 	ClearPhone bool
 	Phone      *string
 	Active     *bool
-	ClearRole  bool
 	RoleID     *int
 }
 
@@ -525,9 +522,6 @@ func (i *UpdateUserInput) Mutate(m *UserMutation) {
 	}
 	if v := i.Active; v != nil {
 		m.SetActive(*v)
-	}
-	if i.ClearRole {
-		m.ClearRole()
 	}
 	if v := i.RoleID; v != nil {
 		m.SetRoleID(*v)

@@ -3939,22 +3939,9 @@ func (m *UserMutation) OldRoleID(ctx context.Context) (v int, err error) {
 	return oldValue.RoleID, nil
 }
 
-// ClearRoleID clears the value of the "role_id" field.
-func (m *UserMutation) ClearRoleID() {
-	m.role = nil
-	m.clearedFields[user.FieldRoleID] = struct{}{}
-}
-
-// RoleIDCleared returns if the "role_id" field was cleared in this mutation.
-func (m *UserMutation) RoleIDCleared() bool {
-	_, ok := m.clearedFields[user.FieldRoleID]
-	return ok
-}
-
 // ResetRoleID resets all changes to the "role_id" field.
 func (m *UserMutation) ResetRoleID() {
 	m.role = nil
-	delete(m.clearedFields, user.FieldRoleID)
 }
 
 // ClearRole clears the "role" edge to the Role entity.
@@ -3965,7 +3952,7 @@ func (m *UserMutation) ClearRole() {
 
 // RoleCleared reports if the "role" edge to the Role entity was cleared.
 func (m *UserMutation) RoleCleared() bool {
-	return m.RoleIDCleared() || m.clearedrole
+	return m.clearedrole
 }
 
 // RoleIDs returns the "role" edge IDs in the mutation.
@@ -4193,9 +4180,6 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldPhone) {
 		fields = append(fields, user.FieldPhone)
 	}
-	if m.FieldCleared(user.FieldRoleID) {
-		fields = append(fields, user.FieldRoleID)
-	}
 	return fields
 }
 
@@ -4212,9 +4196,6 @@ func (m *UserMutation) ClearField(name string) error {
 	switch name {
 	case user.FieldPhone:
 		m.ClearPhone()
-		return nil
-	case user.FieldRoleID:
-		m.ClearRoleID()
 		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)

@@ -1794,7 +1794,7 @@ input CreateUserInput {
   password: String!
   phone: String
   active: Boolean
-  roleID: ID
+  roleID: ID!
 }
 """
 CreateVehicleDataInput is used for create VehicleData object.
@@ -2679,7 +2679,6 @@ input UpdateUserInput {
   clearPhone: Boolean
   active: Boolean
   roleID: ID
-  clearRole: Boolean
 }
 """
 UpdateVehicleDataInput is used for update VehicleData object.
@@ -2783,8 +2782,8 @@ type User implements Node {
   email: String!
   phone: String
   active: Boolean!
-  roleID: ID
-  role: Role
+  roleID: ID!
+  role: Role!
 }
 """
 A connection to a list of items.
@@ -2940,8 +2939,6 @@ input UserWhereInput {
   roleIDNEQ: ID
   roleIDIn: [ID!]
   roleIDNotIn: [ID!]
-  roleIDIsNil: Boolean
-  roleIDNotNil: Boolean
   """
   role edge predicates
   """
@@ -8921,11 +8918,14 @@ func (ec *executionContext) _User_roleID(ctx context.Context, field graphql.Coll
 	})
 
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalOID2int(ctx, field.Selections, res)
+	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_roleID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8959,11 +8959,14 @@ func (ec *executionContext) _User_role(ctx context.Context, field graphql.Collec
 	})
 
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(*ent.Role)
 	fc.Result = res
-	return ec.marshalORole2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐRole(ctx, field.Selections, res)
+	return ec.marshalNRole2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐRole(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_role(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -13533,7 +13536,7 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 			it.Active = data
 		case "roleID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleID"))
-			data, err := ec.unmarshalOID2ᚖint(ctx, v)
+			data, err := ec.unmarshalNID2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -15406,7 +15409,7 @@ func (ec *executionContext) unmarshalInputUpdateUserInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "name", "email", "password", "phone", "clearPhone", "active", "roleID", "clearRole"}
+	fieldsInOrder := [...]string{"updatedAt", "name", "email", "password", "phone", "clearPhone", "active", "roleID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -15469,13 +15472,6 @@ func (ec *executionContext) unmarshalInputUpdateUserInput(ctx context.Context, o
 				return it, err
 			}
 			it.RoleID = data
-		case "clearRole":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearRole"))
-			data, err := ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.ClearRole = data
 		}
 	}
 
@@ -15806,7 +15802,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "phone", "phoneNEQ", "phoneIn", "phoneNotIn", "phoneGT", "phoneGTE", "phoneLT", "phoneLTE", "phoneContains", "phoneHasPrefix", "phoneHasSuffix", "phoneIsNil", "phoneNotNil", "phoneEqualFold", "phoneContainsFold", "active", "activeNEQ", "roleID", "roleIDNEQ", "roleIDIn", "roleIDNotIn", "roleIDIsNil", "roleIDNotNil", "hasRole", "hasRoleWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "phone", "phoneNEQ", "phoneIn", "phoneNotIn", "phoneGT", "phoneGTE", "phoneLT", "phoneLTE", "phoneContains", "phoneHasPrefix", "phoneHasSuffix", "phoneIsNil", "phoneNotNil", "phoneEqualFold", "phoneContainsFold", "active", "activeNEQ", "roleID", "roleIDNEQ", "roleIDIn", "roleIDNotIn", "hasRole", "hasRoleWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -16331,20 +16327,6 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 				return it, err
 			}
 			it.RoleIDNotIn = data
-		case "roleIDIsNil":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleIDIsNil"))
-			data, err := ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.RoleIDIsNil = data
-		case "roleIDNotNil":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleIDNotNil"))
-			data, err := ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.RoleIDNotNil = data
 		case "hasRole":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasRole"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -19325,16 +19307,22 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "roleID":
 			out.Values[i] = ec._User_roleID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "role":
 			field := field
 
-			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._User_role(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
 				return res
 			}
 
@@ -20347,6 +20335,16 @@ func (ec *executionContext) marshalNRefreshTokenResponse2ᚖgoᚑentᚑproject�
 	return ec._RefreshTokenResponse(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNRole2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐRole(ctx context.Context, sel ast.SelectionSet, v *ent.Role) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Role(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNRoleConnection2goᚑentᚑprojectᚋinternalᚋentᚐRoleConnection(ctx context.Context, sel ast.SelectionSet, v ent.RoleConnection) graphql.Marshaler {
 	return ec._RoleConnection(ctx, sel, &v)
 }
@@ -21010,16 +21008,6 @@ func (ec *executionContext) marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCu
 		return graphql.Null
 	}
 	return v
-}
-
-func (ec *executionContext) unmarshalOID2int(ctx context.Context, v any) (int, error) {
-	res, err := graphql.UnmarshalInt(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOID2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
-	res := graphql.MarshalInt(v)
-	return res
 }
 
 func (ec *executionContext) unmarshalOID2ᚕintᚄ(ctx context.Context, v any) ([]int, error) {

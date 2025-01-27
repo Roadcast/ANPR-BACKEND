@@ -117,7 +117,7 @@ var (
 		{Name: "phone", Type: field.TypeString, Nullable: true},
 		{Name: "active", Type: field.TypeBool, Default: true},
 		{Name: "police_station_users", Type: field.TypeInt, Nullable: true},
-		{Name: "role_id", Type: field.TypeInt, Nullable: true},
+		{Name: "role_id", Type: field.TypeInt},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -135,7 +135,7 @@ var (
 				Symbol:     "users_roles_users",
 				Columns:    []*schema.Column{UsersColumns[9]},
 				RefColumns: []*schema.Column{RolesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}

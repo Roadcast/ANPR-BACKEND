@@ -408,7 +408,7 @@ input CreateUserInput {
   password: String!
   phone: String
   active: Boolean
-  roleID: ID
+  roleID: ID!
 }
 """
 CreateVehicleDataInput is used for create VehicleData object.
@@ -1293,7 +1293,6 @@ input UpdateUserInput {
   clearPhone: Boolean
   active: Boolean
   roleID: ID
-  clearRole: Boolean
 }
 """
 UpdateVehicleDataInput is used for update VehicleData object.
@@ -1397,8 +1396,8 @@ type User implements Node {
   email: String!
   phone: String
   active: Boolean!
-  roleID: ID
-  role: Role
+  roleID: ID!
+  role: Role!
 }
 """
 A connection to a list of items.
@@ -1554,8 +1553,6 @@ input UserWhereInput {
   roleIDNEQ: ID
   roleIDIn: [ID!]
   roleIDNotIn: [ID!]
-  roleIDIsNil: Boolean
-  roleIDNotNil: Boolean
   """
   role edge predicates
   """

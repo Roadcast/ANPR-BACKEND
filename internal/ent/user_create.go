@@ -103,14 +103,6 @@ func (uc *UserCreate) SetRoleID(i int) *UserCreate {
 	return uc
 }
 
-// SetNillableRoleID sets the "role_id" field if the given value is not nil.
-func (uc *UserCreate) SetNillableRoleID(i *int) *UserCreate {
-	if i != nil {
-		uc.SetRoleID(*i)
-	}
-	return uc
-}
-
 // SetID sets the "id" field.
 func (uc *UserCreate) SetID(i int) *UserCreate {
 	uc.mutation.SetID(i)
@@ -214,6 +206,12 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.Active(); !ok {
 		return &ValidationError{Name: "active", err: errors.New(`ent: missing required field "User.active"`)}
+	}
+	if _, ok := uc.mutation.RoleID(); !ok {
+		return &ValidationError{Name: "role_id", err: errors.New(`ent: missing required field "User.role_id"`)}
+	}
+	if len(uc.mutation.RoleIDs()) == 0 {
+		return &ValidationError{Name: "role", err: errors.New(`ent: missing required edge "User.role"`)}
 	}
 	return nil
 }
@@ -435,12 +433,6 @@ func (u *UserUpsert) UpdateRoleID() *UserUpsert {
 	return u
 }
 
-// ClearRoleID clears the value of the "role_id" field.
-func (u *UserUpsert) ClearRoleID() *UserUpsert {
-	u.SetNull(user.FieldRoleID)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -594,13 +586,6 @@ func (u *UserUpsertOne) SetRoleID(v int) *UserUpsertOne {
 func (u *UserUpsertOne) UpdateRoleID() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateRoleID()
-	})
-}
-
-// ClearRoleID clears the value of the "role_id" field.
-func (u *UserUpsertOne) ClearRoleID() *UserUpsertOne {
-	return u.Update(func(s *UserUpsert) {
-		s.ClearRoleID()
 	})
 }
 
@@ -923,13 +908,6 @@ func (u *UserUpsertBulk) SetRoleID(v int) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdateRoleID() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateRoleID()
-	})
-}
-
-// ClearRoleID clears the value of the "role_id" field.
-func (u *UserUpsertBulk) ClearRoleID() *UserUpsertBulk {
-	return u.Update(func(s *UserUpsert) {
-		s.ClearRoleID()
 	})
 }
 

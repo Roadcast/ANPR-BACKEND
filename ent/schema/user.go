@@ -48,7 +48,7 @@ func (User) Fields() []ent.Field {
 			// Expose this field in GraphQL
 			),
 		field.Bool("active").Default(true).Annotations(),
-		field.Int("role_id").Optional().Annotations(),
+		field.Int("role_id").Annotations(),
 	}
 }
 
@@ -58,7 +58,7 @@ func (User) Edges() []ent.Edge {
 		edge.From("role", Role.Type).
 			Ref("users").
 			Field("role_id").
-			Unique().
+			Unique().Required().
 			Annotations(
 			// Binds this edge to GraphQL
 

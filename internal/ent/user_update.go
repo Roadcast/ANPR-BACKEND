@@ -125,12 +125,6 @@ func (uu *UserUpdate) SetNillableRoleID(i *int) *UserUpdate {
 	return uu
 }
 
-// ClearRoleID clears the value of the "role_id" field.
-func (uu *UserUpdate) ClearRoleID() *UserUpdate {
-	uu.mutation.ClearRoleID()
-	return uu
-}
-
 // SetRole sets the "role" edge to the Role entity.
 func (uu *UserUpdate) SetRole(r *Role) *UserUpdate {
 	return uu.SetRoleID(r.ID)
@@ -205,6 +199,9 @@ func (uu *UserUpdate) check() error {
 		if err := user.PasswordValidator(v); err != nil {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
 		}
+	}
+	if uu.mutation.RoleCleared() && len(uu.mutation.RoleIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "User.role"`)
 	}
 	return nil
 }
@@ -387,12 +384,6 @@ func (uuo *UserUpdateOne) SetNillableRoleID(i *int) *UserUpdateOne {
 	return uuo
 }
 
-// ClearRoleID clears the value of the "role_id" field.
-func (uuo *UserUpdateOne) ClearRoleID() *UserUpdateOne {
-	uuo.mutation.ClearRoleID()
-	return uuo
-}
-
 // SetRole sets the "role" edge to the Role entity.
 func (uuo *UserUpdateOne) SetRole(r *Role) *UserUpdateOne {
 	return uuo.SetRoleID(r.ID)
@@ -480,6 +471,9 @@ func (uuo *UserUpdateOne) check() error {
 		if err := user.PasswordValidator(v); err != nil {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
 		}
+	}
+	if uuo.mutation.RoleCleared() && len(uuo.mutation.RoleIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "User.role"`)
 	}
 	return nil
 }

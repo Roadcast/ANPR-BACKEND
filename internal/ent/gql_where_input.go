@@ -1922,12 +1922,10 @@ type UserWhereInput struct {
 	ActiveNEQ *bool `json:"activeNEQ,omitempty"`
 
 	// "role_id" field predicates.
-	RoleID       *int  `json:"roleID,omitempty"`
-	RoleIDNEQ    *int  `json:"roleIDNEQ,omitempty"`
-	RoleIDIn     []int `json:"roleIDIn,omitempty"`
-	RoleIDNotIn  []int `json:"roleIDNotIn,omitempty"`
-	RoleIDIsNil  bool  `json:"roleIDIsNil,omitempty"`
-	RoleIDNotNil bool  `json:"roleIDNotNil,omitempty"`
+	RoleID      *int  `json:"roleID,omitempty"`
+	RoleIDNEQ   *int  `json:"roleIDNEQ,omitempty"`
+	RoleIDIn    []int `json:"roleIDIn,omitempty"`
+	RoleIDNotIn []int `json:"roleIDNotIn,omitempty"`
 
 	// "role" edge predicates.
 	HasRole     *bool             `json:"hasRole,omitempty"`
@@ -2256,12 +2254,6 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	}
 	if len(i.RoleIDNotIn) > 0 {
 		predicates = append(predicates, user.RoleIDNotIn(i.RoleIDNotIn...))
-	}
-	if i.RoleIDIsNil {
-		predicates = append(predicates, user.RoleIDIsNil())
-	}
-	if i.RoleIDNotNil {
-		predicates = append(predicates, user.RoleIDNotNil())
 	}
 
 	if i.HasRole != nil {
