@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -16,22 +17,29 @@ type BMixin struct {
 func (BMixin) Fields() []ent.Field {
 	return []ent.Field{
 		// Primary key
-		field.Int("id").
+		field.UUID("id", uuid.UUID{}).
+			Default(uuid.New).
 			Unique().
 			Immutable().
-			Annotations(entgql.OrderField("ID")),
+			Annotations(entgql.Type("ID")),
 
 		// CreatedAt timestamp
 		field.Time("created_at").
 			Default(time.Now).
+			SchemaType(map[string]string{
+				"postgres": "timestamp with time zone", // PostgreSQL type
+			}).
 			Immutable().
-			Annotations(),
+			Annotations(entgql.OrderField("CreatedAt")),
 
 		// UpdatedAt timestamp
 		field.Time("updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now).
-			Annotations(),
+			SchemaType(map[string]string{
+				"postgres": "timestamp with time zone", // PostgreSQL type
+			}).
+			Annotations(entgql.OrderField("UpdatedAt")),
 	}
 }
 

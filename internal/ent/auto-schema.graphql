@@ -57,7 +57,8 @@ input CameraOrder {
 Properties by which Camera connections can be ordered.
 """
 enum CameraOrderField {
-  ID
+  CreatedAt
+  UpdatedAt
   NAME
 }
 """
@@ -212,7 +213,8 @@ input CarOrder {
 Properties by which Car connections can be ordered.
 """
 enum CarOrderField {
-  ID
+  CreatedAt
+  UpdatedAt
 }
 """
 CarWhereInput is used for filtering Car objects.
@@ -408,8 +410,8 @@ input CreateUserInput {
   password: String!
   phone: String
   active: Boolean
-  roleID: Int!
-  policeStationID: Int!
+  roleID: ID!
+  policeStationID: ID!
   roleIDs: [ID!]!
   policeStationIDs: [ID!]!
 }
@@ -600,7 +602,8 @@ input PermissionOrder {
 Properties by which Permission connections can be ordered.
 """
 enum PermissionOrderField {
-  ID
+  CreatedAt
+  UpdatedAt
 }
 """
 PermissionWhereInput is used for filtering Permission objects.
@@ -739,7 +742,8 @@ input PoliceStationOrder {
 Properties by which PoliceStation connections can be ordered.
 """
 enum PoliceStationOrderField {
-  ID
+  CreatedAt
+  UpdatedAt
   NAME
 }
 """
@@ -1139,7 +1143,8 @@ input RoleOrder {
 Properties by which Role connections can be ordered.
 """
 enum RoleOrderField {
-  ID
+  CreatedAt
+  UpdatedAt
 }
 """
 RoleWhereInput is used for filtering Role objects.
@@ -1295,8 +1300,8 @@ input UpdateUserInput {
   phone: String
   clearPhone: Boolean
   active: Boolean
-  roleID: Int
-  policeStationID: Int
+  roleID: ID
+  policeStationID: ID
   addRoleIDs: [ID!]
   removeRoleIDs: [ID!]
   addPoliceStationIDs: [ID!]
@@ -1404,8 +1409,8 @@ type User implements Node {
   email: String!
   phone: String
   active: Boolean!
-  roleID: Int!
-  policeStationID: Int!
+  roleID: ID!
+  policeStationID: ID!
   role: [Role!]!
   policeStation: [PoliceStation!]!
 }
@@ -1456,7 +1461,8 @@ input UserOrder {
 Properties by which User connections can be ordered.
 """
 enum UserOrderField {
-  ID
+  CreatedAt
+  UpdatedAt
   NAME
   EMAIL
 }
@@ -1559,25 +1565,25 @@ input UserWhereInput {
   """
   role_id field predicates
   """
-  roleID: Int
-  roleIDNEQ: Int
-  roleIDIn: [Int!]
-  roleIDNotIn: [Int!]
-  roleIDGT: Int
-  roleIDGTE: Int
-  roleIDLT: Int
-  roleIDLTE: Int
+  roleID: ID
+  roleIDNEQ: ID
+  roleIDIn: [ID!]
+  roleIDNotIn: [ID!]
+  roleIDGT: ID
+  roleIDGTE: ID
+  roleIDLT: ID
+  roleIDLTE: ID
   """
   police_station_id field predicates
   """
-  policeStationID: Int
-  policeStationIDNEQ: Int
-  policeStationIDIn: [Int!]
-  policeStationIDNotIn: [Int!]
-  policeStationIDGT: Int
-  policeStationIDGTE: Int
-  policeStationIDLT: Int
-  policeStationIDLTE: Int
+  policeStationID: ID
+  policeStationIDNEQ: ID
+  policeStationIDIn: [ID!]
+  policeStationIDNotIn: [ID!]
+  policeStationIDGT: ID
+  policeStationIDGTE: ID
+  policeStationIDLT: ID
+  policeStationIDLTE: ID
   """
   role edge predicates
   """
@@ -1709,7 +1715,8 @@ input VehicleDataOrder {
 Properties by which VehicleData connections can be ordered.
 """
 enum VehicleDataOrderField {
-  ID
+  CreatedAt
+  UpdatedAt
 }
 """
 VehicleDataWhereInput is used for filtering VehicleData objects.

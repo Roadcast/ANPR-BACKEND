@@ -14,6 +14,8 @@ import (
 	"go-ent-project/internal/ent/user"
 	"go-ent-project/internal/ent/vehicledata"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // CameraWhereInput represents a where input for filtering Camera queries.
@@ -24,14 +26,14 @@ type CameraWhereInput struct {
 	And        []*CameraWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *int  `json:"id,omitempty"`
-	IDNEQ   *int  `json:"idNEQ,omitempty"`
-	IDIn    []int `json:"idIn,omitempty"`
-	IDNotIn []int `json:"idNotIn,omitempty"`
-	IDGT    *int  `json:"idGT,omitempty"`
-	IDGTE   *int  `json:"idGTE,omitempty"`
-	IDLT    *int  `json:"idLT,omitempty"`
-	IDLTE   *int  `json:"idLTE,omitempty"`
+	ID      *uuid.UUID  `json:"id,omitempty"`
+	IDNEQ   *uuid.UUID  `json:"idNEQ,omitempty"`
+	IDIn    []uuid.UUID `json:"idIn,omitempty"`
+	IDNotIn []uuid.UUID `json:"idNotIn,omitempty"`
+	IDGT    *uuid.UUID  `json:"idGT,omitempty"`
+	IDGTE   *uuid.UUID  `json:"idGTE,omitempty"`
+	IDLT    *uuid.UUID  `json:"idLT,omitempty"`
+	IDLTE   *uuid.UUID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -388,14 +390,14 @@ type CarWhereInput struct {
 	And        []*CarWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *int  `json:"id,omitempty"`
-	IDNEQ   *int  `json:"idNEQ,omitempty"`
-	IDIn    []int `json:"idIn,omitempty"`
-	IDNotIn []int `json:"idNotIn,omitempty"`
-	IDGT    *int  `json:"idGT,omitempty"`
-	IDGTE   *int  `json:"idGTE,omitempty"`
-	IDLT    *int  `json:"idLT,omitempty"`
-	IDLTE   *int  `json:"idLTE,omitempty"`
+	ID      *uuid.UUID  `json:"id,omitempty"`
+	IDNEQ   *uuid.UUID  `json:"idNEQ,omitempty"`
+	IDIn    []uuid.UUID `json:"idIn,omitempty"`
+	IDNotIn []uuid.UUID `json:"idNotIn,omitempty"`
+	IDGT    *uuid.UUID  `json:"idGT,omitempty"`
+	IDGTE   *uuid.UUID  `json:"idGTE,omitempty"`
+	IDLT    *uuid.UUID  `json:"idLT,omitempty"`
+	IDLTE   *uuid.UUID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -830,14 +832,14 @@ type PermissionWhereInput struct {
 	And        []*PermissionWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *int  `json:"id,omitempty"`
-	IDNEQ   *int  `json:"idNEQ,omitempty"`
-	IDIn    []int `json:"idIn,omitempty"`
-	IDNotIn []int `json:"idNotIn,omitempty"`
-	IDGT    *int  `json:"idGT,omitempty"`
-	IDGTE   *int  `json:"idGTE,omitempty"`
-	IDLT    *int  `json:"idLT,omitempty"`
-	IDLTE   *int  `json:"idLTE,omitempty"`
+	ID      *uuid.UUID  `json:"id,omitempty"`
+	IDNEQ   *uuid.UUID  `json:"idNEQ,omitempty"`
+	IDIn    []uuid.UUID `json:"idIn,omitempty"`
+	IDNotIn []uuid.UUID `json:"idNotIn,omitempty"`
+	IDGT    *uuid.UUID  `json:"idGT,omitempty"`
+	IDGTE   *uuid.UUID  `json:"idGTE,omitempty"`
+	IDLT    *uuid.UUID  `json:"idLT,omitempty"`
+	IDLTE   *uuid.UUID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -1116,14 +1118,14 @@ type PoliceStationWhereInput struct {
 	And        []*PoliceStationWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *int  `json:"id,omitempty"`
-	IDNEQ   *int  `json:"idNEQ,omitempty"`
-	IDIn    []int `json:"idIn,omitempty"`
-	IDNotIn []int `json:"idNotIn,omitempty"`
-	IDGT    *int  `json:"idGT,omitempty"`
-	IDGTE   *int  `json:"idGTE,omitempty"`
-	IDLT    *int  `json:"idLT,omitempty"`
-	IDLTE   *int  `json:"idLTE,omitempty"`
+	ID      *uuid.UUID  `json:"id,omitempty"`
+	IDNEQ   *uuid.UUID  `json:"idNEQ,omitempty"`
+	IDIn    []uuid.UUID `json:"idIn,omitempty"`
+	IDNotIn []uuid.UUID `json:"idNotIn,omitempty"`
+	IDGT    *uuid.UUID  `json:"idGT,omitempty"`
+	IDGTE   *uuid.UUID  `json:"idGTE,omitempty"`
+	IDLT    *uuid.UUID  `json:"idLT,omitempty"`
+	IDLTE   *uuid.UUID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -1536,14 +1538,14 @@ type RoleWhereInput struct {
 	And        []*RoleWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *int  `json:"id,omitempty"`
-	IDNEQ   *int  `json:"idNEQ,omitempty"`
-	IDIn    []int `json:"idIn,omitempty"`
-	IDNotIn []int `json:"idNotIn,omitempty"`
-	IDGT    *int  `json:"idGT,omitempty"`
-	IDGTE   *int  `json:"idGTE,omitempty"`
-	IDLT    *int  `json:"idLT,omitempty"`
-	IDLTE   *int  `json:"idLTE,omitempty"`
+	ID      *uuid.UUID  `json:"id,omitempty"`
+	IDNEQ   *uuid.UUID  `json:"idNEQ,omitempty"`
+	IDIn    []uuid.UUID `json:"idIn,omitempty"`
+	IDNotIn []uuid.UUID `json:"idNotIn,omitempty"`
+	IDGT    *uuid.UUID  `json:"idGT,omitempty"`
+	IDGTE   *uuid.UUID  `json:"idGTE,omitempty"`
+	IDLT    *uuid.UUID  `json:"idLT,omitempty"`
+	IDLTE   *uuid.UUID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -1826,14 +1828,14 @@ type UserWhereInput struct {
 	And        []*UserWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *int  `json:"id,omitempty"`
-	IDNEQ   *int  `json:"idNEQ,omitempty"`
-	IDIn    []int `json:"idIn,omitempty"`
-	IDNotIn []int `json:"idNotIn,omitempty"`
-	IDGT    *int  `json:"idGT,omitempty"`
-	IDGTE   *int  `json:"idGTE,omitempty"`
-	IDLT    *int  `json:"idLT,omitempty"`
-	IDLTE   *int  `json:"idLTE,omitempty"`
+	ID      *uuid.UUID  `json:"id,omitempty"`
+	IDNEQ   *uuid.UUID  `json:"idNEQ,omitempty"`
+	IDIn    []uuid.UUID `json:"idIn,omitempty"`
+	IDNotIn []uuid.UUID `json:"idNotIn,omitempty"`
+	IDGT    *uuid.UUID  `json:"idGT,omitempty"`
+	IDGTE   *uuid.UUID  `json:"idGTE,omitempty"`
+	IDLT    *uuid.UUID  `json:"idLT,omitempty"`
+	IDLTE   *uuid.UUID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -1922,24 +1924,24 @@ type UserWhereInput struct {
 	ActiveNEQ *bool `json:"activeNEQ,omitempty"`
 
 	// "role_id" field predicates.
-	RoleID      *int  `json:"roleID,omitempty"`
-	RoleIDNEQ   *int  `json:"roleIDNEQ,omitempty"`
-	RoleIDIn    []int `json:"roleIDIn,omitempty"`
-	RoleIDNotIn []int `json:"roleIDNotIn,omitempty"`
-	RoleIDGT    *int  `json:"roleIDGT,omitempty"`
-	RoleIDGTE   *int  `json:"roleIDGTE,omitempty"`
-	RoleIDLT    *int  `json:"roleIDLT,omitempty"`
-	RoleIDLTE   *int  `json:"roleIDLTE,omitempty"`
+	RoleID      *uuid.UUID  `json:"roleID,omitempty"`
+	RoleIDNEQ   *uuid.UUID  `json:"roleIDNEQ,omitempty"`
+	RoleIDIn    []uuid.UUID `json:"roleIDIn,omitempty"`
+	RoleIDNotIn []uuid.UUID `json:"roleIDNotIn,omitempty"`
+	RoleIDGT    *uuid.UUID  `json:"roleIDGT,omitempty"`
+	RoleIDGTE   *uuid.UUID  `json:"roleIDGTE,omitempty"`
+	RoleIDLT    *uuid.UUID  `json:"roleIDLT,omitempty"`
+	RoleIDLTE   *uuid.UUID  `json:"roleIDLTE,omitempty"`
 
 	// "police_station_id" field predicates.
-	PoliceStationID      *int  `json:"policeStationID,omitempty"`
-	PoliceStationIDNEQ   *int  `json:"policeStationIDNEQ,omitempty"`
-	PoliceStationIDIn    []int `json:"policeStationIDIn,omitempty"`
-	PoliceStationIDNotIn []int `json:"policeStationIDNotIn,omitempty"`
-	PoliceStationIDGT    *int  `json:"policeStationIDGT,omitempty"`
-	PoliceStationIDGTE   *int  `json:"policeStationIDGTE,omitempty"`
-	PoliceStationIDLT    *int  `json:"policeStationIDLT,omitempty"`
-	PoliceStationIDLTE   *int  `json:"policeStationIDLTE,omitempty"`
+	PoliceStationID      *uuid.UUID  `json:"policeStationID,omitempty"`
+	PoliceStationIDNEQ   *uuid.UUID  `json:"policeStationIDNEQ,omitempty"`
+	PoliceStationIDIn    []uuid.UUID `json:"policeStationIDIn,omitempty"`
+	PoliceStationIDNotIn []uuid.UUID `json:"policeStationIDNotIn,omitempty"`
+	PoliceStationIDGT    *uuid.UUID  `json:"policeStationIDGT,omitempty"`
+	PoliceStationIDGTE   *uuid.UUID  `json:"policeStationIDGTE,omitempty"`
+	PoliceStationIDLT    *uuid.UUID  `json:"policeStationIDLT,omitempty"`
+	PoliceStationIDLTE   *uuid.UUID  `json:"policeStationIDLTE,omitempty"`
 
 	// "role" edge predicates.
 	HasRole     *bool             `json:"hasRole,omitempty"`
@@ -2364,14 +2366,14 @@ type VehicleDataWhereInput struct {
 	And        []*VehicleDataWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *int  `json:"id,omitempty"`
-	IDNEQ   *int  `json:"idNEQ,omitempty"`
-	IDIn    []int `json:"idIn,omitempty"`
-	IDNotIn []int `json:"idNotIn,omitempty"`
-	IDGT    *int  `json:"idGT,omitempty"`
-	IDGTE   *int  `json:"idGTE,omitempty"`
-	IDLT    *int  `json:"idLT,omitempty"`
-	IDLTE   *int  `json:"idLTE,omitempty"`
+	ID      *uuid.UUID  `json:"id,omitempty"`
+	IDNEQ   *uuid.UUID  `json:"idNEQ,omitempty"`
+	IDIn    []uuid.UUID `json:"idIn,omitempty"`
+	IDNotIn []uuid.UUID `json:"idNotIn,omitempty"`
+	IDGT    *uuid.UUID  `json:"idGT,omitempty"`
+	IDGTE   *uuid.UUID  `json:"idGTE,omitempty"`
+	IDLT    *uuid.UUID  `json:"idLT,omitempty"`
+	IDLTE   *uuid.UUID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`

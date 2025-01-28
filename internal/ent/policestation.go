@@ -11,13 +11,14 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 )
 
 // PoliceStation is the model entity for the PoliceStation schema.
 type PoliceStation struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -33,7 +34,7 @@ type PoliceStation struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PoliceStationQuery when eager-loading is set.
 	Edges                         PoliceStationEdges `json:"edges"`
-	police_station_child_stations *int
+	police_station_child_stations *uuid.UUID
 	selectValues                  sql.SelectValues
 }
 
@@ -91,14 +92,14 @@ func (*PoliceStation) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case policestation.FieldLocation:
 			values[i] = new([]byte)
-		case policestation.FieldID:
-			values[i] = new(sql.NullInt64)
 		case policestation.FieldName, policestation.FieldCode, policestation.FieldIdentifier:
 			values[i] = new(sql.NullString)
 		case policestation.FieldCreatedAt, policestation.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case policestation.FieldID:
+			values[i] = new(uuid.UUID)
 		case policestation.ForeignKeys[0]: // police_station_child_stations
-			values[i] = new(sql.NullInt64)
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -115,11 +116,11 @@ func (ps *PoliceStation) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case policestation.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				ps.ID = *value
 			}
-			ps.ID = int(value.Int64)
 		case policestation.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -159,11 +160,11 @@ func (ps *PoliceStation) assignValues(columns []string, values []any) error {
 				ps.Identifier = value.String
 			}
 		case policestation.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field police_station_child_stations", value)
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field police_station_child_stations", values[i])
 			} else if value.Valid {
-				ps.police_station_child_stations = new(int)
-				*ps.police_station_child_stations = int(value.Int64)
+				ps.police_station_child_stations = new(uuid.UUID)
+				*ps.police_station_child_stations = *value.S.(*uuid.UUID)
 			}
 		default:
 			ps.selectValues.Set(columns[i], values[i])

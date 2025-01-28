@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // PoliceStationUpdate is the builder for updating PoliceStation entities.
@@ -90,14 +91,14 @@ func (psu *PoliceStationUpdate) SetNillableIdentifier(s *string) *PoliceStationU
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (psu *PoliceStationUpdate) AddUserIDs(ids ...int) *PoliceStationUpdate {
+func (psu *PoliceStationUpdate) AddUserIDs(ids ...uuid.UUID) *PoliceStationUpdate {
 	psu.mutation.AddUserIDs(ids...)
 	return psu
 }
 
 // AddUsers adds the "users" edges to the User entity.
 func (psu *PoliceStationUpdate) AddUsers(u ...*User) *PoliceStationUpdate {
-	ids := make([]int, len(u))
+	ids := make([]uuid.UUID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -105,13 +106,13 @@ func (psu *PoliceStationUpdate) AddUsers(u ...*User) *PoliceStationUpdate {
 }
 
 // SetParentStationID sets the "parent_station" edge to the PoliceStation entity by ID.
-func (psu *PoliceStationUpdate) SetParentStationID(id int) *PoliceStationUpdate {
+func (psu *PoliceStationUpdate) SetParentStationID(id uuid.UUID) *PoliceStationUpdate {
 	psu.mutation.SetParentStationID(id)
 	return psu
 }
 
 // SetNillableParentStationID sets the "parent_station" edge to the PoliceStation entity by ID if the given value is not nil.
-func (psu *PoliceStationUpdate) SetNillableParentStationID(id *int) *PoliceStationUpdate {
+func (psu *PoliceStationUpdate) SetNillableParentStationID(id *uuid.UUID) *PoliceStationUpdate {
 	if id != nil {
 		psu = psu.SetParentStationID(*id)
 	}
@@ -124,14 +125,14 @@ func (psu *PoliceStationUpdate) SetParentStation(p *PoliceStation) *PoliceStatio
 }
 
 // AddChildStationIDs adds the "child_stations" edge to the PoliceStation entity by IDs.
-func (psu *PoliceStationUpdate) AddChildStationIDs(ids ...int) *PoliceStationUpdate {
+func (psu *PoliceStationUpdate) AddChildStationIDs(ids ...uuid.UUID) *PoliceStationUpdate {
 	psu.mutation.AddChildStationIDs(ids...)
 	return psu
 }
 
 // AddChildStations adds the "child_stations" edges to the PoliceStation entity.
 func (psu *PoliceStationUpdate) AddChildStations(p ...*PoliceStation) *PoliceStationUpdate {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -150,14 +151,14 @@ func (psu *PoliceStationUpdate) ClearUsers() *PoliceStationUpdate {
 }
 
 // RemoveUserIDs removes the "users" edge to User entities by IDs.
-func (psu *PoliceStationUpdate) RemoveUserIDs(ids ...int) *PoliceStationUpdate {
+func (psu *PoliceStationUpdate) RemoveUserIDs(ids ...uuid.UUID) *PoliceStationUpdate {
 	psu.mutation.RemoveUserIDs(ids...)
 	return psu
 }
 
 // RemoveUsers removes "users" edges to User entities.
 func (psu *PoliceStationUpdate) RemoveUsers(u ...*User) *PoliceStationUpdate {
-	ids := make([]int, len(u))
+	ids := make([]uuid.UUID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -177,14 +178,14 @@ func (psu *PoliceStationUpdate) ClearChildStations() *PoliceStationUpdate {
 }
 
 // RemoveChildStationIDs removes the "child_stations" edge to PoliceStation entities by IDs.
-func (psu *PoliceStationUpdate) RemoveChildStationIDs(ids ...int) *PoliceStationUpdate {
+func (psu *PoliceStationUpdate) RemoveChildStationIDs(ids ...uuid.UUID) *PoliceStationUpdate {
 	psu.mutation.RemoveChildStationIDs(ids...)
 	return psu
 }
 
 // RemoveChildStations removes "child_stations" edges to PoliceStation entities.
 func (psu *PoliceStationUpdate) RemoveChildStations(p ...*PoliceStation) *PoliceStationUpdate {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -251,7 +252,7 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	if err := psu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(policestation.Table, policestation.Columns, sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(policestation.Table, policestation.Columns, sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID))
 	if ps := psu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -285,7 +286,7 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -298,7 +299,7 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -314,7 +315,7 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -330,7 +331,7 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Columns: []string{policestation.ParentStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -343,7 +344,7 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Columns: []string{policestation.ParentStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -359,7 +360,7 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Columns: []string{policestation.ChildStationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -372,7 +373,7 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Columns: []string{policestation.ChildStationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -388,7 +389,7 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Columns: []string{policestation.ChildStationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -477,14 +478,14 @@ func (psuo *PoliceStationUpdateOne) SetNillableIdentifier(s *string) *PoliceStat
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (psuo *PoliceStationUpdateOne) AddUserIDs(ids ...int) *PoliceStationUpdateOne {
+func (psuo *PoliceStationUpdateOne) AddUserIDs(ids ...uuid.UUID) *PoliceStationUpdateOne {
 	psuo.mutation.AddUserIDs(ids...)
 	return psuo
 }
 
 // AddUsers adds the "users" edges to the User entity.
 func (psuo *PoliceStationUpdateOne) AddUsers(u ...*User) *PoliceStationUpdateOne {
-	ids := make([]int, len(u))
+	ids := make([]uuid.UUID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -492,13 +493,13 @@ func (psuo *PoliceStationUpdateOne) AddUsers(u ...*User) *PoliceStationUpdateOne
 }
 
 // SetParentStationID sets the "parent_station" edge to the PoliceStation entity by ID.
-func (psuo *PoliceStationUpdateOne) SetParentStationID(id int) *PoliceStationUpdateOne {
+func (psuo *PoliceStationUpdateOne) SetParentStationID(id uuid.UUID) *PoliceStationUpdateOne {
 	psuo.mutation.SetParentStationID(id)
 	return psuo
 }
 
 // SetNillableParentStationID sets the "parent_station" edge to the PoliceStation entity by ID if the given value is not nil.
-func (psuo *PoliceStationUpdateOne) SetNillableParentStationID(id *int) *PoliceStationUpdateOne {
+func (psuo *PoliceStationUpdateOne) SetNillableParentStationID(id *uuid.UUID) *PoliceStationUpdateOne {
 	if id != nil {
 		psuo = psuo.SetParentStationID(*id)
 	}
@@ -511,14 +512,14 @@ func (psuo *PoliceStationUpdateOne) SetParentStation(p *PoliceStation) *PoliceSt
 }
 
 // AddChildStationIDs adds the "child_stations" edge to the PoliceStation entity by IDs.
-func (psuo *PoliceStationUpdateOne) AddChildStationIDs(ids ...int) *PoliceStationUpdateOne {
+func (psuo *PoliceStationUpdateOne) AddChildStationIDs(ids ...uuid.UUID) *PoliceStationUpdateOne {
 	psuo.mutation.AddChildStationIDs(ids...)
 	return psuo
 }
 
 // AddChildStations adds the "child_stations" edges to the PoliceStation entity.
 func (psuo *PoliceStationUpdateOne) AddChildStations(p ...*PoliceStation) *PoliceStationUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -537,14 +538,14 @@ func (psuo *PoliceStationUpdateOne) ClearUsers() *PoliceStationUpdateOne {
 }
 
 // RemoveUserIDs removes the "users" edge to User entities by IDs.
-func (psuo *PoliceStationUpdateOne) RemoveUserIDs(ids ...int) *PoliceStationUpdateOne {
+func (psuo *PoliceStationUpdateOne) RemoveUserIDs(ids ...uuid.UUID) *PoliceStationUpdateOne {
 	psuo.mutation.RemoveUserIDs(ids...)
 	return psuo
 }
 
 // RemoveUsers removes "users" edges to User entities.
 func (psuo *PoliceStationUpdateOne) RemoveUsers(u ...*User) *PoliceStationUpdateOne {
-	ids := make([]int, len(u))
+	ids := make([]uuid.UUID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -564,14 +565,14 @@ func (psuo *PoliceStationUpdateOne) ClearChildStations() *PoliceStationUpdateOne
 }
 
 // RemoveChildStationIDs removes the "child_stations" edge to PoliceStation entities by IDs.
-func (psuo *PoliceStationUpdateOne) RemoveChildStationIDs(ids ...int) *PoliceStationUpdateOne {
+func (psuo *PoliceStationUpdateOne) RemoveChildStationIDs(ids ...uuid.UUID) *PoliceStationUpdateOne {
 	psuo.mutation.RemoveChildStationIDs(ids...)
 	return psuo
 }
 
 // RemoveChildStations removes "child_stations" edges to PoliceStation entities.
 func (psuo *PoliceStationUpdateOne) RemoveChildStations(p ...*PoliceStation) *PoliceStationUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -651,7 +652,7 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 	if err := psuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(policestation.Table, policestation.Columns, sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(policestation.Table, policestation.Columns, sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID))
 	id, ok := psuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "PoliceStation.id" for update`)}
@@ -702,7 +703,7 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -715,7 +716,7 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -731,7 +732,7 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -747,7 +748,7 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 			Columns: []string{policestation.ParentStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -760,7 +761,7 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 			Columns: []string{policestation.ParentStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -776,7 +777,7 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 			Columns: []string{policestation.ChildStationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -789,7 +790,7 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 			Columns: []string{policestation.ChildStationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -805,7 +806,7 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 			Columns: []string{policestation.ChildStationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

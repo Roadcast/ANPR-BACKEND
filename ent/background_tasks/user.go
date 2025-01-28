@@ -8,7 +8,7 @@ import (
 
 type UserNotificationParams struct {
 	celery.BaseParams
-	UserID  int
+	UserID  string
 	Message string
 	Email   string
 }

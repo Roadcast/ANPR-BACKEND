@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // VehicleDataQuery is the builder for querying VehicleData entities.
@@ -85,8 +86,8 @@ func (vdq *VehicleDataQuery) FirstX(ctx context.Context) *VehicleData {
 
 // FirstID returns the first VehicleData ID from the query.
 // Returns a *NotFoundError when no VehicleData ID was found.
-func (vdq *VehicleDataQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (vdq *VehicleDataQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = vdq.Limit(1).IDs(setContextOp(ctx, vdq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -98,7 +99,7 @@ func (vdq *VehicleDataQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (vdq *VehicleDataQuery) FirstIDX(ctx context.Context) int {
+func (vdq *VehicleDataQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := vdq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -136,8 +137,8 @@ func (vdq *VehicleDataQuery) OnlyX(ctx context.Context) *VehicleData {
 // OnlyID is like Only, but returns the only VehicleData ID in the query.
 // Returns a *NotSingularError when more than one VehicleData ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (vdq *VehicleDataQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (vdq *VehicleDataQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = vdq.Limit(2).IDs(setContextOp(ctx, vdq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -153,7 +154,7 @@ func (vdq *VehicleDataQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (vdq *VehicleDataQuery) OnlyIDX(ctx context.Context) int {
+func (vdq *VehicleDataQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := vdq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -181,7 +182,7 @@ func (vdq *VehicleDataQuery) AllX(ctx context.Context) []*VehicleData {
 }
 
 // IDs executes the query and returns a list of VehicleData IDs.
-func (vdq *VehicleDataQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (vdq *VehicleDataQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 	if vdq.ctx.Unique == nil && vdq.path != nil {
 		vdq.Unique(true)
 	}
@@ -193,7 +194,7 @@ func (vdq *VehicleDataQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (vdq *VehicleDataQuery) IDsX(ctx context.Context) []int {
+func (vdq *VehicleDataQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := vdq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -379,7 +380,7 @@ func (vdq *VehicleDataQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (vdq *VehicleDataQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(vehicledata.Table, vehicledata.Columns, sqlgraph.NewFieldSpec(vehicledata.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(vehicledata.Table, vehicledata.Columns, sqlgraph.NewFieldSpec(vehicledata.FieldID, field.TypeUUID))
 	_spec.From = vdq.sql
 	if unique := vdq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

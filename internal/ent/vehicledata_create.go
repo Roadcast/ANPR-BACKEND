@@ -9,9 +9,11 @@ import (
 	"go-ent-project/internal/ent/vehicledata"
 	"time"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // VehicleDataCreate is the builder for creating a VehicleData entity.
@@ -273,8 +275,16 @@ func (vdc *VehicleDataCreate) SetNillableVehicleSeries(s *string) *VehicleDataCr
 }
 
 // SetID sets the "id" field.
-func (vdc *VehicleDataCreate) SetID(i int) *VehicleDataCreate {
-	vdc.mutation.SetID(i)
+func (vdc *VehicleDataCreate) SetID(u uuid.UUID) *VehicleDataCreate {
+	vdc.mutation.SetID(u)
+	return vdc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (vdc *VehicleDataCreate) SetNillableID(u *uuid.UUID) *VehicleDataCreate {
+	if u != nil {
+		vdc.SetID(*u)
+	}
 	return vdc
 }
 
@@ -321,6 +331,10 @@ func (vdc *VehicleDataCreate) defaults() {
 		v := vehicledata.DefaultUpdatedAt()
 		vdc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := vdc.mutation.ID(); !ok {
+		v := vehicledata.DefaultID()
+		vdc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -345,9 +359,12 @@ func (vdc *VehicleDataCreate) sqlSave(ctx context.Context) (*VehicleData, error)
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	vdc.mutation.id = &_node.ID
 	vdc.mutation.done = true
@@ -357,12 +374,12 @@ func (vdc *VehicleDataCreate) sqlSave(ctx context.Context) (*VehicleData, error)
 func (vdc *VehicleDataCreate) createSpec() (*VehicleData, *sqlgraph.CreateSpec) {
 	var (
 		_node = &VehicleData{config: vdc.config}
-		_spec = sqlgraph.NewCreateSpec(vehicledata.Table, sqlgraph.NewFieldSpec(vehicledata.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(vehicledata.Table, sqlgraph.NewFieldSpec(vehicledata.FieldID, field.TypeUUID))
 	)
 	_spec.OnConflict = vdc.conflict
 	if id, ok := vdc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := vdc.mutation.CreatedAt(); ok {
 		_spec.SetField(vehicledata.FieldCreatedAt, field.TypeTime, value)
@@ -1300,7 +1317,12 @@ func (u *VehicleDataUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *VehicleDataUpsertOne) ID(ctx context.Context) (id int, err error) {
+func (u *VehicleDataUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: VehicleDataUpsertOne.ID is not supported by MySQL driver. Use VehicleDataUpsertOne.Exec instead")
+	}
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1309,7 +1331,7 @@ func (u *VehicleDataUpsertOne) ID(ctx context.Context) (id int, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *VehicleDataUpsertOne) IDX(ctx context.Context) int {
+func (u *VehicleDataUpsertOne) IDX(ctx context.Context) uuid.UUID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1364,10 +1386,6 @@ func (vdcb *VehicleDataCreateBulk) Save(ctx context.Context) ([]*VehicleData, er
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

@@ -21,13 +21,14 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/errcode"
+	"github.com/google/uuid"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 // Common entgql types.
 type (
-	Cursor         = entgql.Cursor[int]
-	PageInfo       = entgql.PageInfo[int]
+	Cursor         = entgql.Cursor[uuid.UUID]
+	PageInfo       = entgql.PageInfo[uuid.UUID]
 	OrderDirection = entgql.OrderDirection
 )
 
@@ -349,17 +350,31 @@ func (c *CameraQuery) Paginate(
 }
 
 var (
-	// CameraOrderFieldID orders Camera by id.
-	CameraOrderFieldID = &CameraOrderField{
+	// CameraOrderFieldCreatedAt orders Camera by created_at.
+	CameraOrderFieldCreatedAt = &CameraOrderField{
 		Value: func(c *Camera) (ent.Value, error) {
-			return c.ID, nil
+			return c.CreatedAt, nil
 		},
-		column: camera.FieldID,
-		toTerm: camera.ByID,
+		column: camera.FieldCreatedAt,
+		toTerm: camera.ByCreatedAt,
 		toCursor: func(c *Camera) Cursor {
 			return Cursor{
 				ID:    c.ID,
-				Value: c.ID,
+				Value: c.CreatedAt,
+			}
+		},
+	}
+	// CameraOrderFieldUpdatedAt orders Camera by updated_at.
+	CameraOrderFieldUpdatedAt = &CameraOrderField{
+		Value: func(c *Camera) (ent.Value, error) {
+			return c.UpdatedAt, nil
+		},
+		column: camera.FieldUpdatedAt,
+		toTerm: camera.ByUpdatedAt,
+		toCursor: func(c *Camera) Cursor {
+			return Cursor{
+				ID:    c.ID,
+				Value: c.UpdatedAt,
 			}
 		},
 	}
@@ -383,8 +398,10 @@ var (
 func (f CameraOrderField) String() string {
 	var str string
 	switch f.column {
-	case CameraOrderFieldID.column:
-		str = "ID"
+	case CameraOrderFieldCreatedAt.column:
+		str = "CreatedAt"
+	case CameraOrderFieldUpdatedAt.column:
+		str = "UpdatedAt"
 	case CameraOrderFieldName.column:
 		str = "NAME"
 	}
@@ -403,8 +420,10 @@ func (f *CameraOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("CameraOrderField %T must be a string", v)
 	}
 	switch str {
-	case "ID":
-		*f = *CameraOrderFieldID
+	case "CreatedAt":
+		*f = *CameraOrderFieldCreatedAt
+	case "UpdatedAt":
+		*f = *CameraOrderFieldUpdatedAt
 	case "NAME":
 		*f = *CameraOrderFieldName
 	default:
@@ -699,17 +718,31 @@ func (c *CarQuery) Paginate(
 }
 
 var (
-	// CarOrderFieldID orders Car by id.
-	CarOrderFieldID = &CarOrderField{
+	// CarOrderFieldCreatedAt orders Car by created_at.
+	CarOrderFieldCreatedAt = &CarOrderField{
 		Value: func(c *Car) (ent.Value, error) {
-			return c.ID, nil
+			return c.CreatedAt, nil
 		},
-		column: car.FieldID,
-		toTerm: car.ByID,
+		column: car.FieldCreatedAt,
+		toTerm: car.ByCreatedAt,
 		toCursor: func(c *Car) Cursor {
 			return Cursor{
 				ID:    c.ID,
-				Value: c.ID,
+				Value: c.CreatedAt,
+			}
+		},
+	}
+	// CarOrderFieldUpdatedAt orders Car by updated_at.
+	CarOrderFieldUpdatedAt = &CarOrderField{
+		Value: func(c *Car) (ent.Value, error) {
+			return c.UpdatedAt, nil
+		},
+		column: car.FieldUpdatedAt,
+		toTerm: car.ByUpdatedAt,
+		toCursor: func(c *Car) Cursor {
+			return Cursor{
+				ID:    c.ID,
+				Value: c.UpdatedAt,
 			}
 		},
 	}
@@ -719,8 +752,10 @@ var (
 func (f CarOrderField) String() string {
 	var str string
 	switch f.column {
-	case CarOrderFieldID.column:
-		str = "ID"
+	case CarOrderFieldCreatedAt.column:
+		str = "CreatedAt"
+	case CarOrderFieldUpdatedAt.column:
+		str = "UpdatedAt"
 	}
 	return str
 }
@@ -737,8 +772,10 @@ func (f *CarOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("CarOrderField %T must be a string", v)
 	}
 	switch str {
-	case "ID":
-		*f = *CarOrderFieldID
+	case "CreatedAt":
+		*f = *CarOrderFieldCreatedAt
+	case "UpdatedAt":
+		*f = *CarOrderFieldUpdatedAt
 	default:
 		return fmt.Errorf("%s is not a valid CarOrderField", str)
 	}
@@ -1031,17 +1068,31 @@ func (pe *PermissionQuery) Paginate(
 }
 
 var (
-	// PermissionOrderFieldID orders Permission by id.
-	PermissionOrderFieldID = &PermissionOrderField{
+	// PermissionOrderFieldCreatedAt orders Permission by created_at.
+	PermissionOrderFieldCreatedAt = &PermissionOrderField{
 		Value: func(pe *Permission) (ent.Value, error) {
-			return pe.ID, nil
+			return pe.CreatedAt, nil
 		},
-		column: permission.FieldID,
-		toTerm: permission.ByID,
+		column: permission.FieldCreatedAt,
+		toTerm: permission.ByCreatedAt,
 		toCursor: func(pe *Permission) Cursor {
 			return Cursor{
 				ID:    pe.ID,
-				Value: pe.ID,
+				Value: pe.CreatedAt,
+			}
+		},
+	}
+	// PermissionOrderFieldUpdatedAt orders Permission by updated_at.
+	PermissionOrderFieldUpdatedAt = &PermissionOrderField{
+		Value: func(pe *Permission) (ent.Value, error) {
+			return pe.UpdatedAt, nil
+		},
+		column: permission.FieldUpdatedAt,
+		toTerm: permission.ByUpdatedAt,
+		toCursor: func(pe *Permission) Cursor {
+			return Cursor{
+				ID:    pe.ID,
+				Value: pe.UpdatedAt,
 			}
 		},
 	}
@@ -1051,8 +1102,10 @@ var (
 func (f PermissionOrderField) String() string {
 	var str string
 	switch f.column {
-	case PermissionOrderFieldID.column:
-		str = "ID"
+	case PermissionOrderFieldCreatedAt.column:
+		str = "CreatedAt"
+	case PermissionOrderFieldUpdatedAt.column:
+		str = "UpdatedAt"
 	}
 	return str
 }
@@ -1069,8 +1122,10 @@ func (f *PermissionOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("PermissionOrderField %T must be a string", v)
 	}
 	switch str {
-	case "ID":
-		*f = *PermissionOrderFieldID
+	case "CreatedAt":
+		*f = *PermissionOrderFieldCreatedAt
+	case "UpdatedAt":
+		*f = *PermissionOrderFieldUpdatedAt
 	default:
 		return fmt.Errorf("%s is not a valid PermissionOrderField", str)
 	}
@@ -1363,17 +1418,31 @@ func (ps *PoliceStationQuery) Paginate(
 }
 
 var (
-	// PoliceStationOrderFieldID orders PoliceStation by id.
-	PoliceStationOrderFieldID = &PoliceStationOrderField{
+	// PoliceStationOrderFieldCreatedAt orders PoliceStation by created_at.
+	PoliceStationOrderFieldCreatedAt = &PoliceStationOrderField{
 		Value: func(ps *PoliceStation) (ent.Value, error) {
-			return ps.ID, nil
+			return ps.CreatedAt, nil
 		},
-		column: policestation.FieldID,
-		toTerm: policestation.ByID,
+		column: policestation.FieldCreatedAt,
+		toTerm: policestation.ByCreatedAt,
 		toCursor: func(ps *PoliceStation) Cursor {
 			return Cursor{
 				ID:    ps.ID,
-				Value: ps.ID,
+				Value: ps.CreatedAt,
+			}
+		},
+	}
+	// PoliceStationOrderFieldUpdatedAt orders PoliceStation by updated_at.
+	PoliceStationOrderFieldUpdatedAt = &PoliceStationOrderField{
+		Value: func(ps *PoliceStation) (ent.Value, error) {
+			return ps.UpdatedAt, nil
+		},
+		column: policestation.FieldUpdatedAt,
+		toTerm: policestation.ByUpdatedAt,
+		toCursor: func(ps *PoliceStation) Cursor {
+			return Cursor{
+				ID:    ps.ID,
+				Value: ps.UpdatedAt,
 			}
 		},
 	}
@@ -1397,8 +1466,10 @@ var (
 func (f PoliceStationOrderField) String() string {
 	var str string
 	switch f.column {
-	case PoliceStationOrderFieldID.column:
-		str = "ID"
+	case PoliceStationOrderFieldCreatedAt.column:
+		str = "CreatedAt"
+	case PoliceStationOrderFieldUpdatedAt.column:
+		str = "UpdatedAt"
 	case PoliceStationOrderFieldName.column:
 		str = "NAME"
 	}
@@ -1417,8 +1488,10 @@ func (f *PoliceStationOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("PoliceStationOrderField %T must be a string", v)
 	}
 	switch str {
-	case "ID":
-		*f = *PoliceStationOrderFieldID
+	case "CreatedAt":
+		*f = *PoliceStationOrderFieldCreatedAt
+	case "UpdatedAt":
+		*f = *PoliceStationOrderFieldUpdatedAt
 	case "NAME":
 		*f = *PoliceStationOrderFieldName
 	default:
@@ -1713,17 +1786,31 @@ func (r *RoleQuery) Paginate(
 }
 
 var (
-	// RoleOrderFieldID orders Role by id.
-	RoleOrderFieldID = &RoleOrderField{
+	// RoleOrderFieldCreatedAt orders Role by created_at.
+	RoleOrderFieldCreatedAt = &RoleOrderField{
 		Value: func(r *Role) (ent.Value, error) {
-			return r.ID, nil
+			return r.CreatedAt, nil
 		},
-		column: role.FieldID,
-		toTerm: role.ByID,
+		column: role.FieldCreatedAt,
+		toTerm: role.ByCreatedAt,
 		toCursor: func(r *Role) Cursor {
 			return Cursor{
 				ID:    r.ID,
-				Value: r.ID,
+				Value: r.CreatedAt,
+			}
+		},
+	}
+	// RoleOrderFieldUpdatedAt orders Role by updated_at.
+	RoleOrderFieldUpdatedAt = &RoleOrderField{
+		Value: func(r *Role) (ent.Value, error) {
+			return r.UpdatedAt, nil
+		},
+		column: role.FieldUpdatedAt,
+		toTerm: role.ByUpdatedAt,
+		toCursor: func(r *Role) Cursor {
+			return Cursor{
+				ID:    r.ID,
+				Value: r.UpdatedAt,
 			}
 		},
 	}
@@ -1733,8 +1820,10 @@ var (
 func (f RoleOrderField) String() string {
 	var str string
 	switch f.column {
-	case RoleOrderFieldID.column:
-		str = "ID"
+	case RoleOrderFieldCreatedAt.column:
+		str = "CreatedAt"
+	case RoleOrderFieldUpdatedAt.column:
+		str = "UpdatedAt"
 	}
 	return str
 }
@@ -1751,8 +1840,10 @@ func (f *RoleOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("RoleOrderField %T must be a string", v)
 	}
 	switch str {
-	case "ID":
-		*f = *RoleOrderFieldID
+	case "CreatedAt":
+		*f = *RoleOrderFieldCreatedAt
+	case "UpdatedAt":
+		*f = *RoleOrderFieldUpdatedAt
 	default:
 		return fmt.Errorf("%s is not a valid RoleOrderField", str)
 	}
@@ -2045,17 +2136,31 @@ func (u *UserQuery) Paginate(
 }
 
 var (
-	// UserOrderFieldID orders User by id.
-	UserOrderFieldID = &UserOrderField{
+	// UserOrderFieldCreatedAt orders User by created_at.
+	UserOrderFieldCreatedAt = &UserOrderField{
 		Value: func(u *User) (ent.Value, error) {
-			return u.ID, nil
+			return u.CreatedAt, nil
 		},
-		column: user.FieldID,
-		toTerm: user.ByID,
+		column: user.FieldCreatedAt,
+		toTerm: user.ByCreatedAt,
 		toCursor: func(u *User) Cursor {
 			return Cursor{
 				ID:    u.ID,
-				Value: u.ID,
+				Value: u.CreatedAt,
+			}
+		},
+	}
+	// UserOrderFieldUpdatedAt orders User by updated_at.
+	UserOrderFieldUpdatedAt = &UserOrderField{
+		Value: func(u *User) (ent.Value, error) {
+			return u.UpdatedAt, nil
+		},
+		column: user.FieldUpdatedAt,
+		toTerm: user.ByUpdatedAt,
+		toCursor: func(u *User) Cursor {
+			return Cursor{
+				ID:    u.ID,
+				Value: u.UpdatedAt,
 			}
 		},
 	}
@@ -2093,8 +2198,10 @@ var (
 func (f UserOrderField) String() string {
 	var str string
 	switch f.column {
-	case UserOrderFieldID.column:
-		str = "ID"
+	case UserOrderFieldCreatedAt.column:
+		str = "CreatedAt"
+	case UserOrderFieldUpdatedAt.column:
+		str = "UpdatedAt"
 	case UserOrderFieldName.column:
 		str = "NAME"
 	case UserOrderFieldEmail.column:
@@ -2115,8 +2222,10 @@ func (f *UserOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("UserOrderField %T must be a string", v)
 	}
 	switch str {
-	case "ID":
-		*f = *UserOrderFieldID
+	case "CreatedAt":
+		*f = *UserOrderFieldCreatedAt
+	case "UpdatedAt":
+		*f = *UserOrderFieldUpdatedAt
 	case "NAME":
 		*f = *UserOrderFieldName
 	case "EMAIL":
@@ -2413,17 +2522,31 @@ func (vd *VehicleDataQuery) Paginate(
 }
 
 var (
-	// VehicleDataOrderFieldID orders VehicleData by id.
-	VehicleDataOrderFieldID = &VehicleDataOrderField{
+	// VehicleDataOrderFieldCreatedAt orders VehicleData by created_at.
+	VehicleDataOrderFieldCreatedAt = &VehicleDataOrderField{
 		Value: func(vd *VehicleData) (ent.Value, error) {
-			return vd.ID, nil
+			return vd.CreatedAt, nil
 		},
-		column: vehicledata.FieldID,
-		toTerm: vehicledata.ByID,
+		column: vehicledata.FieldCreatedAt,
+		toTerm: vehicledata.ByCreatedAt,
 		toCursor: func(vd *VehicleData) Cursor {
 			return Cursor{
 				ID:    vd.ID,
-				Value: vd.ID,
+				Value: vd.CreatedAt,
+			}
+		},
+	}
+	// VehicleDataOrderFieldUpdatedAt orders VehicleData by updated_at.
+	VehicleDataOrderFieldUpdatedAt = &VehicleDataOrderField{
+		Value: func(vd *VehicleData) (ent.Value, error) {
+			return vd.UpdatedAt, nil
+		},
+		column: vehicledata.FieldUpdatedAt,
+		toTerm: vehicledata.ByUpdatedAt,
+		toCursor: func(vd *VehicleData) Cursor {
+			return Cursor{
+				ID:    vd.ID,
+				Value: vd.UpdatedAt,
 			}
 		},
 	}
@@ -2433,8 +2556,10 @@ var (
 func (f VehicleDataOrderField) String() string {
 	var str string
 	switch f.column {
-	case VehicleDataOrderFieldID.column:
-		str = "ID"
+	case VehicleDataOrderFieldCreatedAt.column:
+		str = "CreatedAt"
+	case VehicleDataOrderFieldUpdatedAt.column:
+		str = "UpdatedAt"
 	}
 	return str
 }
@@ -2451,8 +2576,10 @@ func (f *VehicleDataOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("VehicleDataOrderField %T must be a string", v)
 	}
 	switch str {
-	case "ID":
-		*f = *VehicleDataOrderFieldID
+	case "CreatedAt":
+		*f = *VehicleDataOrderFieldCreatedAt
+	case "UpdatedAt":
+		*f = *VehicleDataOrderFieldUpdatedAt
 	default:
 		return fmt.Errorf("%s is not a valid VehicleDataOrderField", str)
 	}

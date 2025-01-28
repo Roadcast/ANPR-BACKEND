@@ -10,13 +10,14 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 )
 
 // Permission is the model entity for the Permission schema.
 type Permission struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -31,7 +32,7 @@ type Permission struct {
 	CanUpdate bool `json:"can_update,omitempty"`
 	// CanDelete holds the value of the "can_delete" field.
 	CanDelete        bool `json:"can_delete,omitempty"`
-	role_permissions *int
+	role_permissions *uuid.UUID
 	selectValues     sql.SelectValues
 }
 
@@ -42,14 +43,14 @@ func (*Permission) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case permission.FieldCanRead, permission.FieldCanCreate, permission.FieldCanUpdate, permission.FieldCanDelete:
 			values[i] = new(sql.NullBool)
-		case permission.FieldID:
-			values[i] = new(sql.NullInt64)
 		case permission.FieldName:
 			values[i] = new(sql.NullString)
 		case permission.FieldCreatedAt, permission.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case permission.FieldID:
+			values[i] = new(uuid.UUID)
 		case permission.ForeignKeys[0]: // role_permissions
-			values[i] = new(sql.NullInt64)
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -66,11 +67,11 @@ func (pe *Permission) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case permission.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				pe.ID = *value
 			}
-			pe.ID = int(value.Int64)
 		case permission.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -114,11 +115,11 @@ func (pe *Permission) assignValues(columns []string, values []any) error {
 				pe.CanDelete = value.Bool
 			}
 		case permission.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field role_permissions", value)
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field role_permissions", values[i])
 			} else if value.Valid {
-				pe.role_permissions = new(int)
-				*pe.role_permissions = int(value.Int64)
+				pe.role_permissions = new(uuid.UUID)
+				*pe.role_permissions = *value.S.(*uuid.UUID)
 			}
 		default:
 			pe.selectValues.Set(columns[i], values[i])

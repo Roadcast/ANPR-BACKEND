@@ -4,6 +4,8 @@ package ent
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // CreateCameraInput represents a mutation input for creating cameras.
@@ -254,9 +256,9 @@ type CreatePoliceStationInput struct {
 	Location        map[string]interface{}
 	Code            string
 	Identifier      string
-	UserIDs         []int
-	ParentStationID *int
-	ChildStationIDs []int
+	UserIDs         []uuid.UUID
+	ParentStationID *uuid.UUID
+	ChildStationIDs []uuid.UUID
 }
 
 // Mutate applies the CreatePoliceStationInput on the PoliceStationMutation builder.
@@ -299,13 +301,13 @@ type UpdatePoliceStationInput struct {
 	Code                  *string
 	Identifier            *string
 	ClearUsers            bool
-	AddUserIDs            []int
-	RemoveUserIDs         []int
+	AddUserIDs            []uuid.UUID
+	RemoveUserIDs         []uuid.UUID
 	ClearParentStation    bool
-	ParentStationID       *int
+	ParentStationID       *uuid.UUID
 	ClearChildStations    bool
-	AddChildStationIDs    []int
-	RemoveChildStationIDs []int
+	AddChildStationIDs    []uuid.UUID
+	RemoveChildStationIDs []uuid.UUID
 }
 
 // Mutate applies the UpdatePoliceStationInput on the PoliceStationMutation builder.
@@ -371,8 +373,8 @@ type CreateRoleInput struct {
 	CreatedAt     *time.Time
 	UpdatedAt     *time.Time
 	Name          string
-	PermissionIDs []int
-	UserIDs       []int
+	PermissionIDs []uuid.UUID
+	UserIDs       []uuid.UUID
 }
 
 // Mutate applies the CreateRoleInput on the RoleMutation builder.
@@ -403,11 +405,11 @@ type UpdateRoleInput struct {
 	UpdatedAt           *time.Time
 	Name                *string
 	ClearPermissions    bool
-	AddPermissionIDs    []int
-	RemovePermissionIDs []int
+	AddPermissionIDs    []uuid.UUID
+	RemovePermissionIDs []uuid.UUID
 	ClearUsers          bool
-	AddUserIDs          []int
-	RemoveUserIDs       []int
+	AddUserIDs          []uuid.UUID
+	RemoveUserIDs       []uuid.UUID
 }
 
 // Mutate applies the UpdateRoleInput on the RoleMutation builder.
@@ -459,10 +461,10 @@ type CreateUserInput struct {
 	Password         string
 	Phone            *string
 	Active           *bool
-	RoleID           int
-	PoliceStationID  int
-	RoleIDs          []int
-	PoliceStationIDs []int
+	RoleID           uuid.UUID
+	PoliceStationID  uuid.UUID
+	RoleIDs          []uuid.UUID
+	PoliceStationIDs []uuid.UUID
 }
 
 // Mutate applies the CreateUserInput on the UserMutation builder.
@@ -507,12 +509,12 @@ type UpdateUserInput struct {
 	ClearPhone             bool
 	Phone                  *string
 	Active                 *bool
-	RoleID                 *int
-	PoliceStationID        *int
-	AddRoleIDs             []int
-	RemoveRoleIDs          []int
-	AddPoliceStationIDs    []int
-	RemovePoliceStationIDs []int
+	RoleID                 *uuid.UUID
+	PoliceStationID        *uuid.UUID
+	AddRoleIDs             []uuid.UUID
+	RemoveRoleIDs          []uuid.UUID
+	AddPoliceStationIDs    []uuid.UUID
+	RemovePoliceStationIDs []uuid.UUID
 }
 
 // Mutate applies the UpdateUserInput on the UserMutation builder.

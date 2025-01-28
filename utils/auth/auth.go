@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"go-ent-project/internal/ent"
 	redisDB "go-ent-project/utils/redis"
 	"golang.org/x/crypto/bcrypt"
@@ -24,9 +25,9 @@ var (
 
 // Claims defines custom claims structure.
 type Claims struct {
-	UserID int    `json:"user_id"`
-	Role   int    `json:"role"`
-	Hash   string `json:"hash"`
+	UserID uuid.UUID `json:"user_id"`
+	Role   uuid.UUID `json:"role"`
+	Hash   string    `json:"hash"`
 	jwt.RegisteredClaims
 }
 
@@ -39,7 +40,7 @@ func GenerateMD5(value string) string {
 }
 
 // GenerateToken generates an access token and refresh token with a combined MD5 hash.
-func GenerateToken(userID int, role int, password string, active bool) (string, string, error) {
+func GenerateToken(userID uuid.UUID, role uuid.UUID, password string, active bool) (string, string, error) {
 	now := time.Now()
 
 	// Generate MD5 hash of concatenated fields

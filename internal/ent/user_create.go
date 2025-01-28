@@ -11,9 +11,11 @@ import (
 	"go-ent-project/internal/ent/user"
 	"time"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -99,32 +101,40 @@ func (uc *UserCreate) SetNillableActive(b *bool) *UserCreate {
 }
 
 // SetRoleID sets the "role_id" field.
-func (uc *UserCreate) SetRoleID(i int) *UserCreate {
-	uc.mutation.SetRoleID(i)
+func (uc *UserCreate) SetRoleID(u uuid.UUID) *UserCreate {
+	uc.mutation.SetRoleID(u)
 	return uc
 }
 
 // SetPoliceStationID sets the "police_station_id" field.
-func (uc *UserCreate) SetPoliceStationID(i int) *UserCreate {
-	uc.mutation.SetPoliceStationID(i)
+func (uc *UserCreate) SetPoliceStationID(u uuid.UUID) *UserCreate {
+	uc.mutation.SetPoliceStationID(u)
 	return uc
 }
 
 // SetID sets the "id" field.
-func (uc *UserCreate) SetID(i int) *UserCreate {
-	uc.mutation.SetID(i)
+func (uc *UserCreate) SetID(u uuid.UUID) *UserCreate {
+	uc.mutation.SetID(u)
+	return uc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (uc *UserCreate) SetNillableID(u *uuid.UUID) *UserCreate {
+	if u != nil {
+		uc.SetID(*u)
+	}
 	return uc
 }
 
 // AddRoleIDs adds the "role" edge to the Role entity by IDs.
-func (uc *UserCreate) AddRoleIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddRoleIDs(ids ...uuid.UUID) *UserCreate {
 	uc.mutation.AddRoleIDs(ids...)
 	return uc
 }
 
 // AddRole adds the "role" edges to the Role entity.
 func (uc *UserCreate) AddRole(r ...*Role) *UserCreate {
-	ids := make([]int, len(r))
+	ids := make([]uuid.UUID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -132,14 +142,14 @@ func (uc *UserCreate) AddRole(r ...*Role) *UserCreate {
 }
 
 // AddPoliceStationIDs adds the "police_station" edge to the PoliceStation entity by IDs.
-func (uc *UserCreate) AddPoliceStationIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddPoliceStationIDs(ids ...uuid.UUID) *UserCreate {
 	uc.mutation.AddPoliceStationIDs(ids...)
 	return uc
 }
 
 // AddPoliceStation adds the "police_station" edges to the PoliceStation entity.
 func (uc *UserCreate) AddPoliceStation(p ...*PoliceStation) *UserCreate {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -153,9 +163,7 @@ func (uc *UserCreate) Mutation() *UserMutation {
 
 // Save creates the User in the database.
 func (uc *UserCreate) Save(ctx context.Context) (*User, error) {
-	if err := uc.defaults(); err != nil {
-		return nil, err
-	}
+	uc.defaults()
 	return withHooks(ctx, uc.sqlSave, uc.mutation, uc.hooks)
 }
 
@@ -182,18 +190,12 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (uc *UserCreate) defaults() error {
+func (uc *UserCreate) defaults() {
 	if _, ok := uc.mutation.CreatedAt(); !ok {
-		if user.DefaultCreatedAt == nil {
-			return fmt.Errorf("ent: uninitialized user.DefaultCreatedAt (forgotten import ent/runtime?)")
-		}
 		v := user.DefaultCreatedAt()
 		uc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := uc.mutation.UpdatedAt(); !ok {
-		if user.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized user.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := user.DefaultUpdatedAt()
 		uc.mutation.SetUpdatedAt(v)
 	}
@@ -201,7 +203,10 @@ func (uc *UserCreate) defaults() error {
 		v := user.DefaultActive
 		uc.mutation.SetActive(v)
 	}
-	return nil
+	if _, ok := uc.mutation.ID(); !ok {
+		v := user.DefaultID()
+		uc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -265,9 +270,12 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	uc.mutation.id = &_node.ID
 	uc.mutation.done = true
@@ -277,12 +285,12 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	var (
 		_node = &User{config: uc.config}
-		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID))
 	)
 	_spec.OnConflict = uc.conflict
 	if id, ok := uc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
@@ -313,11 +321,11 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_node.Active = value
 	}
 	if value, ok := uc.mutation.RoleID(); ok {
-		_spec.SetField(user.FieldRoleID, field.TypeInt, value)
+		_spec.SetField(user.FieldRoleID, field.TypeUUID, value)
 		_node.RoleID = value
 	}
 	if value, ok := uc.mutation.PoliceStationID(); ok {
-		_spec.SetField(user.FieldPoliceStationID, field.TypeInt, value)
+		_spec.SetField(user.FieldPoliceStationID, field.TypeUUID, value)
 		_node.PoliceStationID = value
 	}
 	if nodes := uc.mutation.RoleIDs(); len(nodes) > 0 {
@@ -328,7 +336,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Columns: user.RolePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -344,7 +352,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Columns: user.PoliceStationPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -483,7 +491,7 @@ func (u *UserUpsert) UpdateActive() *UserUpsert {
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *UserUpsert) SetRoleID(v int) *UserUpsert {
+func (u *UserUpsert) SetRoleID(v uuid.UUID) *UserUpsert {
 	u.Set(user.FieldRoleID, v)
 	return u
 }
@@ -494,14 +502,8 @@ func (u *UserUpsert) UpdateRoleID() *UserUpsert {
 	return u
 }
 
-// AddRoleID adds v to the "role_id" field.
-func (u *UserUpsert) AddRoleID(v int) *UserUpsert {
-	u.Add(user.FieldRoleID, v)
-	return u
-}
-
 // SetPoliceStationID sets the "police_station_id" field.
-func (u *UserUpsert) SetPoliceStationID(v int) *UserUpsert {
+func (u *UserUpsert) SetPoliceStationID(v uuid.UUID) *UserUpsert {
 	u.Set(user.FieldPoliceStationID, v)
 	return u
 }
@@ -509,12 +511,6 @@ func (u *UserUpsert) SetPoliceStationID(v int) *UserUpsert {
 // UpdatePoliceStationID sets the "police_station_id" field to the value that was provided on create.
 func (u *UserUpsert) UpdatePoliceStationID() *UserUpsert {
 	u.SetExcluded(user.FieldPoliceStationID)
-	return u
-}
-
-// AddPoliceStationID adds v to the "police_station_id" field.
-func (u *UserUpsert) AddPoliceStationID(v int) *UserUpsert {
-	u.Add(user.FieldPoliceStationID, v)
 	return u
 }
 
@@ -661,16 +657,9 @@ func (u *UserUpsertOne) UpdateActive() *UserUpsertOne {
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *UserUpsertOne) SetRoleID(v int) *UserUpsertOne {
+func (u *UserUpsertOne) SetRoleID(v uuid.UUID) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.SetRoleID(v)
-	})
-}
-
-// AddRoleID adds v to the "role_id" field.
-func (u *UserUpsertOne) AddRoleID(v int) *UserUpsertOne {
-	return u.Update(func(s *UserUpsert) {
-		s.AddRoleID(v)
 	})
 }
 
@@ -682,16 +671,9 @@ func (u *UserUpsertOne) UpdateRoleID() *UserUpsertOne {
 }
 
 // SetPoliceStationID sets the "police_station_id" field.
-func (u *UserUpsertOne) SetPoliceStationID(v int) *UserUpsertOne {
+func (u *UserUpsertOne) SetPoliceStationID(v uuid.UUID) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.SetPoliceStationID(v)
-	})
-}
-
-// AddPoliceStationID adds v to the "police_station_id" field.
-func (u *UserUpsertOne) AddPoliceStationID(v int) *UserUpsertOne {
-	return u.Update(func(s *UserUpsert) {
-		s.AddPoliceStationID(v)
 	})
 }
 
@@ -718,7 +700,12 @@ func (u *UserUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *UserUpsertOne) ID(ctx context.Context) (id int, err error) {
+func (u *UserUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: UserUpsertOne.ID is not supported by MySQL driver. Use UserUpsertOne.Exec instead")
+	}
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -727,7 +714,7 @@ func (u *UserUpsertOne) ID(ctx context.Context) (id int, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *UserUpsertOne) IDX(ctx context.Context) int {
+func (u *UserUpsertOne) IDX(ctx context.Context) uuid.UUID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -782,10 +769,6 @@ func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})
@@ -1011,16 +994,9 @@ func (u *UserUpsertBulk) UpdateActive() *UserUpsertBulk {
 }
 
 // SetRoleID sets the "role_id" field.
-func (u *UserUpsertBulk) SetRoleID(v int) *UserUpsertBulk {
+func (u *UserUpsertBulk) SetRoleID(v uuid.UUID) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.SetRoleID(v)
-	})
-}
-
-// AddRoleID adds v to the "role_id" field.
-func (u *UserUpsertBulk) AddRoleID(v int) *UserUpsertBulk {
-	return u.Update(func(s *UserUpsert) {
-		s.AddRoleID(v)
 	})
 }
 
@@ -1032,16 +1008,9 @@ func (u *UserUpsertBulk) UpdateRoleID() *UserUpsertBulk {
 }
 
 // SetPoliceStationID sets the "police_station_id" field.
-func (u *UserUpsertBulk) SetPoliceStationID(v int) *UserUpsertBulk {
+func (u *UserUpsertBulk) SetPoliceStationID(v uuid.UUID) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.SetPoliceStationID(v)
-	})
-}
-
-// AddPoliceStationID adds v to the "police_station_id" field.
-func (u *UserUpsertBulk) AddPoliceStationID(v int) *UserUpsertBulk {
-	return u.Update(func(s *UserUpsert) {
-		s.AddPoliceStationID(v)
 	})
 }
 

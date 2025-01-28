@@ -159,7 +159,7 @@ func (pu *PermissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := pu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(permission.Table, permission.Columns, sqlgraph.NewFieldSpec(permission.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(permission.Table, permission.Columns, sqlgraph.NewFieldSpec(permission.FieldID, field.TypeUUID))
 	if ps := pu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -349,7 +349,7 @@ func (puo *PermissionUpdateOne) sqlSave(ctx context.Context) (_node *Permission,
 	if err := puo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(permission.Table, permission.Columns, sqlgraph.NewFieldSpec(permission.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(permission.Table, permission.Columns, sqlgraph.NewFieldSpec(permission.FieldID, field.TypeUUID))
 	id, ok := puo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Permission.id" for update`)}

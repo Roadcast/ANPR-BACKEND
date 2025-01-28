@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 )
 
 const (
@@ -68,6 +69,8 @@ var (
 	ImeiValidator func(string) error
 	// DefaultActive holds the default value on creation for the "active" field.
 	DefaultActive bool
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() uuid.UUID
 )
 
 // OrderOption defines the ordering options for the Camera queries.

@@ -441,7 +441,7 @@ func (vdu *VehicleDataUpdate) defaults() {
 }
 
 func (vdu *VehicleDataUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(vehicledata.Table, vehicledata.Columns, sqlgraph.NewFieldSpec(vehicledata.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(vehicledata.Table, vehicledata.Columns, sqlgraph.NewFieldSpec(vehicledata.FieldID, field.TypeUUID))
 	if ps := vdu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -1021,7 +1021,7 @@ func (vduo *VehicleDataUpdateOne) defaults() {
 }
 
 func (vduo *VehicleDataUpdateOne) sqlSave(ctx context.Context) (_node *VehicleData, err error) {
-	_spec := sqlgraph.NewUpdateSpec(vehicledata.Table, vehicledata.Columns, sqlgraph.NewFieldSpec(vehicledata.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(vehicledata.Table, vehicledata.Columns, sqlgraph.NewFieldSpec(vehicledata.FieldID, field.TypeUUID))
 	id, ok := vduo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "VehicleData.id" for update`)}

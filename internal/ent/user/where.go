@@ -8,50 +8,51 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/google/uuid"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.User {
+func ID(id uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.User {
+func IDEQ(id uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.User {
+func IDNEQ(id uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.User {
+func IDIn(ids ...uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.User {
+func IDNotIn(ids ...uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.User {
+func IDGT(id uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.User {
+func IDGTE(id uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.User {
+func IDLT(id uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.User {
+func IDLTE(id uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldID, id))
 }
 
@@ -91,12 +92,12 @@ func Active(v bool) predicate.User {
 }
 
 // RoleID applies equality check predicate on the "role_id" field. It's identical to RoleIDEQ.
-func RoleID(v int) predicate.User {
+func RoleID(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldRoleID, v))
 }
 
 // PoliceStationID applies equality check predicate on the "police_station_id" field. It's identical to PoliceStationIDEQ.
-func PoliceStationID(v int) predicate.User {
+func PoliceStationID(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldPoliceStationID, v))
 }
 
@@ -461,82 +462,82 @@ func ActiveNEQ(v bool) predicate.User {
 }
 
 // RoleIDEQ applies the EQ predicate on the "role_id" field.
-func RoleIDEQ(v int) predicate.User {
+func RoleIDEQ(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldRoleID, v))
 }
 
 // RoleIDNEQ applies the NEQ predicate on the "role_id" field.
-func RoleIDNEQ(v int) predicate.User {
+func RoleIDNEQ(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldRoleID, v))
 }
 
 // RoleIDIn applies the In predicate on the "role_id" field.
-func RoleIDIn(vs ...int) predicate.User {
+func RoleIDIn(vs ...uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldIn(FieldRoleID, vs...))
 }
 
 // RoleIDNotIn applies the NotIn predicate on the "role_id" field.
-func RoleIDNotIn(vs ...int) predicate.User {
+func RoleIDNotIn(vs ...uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldNotIn(FieldRoleID, vs...))
 }
 
 // RoleIDGT applies the GT predicate on the "role_id" field.
-func RoleIDGT(v int) predicate.User {
+func RoleIDGT(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldGT(FieldRoleID, v))
 }
 
 // RoleIDGTE applies the GTE predicate on the "role_id" field.
-func RoleIDGTE(v int) predicate.User {
+func RoleIDGTE(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldGTE(FieldRoleID, v))
 }
 
 // RoleIDLT applies the LT predicate on the "role_id" field.
-func RoleIDLT(v int) predicate.User {
+func RoleIDLT(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldLT(FieldRoleID, v))
 }
 
 // RoleIDLTE applies the LTE predicate on the "role_id" field.
-func RoleIDLTE(v int) predicate.User {
+func RoleIDLTE(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldRoleID, v))
 }
 
 // PoliceStationIDEQ applies the EQ predicate on the "police_station_id" field.
-func PoliceStationIDEQ(v int) predicate.User {
+func PoliceStationIDEQ(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldPoliceStationID, v))
 }
 
 // PoliceStationIDNEQ applies the NEQ predicate on the "police_station_id" field.
-func PoliceStationIDNEQ(v int) predicate.User {
+func PoliceStationIDNEQ(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldPoliceStationID, v))
 }
 
 // PoliceStationIDIn applies the In predicate on the "police_station_id" field.
-func PoliceStationIDIn(vs ...int) predicate.User {
+func PoliceStationIDIn(vs ...uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldIn(FieldPoliceStationID, vs...))
 }
 
 // PoliceStationIDNotIn applies the NotIn predicate on the "police_station_id" field.
-func PoliceStationIDNotIn(vs ...int) predicate.User {
+func PoliceStationIDNotIn(vs ...uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldNotIn(FieldPoliceStationID, vs...))
 }
 
 // PoliceStationIDGT applies the GT predicate on the "police_station_id" field.
-func PoliceStationIDGT(v int) predicate.User {
+func PoliceStationIDGT(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldGT(FieldPoliceStationID, v))
 }
 
 // PoliceStationIDGTE applies the GTE predicate on the "police_station_id" field.
-func PoliceStationIDGTE(v int) predicate.User {
+func PoliceStationIDGTE(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldGTE(FieldPoliceStationID, v))
 }
 
 // PoliceStationIDLT applies the LT predicate on the "police_station_id" field.
-func PoliceStationIDLT(v int) predicate.User {
+func PoliceStationIDLT(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldLT(FieldPoliceStationID, v))
 }
 
 // PoliceStationIDLTE applies the LTE predicate on the "police_station_id" field.
-func PoliceStationIDLTE(v int) predicate.User {
+func PoliceStationIDLTE(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldPoliceStationID, v))
 }
 

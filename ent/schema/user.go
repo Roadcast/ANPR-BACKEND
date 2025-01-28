@@ -5,8 +5,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	hook "go-ent-project/ent/hooks"
-	"go-ent-project/ent/privacy"
+	"github.com/google/uuid"
 	"go-ent-project/utils/base"
 )
 
@@ -48,8 +47,8 @@ func (User) Fields() []ent.Field {
 			// Expose this field in GraphQL
 			),
 		field.Bool("active").Default(true).Annotations(),
-		field.Int("role_id").Annotations(),
-		field.Int("police_station_id").Annotations(),
+		field.UUID("role_id", uuid.UUID{}).Annotations(entgql.Type("ID")),
+		field.UUID("police_station_id", uuid.UUID{}).Annotations(entgql.Type("ID")),
 	}
 }
 
@@ -66,10 +65,11 @@ func (User) Edges() []ent.Edge {
 	}
 }
 
-func (User) Hooks() []ent.Hook {
-	return hook.MakeHooks()
-}
-
-func (User) Policy() ent.Policy {
-	return privacy.UserPolicy
-}
+//
+//func (User) Hooks() []ent.Hook {
+//	return hook.MakeHooks()
+//}
+//
+//func (User) Policy() ent.Policy {
+//	return privacy.UserPolicy
+//}

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 )
 
 const (
@@ -70,6 +71,8 @@ var (
 	RegistrationValidator func(string) error
 	// ColorValidator is a validator for the "color" field. It is called by the builders before save.
 	ColorValidator func(string) error
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() uuid.UUID
 )
 
 // OrderOption defines the ordering options for the Car queries.

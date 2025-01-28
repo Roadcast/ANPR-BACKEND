@@ -26,7 +26,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   camera.Table,
 			Columns: camera.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: camera.FieldID,
 			},
 		},
@@ -46,7 +46,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   car.Table,
 			Columns: car.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: car.FieldID,
 			},
 		},
@@ -66,7 +66,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   permission.Table,
 			Columns: permission.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: permission.FieldID,
 			},
 		},
@@ -86,7 +86,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   policestation.Table,
 			Columns: policestation.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: policestation.FieldID,
 			},
 		},
@@ -105,7 +105,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   role.Table,
 			Columns: role.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: role.FieldID,
 			},
 		},
@@ -121,7 +121,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   user.Table,
 			Columns: user.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: user.FieldID,
 			},
 		},
@@ -134,8 +134,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			user.FieldPassword:        {Type: field.TypeString, Column: user.FieldPassword},
 			user.FieldPhone:           {Type: field.TypeString, Column: user.FieldPhone},
 			user.FieldActive:          {Type: field.TypeBool, Column: user.FieldActive},
-			user.FieldRoleID:          {Type: field.TypeInt, Column: user.FieldRoleID},
-			user.FieldPoliceStationID: {Type: field.TypeInt, Column: user.FieldPoliceStationID},
+			user.FieldRoleID:          {Type: field.TypeUUID, Column: user.FieldRoleID},
+			user.FieldPoliceStationID: {Type: field.TypeUUID, Column: user.FieldPoliceStationID},
 		},
 	}
 	graph.Nodes[6] = &sqlgraph.Node{
@@ -143,7 +143,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   vehicledata.Table,
 			Columns: vehicledata.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: vehicledata.FieldID,
 			},
 		},
@@ -298,8 +298,8 @@ func (f *CameraFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql int predicate on the id field.
-func (f *CameraFilter) WhereID(p entql.IntP) {
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *CameraFilter) WhereID(p entql.ValueP) {
 	f.Where(p.Field(camera.FieldID))
 }
 
@@ -373,8 +373,8 @@ func (f *CarFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql int predicate on the id field.
-func (f *CarFilter) WhereID(p entql.IntP) {
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *CarFilter) WhereID(p entql.ValueP) {
 	f.Where(p.Field(car.FieldID))
 }
 
@@ -448,8 +448,8 @@ func (f *PermissionFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql int predicate on the id field.
-func (f *PermissionFilter) WhereID(p entql.IntP) {
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *PermissionFilter) WhereID(p entql.ValueP) {
 	f.Where(p.Field(permission.FieldID))
 }
 
@@ -523,8 +523,8 @@ func (f *PoliceStationFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql int predicate on the id field.
-func (f *PoliceStationFilter) WhereID(p entql.IntP) {
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *PoliceStationFilter) WhereID(p entql.ValueP) {
 	f.Where(p.Field(policestation.FieldID))
 }
 
@@ -635,8 +635,8 @@ func (f *RoleFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql int predicate on the id field.
-func (f *RoleFilter) WhereID(p entql.IntP) {
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *RoleFilter) WhereID(p entql.ValueP) {
 	f.Where(p.Field(role.FieldID))
 }
 
@@ -718,8 +718,8 @@ func (f *UserFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql int predicate on the id field.
-func (f *UserFilter) WhereID(p entql.IntP) {
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *UserFilter) WhereID(p entql.ValueP) {
 	f.Where(p.Field(user.FieldID))
 }
 
@@ -758,13 +758,13 @@ func (f *UserFilter) WhereActive(p entql.BoolP) {
 	f.Where(p.Field(user.FieldActive))
 }
 
-// WhereRoleID applies the entql int predicate on the role_id field.
-func (f *UserFilter) WhereRoleID(p entql.IntP) {
+// WhereRoleID applies the entql [16]byte predicate on the role_id field.
+func (f *UserFilter) WhereRoleID(p entql.ValueP) {
 	f.Where(p.Field(user.FieldRoleID))
 }
 
-// WherePoliceStationID applies the entql int predicate on the police_station_id field.
-func (f *UserFilter) WherePoliceStationID(p entql.IntP) {
+// WherePoliceStationID applies the entql [16]byte predicate on the police_station_id field.
+func (f *UserFilter) WherePoliceStationID(p entql.ValueP) {
 	f.Where(p.Field(user.FieldPoliceStationID))
 }
 
@@ -831,8 +831,8 @@ func (f *VehicleDataFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql int predicate on the id field.
-func (f *VehicleDataFilter) WhereID(p entql.IntP) {
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *VehicleDataFilter) WhereID(p entql.ValueP) {
 	f.Where(p.Field(vehicledata.FieldID))
 }
 

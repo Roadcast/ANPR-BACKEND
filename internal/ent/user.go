@@ -10,13 +10,14 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 )
 
 // User is the model entity for the User schema.
 type User struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -32,9 +33,9 @@ type User struct {
 	// Active holds the value of the "active" field.
 	Active bool `json:"active,omitempty"`
 	// RoleID holds the value of the "role_id" field.
-	RoleID int `json:"role_id,omitempty"`
+	RoleID uuid.UUID `json:"role_id,omitempty"`
 	// PoliceStationID holds the value of the "police_station_id" field.
-	PoliceStationID int `json:"police_station_id,omitempty"`
+	PoliceStationID uuid.UUID `json:"police_station_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges        UserEdges `json:"edges"`
@@ -82,12 +83,12 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldActive:
 			values[i] = new(sql.NullBool)
-		case user.FieldID, user.FieldRoleID, user.FieldPoliceStationID:
-			values[i] = new(sql.NullInt64)
 		case user.FieldName, user.FieldEmail, user.FieldPassword, user.FieldPhone:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt, user.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case user.FieldID, user.FieldRoleID, user.FieldPoliceStationID:
+			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -104,11 +105,11 @@ func (u *User) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case user.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				u.ID = *value
 			}
-			u.ID = int(value.Int64)
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -152,16 +153,16 @@ func (u *User) assignValues(columns []string, values []any) error {
 				u.Active = value.Bool
 			}
 		case user.FieldRoleID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field role_id", values[i])
-			} else if value.Valid {
-				u.RoleID = int(value.Int64)
+			} else if value != nil {
+				u.RoleID = *value
 			}
 		case user.FieldPoliceStationID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field police_station_id", values[i])
-			} else if value.Valid {
-				u.PoliceStationID = int(value.Int64)
+			} else if value != nil {
+				u.PoliceStationID = *value
 			}
 		default:
 			u.selectValues.Set(columns[i], values[i])

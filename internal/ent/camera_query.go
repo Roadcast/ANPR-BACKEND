@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // CameraQuery is the builder for querying Camera entities.
@@ -85,8 +86,8 @@ func (cq *CameraQuery) FirstX(ctx context.Context) *Camera {
 
 // FirstID returns the first Camera ID from the query.
 // Returns a *NotFoundError when no Camera ID was found.
-func (cq *CameraQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (cq *CameraQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = cq.Limit(1).IDs(setContextOp(ctx, cq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -98,7 +99,7 @@ func (cq *CameraQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (cq *CameraQuery) FirstIDX(ctx context.Context) int {
+func (cq *CameraQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := cq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -136,8 +137,8 @@ func (cq *CameraQuery) OnlyX(ctx context.Context) *Camera {
 // OnlyID is like Only, but returns the only Camera ID in the query.
 // Returns a *NotSingularError when more than one Camera ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (cq *CameraQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (cq *CameraQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = cq.Limit(2).IDs(setContextOp(ctx, cq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -153,7 +154,7 @@ func (cq *CameraQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (cq *CameraQuery) OnlyIDX(ctx context.Context) int {
+func (cq *CameraQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := cq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -181,7 +182,7 @@ func (cq *CameraQuery) AllX(ctx context.Context) []*Camera {
 }
 
 // IDs executes the query and returns a list of Camera IDs.
-func (cq *CameraQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (cq *CameraQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 	if cq.ctx.Unique == nil && cq.path != nil {
 		cq.Unique(true)
 	}
@@ -193,7 +194,7 @@ func (cq *CameraQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (cq *CameraQuery) IDsX(ctx context.Context) []int {
+func (cq *CameraQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := cq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -379,7 +380,7 @@ func (cq *CameraQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (cq *CameraQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(camera.Table, camera.Columns, sqlgraph.NewFieldSpec(camera.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(camera.Table, camera.Columns, sqlgraph.NewFieldSpec(camera.FieldID, field.TypeUUID))
 	_spec.From = cq.sql
 	if unique := cq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

@@ -11,9 +11,11 @@ import (
 	"go-ent-project/internal/ent/user"
 	"time"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // RoleCreate is the builder for creating a Role entity.
@@ -59,20 +61,28 @@ func (rc *RoleCreate) SetName(s string) *RoleCreate {
 }
 
 // SetID sets the "id" field.
-func (rc *RoleCreate) SetID(i int) *RoleCreate {
-	rc.mutation.SetID(i)
+func (rc *RoleCreate) SetID(u uuid.UUID) *RoleCreate {
+	rc.mutation.SetID(u)
+	return rc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (rc *RoleCreate) SetNillableID(u *uuid.UUID) *RoleCreate {
+	if u != nil {
+		rc.SetID(*u)
+	}
 	return rc
 }
 
 // AddPermissionIDs adds the "permissions" edge to the Permission entity by IDs.
-func (rc *RoleCreate) AddPermissionIDs(ids ...int) *RoleCreate {
+func (rc *RoleCreate) AddPermissionIDs(ids ...uuid.UUID) *RoleCreate {
 	rc.mutation.AddPermissionIDs(ids...)
 	return rc
 }
 
 // AddPermissions adds the "permissions" edges to the Permission entity.
 func (rc *RoleCreate) AddPermissions(p ...*Permission) *RoleCreate {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -80,14 +90,14 @@ func (rc *RoleCreate) AddPermissions(p ...*Permission) *RoleCreate {
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (rc *RoleCreate) AddUserIDs(ids ...int) *RoleCreate {
+func (rc *RoleCreate) AddUserIDs(ids ...uuid.UUID) *RoleCreate {
 	rc.mutation.AddUserIDs(ids...)
 	return rc
 }
 
 // AddUsers adds the "users" edges to the User entity.
 func (rc *RoleCreate) AddUsers(u ...*User) *RoleCreate {
-	ids := make([]int, len(u))
+	ids := make([]uuid.UUID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -137,6 +147,10 @@ func (rc *RoleCreate) defaults() {
 		v := role.DefaultUpdatedAt()
 		rc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := rc.mutation.ID(); !ok {
+		v := role.DefaultID()
+		rc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -169,9 +183,12 @@ func (rc *RoleCreate) sqlSave(ctx context.Context) (*Role, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	rc.mutation.id = &_node.ID
 	rc.mutation.done = true
@@ -181,12 +198,12 @@ func (rc *RoleCreate) sqlSave(ctx context.Context) (*Role, error) {
 func (rc *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Role{config: rc.config}
-		_spec = sqlgraph.NewCreateSpec(role.Table, sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(role.Table, sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID))
 	)
 	_spec.OnConflict = rc.conflict
 	if id, ok := rc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := rc.mutation.CreatedAt(); ok {
 		_spec.SetField(role.FieldCreatedAt, field.TypeTime, value)
@@ -208,7 +225,7 @@ func (rc *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 			Columns: []string{role.PermissionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -224,7 +241,7 @@ func (rc *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 			Columns: role.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -403,7 +420,12 @@ func (u *RoleUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *RoleUpsertOne) ID(ctx context.Context) (id int, err error) {
+func (u *RoleUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: RoleUpsertOne.ID is not supported by MySQL driver. Use RoleUpsertOne.Exec instead")
+	}
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -412,7 +434,7 @@ func (u *RoleUpsertOne) ID(ctx context.Context) (id int, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *RoleUpsertOne) IDX(ctx context.Context) int {
+func (u *RoleUpsertOne) IDX(ctx context.Context) uuid.UUID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -467,10 +489,6 @@ func (rcb *RoleCreateBulk) Save(ctx context.Context) ([]*Role, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

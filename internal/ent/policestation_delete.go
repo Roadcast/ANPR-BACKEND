@@ -40,7 +40,7 @@ func (psd *PoliceStationDelete) ExecX(ctx context.Context) int {
 }
 
 func (psd *PoliceStationDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(policestation.Table, sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewDeleteSpec(policestation.Table, sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID))
 	if ps := psd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

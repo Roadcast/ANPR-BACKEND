@@ -5,9 +5,9 @@ package user
 import (
 	"time"
 
-	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/google/uuid"
 )
 
 const (
@@ -84,14 +84,7 @@ func ValidColumn(column string) bool {
 	return false
 }
 
-// Note that the variables below are initialized by the runtime
-// package on the initialization of the application. Therefore,
-// it should be imported in the main as follows:
-//
-//	import _ "go-ent-project/internal/ent/runtime"
 var (
-	Hooks  [3]ent.Hook
-	Policy ent.Policy
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -106,6 +99,8 @@ var (
 	PasswordValidator func(string) error
 	// DefaultActive holds the default value on creation for the "active" field.
 	DefaultActive bool
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() uuid.UUID
 )
 
 // OrderOption defines the ordering options for the User queries.

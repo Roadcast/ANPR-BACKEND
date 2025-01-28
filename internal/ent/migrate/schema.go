@@ -10,9 +10,9 @@ import (
 var (
 	// CamerasColumns holds the columns for the "cameras" table.
 	CamerasColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
 		{Name: "model", Type: field.TypeString},
 		{Name: "imei", Type: field.TypeString, Unique: true},
@@ -27,9 +27,9 @@ var (
 	}
 	// CarsColumns holds the columns for the "cars" table.
 	CarsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "make", Type: field.TypeString},
 		{Name: "model", Type: field.TypeString},
 		{Name: "year", Type: field.TypeInt},
@@ -44,15 +44,15 @@ var (
 	}
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
 		{Name: "can_read", Type: field.TypeBool, Default: false},
 		{Name: "can_create", Type: field.TypeBool, Default: false},
 		{Name: "can_update", Type: field.TypeBool, Default: false},
 		{Name: "can_delete", Type: field.TypeBool, Default: false},
-		{Name: "role_permissions", Type: field.TypeInt, Nullable: true},
+		{Name: "role_permissions", Type: field.TypeUUID, Nullable: true},
 	}
 	// PermissionsTable holds the schema information for the "permissions" table.
 	PermissionsTable = &schema.Table{
@@ -70,14 +70,14 @@ var (
 	}
 	// PoliceStationsColumns holds the columns for the "police_stations" table.
 	PoliceStationsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
 		{Name: "location", Type: field.TypeJSON, Nullable: true, SchemaType: map[string]string{"postgres": "geometry(Point)"}},
 		{Name: "code", Type: field.TypeString, Unique: true},
 		{Name: "identifier", Type: field.TypeString, Unique: true},
-		{Name: "police_station_child_stations", Type: field.TypeInt, Nullable: true},
+		{Name: "police_station_child_stations", Type: field.TypeUUID, Nullable: true},
 	}
 	// PoliceStationsTable holds the schema information for the "police_stations" table.
 	PoliceStationsTable = &schema.Table{
@@ -95,9 +95,9 @@ var (
 	}
 	// RolesColumns holds the columns for the "roles" table.
 	RolesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
 	}
 	// RolesTable holds the schema information for the "roles" table.
@@ -108,16 +108,16 @@ var (
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString},
 		{Name: "phone", Type: field.TypeString, Nullable: true},
 		{Name: "active", Type: field.TypeBool, Default: true},
-		{Name: "role_id", Type: field.TypeInt},
-		{Name: "police_station_id", Type: field.TypeInt},
+		{Name: "role_id", Type: field.TypeUUID},
+		{Name: "police_station_id", Type: field.TypeUUID},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -127,9 +127,9 @@ var (
 	}
 	// VehicleDataColumns holds the columns for the "vehicle_data" table.
 	VehicleDataColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "plate_bounding_box", Type: field.TypeJSON, Nullable: true},
 		{Name: "plate_channel", Type: field.TypeInt, Nullable: true},
 		{Name: "plate_is_exist", Type: field.TypeBool, Nullable: true},
@@ -156,8 +156,8 @@ var (
 	}
 	// PoliceStationUsersColumns holds the columns for the "police_station_users" table.
 	PoliceStationUsersColumns = []*schema.Column{
-		{Name: "police_station_id", Type: field.TypeInt},
-		{Name: "user_id", Type: field.TypeInt},
+		{Name: "police_station_id", Type: field.TypeUUID},
+		{Name: "user_id", Type: field.TypeUUID},
 	}
 	// PoliceStationUsersTable holds the schema information for the "police_station_users" table.
 	PoliceStationUsersTable = &schema.Table{
@@ -181,8 +181,8 @@ var (
 	}
 	// RoleUsersColumns holds the columns for the "role_users" table.
 	RoleUsersColumns = []*schema.Column{
-		{Name: "role_id", Type: field.TypeInt},
-		{Name: "user_id", Type: field.TypeInt},
+		{Name: "role_id", Type: field.TypeUUID},
+		{Name: "user_id", Type: field.TypeUUID},
 	}
 	// RoleUsersTable holds the schema information for the "role_users" table.
 	RoleUsersTable = &schema.Table{

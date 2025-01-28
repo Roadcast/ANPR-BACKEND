@@ -40,7 +40,7 @@ func (vdd *VehicleDataDelete) ExecX(ctx context.Context) int {
 }
 
 func (vdd *VehicleDataDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(vehicledata.Table, sqlgraph.NewFieldSpec(vehicledata.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewDeleteSpec(vehicledata.Table, sqlgraph.NewFieldSpec(vehicledata.FieldID, field.TypeUUID))
 	if ps := vdd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

@@ -44,7 +44,7 @@ func FilterTenantRule() privacy.UserQueryRuleFunc {
 func AllowIfAdminOrManager() privacy.MutationRule {
 	return privacy.MutationRuleFunc(func(ctx context.Context, m ent.Mutation) error {
 		user, ok := ctx.Value("user").(ent2.User)
-		if !ok || (user.RoleID != 1 && user.RoleID != 2) {
+		if !ok || (user.RoleID != "1" && user.RoleID != "2") {
 			return privacy.Denyf("only admins or managers can perform this action")
 		}
 		return privacy.Allow
@@ -55,7 +55,7 @@ func AllowIfAdminOrManager() privacy.MutationRule {
 func DenyRoleChange() privacy.MutationRule {
 	return privacy.MutationRuleFunc(func(ctx context.Context, m ent.Mutation) error {
 		user, ok := ctx.Value("user").(ent2.User)
-		if !ok || user.RoleID != 1 {
+		if !ok || user.RoleID != "1" {
 			return privacy.Denyf("only admins can update the role field")
 		}
 

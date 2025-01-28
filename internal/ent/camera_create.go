@@ -9,9 +9,11 @@ import (
 	"go-ent-project/internal/ent/camera"
 	"time"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // CameraCreate is the builder for creating a Camera entity.
@@ -89,8 +91,16 @@ func (cc *CameraCreate) SetNillableActive(b *bool) *CameraCreate {
 }
 
 // SetID sets the "id" field.
-func (cc *CameraCreate) SetID(i int) *CameraCreate {
-	cc.mutation.SetID(i)
+func (cc *CameraCreate) SetID(u uuid.UUID) *CameraCreate {
+	cc.mutation.SetID(u)
+	return cc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (cc *CameraCreate) SetNillableID(u *uuid.UUID) *CameraCreate {
+	if u != nil {
+		cc.SetID(*u)
+	}
 	return cc
 }
 
@@ -140,6 +150,10 @@ func (cc *CameraCreate) defaults() {
 	if _, ok := cc.mutation.Active(); !ok {
 		v := camera.DefaultActive
 		cc.mutation.SetActive(v)
+	}
+	if _, ok := cc.mutation.ID(); !ok {
+		v := camera.DefaultID()
+		cc.mutation.SetID(v)
 	}
 }
 
@@ -195,9 +209,12 @@ func (cc *CameraCreate) sqlSave(ctx context.Context) (*Camera, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	cc.mutation.id = &_node.ID
 	cc.mutation.done = true
@@ -207,12 +224,12 @@ func (cc *CameraCreate) sqlSave(ctx context.Context) (*Camera, error) {
 func (cc *CameraCreate) createSpec() (*Camera, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Camera{config: cc.config}
-		_spec = sqlgraph.NewCreateSpec(camera.Table, sqlgraph.NewFieldSpec(camera.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(camera.Table, sqlgraph.NewFieldSpec(camera.FieldID, field.TypeUUID))
 	)
 	_spec.OnConflict = cc.conflict
 	if id, ok := cc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := cc.mutation.CreatedAt(); ok {
 		_spec.SetField(camera.FieldCreatedAt, field.TypeTime, value)
@@ -517,7 +534,12 @@ func (u *CameraUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *CameraUpsertOne) ID(ctx context.Context) (id int, err error) {
+func (u *CameraUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: CameraUpsertOne.ID is not supported by MySQL driver. Use CameraUpsertOne.Exec instead")
+	}
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -526,7 +548,7 @@ func (u *CameraUpsertOne) ID(ctx context.Context) (id int, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *CameraUpsertOne) IDX(ctx context.Context) int {
+func (u *CameraUpsertOne) IDX(ctx context.Context) uuid.UUID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -581,10 +603,6 @@ func (ccb *CameraCreateBulk) Save(ctx context.Context) ([]*Camera, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

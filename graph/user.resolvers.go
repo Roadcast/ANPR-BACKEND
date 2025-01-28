@@ -9,17 +9,14 @@ import (
 	"fmt"
 	"go-ent-project/internal/ent"
 	"go-ent-project/internal/ent/user"
-	"strconv"
+
+	"github.com/google/uuid"
 )
 
 // UpdateUserPassword is the resolver for the update_user_password field.
-func (r *mutationResolver) UpdateUserPassword(ctx context.Context, userID string, password string) (*ent.User, error) {
+func (r *mutationResolver) UpdateUserPassword(ctx context.Context, userID uuid.UUID, password string) (*ent.User, error) {
 	// convert userID to int
-	userIDInt, err := strconv.Atoi(userID)
-	if err != nil {
-		return nil, fmt.Errorf("invalid user id")
-	}
-	authUser, err := r.Client.User.Query().Where(user.IDEQ(userIDInt)).Only(ctx)
+	authUser, err := r.Client.User.Query().Where(user.IDEQ(userID)).Only(ctx)
 	fmt.Printf("authUser: %v\n", authUser)
 	if err != nil {
 		return nil, fmt.Errorf("invalid email")

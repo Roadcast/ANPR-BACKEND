@@ -186,7 +186,7 @@ func (cu *CarUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := cu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(car.Table, car.Columns, sqlgraph.NewFieldSpec(car.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(car.Table, car.Columns, sqlgraph.NewFieldSpec(car.FieldID, field.TypeUUID))
 	if ps := cu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -406,7 +406,7 @@ func (cuo *CarUpdateOne) sqlSave(ctx context.Context) (_node *Car, err error) {
 	if err := cuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(car.Table, car.Columns, sqlgraph.NewFieldSpec(car.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(car.Table, car.Columns, sqlgraph.NewFieldSpec(car.FieldID, field.TypeUUID))
 	id, ok := cuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Car.id" for update`)}

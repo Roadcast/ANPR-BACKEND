@@ -10,9 +10,11 @@ import (
 	"go-ent-project/internal/ent/user"
 	"time"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // PoliceStationCreate is the builder for creating a PoliceStation entity.
@@ -76,20 +78,28 @@ func (psc *PoliceStationCreate) SetIdentifier(s string) *PoliceStationCreate {
 }
 
 // SetID sets the "id" field.
-func (psc *PoliceStationCreate) SetID(i int) *PoliceStationCreate {
-	psc.mutation.SetID(i)
+func (psc *PoliceStationCreate) SetID(u uuid.UUID) *PoliceStationCreate {
+	psc.mutation.SetID(u)
+	return psc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (psc *PoliceStationCreate) SetNillableID(u *uuid.UUID) *PoliceStationCreate {
+	if u != nil {
+		psc.SetID(*u)
+	}
 	return psc
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (psc *PoliceStationCreate) AddUserIDs(ids ...int) *PoliceStationCreate {
+func (psc *PoliceStationCreate) AddUserIDs(ids ...uuid.UUID) *PoliceStationCreate {
 	psc.mutation.AddUserIDs(ids...)
 	return psc
 }
 
 // AddUsers adds the "users" edges to the User entity.
 func (psc *PoliceStationCreate) AddUsers(u ...*User) *PoliceStationCreate {
-	ids := make([]int, len(u))
+	ids := make([]uuid.UUID, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -97,13 +107,13 @@ func (psc *PoliceStationCreate) AddUsers(u ...*User) *PoliceStationCreate {
 }
 
 // SetParentStationID sets the "parent_station" edge to the PoliceStation entity by ID.
-func (psc *PoliceStationCreate) SetParentStationID(id int) *PoliceStationCreate {
+func (psc *PoliceStationCreate) SetParentStationID(id uuid.UUID) *PoliceStationCreate {
 	psc.mutation.SetParentStationID(id)
 	return psc
 }
 
 // SetNillableParentStationID sets the "parent_station" edge to the PoliceStation entity by ID if the given value is not nil.
-func (psc *PoliceStationCreate) SetNillableParentStationID(id *int) *PoliceStationCreate {
+func (psc *PoliceStationCreate) SetNillableParentStationID(id *uuid.UUID) *PoliceStationCreate {
 	if id != nil {
 		psc = psc.SetParentStationID(*id)
 	}
@@ -116,14 +126,14 @@ func (psc *PoliceStationCreate) SetParentStation(p *PoliceStation) *PoliceStatio
 }
 
 // AddChildStationIDs adds the "child_stations" edge to the PoliceStation entity by IDs.
-func (psc *PoliceStationCreate) AddChildStationIDs(ids ...int) *PoliceStationCreate {
+func (psc *PoliceStationCreate) AddChildStationIDs(ids ...uuid.UUID) *PoliceStationCreate {
 	psc.mutation.AddChildStationIDs(ids...)
 	return psc
 }
 
 // AddChildStations adds the "child_stations" edges to the PoliceStation entity.
 func (psc *PoliceStationCreate) AddChildStations(p ...*PoliceStation) *PoliceStationCreate {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -173,6 +183,10 @@ func (psc *PoliceStationCreate) defaults() {
 		v := policestation.DefaultUpdatedAt()
 		psc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := psc.mutation.ID(); !ok {
+		v := policestation.DefaultID()
+		psc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -221,9 +235,12 @@ func (psc *PoliceStationCreate) sqlSave(ctx context.Context) (*PoliceStation, er
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	psc.mutation.id = &_node.ID
 	psc.mutation.done = true
@@ -233,12 +250,12 @@ func (psc *PoliceStationCreate) sqlSave(ctx context.Context) (*PoliceStation, er
 func (psc *PoliceStationCreate) createSpec() (*PoliceStation, *sqlgraph.CreateSpec) {
 	var (
 		_node = &PoliceStation{config: psc.config}
-		_spec = sqlgraph.NewCreateSpec(policestation.Table, sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(policestation.Table, sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID))
 	)
 	_spec.OnConflict = psc.conflict
 	if id, ok := psc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := psc.mutation.CreatedAt(); ok {
 		_spec.SetField(policestation.FieldCreatedAt, field.TypeTime, value)
@@ -272,7 +289,7 @@ func (psc *PoliceStationCreate) createSpec() (*PoliceStation, *sqlgraph.CreateSp
 			Columns: policestation.UsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -288,7 +305,7 @@ func (psc *PoliceStationCreate) createSpec() (*PoliceStation, *sqlgraph.CreateSp
 			Columns: []string{policestation.ParentStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -305,7 +322,7 @@ func (psc *PoliceStationCreate) createSpec() (*PoliceStation, *sqlgraph.CreateSp
 			Columns: []string{policestation.ChildStationsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -575,7 +592,12 @@ func (u *PoliceStationUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *PoliceStationUpsertOne) ID(ctx context.Context) (id int, err error) {
+func (u *PoliceStationUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: PoliceStationUpsertOne.ID is not supported by MySQL driver. Use PoliceStationUpsertOne.Exec instead")
+	}
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -584,7 +606,7 @@ func (u *PoliceStationUpsertOne) ID(ctx context.Context) (id int, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *PoliceStationUpsertOne) IDX(ctx context.Context) int {
+func (u *PoliceStationUpsertOne) IDX(ctx context.Context) uuid.UUID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -639,10 +661,6 @@ func (pscb *PoliceStationCreateBulk) Save(ctx context.Context) ([]*PoliceStation
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

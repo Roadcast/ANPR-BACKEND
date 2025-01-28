@@ -16,6 +16,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // PoliceStationQuery is the builder for querying PoliceStation entities.
@@ -159,8 +160,8 @@ func (psq *PoliceStationQuery) FirstX(ctx context.Context) *PoliceStation {
 
 // FirstID returns the first PoliceStation ID from the query.
 // Returns a *NotFoundError when no PoliceStation ID was found.
-func (psq *PoliceStationQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (psq *PoliceStationQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = psq.Limit(1).IDs(setContextOp(ctx, psq.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -172,7 +173,7 @@ func (psq *PoliceStationQuery) FirstID(ctx context.Context) (id int, err error) 
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (psq *PoliceStationQuery) FirstIDX(ctx context.Context) int {
+func (psq *PoliceStationQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := psq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -210,8 +211,8 @@ func (psq *PoliceStationQuery) OnlyX(ctx context.Context) *PoliceStation {
 // OnlyID is like Only, but returns the only PoliceStation ID in the query.
 // Returns a *NotSingularError when more than one PoliceStation ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (psq *PoliceStationQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (psq *PoliceStationQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = psq.Limit(2).IDs(setContextOp(ctx, psq.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -227,7 +228,7 @@ func (psq *PoliceStationQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (psq *PoliceStationQuery) OnlyIDX(ctx context.Context) int {
+func (psq *PoliceStationQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := psq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -255,7 +256,7 @@ func (psq *PoliceStationQuery) AllX(ctx context.Context) []*PoliceStation {
 }
 
 // IDs executes the query and returns a list of PoliceStation IDs.
-func (psq *PoliceStationQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (psq *PoliceStationQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 	if psq.ctx.Unique == nil && psq.path != nil {
 		psq.Unique(true)
 	}
@@ -267,7 +268,7 @@ func (psq *PoliceStationQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (psq *PoliceStationQuery) IDsX(ctx context.Context) []int {
+func (psq *PoliceStationQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := psq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -535,8 +536,8 @@ func (psq *PoliceStationQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 
 func (psq *PoliceStationQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*PoliceStation, init func(*PoliceStation), assign func(*PoliceStation, *User)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int]*PoliceStation)
-	nids := make(map[int]map[*PoliceStation]struct{})
+	byID := make(map[uuid.UUID]*PoliceStation)
+	nids := make(map[uuid.UUID]map[*PoliceStation]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -565,11 +566,11 @@ func (psq *PoliceStationQuery) loadUsers(ctx context.Context, query *UserQuery, 
 				if err != nil {
 					return nil, err
 				}
-				return append([]any{new(sql.NullInt64)}, values...), nil
+				return append([]any{new(uuid.UUID)}, values...), nil
 			}
 			spec.Assign = func(columns []string, values []any) error {
-				outValue := int(values[0].(*sql.NullInt64).Int64)
-				inValue := int(values[1].(*sql.NullInt64).Int64)
+				outValue := *values[0].(*uuid.UUID)
+				inValue := *values[1].(*uuid.UUID)
 				if nids[inValue] == nil {
 					nids[inValue] = map[*PoliceStation]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
@@ -595,8 +596,8 @@ func (psq *PoliceStationQuery) loadUsers(ctx context.Context, query *UserQuery, 
 	return nil
 }
 func (psq *PoliceStationQuery) loadParentStation(ctx context.Context, query *PoliceStationQuery, nodes []*PoliceStation, init func(*PoliceStation), assign func(*PoliceStation, *PoliceStation)) error {
-	ids := make([]int, 0, len(nodes))
-	nodeids := make(map[int][]*PoliceStation)
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*PoliceStation)
 	for i := range nodes {
 		if nodes[i].police_station_child_stations == nil {
 			continue
@@ -628,7 +629,7 @@ func (psq *PoliceStationQuery) loadParentStation(ctx context.Context, query *Pol
 }
 func (psq *PoliceStationQuery) loadChildStations(ctx context.Context, query *PoliceStationQuery, nodes []*PoliceStation, init func(*PoliceStation), assign func(*PoliceStation, *PoliceStation)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*PoliceStation)
+	nodeids := make(map[uuid.UUID]*PoliceStation)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -671,7 +672,7 @@ func (psq *PoliceStationQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (psq *PoliceStationQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(policestation.Table, policestation.Columns, sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(policestation.Table, policestation.Columns, sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID))
 	_spec.From = psq.sql
 	if unique := psq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

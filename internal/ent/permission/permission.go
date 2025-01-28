@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 )
 
 const (
@@ -81,6 +82,8 @@ var (
 	DefaultCanUpdate bool
 	// DefaultCanDelete holds the default value on creation for the "can_delete" field.
 	DefaultCanDelete bool
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() uuid.UUID
 )
 
 // OrderOption defines the ordering options for the Permission queries.

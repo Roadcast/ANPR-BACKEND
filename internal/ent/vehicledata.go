@@ -11,13 +11,14 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 )
 
 // VehicleData is the model entity for the VehicleData schema.
 type VehicleData struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -68,12 +69,14 @@ func (*VehicleData) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case vehicledata.FieldPlateIsExist, vehicledata.FieldSnapAllowUser, vehicledata.FieldSnapOpenStrobe:
 			values[i] = new(sql.NullBool)
-		case vehicledata.FieldID, vehicledata.FieldPlateChannel, vehicledata.FieldPlateUploadNum, vehicledata.FieldSnapInCarPeopleNum, vehicledata.FieldSnapLanNo:
+		case vehicledata.FieldPlateChannel, vehicledata.FieldPlateUploadNum, vehicledata.FieldSnapInCarPeopleNum, vehicledata.FieldSnapLanNo:
 			values[i] = new(sql.NullInt64)
 		case vehicledata.FieldPlateColor, vehicledata.FieldPlateNumber, vehicledata.FieldPlateType, vehicledata.FieldPlateRegion, vehicledata.FieldSnapAllowUserEndTime, vehicledata.FieldSnapDefenceCode, vehicledata.FieldSnapDeviceID, vehicledata.FieldVehicleSeries:
 			values[i] = new(sql.NullString)
 		case vehicledata.FieldCreatedAt, vehicledata.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case vehicledata.FieldID:
+			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -90,11 +93,11 @@ func (vd *VehicleData) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case vehicledata.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				vd.ID = *value
 			}
-			vd.ID = int(value.Int64)
 		case vehicledata.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
