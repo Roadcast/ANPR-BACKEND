@@ -707,12 +707,14 @@ func (u *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *graph
 				path  = append(path, alias)
 				query = (&RoleClient{config: u.config}).Query()
 			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, roleImplementors)...); err != nil {
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, roleImplementors)...); err != nil {
 				return err
 			}
-			u.WithNamedRole(alias, func(wq *RoleQuery) {
-				*wq = *query
-			})
+			u.withRole = query
+			if _, ok := fieldSeen[user.FieldRoleID]; !ok {
+				selectedFields = append(selectedFields, user.FieldRoleID)
+				fieldSeen[user.FieldRoleID] = struct{}{}
+			}
 
 		case "policeStation":
 			var (

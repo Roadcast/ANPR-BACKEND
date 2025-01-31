@@ -2,13 +2,14 @@ package background_tasks
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"go-ent-project/utils/celery"
 	"time"
 )
 
 type UserNotificationParams struct {
 	celery.BaseParams
-	UserID  string
+	UserID  uuid.UUID
 	Message string
 	Email   string
 }

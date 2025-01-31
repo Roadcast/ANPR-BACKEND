@@ -4,6 +4,7 @@ package ent
 
 import (
 	"fmt"
+	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
 	"strings"
 	"time"
@@ -45,7 +46,7 @@ type User struct {
 // UserEdges holds the relations/edges for other nodes in the graph.
 type UserEdges struct {
 	// Role holds the value of the role edge.
-	Role []*Role `json:"role,omitempty"`
+	Role *Role `json:"role,omitempty"`
 	// PoliceStation holds the value of the police_station edge.
 	PoliceStation []*PoliceStation `json:"police_station,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -54,15 +55,16 @@ type UserEdges struct {
 	// totalCount holds the count of the edges above.
 	totalCount [2]map[string]int
 
-	namedRole          map[string][]*Role
 	namedPoliceStation map[string][]*PoliceStation
 }
 
 // RoleOrErr returns the Role value or an error if the edge
-// was not loaded in eager-loading.
-func (e UserEdges) RoleOrErr() ([]*Role, error) {
-	if e.loadedTypes[0] {
+// was not loaded in eager-loading, or loaded but was not found.
+func (e UserEdges) RoleOrErr() (*Role, error) {
+	if e.Role != nil {
 		return e.Role, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: role.Label}
 	}
 	return nil, &NotLoadedError{edge: "role"}
 }
@@ -237,30 +239,6 @@ func (u *User) String() string {
 	builder.WriteString(fmt.Sprintf("%v", u.PoliceStationID))
 	builder.WriteByte(')')
 	return builder.String()
-}
-
-// NamedRole returns the Role named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (u *User) NamedRole(name string) ([]*Role, error) {
-	if u.Edges.namedRole == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := u.Edges.namedRole[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (u *User) appendNamedRole(name string, edges ...*Role) {
-	if u.Edges.namedRole == nil {
-		u.Edges.namedRole = make(map[string][]*Role)
-	}
-	if len(edges) == 0 {
-		u.Edges.namedRole[name] = []*Role{}
-	} else {
-		u.Edges.namedRole[name] = append(u.Edges.namedRole[name], edges...)
-	}
 }
 
 // NamedPoliceStation returns the PoliceStation named value or an error if the edge was not

@@ -164,6 +164,7 @@ type ComplexityRoot struct {
 		Cameras          func(childComplexity int, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.CameraOrder, where *ent.CameraWhereInput) int
 		Cars             func(childComplexity int, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.CarOrder, where *ent.CarWhereInput) int
 		GetMe            func(childComplexity int) int
+		GetUser          func(childComplexity int, id *uuid.UUID) int
 		Node             func(childComplexity int, id uuid.UUID) int
 		Nodes            func(childComplexity int, ids []uuid.UUID) int
 		Permissions      func(childComplexity int, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.PermissionOrder, where *ent.PermissionWhereInput) int
@@ -275,6 +276,7 @@ type QueryResolver interface {
 	Users(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.UserOrder, where *ent.UserWhereInput) (*ent.UserConnection, error)
 	VehicleDataSlice(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.VehicleDataOrder, where *ent.VehicleDataWhereInput) (*ent.VehicleDataConnection, error)
 	GetMe(ctx context.Context) (*ent.User, error)
+	GetUser(ctx context.Context, id *uuid.UUID) (*ent.User, error)
 }
 
 type executableSchema struct {
@@ -789,6 +791,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.GetMe(childComplexity), true
+
+	case "Query.getUser":
+		if e.complexity.Query.GetUser == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetUser(childComplexity, args["id"].(*uuid.UUID)), true
 
 	case "Query.node":
 		if e.complexity.Query.Node == nil {
@@ -1811,9 +1825,8 @@ input CreateUserInput {
   password: String!
   phone: String
   active: Boolean
-  roleID: ID!
   policeStationID: ID!
-  roleIDs: [ID!]!
+  roleID: ID!
   policeStationIDs: [ID!]!
 }
 """
@@ -2701,10 +2714,8 @@ input UpdateUserInput {
   phone: String
   clearPhone: Boolean
   active: Boolean
-  roleID: ID
   policeStationID: ID
-  addRoleIDs: [ID!]
-  removeRoleIDs: [ID!]
+  roleID: ID
   addPoliceStationIDs: [ID!]
   removePoliceStationIDs: [ID!]
 }
@@ -2812,7 +2823,7 @@ type User implements Node {
   active: Boolean!
   roleID: ID!
   policeStationID: ID!
-  role: [Role!]!
+  role: Role!
   policeStation: [PoliceStation!]!
 }
 """
@@ -2970,10 +2981,6 @@ input UserWhereInput {
   roleIDNEQ: ID
   roleIDIn: [ID!]
   roleIDNotIn: [ID!]
-  roleIDGT: ID
-  roleIDGTE: ID
-  roleIDLT: ID
-  roleIDLTE: ID
   """
   police_station_id field predicates
   """
@@ -3737,6 +3744,29 @@ func (ec *executionContext) field_Query_cars_argsWhere(
 	}
 
 	var zeroVal *ent.CarWhereInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_getUser_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_getUser_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Query_getUser_argsID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*uuid.UUID, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+	}
+
+	var zeroVal *uuid.UUID
 	return zeroVal, nil
 }
 
@@ -8069,6 +8099,82 @@ func (ec *executionContext) fieldContext_Query_getMe(_ context.Context, field gr
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_getUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getUser(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetUser(rctx, fc.Args["id"].(*uuid.UUID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.User)
+	fc.Result = res
+	return ec.marshalOUser2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_User_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_User_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "phone":
+				return ec.fieldContext_User_phone(ctx, field)
+			case "active":
+				return ec.fieldContext_User_active(ctx, field)
+			case "roleID":
+				return ec.fieldContext_User_roleID(ctx, field)
+			case "policeStationID":
+				return ec.fieldContext_User_policeStationID(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			case "policeStation":
+				return ec.fieldContext_User_policeStation(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query___type(ctx, field)
 	if err != nil {
@@ -9249,9 +9355,9 @@ func (ec *executionContext) _User_role(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*ent.Role)
+	res := resTmp.(*ent.Role)
 	fc.Result = res
-	return ec.marshalNRole2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐRoleᚄ(ctx, field.Selections, res)
+	return ec.marshalNRole2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐRole(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_role(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -14028,7 +14134,7 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "name", "email", "password", "phone", "active", "roleID", "policeStationID", "roleIDs", "policeStationIDs"}
+	fieldsInOrder := [...]string{"createdAt", "updatedAt", "name", "email", "password", "phone", "active", "policeStationID", "roleID", "policeStationIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -14084,13 +14190,6 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 				return it, err
 			}
 			it.Active = data
-		case "roleID":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleID"))
-			data, err := ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.RoleID = data
 		case "policeStationID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("policeStationID"))
 			data, err := ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
@@ -14098,13 +14197,13 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 				return it, err
 			}
 			it.PoliceStationID = data
-		case "roleIDs":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleIDs"))
-			data, err := ec.unmarshalNID2ᚕgithubᚗcomᚋgoogleᚋuuidᚐUUIDᚄ(ctx, v)
+		case "roleID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleID"))
+			data, err := ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.RoleIDs = data
+			it.RoleID = data
 		case "policeStationIDs":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("policeStationIDs"))
 			data, err := ec.unmarshalNID2ᚕgithubᚗcomᚋgoogleᚋuuidᚐUUIDᚄ(ctx, v)
@@ -15980,7 +16079,7 @@ func (ec *executionContext) unmarshalInputUpdateUserInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "name", "email", "password", "phone", "clearPhone", "active", "roleID", "policeStationID", "addRoleIDs", "removeRoleIDs", "addPoliceStationIDs", "removePoliceStationIDs"}
+	fieldsInOrder := [...]string{"updatedAt", "name", "email", "password", "phone", "clearPhone", "active", "policeStationID", "roleID", "addPoliceStationIDs", "removePoliceStationIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -16036,13 +16135,6 @@ func (ec *executionContext) unmarshalInputUpdateUserInput(ctx context.Context, o
 				return it, err
 			}
 			it.Active = data
-		case "roleID":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleID"))
-			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.RoleID = data
 		case "policeStationID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("policeStationID"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
@@ -16050,20 +16142,13 @@ func (ec *executionContext) unmarshalInputUpdateUserInput(ctx context.Context, o
 				return it, err
 			}
 			it.PoliceStationID = data
-		case "addRoleIDs":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addRoleIDs"))
-			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgoogleᚋuuidᚐUUIDᚄ(ctx, v)
+		case "roleID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleID"))
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.AddRoleIDs = data
-		case "removeRoleIDs":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeRoleIDs"))
-			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgoogleᚋuuidᚐUUIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.RemoveRoleIDs = data
+			it.RoleID = data
 		case "addPoliceStationIDs":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addPoliceStationIDs"))
 			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgoogleᚋuuidᚐUUIDᚄ(ctx, v)
@@ -16408,7 +16493,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "phone", "phoneNEQ", "phoneIn", "phoneNotIn", "phoneGT", "phoneGTE", "phoneLT", "phoneLTE", "phoneContains", "phoneHasPrefix", "phoneHasSuffix", "phoneIsNil", "phoneNotNil", "phoneEqualFold", "phoneContainsFold", "active", "activeNEQ", "roleID", "roleIDNEQ", "roleIDIn", "roleIDNotIn", "roleIDGT", "roleIDGTE", "roleIDLT", "roleIDLTE", "policeStationID", "policeStationIDNEQ", "policeStationIDIn", "policeStationIDNotIn", "policeStationIDGT", "policeStationIDGTE", "policeStationIDLT", "policeStationIDLTE", "hasRole", "hasRoleWith", "hasPoliceStation", "hasPoliceStationWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "phone", "phoneNEQ", "phoneIn", "phoneNotIn", "phoneGT", "phoneGTE", "phoneLT", "phoneLTE", "phoneContains", "phoneHasPrefix", "phoneHasSuffix", "phoneIsNil", "phoneNotNil", "phoneEqualFold", "phoneContainsFold", "active", "activeNEQ", "roleID", "roleIDNEQ", "roleIDIn", "roleIDNotIn", "policeStationID", "policeStationIDNEQ", "policeStationIDIn", "policeStationIDNotIn", "policeStationIDGT", "policeStationIDGTE", "policeStationIDLT", "policeStationIDLTE", "hasRole", "hasRoleWith", "hasPoliceStation", "hasPoliceStationWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -16933,34 +17018,6 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 				return it, err
 			}
 			it.RoleIDNotIn = data
-		case "roleIDGT":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleIDGT"))
-			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.RoleIDGT = data
-		case "roleIDGTE":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleIDGTE"))
-			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.RoleIDGTE = data
-		case "roleIDLT":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleIDLT"))
-			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.RoleIDLT = data
-		case "roleIDLTE":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleIDLTE"))
-			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.RoleIDLTE = data
 		case "policeStationID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("policeStationID"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
@@ -19684,6 +19741,25 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getUser":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getUser(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -21107,50 +21183,6 @@ func (ec *executionContext) marshalNRefreshTokenResponse2ᚖgoᚑentᚑproject�
 		return graphql.Null
 	}
 	return ec._RefreshTokenResponse(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNRole2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐRoleᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Role) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNRole2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐRole(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
 }
 
 func (ec *executionContext) marshalNRole2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐRole(ctx context.Context, sel ast.SelectionSet, v *ent.Role) graphql.Marshaler {

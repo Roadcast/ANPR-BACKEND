@@ -481,26 +481,6 @@ func RoleIDNotIn(vs ...uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldNotIn(FieldRoleID, vs...))
 }
 
-// RoleIDGT applies the GT predicate on the "role_id" field.
-func RoleIDGT(v uuid.UUID) predicate.User {
-	return predicate.User(sql.FieldGT(FieldRoleID, v))
-}
-
-// RoleIDGTE applies the GTE predicate on the "role_id" field.
-func RoleIDGTE(v uuid.UUID) predicate.User {
-	return predicate.User(sql.FieldGTE(FieldRoleID, v))
-}
-
-// RoleIDLT applies the LT predicate on the "role_id" field.
-func RoleIDLT(v uuid.UUID) predicate.User {
-	return predicate.User(sql.FieldLT(FieldRoleID, v))
-}
-
-// RoleIDLTE applies the LTE predicate on the "role_id" field.
-func RoleIDLTE(v uuid.UUID) predicate.User {
-	return predicate.User(sql.FieldLTE(FieldRoleID, v))
-}
-
 // PoliceStationIDEQ applies the EQ predicate on the "police_station_id" field.
 func PoliceStationIDEQ(v uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldPoliceStationID, v))
@@ -546,7 +526,7 @@ func HasRole() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, RoleTable, RolePrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, RoleTable, RoleColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

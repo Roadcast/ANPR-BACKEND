@@ -410,9 +410,8 @@ input CreateUserInput {
   password: String!
   phone: String
   active: Boolean
-  roleID: ID!
   policeStationID: ID!
-  roleIDs: [ID!]!
+  roleID: ID!
   policeStationIDs: [ID!]!
 }
 """
@@ -1300,10 +1299,8 @@ input UpdateUserInput {
   phone: String
   clearPhone: Boolean
   active: Boolean
-  roleID: ID
   policeStationID: ID
-  addRoleIDs: [ID!]
-  removeRoleIDs: [ID!]
+  roleID: ID
   addPoliceStationIDs: [ID!]
   removePoliceStationIDs: [ID!]
 }
@@ -1411,7 +1408,7 @@ type User implements Node {
   active: Boolean!
   roleID: ID!
   policeStationID: ID!
-  role: [Role!]!
+  role: Role!
   policeStation: [PoliceStation!]!
 }
 """
@@ -1569,10 +1566,6 @@ input UserWhereInput {
   roleIDNEQ: ID
   roleIDIn: [ID!]
   roleIDNotIn: [ID!]
-  roleIDGT: ID
-  roleIDGTE: ID
-  roleIDLT: ID
-  roleIDLTE: ID
   """
   police_station_id field predicates
   """

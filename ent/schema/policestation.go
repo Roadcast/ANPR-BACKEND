@@ -3,8 +3,11 @@ package schema
 import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"go-ent-project/utils/base"
 )
 
@@ -66,5 +69,18 @@ func (PoliceStation) Edges() []ent.Edge {
 
 		// Child police stations
 		edge.To("child_stations", PoliceStation.Type),
+	}
+}
+
+// Indexes defines the indexes of the User entity.
+func (PoliceStation) Indexes() []ent.Index {
+	return []ent.Index{
+		// Create a GIN index using the `pg_trgm` operator class
+		index.Fields("name").
+			Annotations(
+				entsql.IndexTypes(map[string]string{
+					dialect.MySQL:    "FULLTEXT",
+					dialect.Postgres: "GIN",
+				})),
 	}
 }

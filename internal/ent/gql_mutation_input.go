@@ -461,9 +461,8 @@ type CreateUserInput struct {
 	Password         string
 	Phone            *string
 	Active           *bool
-	RoleID           uuid.UUID
 	PoliceStationID  uuid.UUID
-	RoleIDs          []uuid.UUID
+	RoleID           uuid.UUID
 	PoliceStationIDs []uuid.UUID
 }
 
@@ -484,11 +483,8 @@ func (i *CreateUserInput) Mutate(m *UserMutation) {
 	if v := i.Active; v != nil {
 		m.SetActive(*v)
 	}
-	m.SetRoleID(i.RoleID)
 	m.SetPoliceStationID(i.PoliceStationID)
-	if v := i.RoleIDs; len(v) > 0 {
-		m.AddRoleIDs(v...)
-	}
+	m.SetRoleID(i.RoleID)
 	if v := i.PoliceStationIDs; len(v) > 0 {
 		m.AddPoliceStationIDs(v...)
 	}
@@ -509,10 +505,8 @@ type UpdateUserInput struct {
 	ClearPhone             bool
 	Phone                  *string
 	Active                 *bool
-	RoleID                 *uuid.UUID
 	PoliceStationID        *uuid.UUID
-	AddRoleIDs             []uuid.UUID
-	RemoveRoleIDs          []uuid.UUID
+	RoleID                 *uuid.UUID
 	AddPoliceStationIDs    []uuid.UUID
 	RemovePoliceStationIDs []uuid.UUID
 }
@@ -540,17 +534,11 @@ func (i *UpdateUserInput) Mutate(m *UserMutation) {
 	if v := i.Active; v != nil {
 		m.SetActive(*v)
 	}
-	if v := i.RoleID; v != nil {
-		m.SetRoleID(*v)
-	}
 	if v := i.PoliceStationID; v != nil {
 		m.SetPoliceStationID(*v)
 	}
-	if v := i.AddRoleIDs; len(v) > 0 {
-		m.AddRoleIDs(v...)
-	}
-	if v := i.RemoveRoleIDs; len(v) > 0 {
-		m.RemoveRoleIDs(v...)
+	if v := i.RoleID; v != nil {
+		m.SetRoleID(*v)
 	}
 	if v := i.AddPoliceStationIDs; len(v) > 0 {
 		m.AddPoliceStationIDs(v...)

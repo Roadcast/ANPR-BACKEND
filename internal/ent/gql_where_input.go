@@ -1928,10 +1928,6 @@ type UserWhereInput struct {
 	RoleIDNEQ   *uuid.UUID  `json:"roleIDNEQ,omitempty"`
 	RoleIDIn    []uuid.UUID `json:"roleIDIn,omitempty"`
 	RoleIDNotIn []uuid.UUID `json:"roleIDNotIn,omitempty"`
-	RoleIDGT    *uuid.UUID  `json:"roleIDGT,omitempty"`
-	RoleIDGTE   *uuid.UUID  `json:"roleIDGTE,omitempty"`
-	RoleIDLT    *uuid.UUID  `json:"roleIDLT,omitempty"`
-	RoleIDLTE   *uuid.UUID  `json:"roleIDLTE,omitempty"`
 
 	// "police_station_id" field predicates.
 	PoliceStationID      *uuid.UUID  `json:"policeStationID,omitempty"`
@@ -2274,18 +2270,6 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	}
 	if len(i.RoleIDNotIn) > 0 {
 		predicates = append(predicates, user.RoleIDNotIn(i.RoleIDNotIn...))
-	}
-	if i.RoleIDGT != nil {
-		predicates = append(predicates, user.RoleIDGT(*i.RoleIDGT))
-	}
-	if i.RoleIDGTE != nil {
-		predicates = append(predicates, user.RoleIDGTE(*i.RoleIDGTE))
-	}
-	if i.RoleIDLT != nil {
-		predicates = append(predicates, user.RoleIDLT(*i.RoleIDLT))
-	}
-	if i.RoleIDLTE != nil {
-		predicates = append(predicates, user.RoleIDLTE(*i.RoleIDLTE))
 	}
 	if i.PoliceStationID != nil {
 		predicates = append(predicates, user.PoliceStationIDEQ(*i.PoliceStationID))

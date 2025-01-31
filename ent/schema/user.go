@@ -3,9 +3,14 @@ package schema
 import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"github.com/google/uuid"
+	hook "go-ent-project/ent/hooks"
+	"go-ent-project/ent/privacy"
 	"go-ent-project/utils/base"
 )
 
@@ -55,7 +60,7 @@ func (User) Fields() []ent.Field {
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("role", Role.Type).
-			Ref("users").
+			Ref("users").Field("role_id").Unique().
 			Required().
 			Annotations(),
 		edge.From("police_station", PoliceStation.Type).
@@ -65,11 +70,23 @@ func (User) Edges() []ent.Edge {
 	}
 }
 
-//
-//func (User) Hooks() []ent.Hook {
-//	return hook.MakeHooks()
-//}
-//
-//func (User) Policy() ent.Policy {
-//	return privacy.UserPolicy
-//}
+// Indexes defines the indexes of the User entity.
+func (User) Indexes() []ent.Index {
+	return []ent.Index{
+		// Create a GIN index using the `pg_trgm` operator class
+		index.Fields("name").
+			Annotations(
+				entsql.IndexTypes(map[string]string{
+					dialect.MySQL:    "FULLTEXT",
+					dialect.Postgres: "GIN",
+				})),
+	}
+}
+
+func (User) Hooks() []ent.Hook {
+	return hook.MakeHooks()
+}
+
+func (User) Policy() ent.Policy {
+	return privacy.UserPolicy
+}

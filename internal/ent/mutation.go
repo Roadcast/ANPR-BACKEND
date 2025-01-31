@@ -3532,11 +3532,9 @@ type UserMutation struct {
 	password              *string
 	phone                 *string
 	active                *bool
-	role_id               *uuid.UUID
 	police_station_id     *uuid.UUID
 	clearedFields         map[string]struct{}
-	role                  map[uuid.UUID]struct{}
-	removedrole           map[uuid.UUID]struct{}
+	role                  *uuid.UUID
 	clearedrole           bool
 	police_station        map[uuid.UUID]struct{}
 	removedpolice_station map[uuid.UUID]struct{}
@@ -3917,12 +3915,12 @@ func (m *UserMutation) ResetActive() {
 
 // SetRoleID sets the "role_id" field.
 func (m *UserMutation) SetRoleID(u uuid.UUID) {
-	m.role_id = &u
+	m.role = &u
 }
 
 // RoleID returns the value of the "role_id" field in the mutation.
 func (m *UserMutation) RoleID() (r uuid.UUID, exists bool) {
-	v := m.role_id
+	v := m.role
 	if v == nil {
 		return
 	}
@@ -3948,7 +3946,7 @@ func (m *UserMutation) OldRoleID(ctx context.Context) (v uuid.UUID, err error) {
 
 // ResetRoleID resets all changes to the "role_id" field.
 func (m *UserMutation) ResetRoleID() {
-	m.role_id = nil
+	m.role = nil
 }
 
 // SetPoliceStationID sets the "police_station_id" field.
@@ -3987,19 +3985,10 @@ func (m *UserMutation) ResetPoliceStationID() {
 	m.police_station_id = nil
 }
 
-// AddRoleIDs adds the "role" edge to the Role entity by ids.
-func (m *UserMutation) AddRoleIDs(ids ...uuid.UUID) {
-	if m.role == nil {
-		m.role = make(map[uuid.UUID]struct{})
-	}
-	for i := range ids {
-		m.role[ids[i]] = struct{}{}
-	}
-}
-
 // ClearRole clears the "role" edge to the Role entity.
 func (m *UserMutation) ClearRole() {
 	m.clearedrole = true
+	m.clearedFields[user.FieldRoleID] = struct{}{}
 }
 
 // RoleCleared reports if the "role" edge to the Role entity was cleared.
@@ -4007,29 +3996,12 @@ func (m *UserMutation) RoleCleared() bool {
 	return m.clearedrole
 }
 
-// RemoveRoleIDs removes the "role" edge to the Role entity by IDs.
-func (m *UserMutation) RemoveRoleIDs(ids ...uuid.UUID) {
-	if m.removedrole == nil {
-		m.removedrole = make(map[uuid.UUID]struct{})
-	}
-	for i := range ids {
-		delete(m.role, ids[i])
-		m.removedrole[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedRole returns the removed IDs of the "role" edge to the Role entity.
-func (m *UserMutation) RemovedRoleIDs() (ids []uuid.UUID) {
-	for id := range m.removedrole {
-		ids = append(ids, id)
-	}
-	return
-}
-
 // RoleIDs returns the "role" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RoleID instead. It exists only for internal usage by the builders.
 func (m *UserMutation) RoleIDs() (ids []uuid.UUID) {
-	for id := range m.role {
-		ids = append(ids, id)
+	if id := m.role; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -4038,7 +4010,6 @@ func (m *UserMutation) RoleIDs() (ids []uuid.UUID) {
 func (m *UserMutation) ResetRole() {
 	m.role = nil
 	m.clearedrole = false
-	m.removedrole = nil
 }
 
 // AddPoliceStationIDs adds the "police_station" edge to the PoliceStation entity by ids.
@@ -4151,7 +4122,7 @@ func (m *UserMutation) Fields() []string {
 	if m.active != nil {
 		fields = append(fields, user.FieldActive)
 	}
-	if m.role_id != nil {
+	if m.role != nil {
 		fields = append(fields, user.FieldRoleID)
 	}
 	if m.police_station_id != nil {
@@ -4388,11 +4359,9 @@ func (m *UserMutation) AddedEdges() []string {
 func (m *UserMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case user.EdgeRole:
-		ids := make([]ent.Value, 0, len(m.role))
-		for id := range m.role {
-			ids = append(ids, id)
+		if id := m.role; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	case user.EdgePoliceStation:
 		ids := make([]ent.Value, 0, len(m.police_station))
 		for id := range m.police_station {
@@ -4406,9 +4375,6 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedrole != nil {
-		edges = append(edges, user.EdgeRole)
-	}
 	if m.removedpolice_station != nil {
 		edges = append(edges, user.EdgePoliceStation)
 	}
@@ -4419,12 +4385,6 @@ func (m *UserMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case user.EdgeRole:
-		ids := make([]ent.Value, 0, len(m.removedrole))
-		for id := range m.removedrole {
-			ids = append(ids, id)
-		}
-		return ids
 	case user.EdgePoliceStation:
 		ids := make([]ent.Value, 0, len(m.removedpolice_station))
 		for id := range m.removedpolice_station {
@@ -4463,6 +4423,9 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *UserMutation) ClearEdge(name string) error {
 	switch name {
+	case user.EdgeRole:
+		m.ClearRole()
+		return nil
 	}
 	return fmt.Errorf("unknown User unique edge %s", name)
 }

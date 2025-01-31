@@ -41,7 +41,17 @@ func (r *queryResolver) Permissions(ctx context.Context, after *entgql.Cursor[uu
 
 // PoliceStations is the resolver for the policeStations field.
 func (r *queryResolver) PoliceStations(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.PoliceStationOrder, where *ent.PoliceStationWhereInput) (*ent.PoliceStationConnection, error) {
-	panic(fmt.Errorf("not implemented: PoliceStations - policeStations"))
+	ctx = context.WithValue(ctx, constant.BypassPrivacyKey, true)
+	paginate, err := r.Client.PoliceStation.Query().Paginate(ctx, after, first, before, last, ent.WithPoliceStationFilter(where.Filter), ent.WithPoliceStationOrder(orderBy))
+	if err != nil {
+		return nil, err
+	}
+
+	if paginate == nil {
+		return nil, fmt.Errorf("no results found")
+
+	}
+	return paginate, nil
 }
 
 // Roles is the resolver for the roles field.
@@ -66,7 +76,17 @@ func (r *queryResolver) Users(ctx context.Context, after *entgql.Cursor[uuid.UUI
 
 // VehicleDataSlice is the resolver for the vehicleDataSlice field.
 func (r *queryResolver) VehicleDataSlice(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.VehicleDataOrder, where *ent.VehicleDataWhereInput) (*ent.VehicleDataConnection, error) {
-	panic(fmt.Errorf("not implemented: VehicleDataSlice - vehicleDataSlice"))
+	ctx = context.WithValue(ctx, constant.BypassPrivacyKey, true)
+	paginate, err := r.Client.VehicleData.Query().Paginate(ctx, after, first, before, last, ent.WithVehicleDataFilter(where.Filter), ent.WithVehicleDataOrder(orderBy))
+	if err != nil {
+		return nil, err
+	}
+
+	if paginate == nil {
+		return nil, fmt.Errorf("no results found")
+
+	}
+	return paginate, nil
 }
 
 // Query returns QueryResolver implementation.

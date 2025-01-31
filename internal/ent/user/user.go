@@ -5,6 +5,7 @@ package user
 import (
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
@@ -39,11 +40,13 @@ const (
 	EdgePoliceStation = "police_station"
 	// Table holds the table name of the user in the database.
 	Table = "users"
-	// RoleTable is the table that holds the role relation/edge. The primary key declared below.
-	RoleTable = "role_users"
+	// RoleTable is the table that holds the role relation/edge.
+	RoleTable = "users"
 	// RoleInverseTable is the table name for the Role entity.
 	// It exists in this package in order to avoid circular dependency with the "role" package.
 	RoleInverseTable = "roles"
+	// RoleColumn is the table column denoting the role relation/edge.
+	RoleColumn = "role_id"
 	// PoliceStationTable is the table that holds the police_station relation/edge. The primary key declared below.
 	PoliceStationTable = "police_station_users"
 	// PoliceStationInverseTable is the table name for the PoliceStation entity.
@@ -66,9 +69,6 @@ var Columns = []string{
 }
 
 var (
-	// RolePrimaryKey and RoleColumn2 are the table columns denoting the
-	// primary key for the role relation (M2M).
-	RolePrimaryKey = []string{"role_id", "user_id"}
 	// PoliceStationPrimaryKey and PoliceStationColumn2 are the table columns denoting the
 	// primary key for the police_station relation (M2M).
 	PoliceStationPrimaryKey = []string{"police_station_id", "user_id"}
@@ -84,7 +84,14 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "go-ent-project/internal/ent/runtime"
 var (
+	Hooks  [3]ent.Hook
+	Policy ent.Policy
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -156,17 +163,10 @@ func ByPoliceStationID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPoliceStationID, opts...).ToFunc()
 }
 
-// ByRoleCount orders the results by role count.
-func ByRoleCount(opts ...sql.OrderTermOption) OrderOption {
+// ByRoleField orders the results by role field.
+func ByRoleField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newRoleStep(), opts...)
-	}
-}
-
-// ByRole orders the results by role terms.
-func ByRole(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newRoleStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newRoleStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -187,7 +187,7 @@ func newRoleStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RoleInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, RoleTable, RolePrimaryKey...),
+		sqlgraph.Edge(sqlgraph.M2O, true, RoleTable, RoleColumn),
 	)
 }
 func newPoliceStationStep() *sqlgraph.Step {

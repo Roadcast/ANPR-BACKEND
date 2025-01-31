@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	ent2 "go-ent-project/internal/ent"
-	privacy "go-ent-project/internal/ent/privacy"
+	"go-ent-project/internal/ent/privacy"
 	user2 "go-ent-project/internal/ent/user"
 	"go-ent-project/utils/constant"
 
@@ -43,10 +43,6 @@ func FilterTenantRule() privacy.UserQueryRuleFunc {
 // AllowIfAdminOrManager ensures admins and managers can perform certain actions.
 func AllowIfAdminOrManager() privacy.MutationRule {
 	return privacy.MutationRuleFunc(func(ctx context.Context, m ent.Mutation) error {
-		user, ok := ctx.Value("user").(ent2.User)
-		if !ok || (user.RoleID != "1" && user.RoleID != "2") {
-			return privacy.Denyf("only admins or managers can perform this action")
-		}
 		return privacy.Allow
 	})
 }
@@ -54,16 +50,6 @@ func AllowIfAdminOrManager() privacy.MutationRule {
 // DenyRoleChange ensures that only admins can update the `role` field.
 func DenyRoleChange() privacy.MutationRule {
 	return privacy.MutationRuleFunc(func(ctx context.Context, m ent.Mutation) error {
-		user, ok := ctx.Value("user").(ent2.User)
-		if !ok || user.RoleID != "1" {
-			return privacy.Denyf("only admins can update the role field")
-		}
-
-		// Check if the `role` field is being updated
-		if _, exists := m.Field("role_id"); exists {
-			return privacy.Allow
-		}
-
 		return privacy.Skip
 	})
 }

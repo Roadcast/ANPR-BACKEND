@@ -126,19 +126,9 @@ func (uc *UserCreate) SetNillableID(u *uuid.UUID) *UserCreate {
 	return uc
 }
 
-// AddRoleIDs adds the "role" edge to the Role entity by IDs.
-func (uc *UserCreate) AddRoleIDs(ids ...uuid.UUID) *UserCreate {
-	uc.mutation.AddRoleIDs(ids...)
-	return uc
-}
-
-// AddRole adds the "role" edges to the Role entity.
-func (uc *UserCreate) AddRole(r ...*Role) *UserCreate {
-	ids := make([]uuid.UUID, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
-	}
-	return uc.AddRoleIDs(ids...)
+// SetRole sets the "role" edge to the Role entity.
+func (uc *UserCreate) SetRole(r *Role) *UserCreate {
+	return uc.SetRoleID(r.ID)
 }
 
 // AddPoliceStationIDs adds the "police_station" edge to the PoliceStation entity by IDs.
@@ -163,7 +153,9 @@ func (uc *UserCreate) Mutation() *UserMutation {
 
 // Save creates the User in the database.
 func (uc *UserCreate) Save(ctx context.Context) (*User, error) {
-	uc.defaults()
+	if err := uc.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, uc.sqlSave, uc.mutation, uc.hooks)
 }
 
@@ -190,12 +182,18 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (uc *UserCreate) defaults() {
+func (uc *UserCreate) defaults() error {
 	if _, ok := uc.mutation.CreatedAt(); !ok {
+		if user.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized user.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := user.DefaultCreatedAt()
 		uc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := uc.mutation.UpdatedAt(); !ok {
+		if user.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized user.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := user.DefaultUpdatedAt()
 		uc.mutation.SetUpdatedAt(v)
 	}
@@ -204,9 +202,13 @@ func (uc *UserCreate) defaults() {
 		uc.mutation.SetActive(v)
 	}
 	if _, ok := uc.mutation.ID(); !ok {
+		if user.DefaultID == nil {
+			return fmt.Errorf("ent: uninitialized user.DefaultID (forgotten import ent/runtime?)")
+		}
 		v := user.DefaultID()
 		uc.mutation.SetID(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -320,20 +322,16 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldActive, field.TypeBool, value)
 		_node.Active = value
 	}
-	if value, ok := uc.mutation.RoleID(); ok {
-		_spec.SetField(user.FieldRoleID, field.TypeUUID, value)
-		_node.RoleID = value
-	}
 	if value, ok := uc.mutation.PoliceStationID(); ok {
 		_spec.SetField(user.FieldPoliceStationID, field.TypeUUID, value)
 		_node.PoliceStationID = value
 	}
 	if nodes := uc.mutation.RoleIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   user.RoleTable,
-			Columns: user.RolePrimaryKey,
+			Columns: []string{user.RoleColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID),
@@ -342,6 +340,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.RoleID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := uc.mutation.PoliceStationIDs(); len(nodes) > 0 {
