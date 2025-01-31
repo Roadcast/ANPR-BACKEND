@@ -21,7 +21,8 @@ func (BMixin) Fields() []ent.Field {
 			Default(uuid.New).
 			Unique().
 			Immutable().
-			Annotations(entgql.Type("ID")),
+			Annotations(entgql.Type("ID"),
+				entgql.Skip(entgql.SkipWhereInput)),
 
 		// CreatedAt timestamp
 		field.Time("created_at").
@@ -30,7 +31,8 @@ func (BMixin) Fields() []ent.Field {
 				"postgres": "timestamp with time zone", // PostgreSQL type
 			}).
 			Immutable().
-			Annotations(entgql.OrderField("CreatedAt")),
+			Annotations(entgql.OrderField("CreatedAt"),
+				entgql.Skip(entgql.SkipWhereInput)),
 
 		// UpdatedAt timestamp
 		field.Time("updated_at").
@@ -39,7 +41,8 @@ func (BMixin) Fields() []ent.Field {
 			SchemaType(map[string]string{
 				"postgres": "timestamp with time zone", // PostgreSQL type
 			}).
-			Annotations(entgql.OrderField("UpdatedAt")),
+			Annotations(entgql.OrderField("UpdatedAt"),
+				entgql.Skip(entgql.SkipWhereInput)),
 	}
 }
 

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go-ent-project/internal/ent/camera"
+	"go-ent-project/internal/ent/policestation"
 	"time"
 
 	"entgo.io/ent/dialect"
@@ -71,8 +72,8 @@ func (cc *CameraCreate) SetImei(s string) *CameraCreate {
 }
 
 // SetLocation sets the "location" field.
-func (cc *CameraCreate) SetLocation(m map[string]interface{}) *CameraCreate {
-	cc.mutation.SetLocation(m)
+func (cc *CameraCreate) SetLocation(s string) *CameraCreate {
+	cc.mutation.SetLocation(s)
 	return cc
 }
 
@@ -90,6 +91,20 @@ func (cc *CameraCreate) SetNillableActive(b *bool) *CameraCreate {
 	return cc
 }
 
+// SetPoliceStationID sets the "police_station_id" field.
+func (cc *CameraCreate) SetPoliceStationID(u uuid.UUID) *CameraCreate {
+	cc.mutation.SetPoliceStationID(u)
+	return cc
+}
+
+// SetNillablePoliceStationID sets the "police_station_id" field if the given value is not nil.
+func (cc *CameraCreate) SetNillablePoliceStationID(u *uuid.UUID) *CameraCreate {
+	if u != nil {
+		cc.SetPoliceStationID(*u)
+	}
+	return cc
+}
+
 // SetID sets the "id" field.
 func (cc *CameraCreate) SetID(u uuid.UUID) *CameraCreate {
 	cc.mutation.SetID(u)
@@ -102,6 +117,11 @@ func (cc *CameraCreate) SetNillableID(u *uuid.UUID) *CameraCreate {
 		cc.SetID(*u)
 	}
 	return cc
+}
+
+// SetPoliceStation sets the "police_station" edge to the PoliceStation entity.
+func (cc *CameraCreate) SetPoliceStation(p *PoliceStation) *CameraCreate {
+	return cc.SetPoliceStationID(p.ID)
 }
 
 // Mutation returns the CameraMutation object of the builder.
@@ -252,12 +272,29 @@ func (cc *CameraCreate) createSpec() (*Camera, *sqlgraph.CreateSpec) {
 		_node.Imei = value
 	}
 	if value, ok := cc.mutation.Location(); ok {
-		_spec.SetField(camera.FieldLocation, field.TypeJSON, value)
+		_spec.SetField(camera.FieldLocation, field.TypeString, value)
 		_node.Location = value
 	}
 	if value, ok := cc.mutation.Active(); ok {
 		_spec.SetField(camera.FieldActive, field.TypeBool, value)
 		_node.Active = value
+	}
+	if nodes := cc.mutation.PoliceStationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   camera.PoliceStationTable,
+			Columns: []string{camera.PoliceStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.PoliceStationID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -360,7 +397,7 @@ func (u *CameraUpsert) UpdateImei() *CameraUpsert {
 }
 
 // SetLocation sets the "location" field.
-func (u *CameraUpsert) SetLocation(v map[string]interface{}) *CameraUpsert {
+func (u *CameraUpsert) SetLocation(v string) *CameraUpsert {
 	u.Set(camera.FieldLocation, v)
 	return u
 }
@@ -380,6 +417,24 @@ func (u *CameraUpsert) SetActive(v bool) *CameraUpsert {
 // UpdateActive sets the "active" field to the value that was provided on create.
 func (u *CameraUpsert) UpdateActive() *CameraUpsert {
 	u.SetExcluded(camera.FieldActive)
+	return u
+}
+
+// SetPoliceStationID sets the "police_station_id" field.
+func (u *CameraUpsert) SetPoliceStationID(v uuid.UUID) *CameraUpsert {
+	u.Set(camera.FieldPoliceStationID, v)
+	return u
+}
+
+// UpdatePoliceStationID sets the "police_station_id" field to the value that was provided on create.
+func (u *CameraUpsert) UpdatePoliceStationID() *CameraUpsert {
+	u.SetExcluded(camera.FieldPoliceStationID)
+	return u
+}
+
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (u *CameraUpsert) ClearPoliceStationID() *CameraUpsert {
+	u.SetNull(camera.FieldPoliceStationID)
 	return u
 }
 
@@ -491,7 +546,7 @@ func (u *CameraUpsertOne) UpdateImei() *CameraUpsertOne {
 }
 
 // SetLocation sets the "location" field.
-func (u *CameraUpsertOne) SetLocation(v map[string]interface{}) *CameraUpsertOne {
+func (u *CameraUpsertOne) SetLocation(v string) *CameraUpsertOne {
 	return u.Update(func(s *CameraUpsert) {
 		s.SetLocation(v)
 	})
@@ -515,6 +570,27 @@ func (u *CameraUpsertOne) SetActive(v bool) *CameraUpsertOne {
 func (u *CameraUpsertOne) UpdateActive() *CameraUpsertOne {
 	return u.Update(func(s *CameraUpsert) {
 		s.UpdateActive()
+	})
+}
+
+// SetPoliceStationID sets the "police_station_id" field.
+func (u *CameraUpsertOne) SetPoliceStationID(v uuid.UUID) *CameraUpsertOne {
+	return u.Update(func(s *CameraUpsert) {
+		s.SetPoliceStationID(v)
+	})
+}
+
+// UpdatePoliceStationID sets the "police_station_id" field to the value that was provided on create.
+func (u *CameraUpsertOne) UpdatePoliceStationID() *CameraUpsertOne {
+	return u.Update(func(s *CameraUpsert) {
+		s.UpdatePoliceStationID()
+	})
+}
+
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (u *CameraUpsertOne) ClearPoliceStationID() *CameraUpsertOne {
+	return u.Update(func(s *CameraUpsert) {
+		s.ClearPoliceStationID()
 	})
 }
 
@@ -793,7 +869,7 @@ func (u *CameraUpsertBulk) UpdateImei() *CameraUpsertBulk {
 }
 
 // SetLocation sets the "location" field.
-func (u *CameraUpsertBulk) SetLocation(v map[string]interface{}) *CameraUpsertBulk {
+func (u *CameraUpsertBulk) SetLocation(v string) *CameraUpsertBulk {
 	return u.Update(func(s *CameraUpsert) {
 		s.SetLocation(v)
 	})
@@ -817,6 +893,27 @@ func (u *CameraUpsertBulk) SetActive(v bool) *CameraUpsertBulk {
 func (u *CameraUpsertBulk) UpdateActive() *CameraUpsertBulk {
 	return u.Update(func(s *CameraUpsert) {
 		s.UpdateActive()
+	})
+}
+
+// SetPoliceStationID sets the "police_station_id" field.
+func (u *CameraUpsertBulk) SetPoliceStationID(v uuid.UUID) *CameraUpsertBulk {
+	return u.Update(func(s *CameraUpsert) {
+		s.SetPoliceStationID(v)
+	})
+}
+
+// UpdatePoliceStationID sets the "police_station_id" field to the value that was provided on create.
+func (u *CameraUpsertBulk) UpdatePoliceStationID() *CameraUpsertBulk {
+	return u.Update(func(s *CameraUpsert) {
+		s.UpdatePoliceStationID()
+	})
+}
+
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (u *CameraUpsertBulk) ClearPoliceStationID() *CameraUpsertBulk {
+	return u.Update(func(s *CameraUpsert) {
+		s.ClearPoliceStationID()
 	})
 }
 

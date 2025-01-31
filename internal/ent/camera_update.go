@@ -7,12 +7,14 @@ import (
 	"errors"
 	"fmt"
 	"go-ent-project/internal/ent/camera"
+	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // CameraUpdate is the builder for updating Camera entities.
@@ -77,8 +79,16 @@ func (cu *CameraUpdate) SetNillableImei(s *string) *CameraUpdate {
 }
 
 // SetLocation sets the "location" field.
-func (cu *CameraUpdate) SetLocation(m map[string]interface{}) *CameraUpdate {
-	cu.mutation.SetLocation(m)
+func (cu *CameraUpdate) SetLocation(s string) *CameraUpdate {
+	cu.mutation.SetLocation(s)
+	return cu
+}
+
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (cu *CameraUpdate) SetNillableLocation(s *string) *CameraUpdate {
+	if s != nil {
+		cu.SetLocation(*s)
+	}
 	return cu
 }
 
@@ -96,9 +106,40 @@ func (cu *CameraUpdate) SetNillableActive(b *bool) *CameraUpdate {
 	return cu
 }
 
+// SetPoliceStationID sets the "police_station_id" field.
+func (cu *CameraUpdate) SetPoliceStationID(u uuid.UUID) *CameraUpdate {
+	cu.mutation.SetPoliceStationID(u)
+	return cu
+}
+
+// SetNillablePoliceStationID sets the "police_station_id" field if the given value is not nil.
+func (cu *CameraUpdate) SetNillablePoliceStationID(u *uuid.UUID) *CameraUpdate {
+	if u != nil {
+		cu.SetPoliceStationID(*u)
+	}
+	return cu
+}
+
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (cu *CameraUpdate) ClearPoliceStationID() *CameraUpdate {
+	cu.mutation.ClearPoliceStationID()
+	return cu
+}
+
+// SetPoliceStation sets the "police_station" edge to the PoliceStation entity.
+func (cu *CameraUpdate) SetPoliceStation(p *PoliceStation) *CameraUpdate {
+	return cu.SetPoliceStationID(p.ID)
+}
+
 // Mutation returns the CameraMutation object of the builder.
 func (cu *CameraUpdate) Mutation() *CameraMutation {
 	return cu.mutation
+}
+
+// ClearPoliceStation clears the "police_station" edge to the PoliceStation entity.
+func (cu *CameraUpdate) ClearPoliceStation() *CameraUpdate {
+	cu.mutation.ClearPoliceStation()
+	return cu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -182,10 +223,39 @@ func (cu *CameraUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.SetField(camera.FieldImei, field.TypeString, value)
 	}
 	if value, ok := cu.mutation.Location(); ok {
-		_spec.SetField(camera.FieldLocation, field.TypeJSON, value)
+		_spec.SetField(camera.FieldLocation, field.TypeString, value)
 	}
 	if value, ok := cu.mutation.Active(); ok {
 		_spec.SetField(camera.FieldActive, field.TypeBool, value)
+	}
+	if cu.mutation.PoliceStationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   camera.PoliceStationTable,
+			Columns: []string{camera.PoliceStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.PoliceStationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   camera.PoliceStationTable,
+			Columns: []string{camera.PoliceStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -256,8 +326,16 @@ func (cuo *CameraUpdateOne) SetNillableImei(s *string) *CameraUpdateOne {
 }
 
 // SetLocation sets the "location" field.
-func (cuo *CameraUpdateOne) SetLocation(m map[string]interface{}) *CameraUpdateOne {
-	cuo.mutation.SetLocation(m)
+func (cuo *CameraUpdateOne) SetLocation(s string) *CameraUpdateOne {
+	cuo.mutation.SetLocation(s)
+	return cuo
+}
+
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (cuo *CameraUpdateOne) SetNillableLocation(s *string) *CameraUpdateOne {
+	if s != nil {
+		cuo.SetLocation(*s)
+	}
 	return cuo
 }
 
@@ -275,9 +353,40 @@ func (cuo *CameraUpdateOne) SetNillableActive(b *bool) *CameraUpdateOne {
 	return cuo
 }
 
+// SetPoliceStationID sets the "police_station_id" field.
+func (cuo *CameraUpdateOne) SetPoliceStationID(u uuid.UUID) *CameraUpdateOne {
+	cuo.mutation.SetPoliceStationID(u)
+	return cuo
+}
+
+// SetNillablePoliceStationID sets the "police_station_id" field if the given value is not nil.
+func (cuo *CameraUpdateOne) SetNillablePoliceStationID(u *uuid.UUID) *CameraUpdateOne {
+	if u != nil {
+		cuo.SetPoliceStationID(*u)
+	}
+	return cuo
+}
+
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (cuo *CameraUpdateOne) ClearPoliceStationID() *CameraUpdateOne {
+	cuo.mutation.ClearPoliceStationID()
+	return cuo
+}
+
+// SetPoliceStation sets the "police_station" edge to the PoliceStation entity.
+func (cuo *CameraUpdateOne) SetPoliceStation(p *PoliceStation) *CameraUpdateOne {
+	return cuo.SetPoliceStationID(p.ID)
+}
+
 // Mutation returns the CameraMutation object of the builder.
 func (cuo *CameraUpdateOne) Mutation() *CameraMutation {
 	return cuo.mutation
+}
+
+// ClearPoliceStation clears the "police_station" edge to the PoliceStation entity.
+func (cuo *CameraUpdateOne) ClearPoliceStation() *CameraUpdateOne {
+	cuo.mutation.ClearPoliceStation()
+	return cuo
 }
 
 // Where appends a list predicates to the CameraUpdate builder.
@@ -391,10 +500,39 @@ func (cuo *CameraUpdateOne) sqlSave(ctx context.Context) (_node *Camera, err err
 		_spec.SetField(camera.FieldImei, field.TypeString, value)
 	}
 	if value, ok := cuo.mutation.Location(); ok {
-		_spec.SetField(camera.FieldLocation, field.TypeJSON, value)
+		_spec.SetField(camera.FieldLocation, field.TypeString, value)
 	}
 	if value, ok := cuo.mutation.Active(); ok {
 		_spec.SetField(camera.FieldActive, field.TypeBool, value)
+	}
+	if cuo.mutation.PoliceStationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   camera.PoliceStationTable,
+			Columns: []string{camera.PoliceStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.PoliceStationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   camera.PoliceStationTable,
+			Columns: []string{camera.PoliceStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Camera{config: cuo.config}
 	_spec.Assign = _node.assignValues

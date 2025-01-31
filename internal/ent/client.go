@@ -363,6 +363,22 @@ func (c *CameraClient) GetX(ctx context.Context, id uuid.UUID) *Camera {
 	return obj
 }
 
+// QueryPoliceStation queries the police_station edge of a Camera.
+func (c *CameraClient) QueryPoliceStation(ca *Camera) *PoliceStationQuery {
+	query := (&PoliceStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(camera.Table, camera.FieldID, id),
+			sqlgraph.To(policestation.Table, policestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, camera.PoliceStationTable, camera.PoliceStationColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CameraClient) Hooks() []Hook {
 	return c.hooks.Camera
@@ -770,7 +786,7 @@ func (c *PoliceStationClient) QueryUsers(ps *PoliceStation) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(policestation.Table, policestation.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, policestation.UsersTable, policestation.UsersPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, policestation.UsersTable, policestation.UsersColumn),
 		)
 		fromV = sqlgraph.Neighbors(ps.driver.Dialect(), step)
 		return fromV, nil
@@ -778,15 +794,31 @@ func (c *PoliceStationClient) QueryUsers(ps *PoliceStation) *UserQuery {
 	return query
 }
 
-// QueryParentStation queries the parent_station edge of a PoliceStation.
-func (c *PoliceStationClient) QueryParentStation(ps *PoliceStation) *PoliceStationQuery {
+// QueryCamera queries the camera edge of a PoliceStation.
+func (c *PoliceStationClient) QueryCamera(ps *PoliceStation) *CameraQuery {
+	query := (&CameraClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ps.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(policestation.Table, policestation.FieldID, id),
+			sqlgraph.To(camera.Table, camera.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, policestation.CameraTable, policestation.CameraColumn),
+		)
+		fromV = sqlgraph.Neighbors(ps.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryParent queries the parent edge of a PoliceStation.
+func (c *PoliceStationClient) QueryParent(ps *PoliceStation) *PoliceStationQuery {
 	query := (&PoliceStationClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ps.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(policestation.Table, policestation.FieldID, id),
 			sqlgraph.To(policestation.Table, policestation.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, policestation.ParentStationTable, policestation.ParentStationColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, policestation.ParentTable, policestation.ParentColumn),
 		)
 		fromV = sqlgraph.Neighbors(ps.driver.Dialect(), step)
 		return fromV, nil
@@ -1132,7 +1164,7 @@ func (c *UserClient) QueryPoliceStation(u *User) *PoliceStationQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(policestation.Table, policestation.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, user.PoliceStationTable, user.PoliceStationPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, user.PoliceStationTable, user.PoliceStationColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

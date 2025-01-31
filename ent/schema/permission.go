@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
 	_ "entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
@@ -33,23 +34,25 @@ func (Permission) Fields() []ent.Field {
 		field.Bool("can_read").
 			Default(false). // Defaults to false
 			Annotations(
-			// Expose in GraphQL
-			),
+				entgql.Skip(entgql.SkipWhereInput)),
 
 		// Create permission
 		field.Bool("can_create").
 			Default(false).
-			Annotations(),
+			Annotations(
+				entgql.Skip(entgql.SkipWhereInput)),
 
 		// Update permission
 		field.Bool("can_update").
 			Default(false).
-			Annotations(),
+			Annotations(
+				entgql.Skip(entgql.SkipWhereInput)),
 
 		// Delete permission
 		field.Bool("can_delete").
 			Default(false).
-			Annotations(),
+			Annotations(
+				entgql.Skip(entgql.SkipWhereInput)),
 	}
 }
 

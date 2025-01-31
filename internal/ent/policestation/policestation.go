@@ -27,27 +27,40 @@ const (
 	FieldCode = "code"
 	// FieldIdentifier holds the string denoting the identifier field in the database.
 	FieldIdentifier = "identifier"
+	// FieldParentStationID holds the string denoting the parent_station_id field in the database.
+	FieldParentStationID = "parent_station_id"
 	// EdgeUsers holds the string denoting the users edge name in mutations.
 	EdgeUsers = "users"
-	// EdgeParentStation holds the string denoting the parent_station edge name in mutations.
-	EdgeParentStation = "parent_station"
+	// EdgeCamera holds the string denoting the camera edge name in mutations.
+	EdgeCamera = "camera"
+	// EdgeParent holds the string denoting the parent edge name in mutations.
+	EdgeParent = "parent"
 	// EdgeChildStations holds the string denoting the child_stations edge name in mutations.
 	EdgeChildStations = "child_stations"
 	// Table holds the table name of the policestation in the database.
 	Table = "police_stations"
-	// UsersTable is the table that holds the users relation/edge. The primary key declared below.
-	UsersTable = "police_station_users"
+	// UsersTable is the table that holds the users relation/edge.
+	UsersTable = "users"
 	// UsersInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	UsersInverseTable = "users"
-	// ParentStationTable is the table that holds the parent_station relation/edge.
-	ParentStationTable = "police_stations"
-	// ParentStationColumn is the table column denoting the parent_station relation/edge.
-	ParentStationColumn = "police_station_child_stations"
+	// UsersColumn is the table column denoting the users relation/edge.
+	UsersColumn = "police_station_id"
+	// CameraTable is the table that holds the camera relation/edge.
+	CameraTable = "cameras"
+	// CameraInverseTable is the table name for the Camera entity.
+	// It exists in this package in order to avoid circular dependency with the "camera" package.
+	CameraInverseTable = "cameras"
+	// CameraColumn is the table column denoting the camera relation/edge.
+	CameraColumn = "police_station_id"
+	// ParentTable is the table that holds the parent relation/edge.
+	ParentTable = "police_stations"
+	// ParentColumn is the table column denoting the parent relation/edge.
+	ParentColumn = "parent_station_id"
 	// ChildStationsTable is the table that holds the child_stations relation/edge.
 	ChildStationsTable = "police_stations"
 	// ChildStationsColumn is the table column denoting the child_stations relation/edge.
-	ChildStationsColumn = "police_station_child_stations"
+	ChildStationsColumn = "parent_station_id"
 )
 
 // Columns holds all SQL columns for policestation fields.
@@ -59,29 +72,13 @@ var Columns = []string{
 	FieldLocation,
 	FieldCode,
 	FieldIdentifier,
+	FieldParentStationID,
 }
-
-// ForeignKeys holds the SQL foreign-keys that are owned by the "police_stations"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"police_station_child_stations",
-}
-
-var (
-	// UsersPrimaryKey and UsersColumn2 are the table columns denoting the
-	// primary key for the users relation (M2M).
-	UsersPrimaryKey = []string{"police_station_id", "user_id"}
-)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -128,6 +125,11 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
+// ByLocation orders the results by the location field.
+func ByLocation(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLocation, opts...).ToFunc()
+}
+
 // ByCode orders the results by the code field.
 func ByCode(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCode, opts...).ToFunc()
@@ -136,6 +138,11 @@ func ByCode(opts ...sql.OrderTermOption) OrderOption {
 // ByIdentifier orders the results by the identifier field.
 func ByIdentifier(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIdentifier, opts...).ToFunc()
+}
+
+// ByParentStationID orders the results by the parent_station_id field.
+func ByParentStationID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldParentStationID, opts...).ToFunc()
 }
 
 // ByUsersCount orders the results by users count.
@@ -152,10 +159,24 @@ func ByUsers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
-// ByParentStationField orders the results by parent_station field.
-func ByParentStationField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByCameraCount orders the results by camera count.
+func ByCameraCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newParentStationStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborsCount(s, newCameraStep(), opts...)
+	}
+}
+
+// ByCamera orders the results by camera terms.
+func ByCamera(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCameraStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByParentField orders the results by parent field.
+func ByParentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newParentStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -176,14 +197,21 @@ func newUsersStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UsersInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, UsersTable, UsersPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.O2M, false, UsersTable, UsersColumn),
 	)
 }
-func newParentStationStep() *sqlgraph.Step {
+func newCameraStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CameraInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CameraTable, CameraColumn),
+	)
+}
+func newParentStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(Table, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, ParentStationTable, ParentStationColumn),
+		sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
 	)
 }
 func newChildStationsStep() *sqlgraph.Step {

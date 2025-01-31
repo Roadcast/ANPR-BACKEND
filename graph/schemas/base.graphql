@@ -1,0 +1,56 @@
+extend type Query {
+    getCamera(id: ID!): Camera!
+    getPoliceStation(id: ID!): PoliceStation!
+}
+
+extend type Mutation {
+    addUserToPoliceStation(
+        user_id: ID!,
+        police_station_id: ID!
+    ): PoliceStation!
+    addCameraToPoliceStation(
+        camera_id: ID!,
+        police_station_id: ID!
+    ): Camera!
+    addPoliceStationToUser(
+        user_id: ID!,
+        police_station_id: ID!
+    ): User!
+    addChildPoliceStationToParentPoliceStation(
+        parent_police_station_id: ID!,
+        child_police_station_id: ID!
+    ): PoliceStation!
+    addParentPoliceStationToChildPoliceStation(
+        parent_police_station_id: ID!,
+        child_police_station_id: ID!
+    ): PoliceStation!
+
+    removeUserFromPoliceStation(
+        user_id: ID!,
+        police_station_id: ID!
+    ): PoliceStation!
+    removeCameraFromPoliceStation(
+        camera_id: ID!,
+    ): Camera!
+    removePoliceStationFromUser(
+        user_id: ID!,
+    ): User!
+    removeChildPoliceStationFromParentPoliceStation(
+        parent_police_station_id: ID!,
+        child_police_station_id: ID!
+    ): PoliceStation!
+    removeParentPoliceStationFromChildPoliceStation(
+        parent_police_station_id: ID!,
+        child_police_station_id: ID!
+    ): PoliceStation!
+}
+
+type Location {
+    latitude: Float!
+    longitude: Float!
+}
+
+input LocationInput {
+    latitude: Float!
+    longitude: Float!
+}

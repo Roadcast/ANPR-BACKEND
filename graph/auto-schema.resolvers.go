@@ -26,7 +26,18 @@ func (r *queryResolver) Nodes(ctx context.Context, ids []uuid.UUID) ([]ent.Noder
 
 // Cameras is the resolver for the cameras field.
 func (r *queryResolver) Cameras(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.CameraOrder, where *ent.CameraWhereInput) (*ent.CameraConnection, error) {
-	panic(fmt.Errorf("not implemented: Cameras - cameras"))
+	fmt.Printf("where: %v\n", where)
+	ctx = context.WithValue(ctx, constant.BypassPrivacyKey, true)
+	paginate, err := r.Client.Camera.Query().Paginate(ctx, after, first, before, last, ent.WithCameraFilter(where.Filter), ent.WithCameraOrder(orderBy))
+	fmt.Printf("paginate: %v\n", paginate)
+	if err != nil {
+		return nil, err
+	}
+	if paginate == nil {
+		return nil, fmt.Errorf("no results found")
+
+	}
+	return paginate, nil
 }
 
 // Cars is the resolver for the cars field.
@@ -41,12 +52,13 @@ func (r *queryResolver) Permissions(ctx context.Context, after *entgql.Cursor[uu
 
 // PoliceStations is the resolver for the policeStations field.
 func (r *queryResolver) PoliceStations(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.PoliceStationOrder, where *ent.PoliceStationWhereInput) (*ent.PoliceStationConnection, error) {
+	fmt.Printf("where: %v\n", where)
 	ctx = context.WithValue(ctx, constant.BypassPrivacyKey, true)
 	paginate, err := r.Client.PoliceStation.Query().Paginate(ctx, after, first, before, last, ent.WithPoliceStationFilter(where.Filter), ent.WithPoliceStationOrder(orderBy))
+	fmt.Printf("paginate: %v\n", paginate)
 	if err != nil {
 		return nil, err
 	}
-
 	if paginate == nil {
 		return nil, fmt.Errorf("no results found")
 
@@ -61,12 +73,13 @@ func (r *queryResolver) Roles(ctx context.Context, after *entgql.Cursor[uuid.UUI
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.UserOrder, where *ent.UserWhereInput) (*ent.UserConnection, error) {
+	fmt.Printf("where: %v\n", where)
 	ctx = context.WithValue(ctx, constant.BypassPrivacyKey, true)
 	paginate, err := r.Client.User.Query().Paginate(ctx, after, first, before, last, ent.WithUserFilter(where.Filter), ent.WithUserOrder(orderBy))
+	fmt.Printf("paginate: %v\n", paginate)
 	if err != nil {
 		return nil, err
 	}
-
 	if paginate == nil {
 		return nil, fmt.Errorf("no results found")
 
@@ -76,12 +89,13 @@ func (r *queryResolver) Users(ctx context.Context, after *entgql.Cursor[uuid.UUI
 
 // VehicleDataSlice is the resolver for the vehicleDataSlice field.
 func (r *queryResolver) VehicleDataSlice(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.VehicleDataOrder, where *ent.VehicleDataWhereInput) (*ent.VehicleDataConnection, error) {
+	fmt.Printf("where: %v\n", where)
 	ctx = context.WithValue(ctx, constant.BypassPrivacyKey, true)
 	paginate, err := r.Client.VehicleData.Query().Paginate(ctx, after, first, before, last, ent.WithVehicleDataFilter(where.Filter), ent.WithVehicleDataOrder(orderBy))
+	fmt.Printf("paginate: %v\n", paginate)
 	if err != nil {
 		return nil, err
 	}
-
 	if paginate == nil {
 		return nil, fmt.Errorf("no results found")
 

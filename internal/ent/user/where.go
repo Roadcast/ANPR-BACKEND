@@ -501,26 +501,6 @@ func PoliceStationIDNotIn(vs ...uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldNotIn(FieldPoliceStationID, vs...))
 }
 
-// PoliceStationIDGT applies the GT predicate on the "police_station_id" field.
-func PoliceStationIDGT(v uuid.UUID) predicate.User {
-	return predicate.User(sql.FieldGT(FieldPoliceStationID, v))
-}
-
-// PoliceStationIDGTE applies the GTE predicate on the "police_station_id" field.
-func PoliceStationIDGTE(v uuid.UUID) predicate.User {
-	return predicate.User(sql.FieldGTE(FieldPoliceStationID, v))
-}
-
-// PoliceStationIDLT applies the LT predicate on the "police_station_id" field.
-func PoliceStationIDLT(v uuid.UUID) predicate.User {
-	return predicate.User(sql.FieldLT(FieldPoliceStationID, v))
-}
-
-// PoliceStationIDLTE applies the LTE predicate on the "police_station_id" field.
-func PoliceStationIDLTE(v uuid.UUID) predicate.User {
-	return predicate.User(sql.FieldLTE(FieldPoliceStationID, v))
-}
-
 // HasRole applies the HasEdge predicate on the "role" edge.
 func HasRole() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
@@ -549,7 +529,7 @@ func HasPoliceStation() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, PoliceStationTable, PoliceStationPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, PoliceStationTable, PoliceStationColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

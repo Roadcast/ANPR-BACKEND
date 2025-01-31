@@ -3,9 +3,9 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
 	"go-ent-project/internal/ent/camera"
+	"go-ent-project/internal/ent/policestation"
 	"strings"
 	"time"
 
@@ -30,10 +30,37 @@ type Camera struct {
 	// Imei holds the value of the "imei" field.
 	Imei string `json:"imei,omitempty"`
 	// Location holds the value of the "location" field.
-	Location map[string]interface{} `json:"location,omitempty"`
+	Location string `json:"location,omitempty"`
 	// Active holds the value of the "active" field.
-	Active       bool `json:"active,omitempty"`
+	Active bool `json:"active,omitempty"`
+	// PoliceStationID holds the value of the "police_station_id" field.
+	PoliceStationID *uuid.UUID `json:"police_station_id,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the CameraQuery when eager-loading is set.
+	Edges        CameraEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// CameraEdges holds the relations/edges for other nodes in the graph.
+type CameraEdges struct {
+	// PoliceStation holds the value of the police_station edge.
+	PoliceStation *PoliceStation `json:"police_station,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+	// totalCount holds the count of the edges above.
+	totalCount [1]map[string]int
+}
+
+// PoliceStationOrErr returns the PoliceStation value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CameraEdges) PoliceStationOrErr() (*PoliceStation, error) {
+	if e.PoliceStation != nil {
+		return e.PoliceStation, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: policestation.Label}
+	}
+	return nil, &NotLoadedError{edge: "police_station"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -41,11 +68,11 @@ func (*Camera) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case camera.FieldLocation:
-			values[i] = new([]byte)
+		case camera.FieldPoliceStationID:
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		case camera.FieldActive:
 			values[i] = new(sql.NullBool)
-		case camera.FieldName, camera.FieldModel, camera.FieldImei:
+		case camera.FieldName, camera.FieldModel, camera.FieldImei, camera.FieldLocation:
 			values[i] = new(sql.NullString)
 		case camera.FieldCreatedAt, camera.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -103,18 +130,23 @@ func (c *Camera) assignValues(columns []string, values []any) error {
 				c.Imei = value.String
 			}
 		case camera.FieldLocation:
-			if value, ok := values[i].(*[]byte); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field location", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &c.Location); err != nil {
-					return fmt.Errorf("unmarshal field location: %w", err)
-				}
+			} else if value.Valid {
+				c.Location = value.String
 			}
 		case camera.FieldActive:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field active", values[i])
 			} else if value.Valid {
 				c.Active = value.Bool
+			}
+		case camera.FieldPoliceStationID:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field police_station_id", values[i])
+			} else if value.Valid {
+				c.PoliceStationID = new(uuid.UUID)
+				*c.PoliceStationID = *value.S.(*uuid.UUID)
 			}
 		default:
 			c.selectValues.Set(columns[i], values[i])
@@ -127,6 +159,11 @@ func (c *Camera) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (c *Camera) Value(name string) (ent.Value, error) {
 	return c.selectValues.Get(name)
+}
+
+// QueryPoliceStation queries the "police_station" edge of the Camera entity.
+func (c *Camera) QueryPoliceStation() *PoliceStationQuery {
+	return NewCameraClient(c.config).QueryPoliceStation(c)
 }
 
 // Update returns a builder for updating this Camera.
@@ -168,10 +205,15 @@ func (c *Camera) String() string {
 	builder.WriteString(c.Imei)
 	builder.WriteString(", ")
 	builder.WriteString("location=")
-	builder.WriteString(fmt.Sprintf("%v", c.Location))
+	builder.WriteString(c.Location)
 	builder.WriteString(", ")
 	builder.WriteString("active=")
 	builder.WriteString(fmt.Sprintf("%v", c.Active))
+	builder.WriteString(", ")
+	if v := c.PoliceStationID; v != nil {
+		builder.WriteString("police_station_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

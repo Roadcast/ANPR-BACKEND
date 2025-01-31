@@ -32,13 +32,14 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Camera",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			camera.FieldCreatedAt: {Type: field.TypeTime, Column: camera.FieldCreatedAt},
-			camera.FieldUpdatedAt: {Type: field.TypeTime, Column: camera.FieldUpdatedAt},
-			camera.FieldName:      {Type: field.TypeString, Column: camera.FieldName},
-			camera.FieldModel:     {Type: field.TypeString, Column: camera.FieldModel},
-			camera.FieldImei:      {Type: field.TypeString, Column: camera.FieldImei},
-			camera.FieldLocation:  {Type: field.TypeJSON, Column: camera.FieldLocation},
-			camera.FieldActive:    {Type: field.TypeBool, Column: camera.FieldActive},
+			camera.FieldCreatedAt:       {Type: field.TypeTime, Column: camera.FieldCreatedAt},
+			camera.FieldUpdatedAt:       {Type: field.TypeTime, Column: camera.FieldUpdatedAt},
+			camera.FieldName:            {Type: field.TypeString, Column: camera.FieldName},
+			camera.FieldModel:           {Type: field.TypeString, Column: camera.FieldModel},
+			camera.FieldImei:            {Type: field.TypeString, Column: camera.FieldImei},
+			camera.FieldLocation:        {Type: field.TypeString, Column: camera.FieldLocation},
+			camera.FieldActive:          {Type: field.TypeBool, Column: camera.FieldActive},
+			camera.FieldPoliceStationID: {Type: field.TypeUUID, Column: camera.FieldPoliceStationID},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -92,12 +93,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "PoliceStation",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			policestation.FieldCreatedAt:  {Type: field.TypeTime, Column: policestation.FieldCreatedAt},
-			policestation.FieldUpdatedAt:  {Type: field.TypeTime, Column: policestation.FieldUpdatedAt},
-			policestation.FieldName:       {Type: field.TypeString, Column: policestation.FieldName},
-			policestation.FieldLocation:   {Type: field.TypeJSON, Column: policestation.FieldLocation},
-			policestation.FieldCode:       {Type: field.TypeString, Column: policestation.FieldCode},
-			policestation.FieldIdentifier: {Type: field.TypeString, Column: policestation.FieldIdentifier},
+			policestation.FieldCreatedAt:       {Type: field.TypeTime, Column: policestation.FieldCreatedAt},
+			policestation.FieldUpdatedAt:       {Type: field.TypeTime, Column: policestation.FieldUpdatedAt},
+			policestation.FieldName:            {Type: field.TypeString, Column: policestation.FieldName},
+			policestation.FieldLocation:        {Type: field.TypeString, Column: policestation.FieldLocation},
+			policestation.FieldCode:            {Type: field.TypeString, Column: policestation.FieldCode},
+			policestation.FieldIdentifier:      {Type: field.TypeString, Column: policestation.FieldIdentifier},
+			policestation.FieldParentStationID: {Type: field.TypeUUID, Column: policestation.FieldParentStationID},
 		},
 	}
 	graph.Nodes[4] = &sqlgraph.Node{
@@ -171,24 +173,48 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 	}
 	graph.MustAddE(
+		"police_station",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   camera.PoliceStationTable,
+			Columns: []string{camera.PoliceStationColumn},
+			Bidi:    false,
+		},
+		"Camera",
+		"PoliceStation",
+	)
+	graph.MustAddE(
 		"users",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: policestation.UsersPrimaryKey,
+			Columns: []string{policestation.UsersColumn},
 			Bidi:    false,
 		},
 		"PoliceStation",
 		"User",
 	)
 	graph.MustAddE(
-		"parent_station",
+		"camera",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CameraTable,
+			Columns: []string{policestation.CameraColumn},
+			Bidi:    false,
+		},
+		"PoliceStation",
+		"Camera",
+	)
+	graph.MustAddE(
+		"parent",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   policestation.ParentStationTable,
-			Columns: []string{policestation.ParentStationColumn},
+			Table:   policestation.ParentTable,
+			Columns: []string{policestation.ParentColumn},
 			Bidi:    false,
 		},
 		"PoliceStation",
@@ -245,10 +271,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 	graph.MustAddE(
 		"police_station",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   user.PoliceStationTable,
-			Columns: user.PoliceStationPrimaryKey,
+			Columns: []string{user.PoliceStationColumn},
 			Bidi:    false,
 		},
 		"User",
@@ -328,14 +354,33 @@ func (f *CameraFilter) WhereImei(p entql.StringP) {
 	f.Where(p.Field(camera.FieldImei))
 }
 
-// WhereLocation applies the entql json.RawMessage predicate on the location field.
-func (f *CameraFilter) WhereLocation(p entql.BytesP) {
+// WhereLocation applies the entql string predicate on the location field.
+func (f *CameraFilter) WhereLocation(p entql.StringP) {
 	f.Where(p.Field(camera.FieldLocation))
 }
 
 // WhereActive applies the entql bool predicate on the active field.
 func (f *CameraFilter) WhereActive(p entql.BoolP) {
 	f.Where(p.Field(camera.FieldActive))
+}
+
+// WherePoliceStationID applies the entql [16]byte predicate on the police_station_id field.
+func (f *CameraFilter) WherePoliceStationID(p entql.ValueP) {
+	f.Where(p.Field(camera.FieldPoliceStationID))
+}
+
+// WhereHasPoliceStation applies a predicate to check if query has an edge police_station.
+func (f *CameraFilter) WhereHasPoliceStation() {
+	f.Where(entql.HasEdge("police_station"))
+}
+
+// WhereHasPoliceStationWith applies a predicate to check if query has an edge police_station with a given conditions (other predicates).
+func (f *CameraFilter) WhereHasPoliceStationWith(preds ...predicate.PoliceStation) {
+	f.Where(entql.HasEdgeWith("police_station", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // addPredicate implements the predicateAdder interface.
@@ -543,8 +588,8 @@ func (f *PoliceStationFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(policestation.FieldName))
 }
 
-// WhereLocation applies the entql json.RawMessage predicate on the location field.
-func (f *PoliceStationFilter) WhereLocation(p entql.BytesP) {
+// WhereLocation applies the entql string predicate on the location field.
+func (f *PoliceStationFilter) WhereLocation(p entql.StringP) {
 	f.Where(p.Field(policestation.FieldLocation))
 }
 
@@ -556,6 +601,11 @@ func (f *PoliceStationFilter) WhereCode(p entql.StringP) {
 // WhereIdentifier applies the entql string predicate on the identifier field.
 func (f *PoliceStationFilter) WhereIdentifier(p entql.StringP) {
 	f.Where(p.Field(policestation.FieldIdentifier))
+}
+
+// WhereParentStationID applies the entql [16]byte predicate on the parent_station_id field.
+func (f *PoliceStationFilter) WhereParentStationID(p entql.ValueP) {
+	f.Where(p.Field(policestation.FieldParentStationID))
 }
 
 // WhereHasUsers applies a predicate to check if query has an edge users.
@@ -572,14 +622,28 @@ func (f *PoliceStationFilter) WhereHasUsersWith(preds ...predicate.User) {
 	})))
 }
 
-// WhereHasParentStation applies a predicate to check if query has an edge parent_station.
-func (f *PoliceStationFilter) WhereHasParentStation() {
-	f.Where(entql.HasEdge("parent_station"))
+// WhereHasCamera applies a predicate to check if query has an edge camera.
+func (f *PoliceStationFilter) WhereHasCamera() {
+	f.Where(entql.HasEdge("camera"))
 }
 
-// WhereHasParentStationWith applies a predicate to check if query has an edge parent_station with a given conditions (other predicates).
-func (f *PoliceStationFilter) WhereHasParentStationWith(preds ...predicate.PoliceStation) {
-	f.Where(entql.HasEdgeWith("parent_station", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasCameraWith applies a predicate to check if query has an edge camera with a given conditions (other predicates).
+func (f *PoliceStationFilter) WhereHasCameraWith(preds ...predicate.Camera) {
+	f.Where(entql.HasEdgeWith("camera", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasParent applies a predicate to check if query has an edge parent.
+func (f *PoliceStationFilter) WhereHasParent() {
+	f.Where(entql.HasEdge("parent"))
+}
+
+// WhereHasParentWith applies a predicate to check if query has an edge parent with a given conditions (other predicates).
+func (f *PoliceStationFilter) WhereHasParentWith(preds ...predicate.PoliceStation) {
+	f.Where(entql.HasEdgeWith("parent", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -28,8 +29,19 @@ const (
 	FieldLocation = "location"
 	// FieldActive holds the string denoting the active field in the database.
 	FieldActive = "active"
+	// FieldPoliceStationID holds the string denoting the police_station_id field in the database.
+	FieldPoliceStationID = "police_station_id"
+	// EdgePoliceStation holds the string denoting the police_station edge name in mutations.
+	EdgePoliceStation = "police_station"
 	// Table holds the table name of the camera in the database.
 	Table = "cameras"
+	// PoliceStationTable is the table that holds the police_station relation/edge.
+	PoliceStationTable = "cameras"
+	// PoliceStationInverseTable is the table name for the PoliceStation entity.
+	// It exists in this package in order to avoid circular dependency with the "policestation" package.
+	PoliceStationInverseTable = "police_stations"
+	// PoliceStationColumn is the table column denoting the police_station relation/edge.
+	PoliceStationColumn = "police_station_id"
 )
 
 // Columns holds all SQL columns for camera fields.
@@ -42,6 +54,7 @@ var Columns = []string{
 	FieldImei,
 	FieldLocation,
 	FieldActive,
+	FieldPoliceStationID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -106,7 +119,31 @@ func ByImei(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldImei, opts...).ToFunc()
 }
 
+// ByLocation orders the results by the location field.
+func ByLocation(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLocation, opts...).ToFunc()
+}
+
 // ByActive orders the results by the active field.
 func ByActive(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldActive, opts...).ToFunc()
+}
+
+// ByPoliceStationID orders the results by the police_station_id field.
+func ByPoliceStationID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPoliceStationID, opts...).ToFunc()
+}
+
+// ByPoliceStationField orders the results by police_station field.
+func ByPoliceStationField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPoliceStationStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newPoliceStationStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PoliceStationInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, PoliceStationTable, PoliceStationColumn),
+	)
 }

@@ -71,6 +71,11 @@ func Name(v string) predicate.PoliceStation {
 	return predicate.PoliceStation(sql.FieldEQ(FieldName, v))
 }
 
+// Location applies equality check predicate on the "location" field. It's identical to LocationEQ.
+func Location(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldEQ(FieldLocation, v))
+}
+
 // Code applies equality check predicate on the "code" field. It's identical to CodeEQ.
 func Code(v string) predicate.PoliceStation {
 	return predicate.PoliceStation(sql.FieldEQ(FieldCode, v))
@@ -79,6 +84,11 @@ func Code(v string) predicate.PoliceStation {
 // Identifier applies equality check predicate on the "identifier" field. It's identical to IdentifierEQ.
 func Identifier(v string) predicate.PoliceStation {
 	return predicate.PoliceStation(sql.FieldEQ(FieldIdentifier, v))
+}
+
+// ParentStationID applies equality check predicate on the "parent_station_id" field. It's identical to ParentStationIDEQ.
+func ParentStationID(v uuid.UUID) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldEQ(FieldParentStationID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -226,6 +236,61 @@ func NameContainsFold(v string) predicate.PoliceStation {
 	return predicate.PoliceStation(sql.FieldContainsFold(FieldName, v))
 }
 
+// LocationEQ applies the EQ predicate on the "location" field.
+func LocationEQ(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldEQ(FieldLocation, v))
+}
+
+// LocationNEQ applies the NEQ predicate on the "location" field.
+func LocationNEQ(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldNEQ(FieldLocation, v))
+}
+
+// LocationIn applies the In predicate on the "location" field.
+func LocationIn(vs ...string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldIn(FieldLocation, vs...))
+}
+
+// LocationNotIn applies the NotIn predicate on the "location" field.
+func LocationNotIn(vs ...string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldNotIn(FieldLocation, vs...))
+}
+
+// LocationGT applies the GT predicate on the "location" field.
+func LocationGT(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldGT(FieldLocation, v))
+}
+
+// LocationGTE applies the GTE predicate on the "location" field.
+func LocationGTE(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldGTE(FieldLocation, v))
+}
+
+// LocationLT applies the LT predicate on the "location" field.
+func LocationLT(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldLT(FieldLocation, v))
+}
+
+// LocationLTE applies the LTE predicate on the "location" field.
+func LocationLTE(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldLTE(FieldLocation, v))
+}
+
+// LocationContains applies the Contains predicate on the "location" field.
+func LocationContains(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldContains(FieldLocation, v))
+}
+
+// LocationHasPrefix applies the HasPrefix predicate on the "location" field.
+func LocationHasPrefix(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldHasPrefix(FieldLocation, v))
+}
+
+// LocationHasSuffix applies the HasSuffix predicate on the "location" field.
+func LocationHasSuffix(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldHasSuffix(FieldLocation, v))
+}
+
 // LocationIsNil applies the IsNil predicate on the "location" field.
 func LocationIsNil() predicate.PoliceStation {
 	return predicate.PoliceStation(sql.FieldIsNull(FieldLocation))
@@ -234,6 +299,16 @@ func LocationIsNil() predicate.PoliceStation {
 // LocationNotNil applies the NotNil predicate on the "location" field.
 func LocationNotNil() predicate.PoliceStation {
 	return predicate.PoliceStation(sql.FieldNotNull(FieldLocation))
+}
+
+// LocationEqualFold applies the EqualFold predicate on the "location" field.
+func LocationEqualFold(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldEqualFold(FieldLocation, v))
+}
+
+// LocationContainsFold applies the ContainsFold predicate on the "location" field.
+func LocationContainsFold(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldContainsFold(FieldLocation, v))
 }
 
 // CodeEQ applies the EQ predicate on the "code" field.
@@ -366,12 +441,42 @@ func IdentifierContainsFold(v string) predicate.PoliceStation {
 	return predicate.PoliceStation(sql.FieldContainsFold(FieldIdentifier, v))
 }
 
+// ParentStationIDEQ applies the EQ predicate on the "parent_station_id" field.
+func ParentStationIDEQ(v uuid.UUID) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldEQ(FieldParentStationID, v))
+}
+
+// ParentStationIDNEQ applies the NEQ predicate on the "parent_station_id" field.
+func ParentStationIDNEQ(v uuid.UUID) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldNEQ(FieldParentStationID, v))
+}
+
+// ParentStationIDIn applies the In predicate on the "parent_station_id" field.
+func ParentStationIDIn(vs ...uuid.UUID) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldIn(FieldParentStationID, vs...))
+}
+
+// ParentStationIDNotIn applies the NotIn predicate on the "parent_station_id" field.
+func ParentStationIDNotIn(vs ...uuid.UUID) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldNotIn(FieldParentStationID, vs...))
+}
+
+// ParentStationIDIsNil applies the IsNil predicate on the "parent_station_id" field.
+func ParentStationIDIsNil() predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldIsNull(FieldParentStationID))
+}
+
+// ParentStationIDNotNil applies the NotNil predicate on the "parent_station_id" field.
+func ParentStationIDNotNil() predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldNotNull(FieldParentStationID))
+}
+
 // HasUsers applies the HasEdge predicate on the "users" edge.
 func HasUsers() predicate.PoliceStation {
 	return predicate.PoliceStation(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, UsersTable, UsersPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, UsersTable, UsersColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -389,21 +494,44 @@ func HasUsersWith(preds ...predicate.User) predicate.PoliceStation {
 	})
 }
 
-// HasParentStation applies the HasEdge predicate on the "parent_station" edge.
-func HasParentStation() predicate.PoliceStation {
+// HasCamera applies the HasEdge predicate on the "camera" edge.
+func HasCamera() predicate.PoliceStation {
 	return predicate.PoliceStation(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ParentStationTable, ParentStationColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, CameraTable, CameraColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasParentStationWith applies the HasEdge predicate on the "parent_station" edge with a given conditions (other predicates).
-func HasParentStationWith(preds ...predicate.PoliceStation) predicate.PoliceStation {
+// HasCameraWith applies the HasEdge predicate on the "camera" edge with a given conditions (other predicates).
+func HasCameraWith(preds ...predicate.Camera) predicate.PoliceStation {
 	return predicate.PoliceStation(func(s *sql.Selector) {
-		step := newParentStationStep()
+		step := newCameraStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasParent applies the HasEdge predicate on the "parent" edge.
+func HasParent() predicate.PoliceStation {
+	return predicate.PoliceStation(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasParentWith applies the HasEdge predicate on the "parent" edge with a given conditions (other predicates).
+func HasParentWith(preds ...predicate.PoliceStation) predicate.PoliceStation {
+	return predicate.PoliceStation(func(s *sql.Selector) {
+		step := newParentStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -43,20 +43,22 @@ const (
 // CameraMutation represents an operation that mutates the Camera nodes in the graph.
 type CameraMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	created_at    *time.Time
-	updated_at    *time.Time
-	name          *string
-	model         *string
-	imei          *string
-	location      *map[string]interface{}
-	active        *bool
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Camera, error)
-	predicates    []predicate.Camera
+	op                    Op
+	typ                   string
+	id                    *uuid.UUID
+	created_at            *time.Time
+	updated_at            *time.Time
+	name                  *string
+	model                 *string
+	imei                  *string
+	location              *string
+	active                *bool
+	clearedFields         map[string]struct{}
+	police_station        *uuid.UUID
+	clearedpolice_station bool
+	done                  bool
+	oldValue              func(context.Context) (*Camera, error)
+	predicates            []predicate.Camera
 }
 
 var _ ent.Mutation = (*CameraMutation)(nil)
@@ -344,12 +346,12 @@ func (m *CameraMutation) ResetImei() {
 }
 
 // SetLocation sets the "location" field.
-func (m *CameraMutation) SetLocation(value map[string]interface{}) {
-	m.location = &value
+func (m *CameraMutation) SetLocation(s string) {
+	m.location = &s
 }
 
 // Location returns the value of the "location" field in the mutation.
-func (m *CameraMutation) Location() (r map[string]interface{}, exists bool) {
+func (m *CameraMutation) Location() (r string, exists bool) {
 	v := m.location
 	if v == nil {
 		return
@@ -360,7 +362,7 @@ func (m *CameraMutation) Location() (r map[string]interface{}, exists bool) {
 // OldLocation returns the old "location" field's value of the Camera entity.
 // If the Camera object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CameraMutation) OldLocation(ctx context.Context) (v map[string]interface{}, err error) {
+func (m *CameraMutation) OldLocation(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLocation is only allowed on UpdateOne operations")
 	}
@@ -415,6 +417,82 @@ func (m *CameraMutation) ResetActive() {
 	m.active = nil
 }
 
+// SetPoliceStationID sets the "police_station_id" field.
+func (m *CameraMutation) SetPoliceStationID(u uuid.UUID) {
+	m.police_station = &u
+}
+
+// PoliceStationID returns the value of the "police_station_id" field in the mutation.
+func (m *CameraMutation) PoliceStationID() (r uuid.UUID, exists bool) {
+	v := m.police_station
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPoliceStationID returns the old "police_station_id" field's value of the Camera entity.
+// If the Camera object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CameraMutation) OldPoliceStationID(ctx context.Context) (v *uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPoliceStationID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPoliceStationID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPoliceStationID: %w", err)
+	}
+	return oldValue.PoliceStationID, nil
+}
+
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (m *CameraMutation) ClearPoliceStationID() {
+	m.police_station = nil
+	m.clearedFields[camera.FieldPoliceStationID] = struct{}{}
+}
+
+// PoliceStationIDCleared returns if the "police_station_id" field was cleared in this mutation.
+func (m *CameraMutation) PoliceStationIDCleared() bool {
+	_, ok := m.clearedFields[camera.FieldPoliceStationID]
+	return ok
+}
+
+// ResetPoliceStationID resets all changes to the "police_station_id" field.
+func (m *CameraMutation) ResetPoliceStationID() {
+	m.police_station = nil
+	delete(m.clearedFields, camera.FieldPoliceStationID)
+}
+
+// ClearPoliceStation clears the "police_station" edge to the PoliceStation entity.
+func (m *CameraMutation) ClearPoliceStation() {
+	m.clearedpolice_station = true
+	m.clearedFields[camera.FieldPoliceStationID] = struct{}{}
+}
+
+// PoliceStationCleared reports if the "police_station" edge to the PoliceStation entity was cleared.
+func (m *CameraMutation) PoliceStationCleared() bool {
+	return m.PoliceStationIDCleared() || m.clearedpolice_station
+}
+
+// PoliceStationIDs returns the "police_station" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PoliceStationID instead. It exists only for internal usage by the builders.
+func (m *CameraMutation) PoliceStationIDs() (ids []uuid.UUID) {
+	if id := m.police_station; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPoliceStation resets all changes to the "police_station" edge.
+func (m *CameraMutation) ResetPoliceStation() {
+	m.police_station = nil
+	m.clearedpolice_station = false
+}
+
 // Where appends a list predicates to the CameraMutation builder.
 func (m *CameraMutation) Where(ps ...predicate.Camera) {
 	m.predicates = append(m.predicates, ps...)
@@ -449,7 +527,7 @@ func (m *CameraMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CameraMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, camera.FieldCreatedAt)
 	}
@@ -470,6 +548,9 @@ func (m *CameraMutation) Fields() []string {
 	}
 	if m.active != nil {
 		fields = append(fields, camera.FieldActive)
+	}
+	if m.police_station != nil {
+		fields = append(fields, camera.FieldPoliceStationID)
 	}
 	return fields
 }
@@ -493,6 +574,8 @@ func (m *CameraMutation) Field(name string) (ent.Value, bool) {
 		return m.Location()
 	case camera.FieldActive:
 		return m.Active()
+	case camera.FieldPoliceStationID:
+		return m.PoliceStationID()
 	}
 	return nil, false
 }
@@ -516,6 +599,8 @@ func (m *CameraMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldLocation(ctx)
 	case camera.FieldActive:
 		return m.OldActive(ctx)
+	case camera.FieldPoliceStationID:
+		return m.OldPoliceStationID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Camera field %s", name)
 }
@@ -561,7 +646,7 @@ func (m *CameraMutation) SetField(name string, value ent.Value) error {
 		m.SetImei(v)
 		return nil
 	case camera.FieldLocation:
-		v, ok := value.(map[string]interface{})
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -573,6 +658,13 @@ func (m *CameraMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetActive(v)
+		return nil
+	case camera.FieldPoliceStationID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPoliceStationID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Camera field %s", name)
@@ -603,7 +695,11 @@ func (m *CameraMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *CameraMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(camera.FieldPoliceStationID) {
+		fields = append(fields, camera.FieldPoliceStationID)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -616,6 +712,11 @@ func (m *CameraMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *CameraMutation) ClearField(name string) error {
+	switch name {
+	case camera.FieldPoliceStationID:
+		m.ClearPoliceStationID()
+		return nil
+	}
 	return fmt.Errorf("unknown Camera nullable field %s", name)
 }
 
@@ -644,25 +745,37 @@ func (m *CameraMutation) ResetField(name string) error {
 	case camera.FieldActive:
 		m.ResetActive()
 		return nil
+	case camera.FieldPoliceStationID:
+		m.ResetPoliceStationID()
+		return nil
 	}
 	return fmt.Errorf("unknown Camera field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CameraMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.police_station != nil {
+		edges = append(edges, camera.EdgePoliceStation)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *CameraMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case camera.EdgePoliceStation:
+		if id := m.police_station; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CameraMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
 	return edges
 }
 
@@ -674,25 +787,42 @@ func (m *CameraMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CameraMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedpolice_station {
+		edges = append(edges, camera.EdgePoliceStation)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *CameraMutation) EdgeCleared(name string) bool {
+	switch name {
+	case camera.EdgePoliceStation:
+		return m.clearedpolice_station
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *CameraMutation) ClearEdge(name string) error {
+	switch name {
+	case camera.EdgePoliceStation:
+		m.ClearPoliceStation()
+		return nil
+	}
 	return fmt.Errorf("unknown Camera unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *CameraMutation) ResetEdge(name string) error {
+	switch name {
+	case camera.EdgePoliceStation:
+		m.ResetPoliceStation()
+		return nil
+	}
 	return fmt.Errorf("unknown Camera edge %s", name)
 }
 
@@ -2053,15 +2183,18 @@ type PoliceStationMutation struct {
 	created_at            *time.Time
 	updated_at            *time.Time
 	name                  *string
-	location              *map[string]interface{}
+	location              *string
 	code                  *string
 	identifier            *string
 	clearedFields         map[string]struct{}
 	users                 map[uuid.UUID]struct{}
 	removedusers          map[uuid.UUID]struct{}
 	clearedusers          bool
-	parent_station        *uuid.UUID
-	clearedparent_station bool
+	camera                map[uuid.UUID]struct{}
+	removedcamera         map[uuid.UUID]struct{}
+	clearedcamera         bool
+	parent                *uuid.UUID
+	clearedparent         bool
 	child_stations        map[uuid.UUID]struct{}
 	removedchild_stations map[uuid.UUID]struct{}
 	clearedchild_stations bool
@@ -2283,12 +2416,12 @@ func (m *PoliceStationMutation) ResetName() {
 }
 
 // SetLocation sets the "location" field.
-func (m *PoliceStationMutation) SetLocation(value map[string]interface{}) {
-	m.location = &value
+func (m *PoliceStationMutation) SetLocation(s string) {
+	m.location = &s
 }
 
 // Location returns the value of the "location" field in the mutation.
-func (m *PoliceStationMutation) Location() (r map[string]interface{}, exists bool) {
+func (m *PoliceStationMutation) Location() (r string, exists bool) {
 	v := m.location
 	if v == nil {
 		return
@@ -2299,7 +2432,7 @@ func (m *PoliceStationMutation) Location() (r map[string]interface{}, exists boo
 // OldLocation returns the old "location" field's value of the PoliceStation entity.
 // If the PoliceStation object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PoliceStationMutation) OldLocation(ctx context.Context) (v map[string]interface{}, err error) {
+func (m *PoliceStationMutation) OldLocation(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLocation is only allowed on UpdateOne operations")
 	}
@@ -2403,6 +2536,55 @@ func (m *PoliceStationMutation) ResetIdentifier() {
 	m.identifier = nil
 }
 
+// SetParentStationID sets the "parent_station_id" field.
+func (m *PoliceStationMutation) SetParentStationID(u uuid.UUID) {
+	m.parent = &u
+}
+
+// ParentStationID returns the value of the "parent_station_id" field in the mutation.
+func (m *PoliceStationMutation) ParentStationID() (r uuid.UUID, exists bool) {
+	v := m.parent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentStationID returns the old "parent_station_id" field's value of the PoliceStation entity.
+// If the PoliceStation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PoliceStationMutation) OldParentStationID(ctx context.Context) (v *uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentStationID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentStationID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentStationID: %w", err)
+	}
+	return oldValue.ParentStationID, nil
+}
+
+// ClearParentStationID clears the value of the "parent_station_id" field.
+func (m *PoliceStationMutation) ClearParentStationID() {
+	m.parent = nil
+	m.clearedFields[policestation.FieldParentStationID] = struct{}{}
+}
+
+// ParentStationIDCleared returns if the "parent_station_id" field was cleared in this mutation.
+func (m *PoliceStationMutation) ParentStationIDCleared() bool {
+	_, ok := m.clearedFields[policestation.FieldParentStationID]
+	return ok
+}
+
+// ResetParentStationID resets all changes to the "parent_station_id" field.
+func (m *PoliceStationMutation) ResetParentStationID() {
+	m.parent = nil
+	delete(m.clearedFields, policestation.FieldParentStationID)
+}
+
 // AddUserIDs adds the "users" edge to the User entity by ids.
 func (m *PoliceStationMutation) AddUserIDs(ids ...uuid.UUID) {
 	if m.users == nil {
@@ -2457,43 +2639,98 @@ func (m *PoliceStationMutation) ResetUsers() {
 	m.removedusers = nil
 }
 
-// SetParentStationID sets the "parent_station" edge to the PoliceStation entity by id.
-func (m *PoliceStationMutation) SetParentStationID(id uuid.UUID) {
-	m.parent_station = &id
+// AddCameraIDs adds the "camera" edge to the Camera entity by ids.
+func (m *PoliceStationMutation) AddCameraIDs(ids ...uuid.UUID) {
+	if m.camera == nil {
+		m.camera = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.camera[ids[i]] = struct{}{}
+	}
 }
 
-// ClearParentStation clears the "parent_station" edge to the PoliceStation entity.
-func (m *PoliceStationMutation) ClearParentStation() {
-	m.clearedparent_station = true
+// ClearCamera clears the "camera" edge to the Camera entity.
+func (m *PoliceStationMutation) ClearCamera() {
+	m.clearedcamera = true
 }
 
-// ParentStationCleared reports if the "parent_station" edge to the PoliceStation entity was cleared.
-func (m *PoliceStationMutation) ParentStationCleared() bool {
-	return m.clearedparent_station
+// CameraCleared reports if the "camera" edge to the Camera entity was cleared.
+func (m *PoliceStationMutation) CameraCleared() bool {
+	return m.clearedcamera
 }
 
-// ParentStationID returns the "parent_station" edge ID in the mutation.
-func (m *PoliceStationMutation) ParentStationID() (id uuid.UUID, exists bool) {
-	if m.parent_station != nil {
-		return *m.parent_station, true
+// RemoveCameraIDs removes the "camera" edge to the Camera entity by IDs.
+func (m *PoliceStationMutation) RemoveCameraIDs(ids ...uuid.UUID) {
+	if m.removedcamera == nil {
+		m.removedcamera = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.camera, ids[i])
+		m.removedcamera[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCamera returns the removed IDs of the "camera" edge to the Camera entity.
+func (m *PoliceStationMutation) RemovedCameraIDs() (ids []uuid.UUID) {
+	for id := range m.removedcamera {
+		ids = append(ids, id)
 	}
 	return
 }
 
-// ParentStationIDs returns the "parent_station" edge IDs in the mutation.
+// CameraIDs returns the "camera" edge IDs in the mutation.
+func (m *PoliceStationMutation) CameraIDs() (ids []uuid.UUID) {
+	for id := range m.camera {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCamera resets all changes to the "camera" edge.
+func (m *PoliceStationMutation) ResetCamera() {
+	m.camera = nil
+	m.clearedcamera = false
+	m.removedcamera = nil
+}
+
+// SetParentID sets the "parent" edge to the PoliceStation entity by id.
+func (m *PoliceStationMutation) SetParentID(id uuid.UUID) {
+	m.parent = &id
+}
+
+// ClearParent clears the "parent" edge to the PoliceStation entity.
+func (m *PoliceStationMutation) ClearParent() {
+	m.clearedparent = true
+	m.clearedFields[policestation.FieldParentStationID] = struct{}{}
+}
+
+// ParentCleared reports if the "parent" edge to the PoliceStation entity was cleared.
+func (m *PoliceStationMutation) ParentCleared() bool {
+	return m.ParentStationIDCleared() || m.clearedparent
+}
+
+// ParentID returns the "parent" edge ID in the mutation.
+func (m *PoliceStationMutation) ParentID() (id uuid.UUID, exists bool) {
+	if m.parent != nil {
+		return *m.parent, true
+	}
+	return
+}
+
+// ParentIDs returns the "parent" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ParentStationID instead. It exists only for internal usage by the builders.
-func (m *PoliceStationMutation) ParentStationIDs() (ids []uuid.UUID) {
-	if id := m.parent_station; id != nil {
+// ParentID instead. It exists only for internal usage by the builders.
+func (m *PoliceStationMutation) ParentIDs() (ids []uuid.UUID) {
+	if id := m.parent; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetParentStation resets all changes to the "parent_station" edge.
-func (m *PoliceStationMutation) ResetParentStation() {
-	m.parent_station = nil
-	m.clearedparent_station = false
+// ResetParent resets all changes to the "parent" edge.
+func (m *PoliceStationMutation) ResetParent() {
+	m.parent = nil
+	m.clearedparent = false
 }
 
 // AddChildStationIDs adds the "child_stations" edge to the PoliceStation entity by ids.
@@ -2584,7 +2821,7 @@ func (m *PoliceStationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PoliceStationMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, policestation.FieldCreatedAt)
 	}
@@ -2602,6 +2839,9 @@ func (m *PoliceStationMutation) Fields() []string {
 	}
 	if m.identifier != nil {
 		fields = append(fields, policestation.FieldIdentifier)
+	}
+	if m.parent != nil {
+		fields = append(fields, policestation.FieldParentStationID)
 	}
 	return fields
 }
@@ -2623,6 +2863,8 @@ func (m *PoliceStationMutation) Field(name string) (ent.Value, bool) {
 		return m.Code()
 	case policestation.FieldIdentifier:
 		return m.Identifier()
+	case policestation.FieldParentStationID:
+		return m.ParentStationID()
 	}
 	return nil, false
 }
@@ -2644,6 +2886,8 @@ func (m *PoliceStationMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldCode(ctx)
 	case policestation.FieldIdentifier:
 		return m.OldIdentifier(ctx)
+	case policestation.FieldParentStationID:
+		return m.OldParentStationID(ctx)
 	}
 	return nil, fmt.Errorf("unknown PoliceStation field %s", name)
 }
@@ -2675,7 +2919,7 @@ func (m *PoliceStationMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case policestation.FieldLocation:
-		v, ok := value.(map[string]interface{})
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2694,6 +2938,13 @@ func (m *PoliceStationMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIdentifier(v)
+		return nil
+	case policestation.FieldParentStationID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentStationID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown PoliceStation field %s", name)
@@ -2728,6 +2979,9 @@ func (m *PoliceStationMutation) ClearedFields() []string {
 	if m.FieldCleared(policestation.FieldLocation) {
 		fields = append(fields, policestation.FieldLocation)
 	}
+	if m.FieldCleared(policestation.FieldParentStationID) {
+		fields = append(fields, policestation.FieldParentStationID)
+	}
 	return fields
 }
 
@@ -2744,6 +2998,9 @@ func (m *PoliceStationMutation) ClearField(name string) error {
 	switch name {
 	case policestation.FieldLocation:
 		m.ClearLocation()
+		return nil
+	case policestation.FieldParentStationID:
+		m.ClearParentStationID()
 		return nil
 	}
 	return fmt.Errorf("unknown PoliceStation nullable field %s", name)
@@ -2771,18 +3028,24 @@ func (m *PoliceStationMutation) ResetField(name string) error {
 	case policestation.FieldIdentifier:
 		m.ResetIdentifier()
 		return nil
+	case policestation.FieldParentStationID:
+		m.ResetParentStationID()
+		return nil
 	}
 	return fmt.Errorf("unknown PoliceStation field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PoliceStationMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.users != nil {
 		edges = append(edges, policestation.EdgeUsers)
 	}
-	if m.parent_station != nil {
-		edges = append(edges, policestation.EdgeParentStation)
+	if m.camera != nil {
+		edges = append(edges, policestation.EdgeCamera)
+	}
+	if m.parent != nil {
+		edges = append(edges, policestation.EdgeParent)
 	}
 	if m.child_stations != nil {
 		edges = append(edges, policestation.EdgeChildStations)
@@ -2800,8 +3063,14 @@ func (m *PoliceStationMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case policestation.EdgeParentStation:
-		if id := m.parent_station; id != nil {
+	case policestation.EdgeCamera:
+		ids := make([]ent.Value, 0, len(m.camera))
+		for id := range m.camera {
+			ids = append(ids, id)
+		}
+		return ids
+	case policestation.EdgeParent:
+		if id := m.parent; id != nil {
 			return []ent.Value{*id}
 		}
 	case policestation.EdgeChildStations:
@@ -2816,9 +3085,12 @@ func (m *PoliceStationMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PoliceStationMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedusers != nil {
 		edges = append(edges, policestation.EdgeUsers)
+	}
+	if m.removedcamera != nil {
+		edges = append(edges, policestation.EdgeCamera)
 	}
 	if m.removedchild_stations != nil {
 		edges = append(edges, policestation.EdgeChildStations)
@@ -2836,6 +3108,12 @@ func (m *PoliceStationMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case policestation.EdgeCamera:
+		ids := make([]ent.Value, 0, len(m.removedcamera))
+		for id := range m.removedcamera {
+			ids = append(ids, id)
+		}
+		return ids
 	case policestation.EdgeChildStations:
 		ids := make([]ent.Value, 0, len(m.removedchild_stations))
 		for id := range m.removedchild_stations {
@@ -2848,12 +3126,15 @@ func (m *PoliceStationMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PoliceStationMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedusers {
 		edges = append(edges, policestation.EdgeUsers)
 	}
-	if m.clearedparent_station {
-		edges = append(edges, policestation.EdgeParentStation)
+	if m.clearedcamera {
+		edges = append(edges, policestation.EdgeCamera)
+	}
+	if m.clearedparent {
+		edges = append(edges, policestation.EdgeParent)
 	}
 	if m.clearedchild_stations {
 		edges = append(edges, policestation.EdgeChildStations)
@@ -2867,8 +3148,10 @@ func (m *PoliceStationMutation) EdgeCleared(name string) bool {
 	switch name {
 	case policestation.EdgeUsers:
 		return m.clearedusers
-	case policestation.EdgeParentStation:
-		return m.clearedparent_station
+	case policestation.EdgeCamera:
+		return m.clearedcamera
+	case policestation.EdgeParent:
+		return m.clearedparent
 	case policestation.EdgeChildStations:
 		return m.clearedchild_stations
 	}
@@ -2879,8 +3162,8 @@ func (m *PoliceStationMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *PoliceStationMutation) ClearEdge(name string) error {
 	switch name {
-	case policestation.EdgeParentStation:
-		m.ClearParentStation()
+	case policestation.EdgeParent:
+		m.ClearParent()
 		return nil
 	}
 	return fmt.Errorf("unknown PoliceStation unique edge %s", name)
@@ -2893,8 +3176,11 @@ func (m *PoliceStationMutation) ResetEdge(name string) error {
 	case policestation.EdgeUsers:
 		m.ResetUsers()
 		return nil
-	case policestation.EdgeParentStation:
-		m.ResetParentStation()
+	case policestation.EdgeCamera:
+		m.ResetCamera()
+		return nil
+	case policestation.EdgeParent:
+		m.ResetParent()
 		return nil
 	case policestation.EdgeChildStations:
 		m.ResetChildStations()
@@ -3532,12 +3818,10 @@ type UserMutation struct {
 	password              *string
 	phone                 *string
 	active                *bool
-	police_station_id     *uuid.UUID
 	clearedFields         map[string]struct{}
 	role                  *uuid.UUID
 	clearedrole           bool
-	police_station        map[uuid.UUID]struct{}
-	removedpolice_station map[uuid.UUID]struct{}
+	police_station        *uuid.UUID
 	clearedpolice_station bool
 	done                  bool
 	oldValue              func(context.Context) (*User, error)
@@ -3951,12 +4235,12 @@ func (m *UserMutation) ResetRoleID() {
 
 // SetPoliceStationID sets the "police_station_id" field.
 func (m *UserMutation) SetPoliceStationID(u uuid.UUID) {
-	m.police_station_id = &u
+	m.police_station = &u
 }
 
 // PoliceStationID returns the value of the "police_station_id" field in the mutation.
 func (m *UserMutation) PoliceStationID() (r uuid.UUID, exists bool) {
-	v := m.police_station_id
+	v := m.police_station
 	if v == nil {
 		return
 	}
@@ -3982,7 +4266,7 @@ func (m *UserMutation) OldPoliceStationID(ctx context.Context) (v uuid.UUID, err
 
 // ResetPoliceStationID resets all changes to the "police_station_id" field.
 func (m *UserMutation) ResetPoliceStationID() {
-	m.police_station_id = nil
+	m.police_station = nil
 }
 
 // ClearRole clears the "role" edge to the Role entity.
@@ -4012,19 +4296,10 @@ func (m *UserMutation) ResetRole() {
 	m.clearedrole = false
 }
 
-// AddPoliceStationIDs adds the "police_station" edge to the PoliceStation entity by ids.
-func (m *UserMutation) AddPoliceStationIDs(ids ...uuid.UUID) {
-	if m.police_station == nil {
-		m.police_station = make(map[uuid.UUID]struct{})
-	}
-	for i := range ids {
-		m.police_station[ids[i]] = struct{}{}
-	}
-}
-
 // ClearPoliceStation clears the "police_station" edge to the PoliceStation entity.
 func (m *UserMutation) ClearPoliceStation() {
 	m.clearedpolice_station = true
+	m.clearedFields[user.FieldPoliceStationID] = struct{}{}
 }
 
 // PoliceStationCleared reports if the "police_station" edge to the PoliceStation entity was cleared.
@@ -4032,29 +4307,12 @@ func (m *UserMutation) PoliceStationCleared() bool {
 	return m.clearedpolice_station
 }
 
-// RemovePoliceStationIDs removes the "police_station" edge to the PoliceStation entity by IDs.
-func (m *UserMutation) RemovePoliceStationIDs(ids ...uuid.UUID) {
-	if m.removedpolice_station == nil {
-		m.removedpolice_station = make(map[uuid.UUID]struct{})
-	}
-	for i := range ids {
-		delete(m.police_station, ids[i])
-		m.removedpolice_station[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedPoliceStation returns the removed IDs of the "police_station" edge to the PoliceStation entity.
-func (m *UserMutation) RemovedPoliceStationIDs() (ids []uuid.UUID) {
-	for id := range m.removedpolice_station {
-		ids = append(ids, id)
-	}
-	return
-}
-
 // PoliceStationIDs returns the "police_station" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PoliceStationID instead. It exists only for internal usage by the builders.
 func (m *UserMutation) PoliceStationIDs() (ids []uuid.UUID) {
-	for id := range m.police_station {
-		ids = append(ids, id)
+	if id := m.police_station; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -4063,7 +4321,6 @@ func (m *UserMutation) PoliceStationIDs() (ids []uuid.UUID) {
 func (m *UserMutation) ResetPoliceStation() {
 	m.police_station = nil
 	m.clearedpolice_station = false
-	m.removedpolice_station = nil
 }
 
 // Where appends a list predicates to the UserMutation builder.
@@ -4125,7 +4382,7 @@ func (m *UserMutation) Fields() []string {
 	if m.role != nil {
 		fields = append(fields, user.FieldRoleID)
 	}
-	if m.police_station_id != nil {
+	if m.police_station != nil {
 		fields = append(fields, user.FieldPoliceStationID)
 	}
 	return fields
@@ -4363,11 +4620,9 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case user.EdgePoliceStation:
-		ids := make([]ent.Value, 0, len(m.police_station))
-		for id := range m.police_station {
-			ids = append(ids, id)
+		if id := m.police_station; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	}
 	return nil
 }
@@ -4375,23 +4630,12 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedpolice_station != nil {
-		edges = append(edges, user.EdgePoliceStation)
-	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *UserMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	case user.EdgePoliceStation:
-		ids := make([]ent.Value, 0, len(m.removedpolice_station))
-		for id := range m.removedpolice_station {
-			ids = append(ids, id)
-		}
-		return ids
-	}
 	return nil
 }
 
@@ -4425,6 +4669,9 @@ func (m *UserMutation) ClearEdge(name string) error {
 	switch name {
 	case user.EdgeRole:
 		m.ClearRole()
+		return nil
+	case user.EdgePoliceStation:
+		m.ClearPoliceStation()
 		return nil
 	}
 	return fmt.Errorf("unknown User unique edge %s", name)

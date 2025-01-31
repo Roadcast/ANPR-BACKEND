@@ -5,7 +5,6 @@ import (
 	"fmt"
 	ent2 "go-ent-project/internal/ent"
 	"go-ent-project/internal/ent/privacy"
-	user2 "go-ent-project/internal/ent/user"
 	"go-ent-project/utils/constant"
 
 	"entgo.io/ent"
@@ -29,13 +28,14 @@ func FilterTenantRule() privacy.UserQueryRuleFunc {
 	// TenantsFilter is an interface to wrap WhereHasTenantWith()
 	return func(ctx context.Context, q *ent2.UserQuery) error {
 		// Check if the user is an admin
-		user, ok := ctx.Value("user").(ent2.User)
-		if !ok {
-			return privacy.Deny
-		}
+		user, ok := ctx.Value(constant.UserCtxKey).(*ent2.User)
+		//if !ok {
+		//	return privacy.Deny
+		//}
 
+		fmt.Printf("FilterTenantRule %T %T\n", user, ok)
 		// Filter out users that do not belong to the tenant
-		q.Where(user2.IDEQ(user.ID))
+		//q.Where(user2.IDEQ(user.ID))
 		return privacy.Allow
 	}
 }

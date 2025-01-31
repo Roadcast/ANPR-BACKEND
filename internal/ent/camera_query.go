@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"go-ent-project/internal/ent/camera"
+	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/predicate"
 	"math"
 
@@ -20,12 +21,13 @@ import (
 // CameraQuery is the builder for querying Camera entities.
 type CameraQuery struct {
 	config
-	ctx        *QueryContext
-	order      []camera.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Camera
-	loadTotal  []func(context.Context, []*Camera) error
-	modifiers  []func(*sql.Selector)
+	ctx               *QueryContext
+	order             []camera.OrderOption
+	inters            []Interceptor
+	predicates        []predicate.Camera
+	withPoliceStation *PoliceStationQuery
+	loadTotal         []func(context.Context, []*Camera) error
+	modifiers         []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -60,6 +62,28 @@ func (cq *CameraQuery) Unique(unique bool) *CameraQuery {
 func (cq *CameraQuery) Order(o ...camera.OrderOption) *CameraQuery {
 	cq.order = append(cq.order, o...)
 	return cq
+}
+
+// QueryPoliceStation chains the current query on the "police_station" edge.
+func (cq *CameraQuery) QueryPoliceStation() *PoliceStationQuery {
+	query := (&PoliceStationClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(camera.Table, camera.FieldID, selector),
+			sqlgraph.To(policestation.Table, policestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, camera.PoliceStationTable, camera.PoliceStationColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Camera entity from the query.
@@ -249,15 +273,27 @@ func (cq *CameraQuery) Clone() *CameraQuery {
 		return nil
 	}
 	return &CameraQuery{
-		config:     cq.config,
-		ctx:        cq.ctx.Clone(),
-		order:      append([]camera.OrderOption{}, cq.order...),
-		inters:     append([]Interceptor{}, cq.inters...),
-		predicates: append([]predicate.Camera{}, cq.predicates...),
+		config:            cq.config,
+		ctx:               cq.ctx.Clone(),
+		order:             append([]camera.OrderOption{}, cq.order...),
+		inters:            append([]Interceptor{}, cq.inters...),
+		predicates:        append([]predicate.Camera{}, cq.predicates...),
+		withPoliceStation: cq.withPoliceStation.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
 	}
+}
+
+// WithPoliceStation tells the query-builder to eager-load the nodes that are connected to
+// the "police_station" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CameraQuery) WithPoliceStation(opts ...func(*PoliceStationQuery)) *CameraQuery {
+	query := (&PoliceStationClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withPoliceStation = query
+	return cq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -336,8 +372,11 @@ func (cq *CameraQuery) prepareQuery(ctx context.Context) error {
 
 func (cq *CameraQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Camera, error) {
 	var (
-		nodes = []*Camera{}
-		_spec = cq.querySpec()
+		nodes       = []*Camera{}
+		_spec       = cq.querySpec()
+		loadedTypes = [1]bool{
+			cq.withPoliceStation != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Camera).scanValues(nil, columns)
@@ -345,6 +384,7 @@ func (cq *CameraQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Camer
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Camera{config: cq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(cq.modifiers) > 0 {
@@ -359,12 +399,51 @@ func (cq *CameraQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Camer
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := cq.withPoliceStation; query != nil {
+		if err := cq.loadPoliceStation(ctx, query, nodes, nil,
+			func(n *Camera, e *PoliceStation) { n.Edges.PoliceStation = e }); err != nil {
+			return nil, err
+		}
+	}
 	for i := range cq.loadTotal {
 		if err := cq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
+}
+
+func (cq *CameraQuery) loadPoliceStation(ctx context.Context, query *PoliceStationQuery, nodes []*Camera, init func(*Camera), assign func(*Camera, *PoliceStation)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*Camera)
+	for i := range nodes {
+		if nodes[i].PoliceStationID == nil {
+			continue
+		}
+		fk := *nodes[i].PoliceStationID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(policestation.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "police_station_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (cq *CameraQuery) sqlCount(ctx context.Context) (int, error) {
@@ -394,6 +473,9 @@ func (cq *CameraQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != camera.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if cq.withPoliceStation != nil {
+			_spec.Node.AddColumnOnce(camera.FieldPoliceStationID)
 		}
 	}
 	if ps := cq.predicates; len(ps) > 0 {

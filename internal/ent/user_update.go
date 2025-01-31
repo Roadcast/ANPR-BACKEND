@@ -146,19 +146,9 @@ func (uu *UserUpdate) SetRole(r *Role) *UserUpdate {
 	return uu.SetRoleID(r.ID)
 }
 
-// AddPoliceStationIDs adds the "police_station" edge to the PoliceStation entity by IDs.
-func (uu *UserUpdate) AddPoliceStationIDs(ids ...uuid.UUID) *UserUpdate {
-	uu.mutation.AddPoliceStationIDs(ids...)
-	return uu
-}
-
-// AddPoliceStation adds the "police_station" edges to the PoliceStation entity.
-func (uu *UserUpdate) AddPoliceStation(p ...*PoliceStation) *UserUpdate {
-	ids := make([]uuid.UUID, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return uu.AddPoliceStationIDs(ids...)
+// SetPoliceStation sets the "police_station" edge to the PoliceStation entity.
+func (uu *UserUpdate) SetPoliceStation(p *PoliceStation) *UserUpdate {
+	return uu.SetPoliceStationID(p.ID)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -172,25 +162,10 @@ func (uu *UserUpdate) ClearRole() *UserUpdate {
 	return uu
 }
 
-// ClearPoliceStation clears all "police_station" edges to the PoliceStation entity.
+// ClearPoliceStation clears the "police_station" edge to the PoliceStation entity.
 func (uu *UserUpdate) ClearPoliceStation() *UserUpdate {
 	uu.mutation.ClearPoliceStation()
 	return uu
-}
-
-// RemovePoliceStationIDs removes the "police_station" edge to PoliceStation entities by IDs.
-func (uu *UserUpdate) RemovePoliceStationIDs(ids ...uuid.UUID) *UserUpdate {
-	uu.mutation.RemovePoliceStationIDs(ids...)
-	return uu
-}
-
-// RemovePoliceStation removes "police_station" edges to PoliceStation entities.
-func (uu *UserUpdate) RemovePoliceStation(p ...*PoliceStation) *UserUpdate {
-	ids := make([]uuid.UUID, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return uu.RemovePoliceStationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -255,6 +230,9 @@ func (uu *UserUpdate) check() error {
 	if uu.mutation.RoleCleared() && len(uu.mutation.RoleIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "User.role"`)
 	}
+	if uu.mutation.PoliceStationCleared() && len(uu.mutation.PoliceStationIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "User.police_station"`)
+	}
 	return nil
 }
 
@@ -291,9 +269,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Active(); ok {
 		_spec.SetField(user.FieldActive, field.TypeBool, value)
 	}
-	if value, ok := uu.mutation.PoliceStationID(); ok {
-		_spec.SetField(user.FieldPoliceStationID, field.TypeUUID, value)
-	}
 	if uu.mutation.RoleCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -325,39 +300,23 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.PoliceStationCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   user.PoliceStationTable,
-			Columns: user.PoliceStationPrimaryKey,
+			Columns: []string{user.PoliceStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uu.mutation.RemovedPoliceStationIDs(); len(nodes) > 0 && !uu.mutation.PoliceStationCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   user.PoliceStationTable,
-			Columns: user.PoliceStationPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := uu.mutation.PoliceStationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   user.PoliceStationTable,
-			Columns: user.PoliceStationPrimaryKey,
+			Columns: []string{user.PoliceStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
@@ -503,19 +462,9 @@ func (uuo *UserUpdateOne) SetRole(r *Role) *UserUpdateOne {
 	return uuo.SetRoleID(r.ID)
 }
 
-// AddPoliceStationIDs adds the "police_station" edge to the PoliceStation entity by IDs.
-func (uuo *UserUpdateOne) AddPoliceStationIDs(ids ...uuid.UUID) *UserUpdateOne {
-	uuo.mutation.AddPoliceStationIDs(ids...)
-	return uuo
-}
-
-// AddPoliceStation adds the "police_station" edges to the PoliceStation entity.
-func (uuo *UserUpdateOne) AddPoliceStation(p ...*PoliceStation) *UserUpdateOne {
-	ids := make([]uuid.UUID, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return uuo.AddPoliceStationIDs(ids...)
+// SetPoliceStation sets the "police_station" edge to the PoliceStation entity.
+func (uuo *UserUpdateOne) SetPoliceStation(p *PoliceStation) *UserUpdateOne {
+	return uuo.SetPoliceStationID(p.ID)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -529,25 +478,10 @@ func (uuo *UserUpdateOne) ClearRole() *UserUpdateOne {
 	return uuo
 }
 
-// ClearPoliceStation clears all "police_station" edges to the PoliceStation entity.
+// ClearPoliceStation clears the "police_station" edge to the PoliceStation entity.
 func (uuo *UserUpdateOne) ClearPoliceStation() *UserUpdateOne {
 	uuo.mutation.ClearPoliceStation()
 	return uuo
-}
-
-// RemovePoliceStationIDs removes the "police_station" edge to PoliceStation entities by IDs.
-func (uuo *UserUpdateOne) RemovePoliceStationIDs(ids ...uuid.UUID) *UserUpdateOne {
-	uuo.mutation.RemovePoliceStationIDs(ids...)
-	return uuo
-}
-
-// RemovePoliceStation removes "police_station" edges to PoliceStation entities.
-func (uuo *UserUpdateOne) RemovePoliceStation(p ...*PoliceStation) *UserUpdateOne {
-	ids := make([]uuid.UUID, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return uuo.RemovePoliceStationIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -625,6 +559,9 @@ func (uuo *UserUpdateOne) check() error {
 	if uuo.mutation.RoleCleared() && len(uuo.mutation.RoleIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "User.role"`)
 	}
+	if uuo.mutation.PoliceStationCleared() && len(uuo.mutation.PoliceStationIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "User.police_station"`)
+	}
 	return nil
 }
 
@@ -678,9 +615,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.Active(); ok {
 		_spec.SetField(user.FieldActive, field.TypeBool, value)
 	}
-	if value, ok := uuo.mutation.PoliceStationID(); ok {
-		_spec.SetField(user.FieldPoliceStationID, field.TypeUUID, value)
-	}
 	if uuo.mutation.RoleCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -712,39 +646,23 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.PoliceStationCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   user.PoliceStationTable,
-			Columns: user.PoliceStationPrimaryKey,
+			Columns: []string{user.PoliceStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uuo.mutation.RemovedPoliceStationIDs(); len(nodes) > 0 && !uuo.mutation.PoliceStationCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   user.PoliceStationTable,
-			Columns: user.PoliceStationPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := uuo.mutation.PoliceStationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   user.PoliceStationTable,
-			Columns: user.PoliceStationPrimaryKey,
+			Columns: []string{user.PoliceStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),

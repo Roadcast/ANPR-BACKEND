@@ -8,6 +8,14 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 )
 
+func (c *Camera) PoliceStation(ctx context.Context) (*PoliceStation, error) {
+	result, err := c.Edges.PoliceStationOrErr()
+	if IsNotLoaded(err) {
+		result, err = c.QueryPoliceStation().Only(ctx)
+	}
+	return result, MaskNotFound(err)
+}
+
 func (ps *PoliceStation) Users(ctx context.Context) (result []*User, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = ps.NamedUsers(graphql.GetFieldContext(ctx).Field.Alias)
@@ -20,10 +28,22 @@ func (ps *PoliceStation) Users(ctx context.Context) (result []*User, err error) 
 	return result, err
 }
 
-func (ps *PoliceStation) ParentStation(ctx context.Context) (*PoliceStation, error) {
-	result, err := ps.Edges.ParentStationOrErr()
+func (ps *PoliceStation) Camera(ctx context.Context) (result []*Camera, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = ps.NamedCamera(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = ps.Edges.CameraOrErr()
+	}
 	if IsNotLoaded(err) {
-		result, err = ps.QueryParentStation().Only(ctx)
+		result, err = ps.QueryCamera().All(ctx)
+	}
+	return result, err
+}
+
+func (ps *PoliceStation) Parent(ctx context.Context) (*PoliceStation, error) {
+	result, err := ps.Edges.ParentOrErr()
+	if IsNotLoaded(err) {
+		result, err = ps.QueryParent().Only(ctx)
 	}
 	return result, MaskNotFound(err)
 }
@@ -72,14 +92,10 @@ func (u *User) Role(ctx context.Context) (*Role, error) {
 	return result, err
 }
 
-func (u *User) PoliceStation(ctx context.Context) (result []*PoliceStation, err error) {
-	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
-		result, err = u.NamedPoliceStation(graphql.GetFieldContext(ctx).Field.Alias)
-	} else {
-		result, err = u.Edges.PoliceStationOrErr()
-	}
+func (u *User) PoliceStation(ctx context.Context) (*PoliceStation, error) {
+	result, err := u.Edges.PoliceStationOrErr()
 	if IsNotLoaded(err) {
-		result, err = u.QueryPoliceStation().All(ctx)
+		result, err = u.QueryPoliceStation().Only(ctx)
 	}
 	return result, err
 }

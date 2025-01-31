@@ -10,13 +10,14 @@ import (
 
 // CreateCameraInput represents a mutation input for creating cameras.
 type CreateCameraInput struct {
-	CreatedAt *time.Time
-	UpdatedAt *time.Time
-	Name      string
-	Model     string
-	Imei      string
-	Location  map[string]interface{}
-	Active    *bool
+	CreatedAt       *time.Time
+	UpdatedAt       *time.Time
+	Name            string
+	Model           string
+	Imei            string
+	Location        string
+	Active          *bool
+	PoliceStationID *uuid.UUID
 }
 
 // Mutate applies the CreateCameraInput on the CameraMutation builder.
@@ -30,11 +31,12 @@ func (i *CreateCameraInput) Mutate(m *CameraMutation) {
 	m.SetName(i.Name)
 	m.SetModel(i.Model)
 	m.SetImei(i.Imei)
-	if v := i.Location; v != nil {
-		m.SetLocation(v)
-	}
+	m.SetLocation(i.Location)
 	if v := i.Active; v != nil {
 		m.SetActive(*v)
+	}
+	if v := i.PoliceStationID; v != nil {
+		m.SetPoliceStationID(*v)
 	}
 }
 
@@ -46,12 +48,14 @@ func (c *CameraCreate) SetInput(i CreateCameraInput) *CameraCreate {
 
 // UpdateCameraInput represents a mutation input for updating cameras.
 type UpdateCameraInput struct {
-	UpdatedAt *time.Time
-	Name      *string
-	Model     *string
-	Imei      *string
-	Location  map[string]interface{}
-	Active    *bool
+	UpdatedAt          *time.Time
+	Name               *string
+	Model              *string
+	Imei               *string
+	Location           *string
+	Active             *bool
+	ClearPoliceStation bool
+	PoliceStationID    *uuid.UUID
 }
 
 // Mutate applies the UpdateCameraInput on the CameraMutation builder.
@@ -69,10 +73,16 @@ func (i *UpdateCameraInput) Mutate(m *CameraMutation) {
 		m.SetImei(*v)
 	}
 	if v := i.Location; v != nil {
-		m.SetLocation(v)
+		m.SetLocation(*v)
 	}
 	if v := i.Active; v != nil {
 		m.SetActive(*v)
+	}
+	if i.ClearPoliceStation {
+		m.ClearPoliceStation()
+	}
+	if v := i.PoliceStationID; v != nil {
+		m.SetPoliceStationID(*v)
 	}
 }
 
@@ -253,11 +263,12 @@ type CreatePoliceStationInput struct {
 	CreatedAt       *time.Time
 	UpdatedAt       *time.Time
 	Name            string
-	Location        map[string]interface{}
+	Location        *string
 	Code            string
 	Identifier      string
 	UserIDs         []uuid.UUID
-	ParentStationID *uuid.UUID
+	CameraIDs       []uuid.UUID
+	ParentID        *uuid.UUID
 	ChildStationIDs []uuid.UUID
 }
 
@@ -271,15 +282,18 @@ func (i *CreatePoliceStationInput) Mutate(m *PoliceStationMutation) {
 	}
 	m.SetName(i.Name)
 	if v := i.Location; v != nil {
-		m.SetLocation(v)
+		m.SetLocation(*v)
 	}
 	m.SetCode(i.Code)
 	m.SetIdentifier(i.Identifier)
 	if v := i.UserIDs; len(v) > 0 {
 		m.AddUserIDs(v...)
 	}
-	if v := i.ParentStationID; v != nil {
-		m.SetParentStationID(*v)
+	if v := i.CameraIDs; len(v) > 0 {
+		m.AddCameraIDs(v...)
+	}
+	if v := i.ParentID; v != nil {
+		m.SetParentID(*v)
 	}
 	if v := i.ChildStationIDs; len(v) > 0 {
 		m.AddChildStationIDs(v...)
@@ -297,14 +311,17 @@ type UpdatePoliceStationInput struct {
 	UpdatedAt             *time.Time
 	Name                  *string
 	ClearLocation         bool
-	Location              map[string]interface{}
+	Location              *string
 	Code                  *string
 	Identifier            *string
 	ClearUsers            bool
 	AddUserIDs            []uuid.UUID
 	RemoveUserIDs         []uuid.UUID
-	ClearParentStation    bool
-	ParentStationID       *uuid.UUID
+	ClearCamera           bool
+	AddCameraIDs          []uuid.UUID
+	RemoveCameraIDs       []uuid.UUID
+	ClearParent           bool
+	ParentID              *uuid.UUID
 	ClearChildStations    bool
 	AddChildStationIDs    []uuid.UUID
 	RemoveChildStationIDs []uuid.UUID
@@ -322,7 +339,7 @@ func (i *UpdatePoliceStationInput) Mutate(m *PoliceStationMutation) {
 		m.ClearLocation()
 	}
 	if v := i.Location; v != nil {
-		m.SetLocation(v)
+		m.SetLocation(*v)
 	}
 	if v := i.Code; v != nil {
 		m.SetCode(*v)
@@ -339,11 +356,20 @@ func (i *UpdatePoliceStationInput) Mutate(m *PoliceStationMutation) {
 	if v := i.RemoveUserIDs; len(v) > 0 {
 		m.RemoveUserIDs(v...)
 	}
-	if i.ClearParentStation {
-		m.ClearParentStation()
+	if i.ClearCamera {
+		m.ClearCamera()
 	}
-	if v := i.ParentStationID; v != nil {
-		m.SetParentStationID(*v)
+	if v := i.AddCameraIDs; len(v) > 0 {
+		m.AddCameraIDs(v...)
+	}
+	if v := i.RemoveCameraIDs; len(v) > 0 {
+		m.RemoveCameraIDs(v...)
+	}
+	if i.ClearParent {
+		m.ClearParent()
+	}
+	if v := i.ParentID; v != nil {
+		m.SetParentID(*v)
 	}
 	if i.ClearChildStations {
 		m.ClearChildStations()
@@ -454,16 +480,15 @@ func (c *RoleUpdateOne) SetInput(i UpdateRoleInput) *RoleUpdateOne {
 
 // CreateUserInput represents a mutation input for creating users.
 type CreateUserInput struct {
-	CreatedAt        *time.Time
-	UpdatedAt        *time.Time
-	Name             string
-	Email            string
-	Password         string
-	Phone            *string
-	Active           *bool
-	PoliceStationID  uuid.UUID
-	RoleID           uuid.UUID
-	PoliceStationIDs []uuid.UUID
+	CreatedAt       *time.Time
+	UpdatedAt       *time.Time
+	Name            string
+	Email           string
+	Password        string
+	Phone           *string
+	Active          *bool
+	RoleID          uuid.UUID
+	PoliceStationID uuid.UUID
 }
 
 // Mutate applies the CreateUserInput on the UserMutation builder.
@@ -483,11 +508,8 @@ func (i *CreateUserInput) Mutate(m *UserMutation) {
 	if v := i.Active; v != nil {
 		m.SetActive(*v)
 	}
-	m.SetPoliceStationID(i.PoliceStationID)
 	m.SetRoleID(i.RoleID)
-	if v := i.PoliceStationIDs; len(v) > 0 {
-		m.AddPoliceStationIDs(v...)
-	}
+	m.SetPoliceStationID(i.PoliceStationID)
 }
 
 // SetInput applies the change-set in the CreateUserInput on the UserCreate builder.
@@ -498,17 +520,15 @@ func (c *UserCreate) SetInput(i CreateUserInput) *UserCreate {
 
 // UpdateUserInput represents a mutation input for updating users.
 type UpdateUserInput struct {
-	UpdatedAt              *time.Time
-	Name                   *string
-	Email                  *string
-	Password               *string
-	ClearPhone             bool
-	Phone                  *string
-	Active                 *bool
-	PoliceStationID        *uuid.UUID
-	RoleID                 *uuid.UUID
-	AddPoliceStationIDs    []uuid.UUID
-	RemovePoliceStationIDs []uuid.UUID
+	UpdatedAt       *time.Time
+	Name            *string
+	Email           *string
+	Password        *string
+	ClearPhone      bool
+	Phone           *string
+	Active          *bool
+	RoleID          *uuid.UUID
+	PoliceStationID *uuid.UUID
 }
 
 // Mutate applies the UpdateUserInput on the UserMutation builder.
@@ -534,17 +554,11 @@ func (i *UpdateUserInput) Mutate(m *UserMutation) {
 	if v := i.Active; v != nil {
 		m.SetActive(*v)
 	}
-	if v := i.PoliceStationID; v != nil {
-		m.SetPoliceStationID(*v)
-	}
 	if v := i.RoleID; v != nil {
 		m.SetRoleID(*v)
 	}
-	if v := i.AddPoliceStationIDs; len(v) > 0 {
-		m.AddPoliceStationIDs(v...)
-	}
-	if v := i.RemovePoliceStationIDs; len(v) > 0 {
-		m.RemovePoliceStationIDs(v...)
+	if v := i.PoliceStationID; v != nil {
+		m.SetPoliceStationID(*v)
 	}
 }
 

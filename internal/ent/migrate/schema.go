@@ -17,14 +17,36 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "model", Type: field.TypeString},
 		{Name: "imei", Type: field.TypeString, Unique: true},
-		{Name: "location", Type: field.TypeJSON, SchemaType: map[string]string{"postgres": "geometry(Point)"}},
+		{Name: "location", Type: field.TypeString, SchemaType: map[string]string{"postgres": "GEOMETRY(Point, 4326)"}},
 		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "police_station_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// CamerasTable holds the schema information for the "cameras" table.
 	CamerasTable = &schema.Table{
 		Name:       "cameras",
 		Columns:    CamerasColumns,
 		PrimaryKey: []*schema.Column{CamerasColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "cameras_police_stations_camera",
+				Columns:    []*schema.Column{CamerasColumns[8]},
+				RefColumns: []*schema.Column{PoliceStationsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "camera_name",
+				Unique:  false,
+				Columns: []*schema.Column{CamerasColumns[3]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"mysql":    "FULLTEXT",
+						"postgres": "GIN",
+					},
+				},
+			},
+		},
 	}
 	// CarsColumns holds the columns for the "cars" table.
 	CarsColumns = []*schema.Column{
@@ -75,10 +97,10 @@ var (
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
-		{Name: "location", Type: field.TypeJSON, Nullable: true, SchemaType: map[string]string{"postgres": "geometry(Point)"}},
+		{Name: "location", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"postgres": "GEOMETRY(Point, 4326)"}},
 		{Name: "code", Type: field.TypeString, Unique: true},
 		{Name: "identifier", Type: field.TypeString, Unique: true},
-		{Name: "police_station_child_stations", Type: field.TypeUUID, Nullable: true},
+		{Name: "parent_station_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// PoliceStationsTable holds the schema information for the "police_stations" table.
 	PoliceStationsTable = &schema.Table{
@@ -140,6 +162,12 @@ var (
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
+				Symbol:     "users_police_stations_users",
+				Columns:    []*schema.Column{UsersColumns[8]},
+				RefColumns: []*schema.Column{PoliceStationsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
 				Symbol:     "users_roles_users",
 				Columns:    []*schema.Column{UsersColumns[9]},
 				RefColumns: []*schema.Column{RolesColumns[0]},
@@ -189,31 +217,6 @@ var (
 		Columns:    VehicleDataColumns,
 		PrimaryKey: []*schema.Column{VehicleDataColumns[0]},
 	}
-	// PoliceStationUsersColumns holds the columns for the "police_station_users" table.
-	PoliceStationUsersColumns = []*schema.Column{
-		{Name: "police_station_id", Type: field.TypeUUID},
-		{Name: "user_id", Type: field.TypeUUID},
-	}
-	// PoliceStationUsersTable holds the schema information for the "police_station_users" table.
-	PoliceStationUsersTable = &schema.Table{
-		Name:       "police_station_users",
-		Columns:    PoliceStationUsersColumns,
-		PrimaryKey: []*schema.Column{PoliceStationUsersColumns[0], PoliceStationUsersColumns[1]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "police_station_users_police_station_id",
-				Columns:    []*schema.Column{PoliceStationUsersColumns[0]},
-				RefColumns: []*schema.Column{PoliceStationsColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-			{
-				Symbol:     "police_station_users_user_id",
-				Columns:    []*schema.Column{PoliceStationUsersColumns[1]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		CamerasTable,
@@ -223,14 +226,13 @@ var (
 		RolesTable,
 		UsersTable,
 		VehicleDataTable,
-		PoliceStationUsersTable,
 	}
 )
 
 func init() {
+	CamerasTable.ForeignKeys[0].RefTable = PoliceStationsTable
 	PermissionsTable.ForeignKeys[0].RefTable = RolesTable
 	PoliceStationsTable.ForeignKeys[0].RefTable = PoliceStationsTable
-	UsersTable.ForeignKeys[0].RefTable = RolesTable
-	PoliceStationUsersTable.ForeignKeys[0].RefTable = PoliceStationsTable
-	PoliceStationUsersTable.ForeignKeys[1].RefTable = UsersTable
+	UsersTable.ForeignKeys[0].RefTable = PoliceStationsTable
+	UsersTable.ForeignKeys[1].RefTable = RolesTable
 }

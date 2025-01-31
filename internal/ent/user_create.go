@@ -131,19 +131,9 @@ func (uc *UserCreate) SetRole(r *Role) *UserCreate {
 	return uc.SetRoleID(r.ID)
 }
 
-// AddPoliceStationIDs adds the "police_station" edge to the PoliceStation entity by IDs.
-func (uc *UserCreate) AddPoliceStationIDs(ids ...uuid.UUID) *UserCreate {
-	uc.mutation.AddPoliceStationIDs(ids...)
-	return uc
-}
-
-// AddPoliceStation adds the "police_station" edges to the PoliceStation entity.
-func (uc *UserCreate) AddPoliceStation(p ...*PoliceStation) *UserCreate {
-	ids := make([]uuid.UUID, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return uc.AddPoliceStationIDs(ids...)
+// SetPoliceStation sets the "police_station" edge to the PoliceStation entity.
+func (uc *UserCreate) SetPoliceStation(p *PoliceStation) *UserCreate {
+	return uc.SetPoliceStationID(p.ID)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -322,10 +312,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldActive, field.TypeBool, value)
 		_node.Active = value
 	}
-	if value, ok := uc.mutation.PoliceStationID(); ok {
-		_spec.SetField(user.FieldPoliceStationID, field.TypeUUID, value)
-		_node.PoliceStationID = value
-	}
 	if nodes := uc.mutation.RoleIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -345,10 +331,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	}
 	if nodes := uc.mutation.PoliceStationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   user.PoliceStationTable,
-			Columns: user.PoliceStationPrimaryKey,
+			Columns: []string{user.PoliceStationColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
@@ -357,6 +343,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.PoliceStationID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

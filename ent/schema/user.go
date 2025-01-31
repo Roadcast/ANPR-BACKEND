@@ -31,8 +31,8 @@ func (User) Fields() []ent.Field {
 		field.String("name").
 			NotEmpty().
 			Annotations(
-				entgql.OrderField("NAME"), // Adds ordering support
-				// Expose this field in GraphQL
+				entgql.OrderField("NAME"), // Adds ordering
+				entgql.Skip(entgql.SkipWhereInput),
 			),
 		field.String("email").
 			Unique().
@@ -44,7 +44,7 @@ func (User) Fields() []ent.Field {
 			Sensitive().
 			NotEmpty().
 			Annotations(
-			// Exposed for creating or updating a user
+				entgql.Skip(entgql.SkipWhereInput),
 			),
 		field.String("phone").
 			Optional().
@@ -52,8 +52,8 @@ func (User) Fields() []ent.Field {
 			// Expose this field in GraphQL
 			),
 		field.Bool("active").Default(true).Annotations(),
-		field.UUID("role_id", uuid.UUID{}).Annotations(entgql.Type("ID")),
-		field.UUID("police_station_id", uuid.UUID{}).Annotations(entgql.Type("ID")),
+		field.UUID("role_id", uuid.UUID{}).Annotations(entgql.Type("ID"), entgql.Skip(entgql.SkipWhereInput)),
+		field.UUID("police_station_id", uuid.UUID{}).Annotations(entgql.Type("ID"), entgql.Skip(entgql.SkipWhereInput)),
 	}
 }
 
@@ -64,7 +64,7 @@ func (User) Edges() []ent.Edge {
 			Required().
 			Annotations(),
 		edge.From("police_station", PoliceStation.Type).
-			Ref("users").
+			Ref("users").Unique().Field("police_station_id").
 			Required().
 			Annotations(),
 	}

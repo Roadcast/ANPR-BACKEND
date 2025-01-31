@@ -47,11 +47,13 @@ const (
 	RoleInverseTable = "roles"
 	// RoleColumn is the table column denoting the role relation/edge.
 	RoleColumn = "role_id"
-	// PoliceStationTable is the table that holds the police_station relation/edge. The primary key declared below.
-	PoliceStationTable = "police_station_users"
+	// PoliceStationTable is the table that holds the police_station relation/edge.
+	PoliceStationTable = "users"
 	// PoliceStationInverseTable is the table name for the PoliceStation entity.
 	// It exists in this package in order to avoid circular dependency with the "policestation" package.
 	PoliceStationInverseTable = "police_stations"
+	// PoliceStationColumn is the table column denoting the police_station relation/edge.
+	PoliceStationColumn = "police_station_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -67,12 +69,6 @@ var Columns = []string{
 	FieldRoleID,
 	FieldPoliceStationID,
 }
-
-var (
-	// PoliceStationPrimaryKey and PoliceStationColumn2 are the table columns denoting the
-	// primary key for the police_station relation (M2M).
-	PoliceStationPrimaryKey = []string{"police_station_id", "user_id"}
-)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -170,17 +166,10 @@ func ByRoleField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByPoliceStationCount orders the results by police_station count.
-func ByPoliceStationCount(opts ...sql.OrderTermOption) OrderOption {
+// ByPoliceStationField orders the results by police_station field.
+func ByPoliceStationField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newPoliceStationStep(), opts...)
-	}
-}
-
-// ByPoliceStation orders the results by police_station terms.
-func ByPoliceStation(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newPoliceStationStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newPoliceStationStep(), sql.OrderByField(field, opts...))
 	}
 }
 func newRoleStep() *sqlgraph.Step {
@@ -194,6 +183,6 @@ func newPoliceStationStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PoliceStationInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, PoliceStationTable, PoliceStationPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.M2O, true, PoliceStationTable, PoliceStationColumn),
 	)
 }

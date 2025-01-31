@@ -3,7 +3,6 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
 	"go-ent-project/internal/ent/policestation"
 	"strings"
@@ -26,33 +25,37 @@ type PoliceStation struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Location holds the value of the "location" field.
-	Location map[string]interface{} `json:"location,omitempty"`
+	Location *string `json:"location,omitempty"`
 	// Code holds the value of the "code" field.
 	Code string `json:"code,omitempty"`
 	// Identifier holds the value of the "identifier" field.
 	Identifier string `json:"identifier,omitempty"`
+	// ParentStationID holds the value of the "parent_station_id" field.
+	ParentStationID *uuid.UUID `json:"parent_station_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PoliceStationQuery when eager-loading is set.
-	Edges                         PoliceStationEdges `json:"edges"`
-	police_station_child_stations *uuid.UUID
-	selectValues                  sql.SelectValues
+	Edges        PoliceStationEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // PoliceStationEdges holds the relations/edges for other nodes in the graph.
 type PoliceStationEdges struct {
 	// Users holds the value of the users edge.
 	Users []*User `json:"users,omitempty"`
-	// ParentStation holds the value of the parent_station edge.
-	ParentStation *PoliceStation `json:"parent_station,omitempty"`
+	// Camera holds the value of the camera edge.
+	Camera []*Camera `json:"camera,omitempty"`
+	// Parent holds the value of the parent edge.
+	Parent *PoliceStation `json:"parent,omitempty"`
 	// ChildStations holds the value of the child_stations edge.
 	ChildStations []*PoliceStation `json:"child_stations,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 	// totalCount holds the count of the edges above.
-	totalCount [3]map[string]int
+	totalCount [4]map[string]int
 
 	namedUsers         map[string][]*User
+	namedCamera        map[string][]*Camera
 	namedChildStations map[string][]*PoliceStation
 }
 
@@ -65,21 +68,30 @@ func (e PoliceStationEdges) UsersOrErr() ([]*User, error) {
 	return nil, &NotLoadedError{edge: "users"}
 }
 
-// ParentStationOrErr returns the ParentStation value or an error if the edge
+// CameraOrErr returns the Camera value or an error if the edge
+// was not loaded in eager-loading.
+func (e PoliceStationEdges) CameraOrErr() ([]*Camera, error) {
+	if e.loadedTypes[1] {
+		return e.Camera, nil
+	}
+	return nil, &NotLoadedError{edge: "camera"}
+}
+
+// ParentOrErr returns the Parent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e PoliceStationEdges) ParentStationOrErr() (*PoliceStation, error) {
-	if e.ParentStation != nil {
-		return e.ParentStation, nil
-	} else if e.loadedTypes[1] {
+func (e PoliceStationEdges) ParentOrErr() (*PoliceStation, error) {
+	if e.Parent != nil {
+		return e.Parent, nil
+	} else if e.loadedTypes[2] {
 		return nil, &NotFoundError{label: policestation.Label}
 	}
-	return nil, &NotLoadedError{edge: "parent_station"}
+	return nil, &NotLoadedError{edge: "parent"}
 }
 
 // ChildStationsOrErr returns the ChildStations value or an error if the edge
 // was not loaded in eager-loading.
 func (e PoliceStationEdges) ChildStationsOrErr() ([]*PoliceStation, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.ChildStations, nil
 	}
 	return nil, &NotLoadedError{edge: "child_stations"}
@@ -90,16 +102,14 @@ func (*PoliceStation) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case policestation.FieldLocation:
-			values[i] = new([]byte)
-		case policestation.FieldName, policestation.FieldCode, policestation.FieldIdentifier:
+		case policestation.FieldParentStationID:
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
+		case policestation.FieldName, policestation.FieldLocation, policestation.FieldCode, policestation.FieldIdentifier:
 			values[i] = new(sql.NullString)
 		case policestation.FieldCreatedAt, policestation.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case policestation.FieldID:
 			values[i] = new(uuid.UUID)
-		case policestation.ForeignKeys[0]: // police_station_child_stations
-			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -140,12 +150,11 @@ func (ps *PoliceStation) assignValues(columns []string, values []any) error {
 				ps.Name = value.String
 			}
 		case policestation.FieldLocation:
-			if value, ok := values[i].(*[]byte); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field location", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &ps.Location); err != nil {
-					return fmt.Errorf("unmarshal field location: %w", err)
-				}
+			} else if value.Valid {
+				ps.Location = new(string)
+				*ps.Location = value.String
 			}
 		case policestation.FieldCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -159,12 +168,12 @@ func (ps *PoliceStation) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ps.Identifier = value.String
 			}
-		case policestation.ForeignKeys[0]:
+		case policestation.FieldParentStationID:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field police_station_child_stations", values[i])
+				return fmt.Errorf("unexpected type %T for field parent_station_id", values[i])
 			} else if value.Valid {
-				ps.police_station_child_stations = new(uuid.UUID)
-				*ps.police_station_child_stations = *value.S.(*uuid.UUID)
+				ps.ParentStationID = new(uuid.UUID)
+				*ps.ParentStationID = *value.S.(*uuid.UUID)
 			}
 		default:
 			ps.selectValues.Set(columns[i], values[i])
@@ -184,9 +193,14 @@ func (ps *PoliceStation) QueryUsers() *UserQuery {
 	return NewPoliceStationClient(ps.config).QueryUsers(ps)
 }
 
-// QueryParentStation queries the "parent_station" edge of the PoliceStation entity.
-func (ps *PoliceStation) QueryParentStation() *PoliceStationQuery {
-	return NewPoliceStationClient(ps.config).QueryParentStation(ps)
+// QueryCamera queries the "camera" edge of the PoliceStation entity.
+func (ps *PoliceStation) QueryCamera() *CameraQuery {
+	return NewPoliceStationClient(ps.config).QueryCamera(ps)
+}
+
+// QueryParent queries the "parent" edge of the PoliceStation entity.
+func (ps *PoliceStation) QueryParent() *PoliceStationQuery {
+	return NewPoliceStationClient(ps.config).QueryParent(ps)
 }
 
 // QueryChildStations queries the "child_stations" edge of the PoliceStation entity.
@@ -226,14 +240,21 @@ func (ps *PoliceStation) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(ps.Name)
 	builder.WriteString(", ")
-	builder.WriteString("location=")
-	builder.WriteString(fmt.Sprintf("%v", ps.Location))
+	if v := ps.Location; v != nil {
+		builder.WriteString("location=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	builder.WriteString("code=")
 	builder.WriteString(ps.Code)
 	builder.WriteString(", ")
 	builder.WriteString("identifier=")
 	builder.WriteString(ps.Identifier)
+	builder.WriteString(", ")
+	if v := ps.ParentStationID; v != nil {
+		builder.WriteString("parent_station_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }
@@ -259,6 +280,30 @@ func (ps *PoliceStation) appendNamedUsers(name string, edges ...*User) {
 		ps.Edges.namedUsers[name] = []*User{}
 	} else {
 		ps.Edges.namedUsers[name] = append(ps.Edges.namedUsers[name], edges...)
+	}
+}
+
+// NamedCamera returns the Camera named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (ps *PoliceStation) NamedCamera(name string) ([]*Camera, error) {
+	if ps.Edges.namedCamera == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := ps.Edges.namedCamera[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (ps *PoliceStation) appendNamedCamera(name string, edges ...*Camera) {
+	if ps.Edges.namedCamera == nil {
+		ps.Edges.namedCamera = make(map[string][]*Camera)
+	}
+	if len(edges) == 0 {
+		ps.Edges.namedCamera[name] = []*Camera{}
+	} else {
+		ps.Edges.namedCamera[name] = append(ps.Edges.namedCamera[name], edges...)
 	}
 }
 

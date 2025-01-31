@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go-ent-project/internal/ent/camera"
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/user"
 	"time"
@@ -60,8 +61,16 @@ func (psc *PoliceStationCreate) SetName(s string) *PoliceStationCreate {
 }
 
 // SetLocation sets the "location" field.
-func (psc *PoliceStationCreate) SetLocation(m map[string]interface{}) *PoliceStationCreate {
-	psc.mutation.SetLocation(m)
+func (psc *PoliceStationCreate) SetLocation(s string) *PoliceStationCreate {
+	psc.mutation.SetLocation(s)
+	return psc
+}
+
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (psc *PoliceStationCreate) SetNillableLocation(s *string) *PoliceStationCreate {
+	if s != nil {
+		psc.SetLocation(*s)
+	}
 	return psc
 }
 
@@ -74,6 +83,20 @@ func (psc *PoliceStationCreate) SetCode(s string) *PoliceStationCreate {
 // SetIdentifier sets the "identifier" field.
 func (psc *PoliceStationCreate) SetIdentifier(s string) *PoliceStationCreate {
 	psc.mutation.SetIdentifier(s)
+	return psc
+}
+
+// SetParentStationID sets the "parent_station_id" field.
+func (psc *PoliceStationCreate) SetParentStationID(u uuid.UUID) *PoliceStationCreate {
+	psc.mutation.SetParentStationID(u)
+	return psc
+}
+
+// SetNillableParentStationID sets the "parent_station_id" field if the given value is not nil.
+func (psc *PoliceStationCreate) SetNillableParentStationID(u *uuid.UUID) *PoliceStationCreate {
+	if u != nil {
+		psc.SetParentStationID(*u)
+	}
 	return psc
 }
 
@@ -106,23 +129,38 @@ func (psc *PoliceStationCreate) AddUsers(u ...*User) *PoliceStationCreate {
 	return psc.AddUserIDs(ids...)
 }
 
-// SetParentStationID sets the "parent_station" edge to the PoliceStation entity by ID.
-func (psc *PoliceStationCreate) SetParentStationID(id uuid.UUID) *PoliceStationCreate {
-	psc.mutation.SetParentStationID(id)
+// AddCameraIDs adds the "camera" edge to the Camera entity by IDs.
+func (psc *PoliceStationCreate) AddCameraIDs(ids ...uuid.UUID) *PoliceStationCreate {
+	psc.mutation.AddCameraIDs(ids...)
 	return psc
 }
 
-// SetNillableParentStationID sets the "parent_station" edge to the PoliceStation entity by ID if the given value is not nil.
-func (psc *PoliceStationCreate) SetNillableParentStationID(id *uuid.UUID) *PoliceStationCreate {
+// AddCamera adds the "camera" edges to the Camera entity.
+func (psc *PoliceStationCreate) AddCamera(c ...*Camera) *PoliceStationCreate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return psc.AddCameraIDs(ids...)
+}
+
+// SetParentID sets the "parent" edge to the PoliceStation entity by ID.
+func (psc *PoliceStationCreate) SetParentID(id uuid.UUID) *PoliceStationCreate {
+	psc.mutation.SetParentID(id)
+	return psc
+}
+
+// SetNillableParentID sets the "parent" edge to the PoliceStation entity by ID if the given value is not nil.
+func (psc *PoliceStationCreate) SetNillableParentID(id *uuid.UUID) *PoliceStationCreate {
 	if id != nil {
-		psc = psc.SetParentStationID(*id)
+		psc = psc.SetParentID(*id)
 	}
 	return psc
 }
 
-// SetParentStation sets the "parent_station" edge to the PoliceStation entity.
-func (psc *PoliceStationCreate) SetParentStation(p *PoliceStation) *PoliceStationCreate {
-	return psc.SetParentStationID(p.ID)
+// SetParent sets the "parent" edge to the PoliceStation entity.
+func (psc *PoliceStationCreate) SetParent(p *PoliceStation) *PoliceStationCreate {
+	return psc.SetParentID(p.ID)
 }
 
 // AddChildStationIDs adds the "child_stations" edge to the PoliceStation entity by IDs.
@@ -270,8 +308,8 @@ func (psc *PoliceStationCreate) createSpec() (*PoliceStation, *sqlgraph.CreateSp
 		_node.Name = value
 	}
 	if value, ok := psc.mutation.Location(); ok {
-		_spec.SetField(policestation.FieldLocation, field.TypeJSON, value)
-		_node.Location = value
+		_spec.SetField(policestation.FieldLocation, field.TypeString, value)
+		_node.Location = &value
 	}
 	if value, ok := psc.mutation.Code(); ok {
 		_spec.SetField(policestation.FieldCode, field.TypeString, value)
@@ -283,10 +321,10 @@ func (psc *PoliceStationCreate) createSpec() (*PoliceStation, *sqlgraph.CreateSp
 	}
 	if nodes := psc.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: policestation.UsersPrimaryKey,
+			Columns: []string{policestation.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
@@ -297,12 +335,28 @@ func (psc *PoliceStationCreate) createSpec() (*PoliceStation, *sqlgraph.CreateSp
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := psc.mutation.ParentStationIDs(); len(nodes) > 0 {
+	if nodes := psc.mutation.CameraIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CameraTable,
+			Columns: []string{policestation.CameraColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(camera.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := psc.mutation.ParentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   policestation.ParentStationTable,
-			Columns: []string{policestation.ParentStationColumn},
+			Table:   policestation.ParentTable,
+			Columns: []string{policestation.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
@@ -311,7 +365,7 @@ func (psc *PoliceStationCreate) createSpec() (*PoliceStation, *sqlgraph.CreateSp
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.police_station_child_stations = &nodes[0]
+		_node.ParentStationID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := psc.mutation.ChildStationsIDs(); len(nodes) > 0 {
@@ -407,7 +461,7 @@ func (u *PoliceStationUpsert) UpdateName() *PoliceStationUpsert {
 }
 
 // SetLocation sets the "location" field.
-func (u *PoliceStationUpsert) SetLocation(v map[string]interface{}) *PoliceStationUpsert {
+func (u *PoliceStationUpsert) SetLocation(v string) *PoliceStationUpsert {
 	u.Set(policestation.FieldLocation, v)
 	return u
 }
@@ -445,6 +499,24 @@ func (u *PoliceStationUpsert) SetIdentifier(v string) *PoliceStationUpsert {
 // UpdateIdentifier sets the "identifier" field to the value that was provided on create.
 func (u *PoliceStationUpsert) UpdateIdentifier() *PoliceStationUpsert {
 	u.SetExcluded(policestation.FieldIdentifier)
+	return u
+}
+
+// SetParentStationID sets the "parent_station_id" field.
+func (u *PoliceStationUpsert) SetParentStationID(v uuid.UUID) *PoliceStationUpsert {
+	u.Set(policestation.FieldParentStationID, v)
+	return u
+}
+
+// UpdateParentStationID sets the "parent_station_id" field to the value that was provided on create.
+func (u *PoliceStationUpsert) UpdateParentStationID() *PoliceStationUpsert {
+	u.SetExcluded(policestation.FieldParentStationID)
+	return u
+}
+
+// ClearParentStationID clears the value of the "parent_station_id" field.
+func (u *PoliceStationUpsert) ClearParentStationID() *PoliceStationUpsert {
+	u.SetNull(policestation.FieldParentStationID)
 	return u
 }
 
@@ -528,7 +600,7 @@ func (u *PoliceStationUpsertOne) UpdateName() *PoliceStationUpsertOne {
 }
 
 // SetLocation sets the "location" field.
-func (u *PoliceStationUpsertOne) SetLocation(v map[string]interface{}) *PoliceStationUpsertOne {
+func (u *PoliceStationUpsertOne) SetLocation(v string) *PoliceStationUpsertOne {
 	return u.Update(func(s *PoliceStationUpsert) {
 		s.SetLocation(v)
 	})
@@ -573,6 +645,27 @@ func (u *PoliceStationUpsertOne) SetIdentifier(v string) *PoliceStationUpsertOne
 func (u *PoliceStationUpsertOne) UpdateIdentifier() *PoliceStationUpsertOne {
 	return u.Update(func(s *PoliceStationUpsert) {
 		s.UpdateIdentifier()
+	})
+}
+
+// SetParentStationID sets the "parent_station_id" field.
+func (u *PoliceStationUpsertOne) SetParentStationID(v uuid.UUID) *PoliceStationUpsertOne {
+	return u.Update(func(s *PoliceStationUpsert) {
+		s.SetParentStationID(v)
+	})
+}
+
+// UpdateParentStationID sets the "parent_station_id" field to the value that was provided on create.
+func (u *PoliceStationUpsertOne) UpdateParentStationID() *PoliceStationUpsertOne {
+	return u.Update(func(s *PoliceStationUpsert) {
+		s.UpdateParentStationID()
+	})
+}
+
+// ClearParentStationID clears the value of the "parent_station_id" field.
+func (u *PoliceStationUpsertOne) ClearParentStationID() *PoliceStationUpsertOne {
+	return u.Update(func(s *PoliceStationUpsert) {
+		s.ClearParentStationID()
 	})
 }
 
@@ -823,7 +916,7 @@ func (u *PoliceStationUpsertBulk) UpdateName() *PoliceStationUpsertBulk {
 }
 
 // SetLocation sets the "location" field.
-func (u *PoliceStationUpsertBulk) SetLocation(v map[string]interface{}) *PoliceStationUpsertBulk {
+func (u *PoliceStationUpsertBulk) SetLocation(v string) *PoliceStationUpsertBulk {
 	return u.Update(func(s *PoliceStationUpsert) {
 		s.SetLocation(v)
 	})
@@ -868,6 +961,27 @@ func (u *PoliceStationUpsertBulk) SetIdentifier(v string) *PoliceStationUpsertBu
 func (u *PoliceStationUpsertBulk) UpdateIdentifier() *PoliceStationUpsertBulk {
 	return u.Update(func(s *PoliceStationUpsert) {
 		s.UpdateIdentifier()
+	})
+}
+
+// SetParentStationID sets the "parent_station_id" field.
+func (u *PoliceStationUpsertBulk) SetParentStationID(v uuid.UUID) *PoliceStationUpsertBulk {
+	return u.Update(func(s *PoliceStationUpsert) {
+		s.SetParentStationID(v)
+	})
+}
+
+// UpdateParentStationID sets the "parent_station_id" field to the value that was provided on create.
+func (u *PoliceStationUpsertBulk) UpdateParentStationID() *PoliceStationUpsertBulk {
+	return u.Update(func(s *PoliceStationUpsert) {
+		s.UpdateParentStationID()
+	})
+}
+
+// ClearParentStationID clears the value of the "parent_station_id" field.
+func (u *PoliceStationUpsertBulk) ClearParentStationID() *PoliceStationUpsertBulk {
+	return u.Update(func(s *PoliceStationUpsert) {
+		s.ClearParentStationID()
 	})
 }
 

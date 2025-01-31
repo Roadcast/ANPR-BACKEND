@@ -13,7 +13,6 @@ import (
 	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
 	"go-ent-project/internal/ent/vehicledata"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -24,36 +23,6 @@ type CameraWhereInput struct {
 	Not        *CameraWhereInput   `json:"not,omitempty"`
 	Or         []*CameraWhereInput `json:"or,omitempty"`
 	And        []*CameraWhereInput `json:"and,omitempty"`
-
-	// "id" field predicates.
-	ID      *uuid.UUID  `json:"id,omitempty"`
-	IDNEQ   *uuid.UUID  `json:"idNEQ,omitempty"`
-	IDIn    []uuid.UUID `json:"idIn,omitempty"`
-	IDNotIn []uuid.UUID `json:"idNotIn,omitempty"`
-	IDGT    *uuid.UUID  `json:"idGT,omitempty"`
-	IDGTE   *uuid.UUID  `json:"idGTE,omitempty"`
-	IDLT    *uuid.UUID  `json:"idLT,omitempty"`
-	IDLTE   *uuid.UUID  `json:"idLTE,omitempty"`
-
-	// "created_at" field predicates.
-	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
-	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
-	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
-	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
-	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
-	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
-	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
-	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
-
-	// "updated_at" field predicates.
-	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
-	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
-	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
-	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
-	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
-	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
-	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
-	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
 	// "name" field predicates.
 	Name             *string  `json:"name,omitempty"`
@@ -103,6 +72,10 @@ type CameraWhereInput struct {
 	// "active" field predicates.
 	Active    *bool `json:"active,omitempty"`
 	ActiveNEQ *bool `json:"activeNEQ,omitempty"`
+
+	// "police_station" edge predicates.
+	HasPoliceStation     *bool                      `json:"hasPoliceStation,omitempty"`
+	HasPoliceStationWith []*PoliceStationWhereInput `json:"hasPoliceStationWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -176,78 +149,6 @@ func (i *CameraWhereInput) P() (predicate.Camera, error) {
 		predicates = append(predicates, camera.And(and...))
 	}
 	predicates = append(predicates, i.Predicates...)
-	if i.ID != nil {
-		predicates = append(predicates, camera.IDEQ(*i.ID))
-	}
-	if i.IDNEQ != nil {
-		predicates = append(predicates, camera.IDNEQ(*i.IDNEQ))
-	}
-	if len(i.IDIn) > 0 {
-		predicates = append(predicates, camera.IDIn(i.IDIn...))
-	}
-	if len(i.IDNotIn) > 0 {
-		predicates = append(predicates, camera.IDNotIn(i.IDNotIn...))
-	}
-	if i.IDGT != nil {
-		predicates = append(predicates, camera.IDGT(*i.IDGT))
-	}
-	if i.IDGTE != nil {
-		predicates = append(predicates, camera.IDGTE(*i.IDGTE))
-	}
-	if i.IDLT != nil {
-		predicates = append(predicates, camera.IDLT(*i.IDLT))
-	}
-	if i.IDLTE != nil {
-		predicates = append(predicates, camera.IDLTE(*i.IDLTE))
-	}
-	if i.CreatedAt != nil {
-		predicates = append(predicates, camera.CreatedAtEQ(*i.CreatedAt))
-	}
-	if i.CreatedAtNEQ != nil {
-		predicates = append(predicates, camera.CreatedAtNEQ(*i.CreatedAtNEQ))
-	}
-	if len(i.CreatedAtIn) > 0 {
-		predicates = append(predicates, camera.CreatedAtIn(i.CreatedAtIn...))
-	}
-	if len(i.CreatedAtNotIn) > 0 {
-		predicates = append(predicates, camera.CreatedAtNotIn(i.CreatedAtNotIn...))
-	}
-	if i.CreatedAtGT != nil {
-		predicates = append(predicates, camera.CreatedAtGT(*i.CreatedAtGT))
-	}
-	if i.CreatedAtGTE != nil {
-		predicates = append(predicates, camera.CreatedAtGTE(*i.CreatedAtGTE))
-	}
-	if i.CreatedAtLT != nil {
-		predicates = append(predicates, camera.CreatedAtLT(*i.CreatedAtLT))
-	}
-	if i.CreatedAtLTE != nil {
-		predicates = append(predicates, camera.CreatedAtLTE(*i.CreatedAtLTE))
-	}
-	if i.UpdatedAt != nil {
-		predicates = append(predicates, camera.UpdatedAtEQ(*i.UpdatedAt))
-	}
-	if i.UpdatedAtNEQ != nil {
-		predicates = append(predicates, camera.UpdatedAtNEQ(*i.UpdatedAtNEQ))
-	}
-	if len(i.UpdatedAtIn) > 0 {
-		predicates = append(predicates, camera.UpdatedAtIn(i.UpdatedAtIn...))
-	}
-	if len(i.UpdatedAtNotIn) > 0 {
-		predicates = append(predicates, camera.UpdatedAtNotIn(i.UpdatedAtNotIn...))
-	}
-	if i.UpdatedAtGT != nil {
-		predicates = append(predicates, camera.UpdatedAtGT(*i.UpdatedAtGT))
-	}
-	if i.UpdatedAtGTE != nil {
-		predicates = append(predicates, camera.UpdatedAtGTE(*i.UpdatedAtGTE))
-	}
-	if i.UpdatedAtLT != nil {
-		predicates = append(predicates, camera.UpdatedAtLT(*i.UpdatedAtLT))
-	}
-	if i.UpdatedAtLTE != nil {
-		predicates = append(predicates, camera.UpdatedAtLTE(*i.UpdatedAtLTE))
-	}
 	if i.Name != nil {
 		predicates = append(predicates, camera.NameEQ(*i.Name))
 	}
@@ -372,6 +273,24 @@ func (i *CameraWhereInput) P() (predicate.Camera, error) {
 		predicates = append(predicates, camera.ActiveNEQ(*i.ActiveNEQ))
 	}
 
+	if i.HasPoliceStation != nil {
+		p := camera.HasPoliceStation()
+		if !*i.HasPoliceStation {
+			p = camera.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasPoliceStationWith) > 0 {
+		with := make([]predicate.PoliceStation, 0, len(i.HasPoliceStationWith))
+		for _, w := range i.HasPoliceStationWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasPoliceStationWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, camera.HasPoliceStationWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, ErrEmptyCameraWhereInput
@@ -388,36 +307,6 @@ type CarWhereInput struct {
 	Not        *CarWhereInput   `json:"not,omitempty"`
 	Or         []*CarWhereInput `json:"or,omitempty"`
 	And        []*CarWhereInput `json:"and,omitempty"`
-
-	// "id" field predicates.
-	ID      *uuid.UUID  `json:"id,omitempty"`
-	IDNEQ   *uuid.UUID  `json:"idNEQ,omitempty"`
-	IDIn    []uuid.UUID `json:"idIn,omitempty"`
-	IDNotIn []uuid.UUID `json:"idNotIn,omitempty"`
-	IDGT    *uuid.UUID  `json:"idGT,omitempty"`
-	IDGTE   *uuid.UUID  `json:"idGTE,omitempty"`
-	IDLT    *uuid.UUID  `json:"idLT,omitempty"`
-	IDLTE   *uuid.UUID  `json:"idLTE,omitempty"`
-
-	// "created_at" field predicates.
-	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
-	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
-	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
-	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
-	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
-	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
-	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
-	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
-
-	// "updated_at" field predicates.
-	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
-	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
-	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
-	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
-	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
-	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
-	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
-	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
 	// "make" field predicates.
 	Make             *string  `json:"make,omitempty"`
@@ -561,78 +450,6 @@ func (i *CarWhereInput) P() (predicate.Car, error) {
 		predicates = append(predicates, car.And(and...))
 	}
 	predicates = append(predicates, i.Predicates...)
-	if i.ID != nil {
-		predicates = append(predicates, car.IDEQ(*i.ID))
-	}
-	if i.IDNEQ != nil {
-		predicates = append(predicates, car.IDNEQ(*i.IDNEQ))
-	}
-	if len(i.IDIn) > 0 {
-		predicates = append(predicates, car.IDIn(i.IDIn...))
-	}
-	if len(i.IDNotIn) > 0 {
-		predicates = append(predicates, car.IDNotIn(i.IDNotIn...))
-	}
-	if i.IDGT != nil {
-		predicates = append(predicates, car.IDGT(*i.IDGT))
-	}
-	if i.IDGTE != nil {
-		predicates = append(predicates, car.IDGTE(*i.IDGTE))
-	}
-	if i.IDLT != nil {
-		predicates = append(predicates, car.IDLT(*i.IDLT))
-	}
-	if i.IDLTE != nil {
-		predicates = append(predicates, car.IDLTE(*i.IDLTE))
-	}
-	if i.CreatedAt != nil {
-		predicates = append(predicates, car.CreatedAtEQ(*i.CreatedAt))
-	}
-	if i.CreatedAtNEQ != nil {
-		predicates = append(predicates, car.CreatedAtNEQ(*i.CreatedAtNEQ))
-	}
-	if len(i.CreatedAtIn) > 0 {
-		predicates = append(predicates, car.CreatedAtIn(i.CreatedAtIn...))
-	}
-	if len(i.CreatedAtNotIn) > 0 {
-		predicates = append(predicates, car.CreatedAtNotIn(i.CreatedAtNotIn...))
-	}
-	if i.CreatedAtGT != nil {
-		predicates = append(predicates, car.CreatedAtGT(*i.CreatedAtGT))
-	}
-	if i.CreatedAtGTE != nil {
-		predicates = append(predicates, car.CreatedAtGTE(*i.CreatedAtGTE))
-	}
-	if i.CreatedAtLT != nil {
-		predicates = append(predicates, car.CreatedAtLT(*i.CreatedAtLT))
-	}
-	if i.CreatedAtLTE != nil {
-		predicates = append(predicates, car.CreatedAtLTE(*i.CreatedAtLTE))
-	}
-	if i.UpdatedAt != nil {
-		predicates = append(predicates, car.UpdatedAtEQ(*i.UpdatedAt))
-	}
-	if i.UpdatedAtNEQ != nil {
-		predicates = append(predicates, car.UpdatedAtNEQ(*i.UpdatedAtNEQ))
-	}
-	if len(i.UpdatedAtIn) > 0 {
-		predicates = append(predicates, car.UpdatedAtIn(i.UpdatedAtIn...))
-	}
-	if len(i.UpdatedAtNotIn) > 0 {
-		predicates = append(predicates, car.UpdatedAtNotIn(i.UpdatedAtNotIn...))
-	}
-	if i.UpdatedAtGT != nil {
-		predicates = append(predicates, car.UpdatedAtGT(*i.UpdatedAtGT))
-	}
-	if i.UpdatedAtGTE != nil {
-		predicates = append(predicates, car.UpdatedAtGTE(*i.UpdatedAtGTE))
-	}
-	if i.UpdatedAtLT != nil {
-		predicates = append(predicates, car.UpdatedAtLT(*i.UpdatedAtLT))
-	}
-	if i.UpdatedAtLTE != nil {
-		predicates = append(predicates, car.UpdatedAtLTE(*i.UpdatedAtLTE))
-	}
 	if i.Make != nil {
 		predicates = append(predicates, car.MakeEQ(*i.Make))
 	}
@@ -831,36 +648,6 @@ type PermissionWhereInput struct {
 	Or         []*PermissionWhereInput `json:"or,omitempty"`
 	And        []*PermissionWhereInput `json:"and,omitempty"`
 
-	// "id" field predicates.
-	ID      *uuid.UUID  `json:"id,omitempty"`
-	IDNEQ   *uuid.UUID  `json:"idNEQ,omitempty"`
-	IDIn    []uuid.UUID `json:"idIn,omitempty"`
-	IDNotIn []uuid.UUID `json:"idNotIn,omitempty"`
-	IDGT    *uuid.UUID  `json:"idGT,omitempty"`
-	IDGTE   *uuid.UUID  `json:"idGTE,omitempty"`
-	IDLT    *uuid.UUID  `json:"idLT,omitempty"`
-	IDLTE   *uuid.UUID  `json:"idLTE,omitempty"`
-
-	// "created_at" field predicates.
-	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
-	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
-	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
-	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
-	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
-	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
-	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
-	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
-
-	// "updated_at" field predicates.
-	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
-	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
-	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
-	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
-	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
-	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
-	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
-	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
-
 	// "name" field predicates.
 	Name             *string  `json:"name,omitempty"`
 	NameNEQ          *string  `json:"nameNEQ,omitempty"`
@@ -875,22 +662,6 @@ type PermissionWhereInput struct {
 	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
 	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
-
-	// "can_read" field predicates.
-	CanRead    *bool `json:"canRead,omitempty"`
-	CanReadNEQ *bool `json:"canReadNEQ,omitempty"`
-
-	// "can_create" field predicates.
-	CanCreate    *bool `json:"canCreate,omitempty"`
-	CanCreateNEQ *bool `json:"canCreateNEQ,omitempty"`
-
-	// "can_update" field predicates.
-	CanUpdate    *bool `json:"canUpdate,omitempty"`
-	CanUpdateNEQ *bool `json:"canUpdateNEQ,omitempty"`
-
-	// "can_delete" field predicates.
-	CanDelete    *bool `json:"canDelete,omitempty"`
-	CanDeleteNEQ *bool `json:"canDeleteNEQ,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -964,78 +735,6 @@ func (i *PermissionWhereInput) P() (predicate.Permission, error) {
 		predicates = append(predicates, permission.And(and...))
 	}
 	predicates = append(predicates, i.Predicates...)
-	if i.ID != nil {
-		predicates = append(predicates, permission.IDEQ(*i.ID))
-	}
-	if i.IDNEQ != nil {
-		predicates = append(predicates, permission.IDNEQ(*i.IDNEQ))
-	}
-	if len(i.IDIn) > 0 {
-		predicates = append(predicates, permission.IDIn(i.IDIn...))
-	}
-	if len(i.IDNotIn) > 0 {
-		predicates = append(predicates, permission.IDNotIn(i.IDNotIn...))
-	}
-	if i.IDGT != nil {
-		predicates = append(predicates, permission.IDGT(*i.IDGT))
-	}
-	if i.IDGTE != nil {
-		predicates = append(predicates, permission.IDGTE(*i.IDGTE))
-	}
-	if i.IDLT != nil {
-		predicates = append(predicates, permission.IDLT(*i.IDLT))
-	}
-	if i.IDLTE != nil {
-		predicates = append(predicates, permission.IDLTE(*i.IDLTE))
-	}
-	if i.CreatedAt != nil {
-		predicates = append(predicates, permission.CreatedAtEQ(*i.CreatedAt))
-	}
-	if i.CreatedAtNEQ != nil {
-		predicates = append(predicates, permission.CreatedAtNEQ(*i.CreatedAtNEQ))
-	}
-	if len(i.CreatedAtIn) > 0 {
-		predicates = append(predicates, permission.CreatedAtIn(i.CreatedAtIn...))
-	}
-	if len(i.CreatedAtNotIn) > 0 {
-		predicates = append(predicates, permission.CreatedAtNotIn(i.CreatedAtNotIn...))
-	}
-	if i.CreatedAtGT != nil {
-		predicates = append(predicates, permission.CreatedAtGT(*i.CreatedAtGT))
-	}
-	if i.CreatedAtGTE != nil {
-		predicates = append(predicates, permission.CreatedAtGTE(*i.CreatedAtGTE))
-	}
-	if i.CreatedAtLT != nil {
-		predicates = append(predicates, permission.CreatedAtLT(*i.CreatedAtLT))
-	}
-	if i.CreatedAtLTE != nil {
-		predicates = append(predicates, permission.CreatedAtLTE(*i.CreatedAtLTE))
-	}
-	if i.UpdatedAt != nil {
-		predicates = append(predicates, permission.UpdatedAtEQ(*i.UpdatedAt))
-	}
-	if i.UpdatedAtNEQ != nil {
-		predicates = append(predicates, permission.UpdatedAtNEQ(*i.UpdatedAtNEQ))
-	}
-	if len(i.UpdatedAtIn) > 0 {
-		predicates = append(predicates, permission.UpdatedAtIn(i.UpdatedAtIn...))
-	}
-	if len(i.UpdatedAtNotIn) > 0 {
-		predicates = append(predicates, permission.UpdatedAtNotIn(i.UpdatedAtNotIn...))
-	}
-	if i.UpdatedAtGT != nil {
-		predicates = append(predicates, permission.UpdatedAtGT(*i.UpdatedAtGT))
-	}
-	if i.UpdatedAtGTE != nil {
-		predicates = append(predicates, permission.UpdatedAtGTE(*i.UpdatedAtGTE))
-	}
-	if i.UpdatedAtLT != nil {
-		predicates = append(predicates, permission.UpdatedAtLT(*i.UpdatedAtLT))
-	}
-	if i.UpdatedAtLTE != nil {
-		predicates = append(predicates, permission.UpdatedAtLTE(*i.UpdatedAtLTE))
-	}
 	if i.Name != nil {
 		predicates = append(predicates, permission.NameEQ(*i.Name))
 	}
@@ -1075,30 +774,6 @@ func (i *PermissionWhereInput) P() (predicate.Permission, error) {
 	if i.NameContainsFold != nil {
 		predicates = append(predicates, permission.NameContainsFold(*i.NameContainsFold))
 	}
-	if i.CanRead != nil {
-		predicates = append(predicates, permission.CanReadEQ(*i.CanRead))
-	}
-	if i.CanReadNEQ != nil {
-		predicates = append(predicates, permission.CanReadNEQ(*i.CanReadNEQ))
-	}
-	if i.CanCreate != nil {
-		predicates = append(predicates, permission.CanCreateEQ(*i.CanCreate))
-	}
-	if i.CanCreateNEQ != nil {
-		predicates = append(predicates, permission.CanCreateNEQ(*i.CanCreateNEQ))
-	}
-	if i.CanUpdate != nil {
-		predicates = append(predicates, permission.CanUpdateEQ(*i.CanUpdate))
-	}
-	if i.CanUpdateNEQ != nil {
-		predicates = append(predicates, permission.CanUpdateNEQ(*i.CanUpdateNEQ))
-	}
-	if i.CanDelete != nil {
-		predicates = append(predicates, permission.CanDeleteEQ(*i.CanDelete))
-	}
-	if i.CanDeleteNEQ != nil {
-		predicates = append(predicates, permission.CanDeleteNEQ(*i.CanDeleteNEQ))
-	}
 
 	switch len(predicates) {
 	case 0:
@@ -1116,36 +791,6 @@ type PoliceStationWhereInput struct {
 	Not        *PoliceStationWhereInput   `json:"not,omitempty"`
 	Or         []*PoliceStationWhereInput `json:"or,omitempty"`
 	And        []*PoliceStationWhereInput `json:"and,omitempty"`
-
-	// "id" field predicates.
-	ID      *uuid.UUID  `json:"id,omitempty"`
-	IDNEQ   *uuid.UUID  `json:"idNEQ,omitempty"`
-	IDIn    []uuid.UUID `json:"idIn,omitempty"`
-	IDNotIn []uuid.UUID `json:"idNotIn,omitempty"`
-	IDGT    *uuid.UUID  `json:"idGT,omitempty"`
-	IDGTE   *uuid.UUID  `json:"idGTE,omitempty"`
-	IDLT    *uuid.UUID  `json:"idLT,omitempty"`
-	IDLTE   *uuid.UUID  `json:"idLTE,omitempty"`
-
-	// "created_at" field predicates.
-	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
-	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
-	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
-	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
-	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
-	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
-	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
-	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
-
-	// "updated_at" field predicates.
-	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
-	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
-	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
-	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
-	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
-	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
-	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
-	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
 	// "name" field predicates.
 	Name             *string  `json:"name,omitempty"`
@@ -1192,13 +837,25 @@ type PoliceStationWhereInput struct {
 	IdentifierEqualFold    *string  `json:"identifierEqualFold,omitempty"`
 	IdentifierContainsFold *string  `json:"identifierContainsFold,omitempty"`
 
+	// "parent_station_id" field predicates.
+	ParentStationID       *uuid.UUID  `json:"parentStationID,omitempty"`
+	ParentStationIDNEQ    *uuid.UUID  `json:"parentStationIDNEQ,omitempty"`
+	ParentStationIDIn     []uuid.UUID `json:"parentStationIDIn,omitempty"`
+	ParentStationIDNotIn  []uuid.UUID `json:"parentStationIDNotIn,omitempty"`
+	ParentStationIDIsNil  bool        `json:"parentStationIDIsNil,omitempty"`
+	ParentStationIDNotNil bool        `json:"parentStationIDNotNil,omitempty"`
+
 	// "users" edge predicates.
 	HasUsers     *bool             `json:"hasUsers,omitempty"`
 	HasUsersWith []*UserWhereInput `json:"hasUsersWith,omitempty"`
 
-	// "parent_station" edge predicates.
-	HasParentStation     *bool                      `json:"hasParentStation,omitempty"`
-	HasParentStationWith []*PoliceStationWhereInput `json:"hasParentStationWith,omitempty"`
+	// "camera" edge predicates.
+	HasCamera     *bool               `json:"hasCamera,omitempty"`
+	HasCameraWith []*CameraWhereInput `json:"hasCameraWith,omitempty"`
+
+	// "parent" edge predicates.
+	HasParent     *bool                      `json:"hasParent,omitempty"`
+	HasParentWith []*PoliceStationWhereInput `json:"hasParentWith,omitempty"`
 
 	// "child_stations" edge predicates.
 	HasChildStations     *bool                      `json:"hasChildStations,omitempty"`
@@ -1276,78 +933,6 @@ func (i *PoliceStationWhereInput) P() (predicate.PoliceStation, error) {
 		predicates = append(predicates, policestation.And(and...))
 	}
 	predicates = append(predicates, i.Predicates...)
-	if i.ID != nil {
-		predicates = append(predicates, policestation.IDEQ(*i.ID))
-	}
-	if i.IDNEQ != nil {
-		predicates = append(predicates, policestation.IDNEQ(*i.IDNEQ))
-	}
-	if len(i.IDIn) > 0 {
-		predicates = append(predicates, policestation.IDIn(i.IDIn...))
-	}
-	if len(i.IDNotIn) > 0 {
-		predicates = append(predicates, policestation.IDNotIn(i.IDNotIn...))
-	}
-	if i.IDGT != nil {
-		predicates = append(predicates, policestation.IDGT(*i.IDGT))
-	}
-	if i.IDGTE != nil {
-		predicates = append(predicates, policestation.IDGTE(*i.IDGTE))
-	}
-	if i.IDLT != nil {
-		predicates = append(predicates, policestation.IDLT(*i.IDLT))
-	}
-	if i.IDLTE != nil {
-		predicates = append(predicates, policestation.IDLTE(*i.IDLTE))
-	}
-	if i.CreatedAt != nil {
-		predicates = append(predicates, policestation.CreatedAtEQ(*i.CreatedAt))
-	}
-	if i.CreatedAtNEQ != nil {
-		predicates = append(predicates, policestation.CreatedAtNEQ(*i.CreatedAtNEQ))
-	}
-	if len(i.CreatedAtIn) > 0 {
-		predicates = append(predicates, policestation.CreatedAtIn(i.CreatedAtIn...))
-	}
-	if len(i.CreatedAtNotIn) > 0 {
-		predicates = append(predicates, policestation.CreatedAtNotIn(i.CreatedAtNotIn...))
-	}
-	if i.CreatedAtGT != nil {
-		predicates = append(predicates, policestation.CreatedAtGT(*i.CreatedAtGT))
-	}
-	if i.CreatedAtGTE != nil {
-		predicates = append(predicates, policestation.CreatedAtGTE(*i.CreatedAtGTE))
-	}
-	if i.CreatedAtLT != nil {
-		predicates = append(predicates, policestation.CreatedAtLT(*i.CreatedAtLT))
-	}
-	if i.CreatedAtLTE != nil {
-		predicates = append(predicates, policestation.CreatedAtLTE(*i.CreatedAtLTE))
-	}
-	if i.UpdatedAt != nil {
-		predicates = append(predicates, policestation.UpdatedAtEQ(*i.UpdatedAt))
-	}
-	if i.UpdatedAtNEQ != nil {
-		predicates = append(predicates, policestation.UpdatedAtNEQ(*i.UpdatedAtNEQ))
-	}
-	if len(i.UpdatedAtIn) > 0 {
-		predicates = append(predicates, policestation.UpdatedAtIn(i.UpdatedAtIn...))
-	}
-	if len(i.UpdatedAtNotIn) > 0 {
-		predicates = append(predicates, policestation.UpdatedAtNotIn(i.UpdatedAtNotIn...))
-	}
-	if i.UpdatedAtGT != nil {
-		predicates = append(predicates, policestation.UpdatedAtGT(*i.UpdatedAtGT))
-	}
-	if i.UpdatedAtGTE != nil {
-		predicates = append(predicates, policestation.UpdatedAtGTE(*i.UpdatedAtGTE))
-	}
-	if i.UpdatedAtLT != nil {
-		predicates = append(predicates, policestation.UpdatedAtLT(*i.UpdatedAtLT))
-	}
-	if i.UpdatedAtLTE != nil {
-		predicates = append(predicates, policestation.UpdatedAtLTE(*i.UpdatedAtLTE))
-	}
 	if i.Name != nil {
 		predicates = append(predicates, policestation.NameEQ(*i.Name))
 	}
@@ -1465,6 +1050,24 @@ func (i *PoliceStationWhereInput) P() (predicate.PoliceStation, error) {
 	if i.IdentifierContainsFold != nil {
 		predicates = append(predicates, policestation.IdentifierContainsFold(*i.IdentifierContainsFold))
 	}
+	if i.ParentStationID != nil {
+		predicates = append(predicates, policestation.ParentStationIDEQ(*i.ParentStationID))
+	}
+	if i.ParentStationIDNEQ != nil {
+		predicates = append(predicates, policestation.ParentStationIDNEQ(*i.ParentStationIDNEQ))
+	}
+	if len(i.ParentStationIDIn) > 0 {
+		predicates = append(predicates, policestation.ParentStationIDIn(i.ParentStationIDIn...))
+	}
+	if len(i.ParentStationIDNotIn) > 0 {
+		predicates = append(predicates, policestation.ParentStationIDNotIn(i.ParentStationIDNotIn...))
+	}
+	if i.ParentStationIDIsNil {
+		predicates = append(predicates, policestation.ParentStationIDIsNil())
+	}
+	if i.ParentStationIDNotNil {
+		predicates = append(predicates, policestation.ParentStationIDNotNil())
+	}
 
 	if i.HasUsers != nil {
 		p := policestation.HasUsers()
@@ -1484,23 +1087,41 @@ func (i *PoliceStationWhereInput) P() (predicate.PoliceStation, error) {
 		}
 		predicates = append(predicates, policestation.HasUsersWith(with...))
 	}
-	if i.HasParentStation != nil {
-		p := policestation.HasParentStation()
-		if !*i.HasParentStation {
+	if i.HasCamera != nil {
+		p := policestation.HasCamera()
+		if !*i.HasCamera {
 			p = policestation.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasParentStationWith) > 0 {
-		with := make([]predicate.PoliceStation, 0, len(i.HasParentStationWith))
-		for _, w := range i.HasParentStationWith {
+	if len(i.HasCameraWith) > 0 {
+		with := make([]predicate.Camera, 0, len(i.HasCameraWith))
+		for _, w := range i.HasCameraWith {
 			p, err := w.P()
 			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasParentStationWith'", err)
+				return nil, fmt.Errorf("%w: field 'HasCameraWith'", err)
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, policestation.HasParentStationWith(with...))
+		predicates = append(predicates, policestation.HasCameraWith(with...))
+	}
+	if i.HasParent != nil {
+		p := policestation.HasParent()
+		if !*i.HasParent {
+			p = policestation.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasParentWith) > 0 {
+		with := make([]predicate.PoliceStation, 0, len(i.HasParentWith))
+		for _, w := range i.HasParentWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasParentWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, policestation.HasParentWith(with...))
 	}
 	if i.HasChildStations != nil {
 		p := policestation.HasChildStations()
@@ -1536,36 +1157,6 @@ type RoleWhereInput struct {
 	Not        *RoleWhereInput   `json:"not,omitempty"`
 	Or         []*RoleWhereInput `json:"or,omitempty"`
 	And        []*RoleWhereInput `json:"and,omitempty"`
-
-	// "id" field predicates.
-	ID      *uuid.UUID  `json:"id,omitempty"`
-	IDNEQ   *uuid.UUID  `json:"idNEQ,omitempty"`
-	IDIn    []uuid.UUID `json:"idIn,omitempty"`
-	IDNotIn []uuid.UUID `json:"idNotIn,omitempty"`
-	IDGT    *uuid.UUID  `json:"idGT,omitempty"`
-	IDGTE   *uuid.UUID  `json:"idGTE,omitempty"`
-	IDLT    *uuid.UUID  `json:"idLT,omitempty"`
-	IDLTE   *uuid.UUID  `json:"idLTE,omitempty"`
-
-	// "created_at" field predicates.
-	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
-	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
-	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
-	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
-	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
-	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
-	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
-	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
-
-	// "updated_at" field predicates.
-	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
-	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
-	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
-	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
-	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
-	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
-	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
-	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
 	// "name" field predicates.
 	Name             *string  `json:"name,omitempty"`
@@ -1662,78 +1253,6 @@ func (i *RoleWhereInput) P() (predicate.Role, error) {
 		predicates = append(predicates, role.And(and...))
 	}
 	predicates = append(predicates, i.Predicates...)
-	if i.ID != nil {
-		predicates = append(predicates, role.IDEQ(*i.ID))
-	}
-	if i.IDNEQ != nil {
-		predicates = append(predicates, role.IDNEQ(*i.IDNEQ))
-	}
-	if len(i.IDIn) > 0 {
-		predicates = append(predicates, role.IDIn(i.IDIn...))
-	}
-	if len(i.IDNotIn) > 0 {
-		predicates = append(predicates, role.IDNotIn(i.IDNotIn...))
-	}
-	if i.IDGT != nil {
-		predicates = append(predicates, role.IDGT(*i.IDGT))
-	}
-	if i.IDGTE != nil {
-		predicates = append(predicates, role.IDGTE(*i.IDGTE))
-	}
-	if i.IDLT != nil {
-		predicates = append(predicates, role.IDLT(*i.IDLT))
-	}
-	if i.IDLTE != nil {
-		predicates = append(predicates, role.IDLTE(*i.IDLTE))
-	}
-	if i.CreatedAt != nil {
-		predicates = append(predicates, role.CreatedAtEQ(*i.CreatedAt))
-	}
-	if i.CreatedAtNEQ != nil {
-		predicates = append(predicates, role.CreatedAtNEQ(*i.CreatedAtNEQ))
-	}
-	if len(i.CreatedAtIn) > 0 {
-		predicates = append(predicates, role.CreatedAtIn(i.CreatedAtIn...))
-	}
-	if len(i.CreatedAtNotIn) > 0 {
-		predicates = append(predicates, role.CreatedAtNotIn(i.CreatedAtNotIn...))
-	}
-	if i.CreatedAtGT != nil {
-		predicates = append(predicates, role.CreatedAtGT(*i.CreatedAtGT))
-	}
-	if i.CreatedAtGTE != nil {
-		predicates = append(predicates, role.CreatedAtGTE(*i.CreatedAtGTE))
-	}
-	if i.CreatedAtLT != nil {
-		predicates = append(predicates, role.CreatedAtLT(*i.CreatedAtLT))
-	}
-	if i.CreatedAtLTE != nil {
-		predicates = append(predicates, role.CreatedAtLTE(*i.CreatedAtLTE))
-	}
-	if i.UpdatedAt != nil {
-		predicates = append(predicates, role.UpdatedAtEQ(*i.UpdatedAt))
-	}
-	if i.UpdatedAtNEQ != nil {
-		predicates = append(predicates, role.UpdatedAtNEQ(*i.UpdatedAtNEQ))
-	}
-	if len(i.UpdatedAtIn) > 0 {
-		predicates = append(predicates, role.UpdatedAtIn(i.UpdatedAtIn...))
-	}
-	if len(i.UpdatedAtNotIn) > 0 {
-		predicates = append(predicates, role.UpdatedAtNotIn(i.UpdatedAtNotIn...))
-	}
-	if i.UpdatedAtGT != nil {
-		predicates = append(predicates, role.UpdatedAtGT(*i.UpdatedAtGT))
-	}
-	if i.UpdatedAtGTE != nil {
-		predicates = append(predicates, role.UpdatedAtGTE(*i.UpdatedAtGTE))
-	}
-	if i.UpdatedAtLT != nil {
-		predicates = append(predicates, role.UpdatedAtLT(*i.UpdatedAtLT))
-	}
-	if i.UpdatedAtLTE != nil {
-		predicates = append(predicates, role.UpdatedAtLTE(*i.UpdatedAtLTE))
-	}
 	if i.Name != nil {
 		predicates = append(predicates, role.NameEQ(*i.Name))
 	}
@@ -1827,51 +1346,6 @@ type UserWhereInput struct {
 	Or         []*UserWhereInput `json:"or,omitempty"`
 	And        []*UserWhereInput `json:"and,omitempty"`
 
-	// "id" field predicates.
-	ID      *uuid.UUID  `json:"id,omitempty"`
-	IDNEQ   *uuid.UUID  `json:"idNEQ,omitempty"`
-	IDIn    []uuid.UUID `json:"idIn,omitempty"`
-	IDNotIn []uuid.UUID `json:"idNotIn,omitempty"`
-	IDGT    *uuid.UUID  `json:"idGT,omitempty"`
-	IDGTE   *uuid.UUID  `json:"idGTE,omitempty"`
-	IDLT    *uuid.UUID  `json:"idLT,omitempty"`
-	IDLTE   *uuid.UUID  `json:"idLTE,omitempty"`
-
-	// "created_at" field predicates.
-	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
-	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
-	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
-	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
-	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
-	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
-	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
-	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
-
-	// "updated_at" field predicates.
-	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
-	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
-	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
-	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
-	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
-	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
-	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
-	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
-
-	// "name" field predicates.
-	Name             *string  `json:"name,omitempty"`
-	NameNEQ          *string  `json:"nameNEQ,omitempty"`
-	NameIn           []string `json:"nameIn,omitempty"`
-	NameNotIn        []string `json:"nameNotIn,omitempty"`
-	NameGT           *string  `json:"nameGT,omitempty"`
-	NameGTE          *string  `json:"nameGTE,omitempty"`
-	NameLT           *string  `json:"nameLT,omitempty"`
-	NameLTE          *string  `json:"nameLTE,omitempty"`
-	NameContains     *string  `json:"nameContains,omitempty"`
-	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
-	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
-	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
-	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
-
 	// "email" field predicates.
 	Email             *string  `json:"email,omitempty"`
 	EmailNEQ          *string  `json:"emailNEQ,omitempty"`
@@ -1886,21 +1360,6 @@ type UserWhereInput struct {
 	EmailHasSuffix    *string  `json:"emailHasSuffix,omitempty"`
 	EmailEqualFold    *string  `json:"emailEqualFold,omitempty"`
 	EmailContainsFold *string  `json:"emailContainsFold,omitempty"`
-
-	// "password" field predicates.
-	Password             *string  `json:"password,omitempty"`
-	PasswordNEQ          *string  `json:"passwordNEQ,omitempty"`
-	PasswordIn           []string `json:"passwordIn,omitempty"`
-	PasswordNotIn        []string `json:"passwordNotIn,omitempty"`
-	PasswordGT           *string  `json:"passwordGT,omitempty"`
-	PasswordGTE          *string  `json:"passwordGTE,omitempty"`
-	PasswordLT           *string  `json:"passwordLT,omitempty"`
-	PasswordLTE          *string  `json:"passwordLTE,omitempty"`
-	PasswordContains     *string  `json:"passwordContains,omitempty"`
-	PasswordHasPrefix    *string  `json:"passwordHasPrefix,omitempty"`
-	PasswordHasSuffix    *string  `json:"passwordHasSuffix,omitempty"`
-	PasswordEqualFold    *string  `json:"passwordEqualFold,omitempty"`
-	PasswordContainsFold *string  `json:"passwordContainsFold,omitempty"`
 
 	// "phone" field predicates.
 	Phone             *string  `json:"phone,omitempty"`
@@ -1922,22 +1381,6 @@ type UserWhereInput struct {
 	// "active" field predicates.
 	Active    *bool `json:"active,omitempty"`
 	ActiveNEQ *bool `json:"activeNEQ,omitempty"`
-
-	// "role_id" field predicates.
-	RoleID      *uuid.UUID  `json:"roleID,omitempty"`
-	RoleIDNEQ   *uuid.UUID  `json:"roleIDNEQ,omitempty"`
-	RoleIDIn    []uuid.UUID `json:"roleIDIn,omitempty"`
-	RoleIDNotIn []uuid.UUID `json:"roleIDNotIn,omitempty"`
-
-	// "police_station_id" field predicates.
-	PoliceStationID      *uuid.UUID  `json:"policeStationID,omitempty"`
-	PoliceStationIDNEQ   *uuid.UUID  `json:"policeStationIDNEQ,omitempty"`
-	PoliceStationIDIn    []uuid.UUID `json:"policeStationIDIn,omitempty"`
-	PoliceStationIDNotIn []uuid.UUID `json:"policeStationIDNotIn,omitempty"`
-	PoliceStationIDGT    *uuid.UUID  `json:"policeStationIDGT,omitempty"`
-	PoliceStationIDGTE   *uuid.UUID  `json:"policeStationIDGTE,omitempty"`
-	PoliceStationIDLT    *uuid.UUID  `json:"policeStationIDLT,omitempty"`
-	PoliceStationIDLTE   *uuid.UUID  `json:"policeStationIDLTE,omitempty"`
 
 	// "role" edge predicates.
 	HasRole     *bool             `json:"hasRole,omitempty"`
@@ -2019,117 +1462,6 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 		predicates = append(predicates, user.And(and...))
 	}
 	predicates = append(predicates, i.Predicates...)
-	if i.ID != nil {
-		predicates = append(predicates, user.IDEQ(*i.ID))
-	}
-	if i.IDNEQ != nil {
-		predicates = append(predicates, user.IDNEQ(*i.IDNEQ))
-	}
-	if len(i.IDIn) > 0 {
-		predicates = append(predicates, user.IDIn(i.IDIn...))
-	}
-	if len(i.IDNotIn) > 0 {
-		predicates = append(predicates, user.IDNotIn(i.IDNotIn...))
-	}
-	if i.IDGT != nil {
-		predicates = append(predicates, user.IDGT(*i.IDGT))
-	}
-	if i.IDGTE != nil {
-		predicates = append(predicates, user.IDGTE(*i.IDGTE))
-	}
-	if i.IDLT != nil {
-		predicates = append(predicates, user.IDLT(*i.IDLT))
-	}
-	if i.IDLTE != nil {
-		predicates = append(predicates, user.IDLTE(*i.IDLTE))
-	}
-	if i.CreatedAt != nil {
-		predicates = append(predicates, user.CreatedAtEQ(*i.CreatedAt))
-	}
-	if i.CreatedAtNEQ != nil {
-		predicates = append(predicates, user.CreatedAtNEQ(*i.CreatedAtNEQ))
-	}
-	if len(i.CreatedAtIn) > 0 {
-		predicates = append(predicates, user.CreatedAtIn(i.CreatedAtIn...))
-	}
-	if len(i.CreatedAtNotIn) > 0 {
-		predicates = append(predicates, user.CreatedAtNotIn(i.CreatedAtNotIn...))
-	}
-	if i.CreatedAtGT != nil {
-		predicates = append(predicates, user.CreatedAtGT(*i.CreatedAtGT))
-	}
-	if i.CreatedAtGTE != nil {
-		predicates = append(predicates, user.CreatedAtGTE(*i.CreatedAtGTE))
-	}
-	if i.CreatedAtLT != nil {
-		predicates = append(predicates, user.CreatedAtLT(*i.CreatedAtLT))
-	}
-	if i.CreatedAtLTE != nil {
-		predicates = append(predicates, user.CreatedAtLTE(*i.CreatedAtLTE))
-	}
-	if i.UpdatedAt != nil {
-		predicates = append(predicates, user.UpdatedAtEQ(*i.UpdatedAt))
-	}
-	if i.UpdatedAtNEQ != nil {
-		predicates = append(predicates, user.UpdatedAtNEQ(*i.UpdatedAtNEQ))
-	}
-	if len(i.UpdatedAtIn) > 0 {
-		predicates = append(predicates, user.UpdatedAtIn(i.UpdatedAtIn...))
-	}
-	if len(i.UpdatedAtNotIn) > 0 {
-		predicates = append(predicates, user.UpdatedAtNotIn(i.UpdatedAtNotIn...))
-	}
-	if i.UpdatedAtGT != nil {
-		predicates = append(predicates, user.UpdatedAtGT(*i.UpdatedAtGT))
-	}
-	if i.UpdatedAtGTE != nil {
-		predicates = append(predicates, user.UpdatedAtGTE(*i.UpdatedAtGTE))
-	}
-	if i.UpdatedAtLT != nil {
-		predicates = append(predicates, user.UpdatedAtLT(*i.UpdatedAtLT))
-	}
-	if i.UpdatedAtLTE != nil {
-		predicates = append(predicates, user.UpdatedAtLTE(*i.UpdatedAtLTE))
-	}
-	if i.Name != nil {
-		predicates = append(predicates, user.NameEQ(*i.Name))
-	}
-	if i.NameNEQ != nil {
-		predicates = append(predicates, user.NameNEQ(*i.NameNEQ))
-	}
-	if len(i.NameIn) > 0 {
-		predicates = append(predicates, user.NameIn(i.NameIn...))
-	}
-	if len(i.NameNotIn) > 0 {
-		predicates = append(predicates, user.NameNotIn(i.NameNotIn...))
-	}
-	if i.NameGT != nil {
-		predicates = append(predicates, user.NameGT(*i.NameGT))
-	}
-	if i.NameGTE != nil {
-		predicates = append(predicates, user.NameGTE(*i.NameGTE))
-	}
-	if i.NameLT != nil {
-		predicates = append(predicates, user.NameLT(*i.NameLT))
-	}
-	if i.NameLTE != nil {
-		predicates = append(predicates, user.NameLTE(*i.NameLTE))
-	}
-	if i.NameContains != nil {
-		predicates = append(predicates, user.NameContains(*i.NameContains))
-	}
-	if i.NameHasPrefix != nil {
-		predicates = append(predicates, user.NameHasPrefix(*i.NameHasPrefix))
-	}
-	if i.NameHasSuffix != nil {
-		predicates = append(predicates, user.NameHasSuffix(*i.NameHasSuffix))
-	}
-	if i.NameEqualFold != nil {
-		predicates = append(predicates, user.NameEqualFold(*i.NameEqualFold))
-	}
-	if i.NameContainsFold != nil {
-		predicates = append(predicates, user.NameContainsFold(*i.NameContainsFold))
-	}
 	if i.Email != nil {
 		predicates = append(predicates, user.EmailEQ(*i.Email))
 	}
@@ -2168,45 +1500,6 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	}
 	if i.EmailContainsFold != nil {
 		predicates = append(predicates, user.EmailContainsFold(*i.EmailContainsFold))
-	}
-	if i.Password != nil {
-		predicates = append(predicates, user.PasswordEQ(*i.Password))
-	}
-	if i.PasswordNEQ != nil {
-		predicates = append(predicates, user.PasswordNEQ(*i.PasswordNEQ))
-	}
-	if len(i.PasswordIn) > 0 {
-		predicates = append(predicates, user.PasswordIn(i.PasswordIn...))
-	}
-	if len(i.PasswordNotIn) > 0 {
-		predicates = append(predicates, user.PasswordNotIn(i.PasswordNotIn...))
-	}
-	if i.PasswordGT != nil {
-		predicates = append(predicates, user.PasswordGT(*i.PasswordGT))
-	}
-	if i.PasswordGTE != nil {
-		predicates = append(predicates, user.PasswordGTE(*i.PasswordGTE))
-	}
-	if i.PasswordLT != nil {
-		predicates = append(predicates, user.PasswordLT(*i.PasswordLT))
-	}
-	if i.PasswordLTE != nil {
-		predicates = append(predicates, user.PasswordLTE(*i.PasswordLTE))
-	}
-	if i.PasswordContains != nil {
-		predicates = append(predicates, user.PasswordContains(*i.PasswordContains))
-	}
-	if i.PasswordHasPrefix != nil {
-		predicates = append(predicates, user.PasswordHasPrefix(*i.PasswordHasPrefix))
-	}
-	if i.PasswordHasSuffix != nil {
-		predicates = append(predicates, user.PasswordHasSuffix(*i.PasswordHasSuffix))
-	}
-	if i.PasswordEqualFold != nil {
-		predicates = append(predicates, user.PasswordEqualFold(*i.PasswordEqualFold))
-	}
-	if i.PasswordContainsFold != nil {
-		predicates = append(predicates, user.PasswordContainsFold(*i.PasswordContainsFold))
 	}
 	if i.Phone != nil {
 		predicates = append(predicates, user.PhoneEQ(*i.Phone))
@@ -2258,42 +1551,6 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	}
 	if i.ActiveNEQ != nil {
 		predicates = append(predicates, user.ActiveNEQ(*i.ActiveNEQ))
-	}
-	if i.RoleID != nil {
-		predicates = append(predicates, user.RoleIDEQ(*i.RoleID))
-	}
-	if i.RoleIDNEQ != nil {
-		predicates = append(predicates, user.RoleIDNEQ(*i.RoleIDNEQ))
-	}
-	if len(i.RoleIDIn) > 0 {
-		predicates = append(predicates, user.RoleIDIn(i.RoleIDIn...))
-	}
-	if len(i.RoleIDNotIn) > 0 {
-		predicates = append(predicates, user.RoleIDNotIn(i.RoleIDNotIn...))
-	}
-	if i.PoliceStationID != nil {
-		predicates = append(predicates, user.PoliceStationIDEQ(*i.PoliceStationID))
-	}
-	if i.PoliceStationIDNEQ != nil {
-		predicates = append(predicates, user.PoliceStationIDNEQ(*i.PoliceStationIDNEQ))
-	}
-	if len(i.PoliceStationIDIn) > 0 {
-		predicates = append(predicates, user.PoliceStationIDIn(i.PoliceStationIDIn...))
-	}
-	if len(i.PoliceStationIDNotIn) > 0 {
-		predicates = append(predicates, user.PoliceStationIDNotIn(i.PoliceStationIDNotIn...))
-	}
-	if i.PoliceStationIDGT != nil {
-		predicates = append(predicates, user.PoliceStationIDGT(*i.PoliceStationIDGT))
-	}
-	if i.PoliceStationIDGTE != nil {
-		predicates = append(predicates, user.PoliceStationIDGTE(*i.PoliceStationIDGTE))
-	}
-	if i.PoliceStationIDLT != nil {
-		predicates = append(predicates, user.PoliceStationIDLT(*i.PoliceStationIDLT))
-	}
-	if i.PoliceStationIDLTE != nil {
-		predicates = append(predicates, user.PoliceStationIDLTE(*i.PoliceStationIDLTE))
 	}
 
 	if i.HasRole != nil {
@@ -2348,36 +1605,6 @@ type VehicleDataWhereInput struct {
 	Not        *VehicleDataWhereInput   `json:"not,omitempty"`
 	Or         []*VehicleDataWhereInput `json:"or,omitempty"`
 	And        []*VehicleDataWhereInput `json:"and,omitempty"`
-
-	// "id" field predicates.
-	ID      *uuid.UUID  `json:"id,omitempty"`
-	IDNEQ   *uuid.UUID  `json:"idNEQ,omitempty"`
-	IDIn    []uuid.UUID `json:"idIn,omitempty"`
-	IDNotIn []uuid.UUID `json:"idNotIn,omitempty"`
-	IDGT    *uuid.UUID  `json:"idGT,omitempty"`
-	IDGTE   *uuid.UUID  `json:"idGTE,omitempty"`
-	IDLT    *uuid.UUID  `json:"idLT,omitempty"`
-	IDLTE   *uuid.UUID  `json:"idLTE,omitempty"`
-
-	// "created_at" field predicates.
-	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
-	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
-	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
-	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
-	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
-	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
-	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
-	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
-
-	// "updated_at" field predicates.
-	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
-	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
-	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
-	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
-	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
-	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
-	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
-	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
 	// "plate_channel" field predicates.
 	PlateChannel       *int  `json:"plateChannel,omitempty"`
@@ -2653,78 +1880,6 @@ func (i *VehicleDataWhereInput) P() (predicate.VehicleData, error) {
 		predicates = append(predicates, vehicledata.And(and...))
 	}
 	predicates = append(predicates, i.Predicates...)
-	if i.ID != nil {
-		predicates = append(predicates, vehicledata.IDEQ(*i.ID))
-	}
-	if i.IDNEQ != nil {
-		predicates = append(predicates, vehicledata.IDNEQ(*i.IDNEQ))
-	}
-	if len(i.IDIn) > 0 {
-		predicates = append(predicates, vehicledata.IDIn(i.IDIn...))
-	}
-	if len(i.IDNotIn) > 0 {
-		predicates = append(predicates, vehicledata.IDNotIn(i.IDNotIn...))
-	}
-	if i.IDGT != nil {
-		predicates = append(predicates, vehicledata.IDGT(*i.IDGT))
-	}
-	if i.IDGTE != nil {
-		predicates = append(predicates, vehicledata.IDGTE(*i.IDGTE))
-	}
-	if i.IDLT != nil {
-		predicates = append(predicates, vehicledata.IDLT(*i.IDLT))
-	}
-	if i.IDLTE != nil {
-		predicates = append(predicates, vehicledata.IDLTE(*i.IDLTE))
-	}
-	if i.CreatedAt != nil {
-		predicates = append(predicates, vehicledata.CreatedAtEQ(*i.CreatedAt))
-	}
-	if i.CreatedAtNEQ != nil {
-		predicates = append(predicates, vehicledata.CreatedAtNEQ(*i.CreatedAtNEQ))
-	}
-	if len(i.CreatedAtIn) > 0 {
-		predicates = append(predicates, vehicledata.CreatedAtIn(i.CreatedAtIn...))
-	}
-	if len(i.CreatedAtNotIn) > 0 {
-		predicates = append(predicates, vehicledata.CreatedAtNotIn(i.CreatedAtNotIn...))
-	}
-	if i.CreatedAtGT != nil {
-		predicates = append(predicates, vehicledata.CreatedAtGT(*i.CreatedAtGT))
-	}
-	if i.CreatedAtGTE != nil {
-		predicates = append(predicates, vehicledata.CreatedAtGTE(*i.CreatedAtGTE))
-	}
-	if i.CreatedAtLT != nil {
-		predicates = append(predicates, vehicledata.CreatedAtLT(*i.CreatedAtLT))
-	}
-	if i.CreatedAtLTE != nil {
-		predicates = append(predicates, vehicledata.CreatedAtLTE(*i.CreatedAtLTE))
-	}
-	if i.UpdatedAt != nil {
-		predicates = append(predicates, vehicledata.UpdatedAtEQ(*i.UpdatedAt))
-	}
-	if i.UpdatedAtNEQ != nil {
-		predicates = append(predicates, vehicledata.UpdatedAtNEQ(*i.UpdatedAtNEQ))
-	}
-	if len(i.UpdatedAtIn) > 0 {
-		predicates = append(predicates, vehicledata.UpdatedAtIn(i.UpdatedAtIn...))
-	}
-	if len(i.UpdatedAtNotIn) > 0 {
-		predicates = append(predicates, vehicledata.UpdatedAtNotIn(i.UpdatedAtNotIn...))
-	}
-	if i.UpdatedAtGT != nil {
-		predicates = append(predicates, vehicledata.UpdatedAtGT(*i.UpdatedAtGT))
-	}
-	if i.UpdatedAtGTE != nil {
-		predicates = append(predicates, vehicledata.UpdatedAtGTE(*i.UpdatedAtGTE))
-	}
-	if i.UpdatedAtLT != nil {
-		predicates = append(predicates, vehicledata.UpdatedAtLT(*i.UpdatedAtLT))
-	}
-	if i.UpdatedAtLTE != nil {
-		predicates = append(predicates, vehicledata.UpdatedAtLTE(*i.UpdatedAtLTE))
-	}
 	if i.PlateChannel != nil {
 		predicates = append(predicates, vehicledata.PlateChannelEQ(*i.PlateChannel))
 	}

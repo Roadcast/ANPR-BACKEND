@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -80,9 +81,19 @@ func Imei(v string) predicate.Camera {
 	return predicate.Camera(sql.FieldEQ(FieldImei, v))
 }
 
+// Location applies equality check predicate on the "location" field. It's identical to LocationEQ.
+func Location(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldEQ(FieldLocation, v))
+}
+
 // Active applies equality check predicate on the "active" field. It's identical to ActiveEQ.
 func Active(v bool) predicate.Camera {
 	return predicate.Camera(sql.FieldEQ(FieldActive, v))
+}
+
+// PoliceStationID applies equality check predicate on the "police_station_id" field. It's identical to PoliceStationIDEQ.
+func PoliceStationID(v uuid.UUID) predicate.Camera {
+	return predicate.Camera(sql.FieldEQ(FieldPoliceStationID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -360,6 +371,71 @@ func ImeiContainsFold(v string) predicate.Camera {
 	return predicate.Camera(sql.FieldContainsFold(FieldImei, v))
 }
 
+// LocationEQ applies the EQ predicate on the "location" field.
+func LocationEQ(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldEQ(FieldLocation, v))
+}
+
+// LocationNEQ applies the NEQ predicate on the "location" field.
+func LocationNEQ(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldNEQ(FieldLocation, v))
+}
+
+// LocationIn applies the In predicate on the "location" field.
+func LocationIn(vs ...string) predicate.Camera {
+	return predicate.Camera(sql.FieldIn(FieldLocation, vs...))
+}
+
+// LocationNotIn applies the NotIn predicate on the "location" field.
+func LocationNotIn(vs ...string) predicate.Camera {
+	return predicate.Camera(sql.FieldNotIn(FieldLocation, vs...))
+}
+
+// LocationGT applies the GT predicate on the "location" field.
+func LocationGT(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldGT(FieldLocation, v))
+}
+
+// LocationGTE applies the GTE predicate on the "location" field.
+func LocationGTE(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldGTE(FieldLocation, v))
+}
+
+// LocationLT applies the LT predicate on the "location" field.
+func LocationLT(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldLT(FieldLocation, v))
+}
+
+// LocationLTE applies the LTE predicate on the "location" field.
+func LocationLTE(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldLTE(FieldLocation, v))
+}
+
+// LocationContains applies the Contains predicate on the "location" field.
+func LocationContains(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldContains(FieldLocation, v))
+}
+
+// LocationHasPrefix applies the HasPrefix predicate on the "location" field.
+func LocationHasPrefix(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldHasPrefix(FieldLocation, v))
+}
+
+// LocationHasSuffix applies the HasSuffix predicate on the "location" field.
+func LocationHasSuffix(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldHasSuffix(FieldLocation, v))
+}
+
+// LocationEqualFold applies the EqualFold predicate on the "location" field.
+func LocationEqualFold(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldEqualFold(FieldLocation, v))
+}
+
+// LocationContainsFold applies the ContainsFold predicate on the "location" field.
+func LocationContainsFold(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldContainsFold(FieldLocation, v))
+}
+
 // ActiveEQ applies the EQ predicate on the "active" field.
 func ActiveEQ(v bool) predicate.Camera {
 	return predicate.Camera(sql.FieldEQ(FieldActive, v))
@@ -368,6 +444,59 @@ func ActiveEQ(v bool) predicate.Camera {
 // ActiveNEQ applies the NEQ predicate on the "active" field.
 func ActiveNEQ(v bool) predicate.Camera {
 	return predicate.Camera(sql.FieldNEQ(FieldActive, v))
+}
+
+// PoliceStationIDEQ applies the EQ predicate on the "police_station_id" field.
+func PoliceStationIDEQ(v uuid.UUID) predicate.Camera {
+	return predicate.Camera(sql.FieldEQ(FieldPoliceStationID, v))
+}
+
+// PoliceStationIDNEQ applies the NEQ predicate on the "police_station_id" field.
+func PoliceStationIDNEQ(v uuid.UUID) predicate.Camera {
+	return predicate.Camera(sql.FieldNEQ(FieldPoliceStationID, v))
+}
+
+// PoliceStationIDIn applies the In predicate on the "police_station_id" field.
+func PoliceStationIDIn(vs ...uuid.UUID) predicate.Camera {
+	return predicate.Camera(sql.FieldIn(FieldPoliceStationID, vs...))
+}
+
+// PoliceStationIDNotIn applies the NotIn predicate on the "police_station_id" field.
+func PoliceStationIDNotIn(vs ...uuid.UUID) predicate.Camera {
+	return predicate.Camera(sql.FieldNotIn(FieldPoliceStationID, vs...))
+}
+
+// PoliceStationIDIsNil applies the IsNil predicate on the "police_station_id" field.
+func PoliceStationIDIsNil() predicate.Camera {
+	return predicate.Camera(sql.FieldIsNull(FieldPoliceStationID))
+}
+
+// PoliceStationIDNotNil applies the NotNil predicate on the "police_station_id" field.
+func PoliceStationIDNotNil() predicate.Camera {
+	return predicate.Camera(sql.FieldNotNull(FieldPoliceStationID))
+}
+
+// HasPoliceStation applies the HasEdge predicate on the "police_station" edge.
+func HasPoliceStation() predicate.Camera {
+	return predicate.Camera(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, PoliceStationTable, PoliceStationColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPoliceStationWith applies the HasEdge predicate on the "police_station" edge with a given conditions (other predicates).
+func HasPoliceStationWith(preds ...predicate.PoliceStation) predicate.Camera {
+	return predicate.Camera(func(s *sql.Selector) {
+		step := newPoliceStationStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

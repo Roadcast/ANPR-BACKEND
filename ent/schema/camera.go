@@ -3,7 +3,12 @@ package schema
 import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/entsql"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
+	"github.com/google/uuid"
 	"go-ent-project/utils/base"
 )
 
@@ -26,7 +31,6 @@ func (Camera) Fields() []ent.Field {
 		field.String("name").
 			NotEmpty().
 			Annotations(
-
 				entgql.OrderField("NAME"),
 			),
 		// Model of the camera
@@ -40,16 +44,39 @@ func (Camera) Fields() []ent.Field {
 			NotEmpty().
 			Annotations(),
 
-		// Location stored as geometry point in PostgreSQL
-		field.JSON("location", map[string]interface{}{}).
-			Annotations().
-			SchemaType(map[string]string{
-				"postgres": "geometry(Point)",
-			}),
+		field.String("location"). // Store as WKB (Bytes)
+						SchemaType(map[string]string{
+				"postgres": "GEOMETRY(Point, 4326)",
+			}).
+			Annotations(
+				entgql.Skip(entgql.SkipWhereInput),
+			),
 
-		// Whether the camera is active
 		field.Bool("active").
 			Default(true).
+			Annotations(),
+
+		field.UUID("police_station_id", uuid.UUID{}).Nillable().Optional().Annotations(entgql.Type("ID"), entgql.Skip(entgql.SkipWhereInput)),
+	}
+}
+
+// Indexes defines the indexes of the User entity.
+func (Camera) Indexes() []ent.Index {
+	return []ent.Index{
+		// Create a GIN index using the `pg_trgm` operator class
+		index.Fields("name").
+			Annotations(
+				entsql.IndexTypes(map[string]string{
+					dialect.MySQL:    "FULLTEXT",
+					dialect.Postgres: "GIN",
+				})),
+	}
+}
+
+func (Camera) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.From("police_station", PoliceStation.Type).
+			Ref("camera").Field("police_station_id").Unique().
 			Annotations(),
 	}
 }

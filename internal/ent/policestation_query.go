@@ -6,6 +6,7 @@ import (
 	"context"
 	"database/sql/driver"
 	"fmt"
+	"go-ent-project/internal/ent/camera"
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/predicate"
 	"go-ent-project/internal/ent/user"
@@ -27,12 +28,13 @@ type PoliceStationQuery struct {
 	inters                 []Interceptor
 	predicates             []predicate.PoliceStation
 	withUsers              *UserQuery
-	withParentStation      *PoliceStationQuery
+	withCamera             *CameraQuery
+	withParent             *PoliceStationQuery
 	withChildStations      *PoliceStationQuery
-	withFKs                bool
 	loadTotal              []func(context.Context, []*PoliceStation) error
 	modifiers              []func(*sql.Selector)
 	withNamedUsers         map[string]*UserQuery
+	withNamedCamera        map[string]*CameraQuery
 	withNamedChildStations map[string]*PoliceStationQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -84,7 +86,7 @@ func (psq *PoliceStationQuery) QueryUsers() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(policestation.Table, policestation.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, policestation.UsersTable, policestation.UsersPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, policestation.UsersTable, policestation.UsersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(psq.driver.Dialect(), step)
 		return fromU, nil
@@ -92,8 +94,30 @@ func (psq *PoliceStationQuery) QueryUsers() *UserQuery {
 	return query
 }
 
-// QueryParentStation chains the current query on the "parent_station" edge.
-func (psq *PoliceStationQuery) QueryParentStation() *PoliceStationQuery {
+// QueryCamera chains the current query on the "camera" edge.
+func (psq *PoliceStationQuery) QueryCamera() *CameraQuery {
+	query := (&CameraClient{config: psq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := psq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := psq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(policestation.Table, policestation.FieldID, selector),
+			sqlgraph.To(camera.Table, camera.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, policestation.CameraTable, policestation.CameraColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(psq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryParent chains the current query on the "parent" edge.
+func (psq *PoliceStationQuery) QueryParent() *PoliceStationQuery {
 	query := (&PoliceStationClient{config: psq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := psq.prepareQuery(ctx); err != nil {
@@ -106,7 +130,7 @@ func (psq *PoliceStationQuery) QueryParentStation() *PoliceStationQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(policestation.Table, policestation.FieldID, selector),
 			sqlgraph.To(policestation.Table, policestation.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, policestation.ParentStationTable, policestation.ParentStationColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, policestation.ParentTable, policestation.ParentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(psq.driver.Dialect(), step)
 		return fromU, nil
@@ -329,7 +353,8 @@ func (psq *PoliceStationQuery) Clone() *PoliceStationQuery {
 		inters:            append([]Interceptor{}, psq.inters...),
 		predicates:        append([]predicate.PoliceStation{}, psq.predicates...),
 		withUsers:         psq.withUsers.Clone(),
-		withParentStation: psq.withParentStation.Clone(),
+		withCamera:        psq.withCamera.Clone(),
+		withParent:        psq.withParent.Clone(),
 		withChildStations: psq.withChildStations.Clone(),
 		// clone intermediate query.
 		sql:  psq.sql.Clone(),
@@ -348,14 +373,25 @@ func (psq *PoliceStationQuery) WithUsers(opts ...func(*UserQuery)) *PoliceStatio
 	return psq
 }
 
-// WithParentStation tells the query-builder to eager-load the nodes that are connected to
-// the "parent_station" edge. The optional arguments are used to configure the query builder of the edge.
-func (psq *PoliceStationQuery) WithParentStation(opts ...func(*PoliceStationQuery)) *PoliceStationQuery {
+// WithCamera tells the query-builder to eager-load the nodes that are connected to
+// the "camera" edge. The optional arguments are used to configure the query builder of the edge.
+func (psq *PoliceStationQuery) WithCamera(opts ...func(*CameraQuery)) *PoliceStationQuery {
+	query := (&CameraClient{config: psq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	psq.withCamera = query
+	return psq
+}
+
+// WithParent tells the query-builder to eager-load the nodes that are connected to
+// the "parent" edge. The optional arguments are used to configure the query builder of the edge.
+func (psq *PoliceStationQuery) WithParent(opts ...func(*PoliceStationQuery)) *PoliceStationQuery {
 	query := (&PoliceStationClient{config: psq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	psq.withParentStation = query
+	psq.withParent = query
 	return psq
 }
 
@@ -447,20 +483,14 @@ func (psq *PoliceStationQuery) prepareQuery(ctx context.Context) error {
 func (psq *PoliceStationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*PoliceStation, error) {
 	var (
 		nodes       = []*PoliceStation{}
-		withFKs     = psq.withFKs
 		_spec       = psq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			psq.withUsers != nil,
-			psq.withParentStation != nil,
+			psq.withCamera != nil,
+			psq.withParent != nil,
 			psq.withChildStations != nil,
 		}
 	)
-	if psq.withParentStation != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, policestation.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*PoliceStation).scanValues(nil, columns)
 	}
@@ -485,13 +515,30 @@ func (psq *PoliceStationQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	if query := psq.withUsers; query != nil {
 		if err := psq.loadUsers(ctx, query, nodes,
 			func(n *PoliceStation) { n.Edges.Users = []*User{} },
-			func(n *PoliceStation, e *User) { n.Edges.Users = append(n.Edges.Users, e) }); err != nil {
+			func(n *PoliceStation, e *User) {
+				n.Edges.Users = append(n.Edges.Users, e)
+				if !e.Edges.loadedTypes[1] {
+					e.Edges.PoliceStation = n
+				}
+			}); err != nil {
 			return nil, err
 		}
 	}
-	if query := psq.withParentStation; query != nil {
-		if err := psq.loadParentStation(ctx, query, nodes, nil,
-			func(n *PoliceStation, e *PoliceStation) { n.Edges.ParentStation = e }); err != nil {
+	if query := psq.withCamera; query != nil {
+		if err := psq.loadCamera(ctx, query, nodes,
+			func(n *PoliceStation) { n.Edges.Camera = []*Camera{} },
+			func(n *PoliceStation, e *Camera) {
+				n.Edges.Camera = append(n.Edges.Camera, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.PoliceStation = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := psq.withParent; query != nil {
+		if err := psq.loadParent(ctx, query, nodes, nil,
+			func(n *PoliceStation, e *PoliceStation) { n.Edges.Parent = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -500,8 +547,8 @@ func (psq *PoliceStationQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			func(n *PoliceStation) { n.Edges.ChildStations = []*PoliceStation{} },
 			func(n *PoliceStation, e *PoliceStation) {
 				n.Edges.ChildStations = append(n.Edges.ChildStations, e)
-				if !e.Edges.loadedTypes[1] {
-					e.Edges.ParentStation = n
+				if !e.Edges.loadedTypes[2] {
+					e.Edges.Parent = n
 				}
 			}); err != nil {
 			return nil, err
@@ -510,7 +557,24 @@ func (psq *PoliceStationQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	for name, query := range psq.withNamedUsers {
 		if err := psq.loadUsers(ctx, query, nodes,
 			func(n *PoliceStation) { n.appendNamedUsers(name) },
-			func(n *PoliceStation, e *User) { n.appendNamedUsers(name, e) }); err != nil {
+			func(n *PoliceStation, e *User) {
+				n.appendNamedUsers(name, e)
+				if !e.Edges.loadedTypes[1] {
+					e.Edges.PoliceStation = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range psq.withNamedCamera {
+		if err := psq.loadCamera(ctx, query, nodes,
+			func(n *PoliceStation) { n.appendNamedCamera(name) },
+			func(n *PoliceStation, e *Camera) {
+				n.appendNamedCamera(name, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.PoliceStation = n
+				}
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -519,8 +583,8 @@ func (psq *PoliceStationQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			func(n *PoliceStation) { n.appendNamedChildStations(name) },
 			func(n *PoliceStation, e *PoliceStation) {
 				n.appendNamedChildStations(name, e)
-				if !e.Edges.loadedTypes[1] {
-					e.Edges.ParentStation = n
+				if !e.Edges.loadedTypes[2] {
+					e.Edges.Parent = n
 				}
 			}); err != nil {
 			return nil, err
@@ -535,74 +599,76 @@ func (psq *PoliceStationQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 }
 
 func (psq *PoliceStationQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*PoliceStation, init func(*PoliceStation), assign func(*PoliceStation, *User)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[uuid.UUID]*PoliceStation)
-	nids := make(map[uuid.UUID]map[*PoliceStation]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*PoliceStation)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
 		if init != nil {
-			init(node)
+			init(nodes[i])
 		}
 	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(policestation.UsersTable)
-		s.Join(joinT).On(s.C(user.FieldID), joinT.C(policestation.UsersPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(policestation.UsersPrimaryKey[0]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(policestation.UsersPrimaryKey[0]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(user.FieldPoliceStationID)
 	}
-	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
-		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-			assign := spec.Assign
-			values := spec.ScanValues
-			spec.ScanValues = func(columns []string) ([]any, error) {
-				values, err := values(columns[1:])
-				if err != nil {
-					return nil, err
-				}
-				return append([]any{new(uuid.UUID)}, values...), nil
-			}
-			spec.Assign = func(columns []string, values []any) error {
-				outValue := *values[0].(*uuid.UUID)
-				inValue := *values[1].(*uuid.UUID)
-				if nids[inValue] == nil {
-					nids[inValue] = map[*PoliceStation]struct{}{byID[outValue]: {}}
-					return assign(columns[1:], values[1:])
-				}
-				nids[inValue][byID[outValue]] = struct{}{}
-				return nil
-			}
-		})
-	})
-	neighbors, err := withInterceptors[[]*User](ctx, query, qr, query.inters)
+	query.Where(predicate.User(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(policestation.UsersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
+		fk := n.PoliceStationID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected "users" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "police_station_id" returned %v for node %v`, fk, n.ID)
 		}
-		for kn := range nodes {
-			assign(kn, n)
-		}
+		assign(node, n)
 	}
 	return nil
 }
-func (psq *PoliceStationQuery) loadParentStation(ctx context.Context, query *PoliceStationQuery, nodes []*PoliceStation, init func(*PoliceStation), assign func(*PoliceStation, *PoliceStation)) error {
+func (psq *PoliceStationQuery) loadCamera(ctx context.Context, query *CameraQuery, nodes []*PoliceStation, init func(*PoliceStation), assign func(*PoliceStation, *Camera)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*PoliceStation)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(camera.FieldPoliceStationID)
+	}
+	query.Where(predicate.Camera(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(policestation.CameraColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.PoliceStationID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "police_station_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "police_station_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (psq *PoliceStationQuery) loadParent(ctx context.Context, query *PoliceStationQuery, nodes []*PoliceStation, init func(*PoliceStation), assign func(*PoliceStation, *PoliceStation)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*PoliceStation)
 	for i := range nodes {
-		if nodes[i].police_station_child_stations == nil {
+		if nodes[i].ParentStationID == nil {
 			continue
 		}
-		fk := *nodes[i].police_station_child_stations
+		fk := *nodes[i].ParentStationID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -619,7 +685,7 @@ func (psq *PoliceStationQuery) loadParentStation(ctx context.Context, query *Pol
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "police_station_child_stations" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "parent_station_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -637,7 +703,9 @@ func (psq *PoliceStationQuery) loadChildStations(ctx context.Context, query *Pol
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(policestation.FieldParentStationID)
+	}
 	query.Where(predicate.PoliceStation(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(policestation.ChildStationsColumn), fks...))
 	}))
@@ -646,13 +714,13 @@ func (psq *PoliceStationQuery) loadChildStations(ctx context.Context, query *Pol
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.police_station_child_stations
+		fk := n.ParentStationID
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "police_station_child_stations" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "parent_station_id" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "police_station_child_stations" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "parent_station_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -686,6 +754,9 @@ func (psq *PoliceStationQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != policestation.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if psq.withParent != nil {
+			_spec.Node.AddColumnOnce(policestation.FieldParentStationID)
 		}
 	}
 	if ps := psq.predicates; len(ps) > 0 {
@@ -783,6 +854,20 @@ func (psq *PoliceStationQuery) WithNamedUsers(name string, opts ...func(*UserQue
 		psq.withNamedUsers = make(map[string]*UserQuery)
 	}
 	psq.withNamedUsers[name] = query
+	return psq
+}
+
+// WithNamedCamera tells the query-builder to eager-load the nodes that are connected to the "camera"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (psq *PoliceStationQuery) WithNamedCamera(name string, opts ...func(*CameraQuery)) *PoliceStationQuery {
+	query := (&CameraClient{config: psq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if psq.withNamedCamera == nil {
+		psq.withNamedCamera = make(map[string]*CameraQuery)
+	}
+	psq.withNamedCamera[name] = query
 	return psq
 }
 

@@ -30,8 +30,8 @@ func (r *mutationResolver) UpdateUserPassword(ctx context.Context, userID uuid.U
 }
 
 // GetUser is the resolver for the getUser field.
-func (r *queryResolver) GetUser(ctx context.Context, id *uuid.UUID) (*ent.User, error) {
-	u, err := r.Client.User.Query().Where(user.IDEQ(*id)).Only(ctx)
+func (r *queryResolver) GetUser(ctx context.Context, id uuid.UUID) (*ent.User, error) {
+	u, err := r.Client.User.Query().Where(user.IDEQ(id)).Only(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("user not found")
 	}

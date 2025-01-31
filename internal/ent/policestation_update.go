@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go-ent-project/internal/ent/camera"
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/predicate"
 	"go-ent-project/internal/ent/user"
@@ -51,8 +52,16 @@ func (psu *PoliceStationUpdate) SetNillableName(s *string) *PoliceStationUpdate 
 }
 
 // SetLocation sets the "location" field.
-func (psu *PoliceStationUpdate) SetLocation(m map[string]interface{}) *PoliceStationUpdate {
-	psu.mutation.SetLocation(m)
+func (psu *PoliceStationUpdate) SetLocation(s string) *PoliceStationUpdate {
+	psu.mutation.SetLocation(s)
+	return psu
+}
+
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (psu *PoliceStationUpdate) SetNillableLocation(s *string) *PoliceStationUpdate {
+	if s != nil {
+		psu.SetLocation(*s)
+	}
 	return psu
 }
 
@@ -90,6 +99,26 @@ func (psu *PoliceStationUpdate) SetNillableIdentifier(s *string) *PoliceStationU
 	return psu
 }
 
+// SetParentStationID sets the "parent_station_id" field.
+func (psu *PoliceStationUpdate) SetParentStationID(u uuid.UUID) *PoliceStationUpdate {
+	psu.mutation.SetParentStationID(u)
+	return psu
+}
+
+// SetNillableParentStationID sets the "parent_station_id" field if the given value is not nil.
+func (psu *PoliceStationUpdate) SetNillableParentStationID(u *uuid.UUID) *PoliceStationUpdate {
+	if u != nil {
+		psu.SetParentStationID(*u)
+	}
+	return psu
+}
+
+// ClearParentStationID clears the value of the "parent_station_id" field.
+func (psu *PoliceStationUpdate) ClearParentStationID() *PoliceStationUpdate {
+	psu.mutation.ClearParentStationID()
+	return psu
+}
+
 // AddUserIDs adds the "users" edge to the User entity by IDs.
 func (psu *PoliceStationUpdate) AddUserIDs(ids ...uuid.UUID) *PoliceStationUpdate {
 	psu.mutation.AddUserIDs(ids...)
@@ -105,23 +134,38 @@ func (psu *PoliceStationUpdate) AddUsers(u ...*User) *PoliceStationUpdate {
 	return psu.AddUserIDs(ids...)
 }
 
-// SetParentStationID sets the "parent_station" edge to the PoliceStation entity by ID.
-func (psu *PoliceStationUpdate) SetParentStationID(id uuid.UUID) *PoliceStationUpdate {
-	psu.mutation.SetParentStationID(id)
+// AddCameraIDs adds the "camera" edge to the Camera entity by IDs.
+func (psu *PoliceStationUpdate) AddCameraIDs(ids ...uuid.UUID) *PoliceStationUpdate {
+	psu.mutation.AddCameraIDs(ids...)
 	return psu
 }
 
-// SetNillableParentStationID sets the "parent_station" edge to the PoliceStation entity by ID if the given value is not nil.
-func (psu *PoliceStationUpdate) SetNillableParentStationID(id *uuid.UUID) *PoliceStationUpdate {
+// AddCamera adds the "camera" edges to the Camera entity.
+func (psu *PoliceStationUpdate) AddCamera(c ...*Camera) *PoliceStationUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return psu.AddCameraIDs(ids...)
+}
+
+// SetParentID sets the "parent" edge to the PoliceStation entity by ID.
+func (psu *PoliceStationUpdate) SetParentID(id uuid.UUID) *PoliceStationUpdate {
+	psu.mutation.SetParentID(id)
+	return psu
+}
+
+// SetNillableParentID sets the "parent" edge to the PoliceStation entity by ID if the given value is not nil.
+func (psu *PoliceStationUpdate) SetNillableParentID(id *uuid.UUID) *PoliceStationUpdate {
 	if id != nil {
-		psu = psu.SetParentStationID(*id)
+		psu = psu.SetParentID(*id)
 	}
 	return psu
 }
 
-// SetParentStation sets the "parent_station" edge to the PoliceStation entity.
-func (psu *PoliceStationUpdate) SetParentStation(p *PoliceStation) *PoliceStationUpdate {
-	return psu.SetParentStationID(p.ID)
+// SetParent sets the "parent" edge to the PoliceStation entity.
+func (psu *PoliceStationUpdate) SetParent(p *PoliceStation) *PoliceStationUpdate {
+	return psu.SetParentID(p.ID)
 }
 
 // AddChildStationIDs adds the "child_stations" edge to the PoliceStation entity by IDs.
@@ -165,9 +209,30 @@ func (psu *PoliceStationUpdate) RemoveUsers(u ...*User) *PoliceStationUpdate {
 	return psu.RemoveUserIDs(ids...)
 }
 
-// ClearParentStation clears the "parent_station" edge to the PoliceStation entity.
-func (psu *PoliceStationUpdate) ClearParentStation() *PoliceStationUpdate {
-	psu.mutation.ClearParentStation()
+// ClearCamera clears all "camera" edges to the Camera entity.
+func (psu *PoliceStationUpdate) ClearCamera() *PoliceStationUpdate {
+	psu.mutation.ClearCamera()
+	return psu
+}
+
+// RemoveCameraIDs removes the "camera" edge to Camera entities by IDs.
+func (psu *PoliceStationUpdate) RemoveCameraIDs(ids ...uuid.UUID) *PoliceStationUpdate {
+	psu.mutation.RemoveCameraIDs(ids...)
+	return psu
+}
+
+// RemoveCamera removes "camera" edges to Camera entities.
+func (psu *PoliceStationUpdate) RemoveCamera(c ...*Camera) *PoliceStationUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return psu.RemoveCameraIDs(ids...)
+}
+
+// ClearParent clears the "parent" edge to the PoliceStation entity.
+func (psu *PoliceStationUpdate) ClearParent() *PoliceStationUpdate {
+	psu.mutation.ClearParent()
 	return psu
 }
 
@@ -267,10 +332,10 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		_spec.SetField(policestation.FieldName, field.TypeString, value)
 	}
 	if value, ok := psu.mutation.Location(); ok {
-		_spec.SetField(policestation.FieldLocation, field.TypeJSON, value)
+		_spec.SetField(policestation.FieldLocation, field.TypeString, value)
 	}
 	if psu.mutation.LocationCleared() {
-		_spec.ClearField(policestation.FieldLocation, field.TypeJSON)
+		_spec.ClearField(policestation.FieldLocation, field.TypeString)
 	}
 	if value, ok := psu.mutation.Code(); ok {
 		_spec.SetField(policestation.FieldCode, field.TypeString, value)
@@ -280,10 +345,10 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if psu.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: policestation.UsersPrimaryKey,
+			Columns: []string{policestation.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
@@ -293,10 +358,10 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if nodes := psu.mutation.RemovedUsersIDs(); len(nodes) > 0 && !psu.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: policestation.UsersPrimaryKey,
+			Columns: []string{policestation.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
@@ -309,10 +374,10 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if nodes := psu.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: policestation.UsersPrimaryKey,
+			Columns: []string{policestation.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
@@ -323,12 +388,57 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if psu.mutation.ParentStationCleared() {
+	if psu.mutation.CameraCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CameraTable,
+			Columns: []string{policestation.CameraColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(camera.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := psu.mutation.RemovedCameraIDs(); len(nodes) > 0 && !psu.mutation.CameraCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CameraTable,
+			Columns: []string{policestation.CameraColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(camera.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := psu.mutation.CameraIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CameraTable,
+			Columns: []string{policestation.CameraColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(camera.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if psu.mutation.ParentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   policestation.ParentStationTable,
-			Columns: []string{policestation.ParentStationColumn},
+			Table:   policestation.ParentTable,
+			Columns: []string{policestation.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
@@ -336,12 +446,12 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := psu.mutation.ParentStationIDs(); len(nodes) > 0 {
+	if nodes := psu.mutation.ParentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   policestation.ParentStationTable,
-			Columns: []string{policestation.ParentStationColumn},
+			Table:   policestation.ParentTable,
+			Columns: []string{policestation.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
@@ -438,8 +548,16 @@ func (psuo *PoliceStationUpdateOne) SetNillableName(s *string) *PoliceStationUpd
 }
 
 // SetLocation sets the "location" field.
-func (psuo *PoliceStationUpdateOne) SetLocation(m map[string]interface{}) *PoliceStationUpdateOne {
-	psuo.mutation.SetLocation(m)
+func (psuo *PoliceStationUpdateOne) SetLocation(s string) *PoliceStationUpdateOne {
+	psuo.mutation.SetLocation(s)
+	return psuo
+}
+
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (psuo *PoliceStationUpdateOne) SetNillableLocation(s *string) *PoliceStationUpdateOne {
+	if s != nil {
+		psuo.SetLocation(*s)
+	}
 	return psuo
 }
 
@@ -477,6 +595,26 @@ func (psuo *PoliceStationUpdateOne) SetNillableIdentifier(s *string) *PoliceStat
 	return psuo
 }
 
+// SetParentStationID sets the "parent_station_id" field.
+func (psuo *PoliceStationUpdateOne) SetParentStationID(u uuid.UUID) *PoliceStationUpdateOne {
+	psuo.mutation.SetParentStationID(u)
+	return psuo
+}
+
+// SetNillableParentStationID sets the "parent_station_id" field if the given value is not nil.
+func (psuo *PoliceStationUpdateOne) SetNillableParentStationID(u *uuid.UUID) *PoliceStationUpdateOne {
+	if u != nil {
+		psuo.SetParentStationID(*u)
+	}
+	return psuo
+}
+
+// ClearParentStationID clears the value of the "parent_station_id" field.
+func (psuo *PoliceStationUpdateOne) ClearParentStationID() *PoliceStationUpdateOne {
+	psuo.mutation.ClearParentStationID()
+	return psuo
+}
+
 // AddUserIDs adds the "users" edge to the User entity by IDs.
 func (psuo *PoliceStationUpdateOne) AddUserIDs(ids ...uuid.UUID) *PoliceStationUpdateOne {
 	psuo.mutation.AddUserIDs(ids...)
@@ -492,23 +630,38 @@ func (psuo *PoliceStationUpdateOne) AddUsers(u ...*User) *PoliceStationUpdateOne
 	return psuo.AddUserIDs(ids...)
 }
 
-// SetParentStationID sets the "parent_station" edge to the PoliceStation entity by ID.
-func (psuo *PoliceStationUpdateOne) SetParentStationID(id uuid.UUID) *PoliceStationUpdateOne {
-	psuo.mutation.SetParentStationID(id)
+// AddCameraIDs adds the "camera" edge to the Camera entity by IDs.
+func (psuo *PoliceStationUpdateOne) AddCameraIDs(ids ...uuid.UUID) *PoliceStationUpdateOne {
+	psuo.mutation.AddCameraIDs(ids...)
 	return psuo
 }
 
-// SetNillableParentStationID sets the "parent_station" edge to the PoliceStation entity by ID if the given value is not nil.
-func (psuo *PoliceStationUpdateOne) SetNillableParentStationID(id *uuid.UUID) *PoliceStationUpdateOne {
+// AddCamera adds the "camera" edges to the Camera entity.
+func (psuo *PoliceStationUpdateOne) AddCamera(c ...*Camera) *PoliceStationUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return psuo.AddCameraIDs(ids...)
+}
+
+// SetParentID sets the "parent" edge to the PoliceStation entity by ID.
+func (psuo *PoliceStationUpdateOne) SetParentID(id uuid.UUID) *PoliceStationUpdateOne {
+	psuo.mutation.SetParentID(id)
+	return psuo
+}
+
+// SetNillableParentID sets the "parent" edge to the PoliceStation entity by ID if the given value is not nil.
+func (psuo *PoliceStationUpdateOne) SetNillableParentID(id *uuid.UUID) *PoliceStationUpdateOne {
 	if id != nil {
-		psuo = psuo.SetParentStationID(*id)
+		psuo = psuo.SetParentID(*id)
 	}
 	return psuo
 }
 
-// SetParentStation sets the "parent_station" edge to the PoliceStation entity.
-func (psuo *PoliceStationUpdateOne) SetParentStation(p *PoliceStation) *PoliceStationUpdateOne {
-	return psuo.SetParentStationID(p.ID)
+// SetParent sets the "parent" edge to the PoliceStation entity.
+func (psuo *PoliceStationUpdateOne) SetParent(p *PoliceStation) *PoliceStationUpdateOne {
+	return psuo.SetParentID(p.ID)
 }
 
 // AddChildStationIDs adds the "child_stations" edge to the PoliceStation entity by IDs.
@@ -552,9 +705,30 @@ func (psuo *PoliceStationUpdateOne) RemoveUsers(u ...*User) *PoliceStationUpdate
 	return psuo.RemoveUserIDs(ids...)
 }
 
-// ClearParentStation clears the "parent_station" edge to the PoliceStation entity.
-func (psuo *PoliceStationUpdateOne) ClearParentStation() *PoliceStationUpdateOne {
-	psuo.mutation.ClearParentStation()
+// ClearCamera clears all "camera" edges to the Camera entity.
+func (psuo *PoliceStationUpdateOne) ClearCamera() *PoliceStationUpdateOne {
+	psuo.mutation.ClearCamera()
+	return psuo
+}
+
+// RemoveCameraIDs removes the "camera" edge to Camera entities by IDs.
+func (psuo *PoliceStationUpdateOne) RemoveCameraIDs(ids ...uuid.UUID) *PoliceStationUpdateOne {
+	psuo.mutation.RemoveCameraIDs(ids...)
+	return psuo
+}
+
+// RemoveCamera removes "camera" edges to Camera entities.
+func (psuo *PoliceStationUpdateOne) RemoveCamera(c ...*Camera) *PoliceStationUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return psuo.RemoveCameraIDs(ids...)
+}
+
+// ClearParent clears the "parent" edge to the PoliceStation entity.
+func (psuo *PoliceStationUpdateOne) ClearParent() *PoliceStationUpdateOne {
+	psuo.mutation.ClearParent()
 	return psuo
 }
 
@@ -684,10 +858,10 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 		_spec.SetField(policestation.FieldName, field.TypeString, value)
 	}
 	if value, ok := psuo.mutation.Location(); ok {
-		_spec.SetField(policestation.FieldLocation, field.TypeJSON, value)
+		_spec.SetField(policestation.FieldLocation, field.TypeString, value)
 	}
 	if psuo.mutation.LocationCleared() {
-		_spec.ClearField(policestation.FieldLocation, field.TypeJSON)
+		_spec.ClearField(policestation.FieldLocation, field.TypeString)
 	}
 	if value, ok := psuo.mutation.Code(); ok {
 		_spec.SetField(policestation.FieldCode, field.TypeString, value)
@@ -697,10 +871,10 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 	}
 	if psuo.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: policestation.UsersPrimaryKey,
+			Columns: []string{policestation.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
@@ -710,10 +884,10 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 	}
 	if nodes := psuo.mutation.RemovedUsersIDs(); len(nodes) > 0 && !psuo.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: policestation.UsersPrimaryKey,
+			Columns: []string{policestation.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
@@ -726,10 +900,10 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 	}
 	if nodes := psuo.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   policestation.UsersTable,
-			Columns: policestation.UsersPrimaryKey,
+			Columns: []string{policestation.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
@@ -740,12 +914,57 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if psuo.mutation.ParentStationCleared() {
+	if psuo.mutation.CameraCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CameraTable,
+			Columns: []string{policestation.CameraColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(camera.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := psuo.mutation.RemovedCameraIDs(); len(nodes) > 0 && !psuo.mutation.CameraCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CameraTable,
+			Columns: []string{policestation.CameraColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(camera.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := psuo.mutation.CameraIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CameraTable,
+			Columns: []string{policestation.CameraColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(camera.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if psuo.mutation.ParentCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   policestation.ParentStationTable,
-			Columns: []string{policestation.ParentStationColumn},
+			Table:   policestation.ParentTable,
+			Columns: []string{policestation.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
@@ -753,12 +972,12 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := psuo.mutation.ParentStationIDs(); len(nodes) > 0 {
+	if nodes := psuo.mutation.ParentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   policestation.ParentStationTable,
-			Columns: []string{policestation.ParentStationColumn},
+			Table:   policestation.ParentTable,
+			Columns: []string{policestation.ParentColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),

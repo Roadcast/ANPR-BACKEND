@@ -37,6 +37,21 @@ func (c *CameraQuery) collectField(ctx context.Context, oneNode bool, opCtx *gra
 	)
 	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
 		switch field.Name {
+
+		case "policeStation":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&PoliceStationClient{config: c.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, policestationImplementors)...); err != nil {
+				return err
+			}
+			c.withPoliceStation = query
+			if _, ok := fieldSeen[camera.FieldPoliceStationID]; !ok {
+				selectedFields = append(selectedFields, camera.FieldPoliceStationID)
+				fieldSeen[camera.FieldPoliceStationID] = struct{}{}
+			}
 		case "createdAt":
 			if _, ok := fieldSeen[camera.FieldCreatedAt]; !ok {
 				selectedFields = append(selectedFields, camera.FieldCreatedAt)
@@ -71,6 +86,11 @@ func (c *CameraQuery) collectField(ctx context.Context, oneNode bool, opCtx *gra
 			if _, ok := fieldSeen[camera.FieldActive]; !ok {
 				selectedFields = append(selectedFields, camera.FieldActive)
 				fieldSeen[camera.FieldActive] = struct{}{}
+			}
+		case "policeStationID":
+			if _, ok := fieldSeen[camera.FieldPoliceStationID]; !ok {
+				selectedFields = append(selectedFields, camera.FieldPoliceStationID)
+				fieldSeen[camera.FieldPoliceStationID] = struct{}{}
 			}
 		case "id":
 		case "__typename":
@@ -426,7 +446,20 @@ func (ps *PoliceStationQuery) collectField(ctx context.Context, oneNode bool, op
 				*wq = *query
 			})
 
-		case "parentStation":
+		case "camera":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&CameraClient{config: ps.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, cameraImplementors)...); err != nil {
+				return err
+			}
+			ps.WithNamedCamera(alias, func(wq *CameraQuery) {
+				*wq = *query
+			})
+
+		case "parent":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -435,7 +468,11 @@ func (ps *PoliceStationQuery) collectField(ctx context.Context, oneNode bool, op
 			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, policestationImplementors)...); err != nil {
 				return err
 			}
-			ps.withParentStation = query
+			ps.withParent = query
+			if _, ok := fieldSeen[policestation.FieldParentStationID]; !ok {
+				selectedFields = append(selectedFields, policestation.FieldParentStationID)
+				fieldSeen[policestation.FieldParentStationID] = struct{}{}
+			}
 
 		case "childStations":
 			var (
@@ -478,6 +515,11 @@ func (ps *PoliceStationQuery) collectField(ctx context.Context, oneNode bool, op
 			if _, ok := fieldSeen[policestation.FieldIdentifier]; !ok {
 				selectedFields = append(selectedFields, policestation.FieldIdentifier)
 				fieldSeen[policestation.FieldIdentifier] = struct{}{}
+			}
+		case "parentStationID":
+			if _, ok := fieldSeen[policestation.FieldParentStationID]; !ok {
+				selectedFields = append(selectedFields, policestation.FieldParentStationID)
+				fieldSeen[policestation.FieldParentStationID] = struct{}{}
 			}
 		case "id":
 		case "__typename":
@@ -722,12 +764,14 @@ func (u *UserQuery) collectField(ctx context.Context, oneNode bool, opCtx *graph
 				path  = append(path, alias)
 				query = (&PoliceStationClient{config: u.config}).Query()
 			)
-			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, policestationImplementors)...); err != nil {
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, policestationImplementors)...); err != nil {
 				return err
 			}
-			u.WithNamedPoliceStation(alias, func(wq *PoliceStationQuery) {
-				*wq = *query
-			})
+			u.withPoliceStation = query
+			if _, ok := fieldSeen[user.FieldPoliceStationID]; !ok {
+				selectedFields = append(selectedFields, user.FieldPoliceStationID)
+				fieldSeen[user.FieldPoliceStationID] = struct{}{}
+			}
 		case "createdAt":
 			if _, ok := fieldSeen[user.FieldCreatedAt]; !ok {
 				selectedFields = append(selectedFields, user.FieldCreatedAt)

@@ -3,36 +3,54 @@ package graph
 // THIS CODE WILL BE UPDATED WITH SCHEMA CHANGES. PREVIOUS IMPLEMENTATION FOR SCHEMA CHANGES WILL BE KEPT IN THE COMMENT SECTION. IMPLEMENTATION FOR UNCHANGED SCHEMA WILL BE KEPT.
 
 import (
-	"encoding/base64"
-	"entgo.io/contrib/entgql"
+	"encoding/hex"
 	"fmt"
+	"github.com/twpayne/go-geom"
+	"github.com/twpayne/go-geom/encoding/wkb"
 	"go-ent-project/internal/ent"
-	"strconv"
 )
 
 type Resolver struct {
 	Client *ent.Client
 }
 
-func DecodeCursor(cursor string) (int, error) {
-	// Decode Base64 string
-	decoded, err := base64.StdEncoding.DecodeString(cursor)
-	if err != nil {
-		return 0, fmt.Errorf("failed to decode cursor: %v", err)
+// Convert WKB (Bytes) to WKT (String)
+func decodeWKBToWKT(wkbBytes []byte) (string, error) {
+	if len(wkbBytes) == 0 {
+		return "", fmt.Errorf("empty WKB data")
 	}
 
-	// Convert the decoded string to an integer
-	value, err := strconv.Atoi(string(decoded))
-
-	if err != nil {
-		return 0, fmt.Errorf("invalid cursor value: %v", err)
+	// Detect if data is in HEX format (ASCII-encoded)
+	if isHexEncoded(wkbBytes) {
+		decodedBytes, err := hex.DecodeString(string(wkbBytes))
+		if err != nil {
+			return "", fmt.Errorf("failed to decode HEX to Binary: %v", err)
+		}
+		wkbBytes = decodedBytes
 	}
 
-	return value, nil
+	// Decode WKB to Geometry
+	point, err := wkb.Unmarshal(wkbBytes)
+	if err != nil {
+		return "", fmt.Errorf("failed to decode WKB: %v", err)
+	}
+
+	// Ensure it's a Point Geometry
+	gp, ok := point.(*geom.Point)
+	if !ok {
+		return "", fmt.Errorf("invalid geometry type: %T", point)
+	}
+
+	// Convert to WKT format
+	return fmt.Sprintf("POINT(%f %f)", gp.X(), gp.Y()), nil
 }
-func convertCursorToString[T any](cursor *entgql.Cursor[T]) *string {
-	str := fmt.Sprintf("%v", cursor.ID)
-	// Encode the value as Base64
-	encoded := base64.StdEncoding.EncodeToString([]byte(str))
-	return &encoded
+
+// Helper function: Detects if data is HEX encoded
+func isHexEncoded(data []byte) bool {
+	for _, b := range data {
+		if !(b >= 48 && b <= 57) && !(b >= 65 && b <= 70) && !(b >= 97 && b <= 102) { // 0-9, A-F, a-f
+			return false
+		}
+	}
+	return len(data)%2 == 0 // Must be an even number of hex chars
 }

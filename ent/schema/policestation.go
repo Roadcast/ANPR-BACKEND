@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+	"github.com/google/uuid"
 	"go-ent-project/utils/base"
 )
 
@@ -34,13 +35,13 @@ func (PoliceStation) Fields() []ent.Field {
 				// Expose in GraphQL
 			),
 
-		// Location stored as geometry(Point) in PostgreSQL
-		field.JSON("location", map[string]interface{}{}).
-			Optional().
-			Annotations().
-			SchemaType(map[string]string{
-				"postgres": "geometry(Point)",
-			}),
+		field.String("location").Optional().Nillable(). // Store as WKB (Bytes)
+								SchemaType(map[string]string{
+				"postgres": "GEOMETRY(Point, 4326)",
+			}).
+			Annotations(
+				entgql.Skip(entgql.SkipWhereInput),
+			),
 
 		// Code for the police station
 		field.String("code").
@@ -53,6 +54,7 @@ func (PoliceStation) Fields() []ent.Field {
 			Unique().
 			NotEmpty().
 			Annotations(),
+		field.UUID("parent_station_id", uuid.UUID{}).Optional().Nillable().Annotations(entgql.Type("ID")),
 	}
 }
 
@@ -61,14 +63,17 @@ func (PoliceStation) Edges() []ent.Edge {
 	return []ent.Edge{
 		// Users assigned to this police station
 		edge.To("users", User.Type),
-
-		// Parent police station
-		edge.From("parent_station", PoliceStation.Type).
+		edge.To("camera", Camera.Type),
+		// Parent station (one-to-many relationship)
+		edge.From("parent", PoliceStation.Type).
 			Ref("child_stations").
-			Unique(),
+			Unique().
+			Field("parent_station_id").
+			Annotations(entgql.Type("PoliceStation")),
 
-		// Child police stations
-		edge.To("child_stations", PoliceStation.Type),
+		// Child stations (one-to-many relationship)
+		edge.To("child_stations", PoliceStation.Type).
+			Annotations(entgql.Type("[PoliceStation!]!")),
 	}
 }
 

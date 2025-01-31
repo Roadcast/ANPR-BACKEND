@@ -4,6 +4,7 @@ package ent
 
 import (
 	"fmt"
+	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
 	"strings"
@@ -48,14 +49,12 @@ type UserEdges struct {
 	// Role holds the value of the role edge.
 	Role *Role `json:"role,omitempty"`
 	// PoliceStation holds the value of the police_station edge.
-	PoliceStation []*PoliceStation `json:"police_station,omitempty"`
+	PoliceStation *PoliceStation `json:"police_station,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 	// totalCount holds the count of the edges above.
 	totalCount [2]map[string]int
-
-	namedPoliceStation map[string][]*PoliceStation
 }
 
 // RoleOrErr returns the Role value or an error if the edge
@@ -70,10 +69,12 @@ func (e UserEdges) RoleOrErr() (*Role, error) {
 }
 
 // PoliceStationOrErr returns the PoliceStation value or an error if the edge
-// was not loaded in eager-loading.
-func (e UserEdges) PoliceStationOrErr() ([]*PoliceStation, error) {
-	if e.loadedTypes[1] {
+// was not loaded in eager-loading, or loaded but was not found.
+func (e UserEdges) PoliceStationOrErr() (*PoliceStation, error) {
+	if e.PoliceStation != nil {
 		return e.PoliceStation, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: policestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "police_station"}
 }
@@ -239,30 +240,6 @@ func (u *User) String() string {
 	builder.WriteString(fmt.Sprintf("%v", u.PoliceStationID))
 	builder.WriteByte(')')
 	return builder.String()
-}
-
-// NamedPoliceStation returns the PoliceStation named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (u *User) NamedPoliceStation(name string) ([]*PoliceStation, error) {
-	if u.Edges.namedPoliceStation == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := u.Edges.namedPoliceStation[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (u *User) appendNamedPoliceStation(name string, edges ...*PoliceStation) {
-	if u.Edges.namedPoliceStation == nil {
-		u.Edges.namedPoliceStation = make(map[string][]*PoliceStation)
-	}
-	if len(edges) == 0 {
-		u.Edges.namedPoliceStation[name] = []*PoliceStation{}
-	} else {
-		u.Edges.namedPoliceStation[name] = append(u.Edges.namedPoliceStation[name], edges...)
-	}
 }
 
 // Users is a parsable slice of User.

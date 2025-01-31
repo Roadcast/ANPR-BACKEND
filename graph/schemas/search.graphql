@@ -1,0 +1,5 @@
+extend type Query {
+    getUserByName(name: String!, limit: Int!, offset: Int!): [User]!
+    getPoliceStationByName(name: String!, limit: Int!, offset: Int!): [PoliceStation]!
+    getCameraByName(name: String!, limit: Int!, offset: Int!): [Camera]!
+}
