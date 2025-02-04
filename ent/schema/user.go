@@ -53,7 +53,7 @@ func (User) Fields() []ent.Field {
 			),
 		field.Bool("active").Default(true).Annotations(),
 		field.UUID("role_id", uuid.UUID{}).Annotations(entgql.Type("ID"), entgql.Skip(entgql.SkipWhereInput)),
-		field.UUID("police_station_id", uuid.UUID{}).Annotations(entgql.Type("ID"), entgql.Skip(entgql.SkipWhereInput)),
+		field.UUID("police_station_id", uuid.UUID{}).Optional().Annotations(entgql.Type("ID"), entgql.Skip(entgql.SkipWhereInput)),
 	}
 }
 
@@ -65,7 +65,7 @@ func (User) Edges() []ent.Edge {
 			Annotations(),
 		edge.From("police_station", PoliceStation.Type).
 			Ref("users").Unique().Field("police_station_id").
-			Required().
+			Unique().
 			Annotations(),
 	}
 }

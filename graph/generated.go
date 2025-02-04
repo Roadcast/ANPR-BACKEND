@@ -2032,7 +2032,7 @@ input CreateUserInput {
   phone: String
   active: Boolean
   roleID: ID!
-  policeStationID: ID!
+  policeStationID: ID
 }
 """
 CreateVehicleDataInput is used for create VehicleData object.
@@ -2819,6 +2819,7 @@ input UpdateUserInput {
   active: Boolean
   roleID: ID
   policeStationID: ID
+  clearPoliceStation: Boolean
 }
 """
 UpdateVehicleDataInput is used for update VehicleData object.
@@ -2923,9 +2924,9 @@ type User implements Node {
   phone: String
   active: Boolean!
   roleID: ID!
-  policeStationID: ID!
+  policeStationID: ID
   role: Role!
-  policeStation: PoliceStation!
+  policeStation: PoliceStation
 }
 """
 A connection to a list of items.
@@ -11413,14 +11414,11 @@ func (ec *executionContext) _User_policeStationID(ctx context.Context, field gra
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(uuid.UUID)
 	fc.Result = res
-	return ec.marshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+	return ec.marshalOID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_policeStationID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -11515,14 +11513,11 @@ func (ec *executionContext) _User_policeStation(ctx context.Context, field graph
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*ent.PoliceStation)
 	fc.Result = res
-	return ec.marshalNPoliceStation2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStation(ctx, field.Selections, res)
+	return ec.marshalOPoliceStation2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStation(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_User_policeStation(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -16002,7 +15997,7 @@ func (ec *executionContext) unmarshalInputCreateUserInput(ctx context.Context, o
 			it.RoleID = data
 		case "policeStationID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("policeStationID"))
-			data, err := ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -17440,7 +17435,7 @@ func (ec *executionContext) unmarshalInputUpdateUserInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "name", "email", "password", "phone", "clearPhone", "active", "roleID", "policeStationID"}
+	fieldsInOrder := [...]string{"updatedAt", "name", "email", "password", "phone", "clearPhone", "active", "roleID", "policeStationID", "clearPoliceStation"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -17510,6 +17505,13 @@ func (ec *executionContext) unmarshalInputUpdateUserInput(ctx context.Context, o
 				return it, err
 			}
 			it.PoliceStationID = data
+		case "clearPoliceStation":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearPoliceStation"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearPoliceStation = data
 		}
 	}
 
@@ -21222,9 +21224,6 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "policeStationID":
 			out.Values[i] = ec._User_policeStationID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
 		case "role":
 			field := field
 
@@ -21264,16 +21263,13 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 		case "policeStation":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
 				res = ec._User_policeStation(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
 				return res
 			}
 
@@ -23117,6 +23113,16 @@ func (ec *executionContext) marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCu
 		return graphql.Null
 	}
 	return v
+}
+
+func (ec *executionContext) unmarshalOID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx context.Context, v any) (uuid.UUID, error) {
+	res, err := graphql.UnmarshalUUID(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx context.Context, sel ast.SelectionSet, v uuid.UUID) graphql.Marshaler {
+	res := graphql.MarshalUUID(v)
+	return res
 }
 
 func (ec *executionContext) unmarshalOID2ᚕgithubᚗcomᚋgoogleᚋuuidᚐUUIDᚄ(ctx context.Context, v any) ([]uuid.UUID, error) {

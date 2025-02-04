@@ -97,5 +97,5 @@ func (u *User) PoliceStation(ctx context.Context) (*PoliceStation, error) {
 	if IsNotLoaded(err) {
 		result, err = u.QueryPoliceStation().Only(ctx)
 	}
-	return result, err
+	return result, MaskNotFound(err)
 }

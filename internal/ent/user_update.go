@@ -141,6 +141,12 @@ func (uu *UserUpdate) SetNillablePoliceStationID(u *uuid.UUID) *UserUpdate {
 	return uu
 }
 
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (uu *UserUpdate) ClearPoliceStationID() *UserUpdate {
+	uu.mutation.ClearPoliceStationID()
+	return uu
+}
+
 // SetRole sets the "role" edge to the Role entity.
 func (uu *UserUpdate) SetRole(r *Role) *UserUpdate {
 	return uu.SetRoleID(r.ID)
@@ -229,9 +235,6 @@ func (uu *UserUpdate) check() error {
 	}
 	if uu.mutation.RoleCleared() && len(uu.mutation.RoleIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "User.role"`)
-	}
-	if uu.mutation.PoliceStationCleared() && len(uu.mutation.PoliceStationIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "User.police_station"`)
 	}
 	return nil
 }
@@ -457,6 +460,12 @@ func (uuo *UserUpdateOne) SetNillablePoliceStationID(u *uuid.UUID) *UserUpdateOn
 	return uuo
 }
 
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (uuo *UserUpdateOne) ClearPoliceStationID() *UserUpdateOne {
+	uuo.mutation.ClearPoliceStationID()
+	return uuo
+}
+
 // SetRole sets the "role" edge to the Role entity.
 func (uuo *UserUpdateOne) SetRole(r *Role) *UserUpdateOne {
 	return uuo.SetRoleID(r.ID)
@@ -558,9 +567,6 @@ func (uuo *UserUpdateOne) check() error {
 	}
 	if uuo.mutation.RoleCleared() && len(uuo.mutation.RoleIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "User.role"`)
-	}
-	if uuo.mutation.PoliceStationCleared() && len(uuo.mutation.PoliceStationIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "User.police_station"`)
 	}
 	return nil
 }

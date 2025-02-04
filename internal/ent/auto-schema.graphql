@@ -354,7 +354,7 @@ input CreateUserInput {
   phone: String
   active: Boolean
   roleID: ID!
-  policeStationID: ID!
+  policeStationID: ID
 }
 """
 CreateVehicleDataInput is used for create VehicleData object.
@@ -1141,6 +1141,7 @@ input UpdateUserInput {
   active: Boolean
   roleID: ID
   policeStationID: ID
+  clearPoliceStation: Boolean
 }
 """
 UpdateVehicleDataInput is used for update VehicleData object.
@@ -1245,9 +1246,9 @@ type User implements Node {
   phone: String
   active: Boolean!
   roleID: ID!
-  policeStationID: ID!
+  policeStationID: ID
   role: Role!
-  policeStation: PoliceStation!
+  policeStation: PoliceStation
 }
 """
 A connection to a list of items.

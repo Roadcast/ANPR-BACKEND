@@ -488,7 +488,7 @@ type CreateUserInput struct {
 	Phone           *string
 	Active          *bool
 	RoleID          uuid.UUID
-	PoliceStationID uuid.UUID
+	PoliceStationID *uuid.UUID
 }
 
 // Mutate applies the CreateUserInput on the UserMutation builder.
@@ -509,7 +509,9 @@ func (i *CreateUserInput) Mutate(m *UserMutation) {
 		m.SetActive(*v)
 	}
 	m.SetRoleID(i.RoleID)
-	m.SetPoliceStationID(i.PoliceStationID)
+	if v := i.PoliceStationID; v != nil {
+		m.SetPoliceStationID(*v)
+	}
 }
 
 // SetInput applies the change-set in the CreateUserInput on the UserCreate builder.
@@ -520,15 +522,16 @@ func (c *UserCreate) SetInput(i CreateUserInput) *UserCreate {
 
 // UpdateUserInput represents a mutation input for updating users.
 type UpdateUserInput struct {
-	UpdatedAt       *time.Time
-	Name            *string
-	Email           *string
-	Password        *string
-	ClearPhone      bool
-	Phone           *string
-	Active          *bool
-	RoleID          *uuid.UUID
-	PoliceStationID *uuid.UUID
+	UpdatedAt          *time.Time
+	Name               *string
+	Email              *string
+	Password           *string
+	ClearPhone         bool
+	Phone              *string
+	Active             *bool
+	RoleID             *uuid.UUID
+	ClearPoliceStation bool
+	PoliceStationID    *uuid.UUID
 }
 
 // Mutate applies the UpdateUserInput on the UserMutation builder.
@@ -556,6 +559,9 @@ func (i *UpdateUserInput) Mutate(m *UserMutation) {
 	}
 	if v := i.RoleID; v != nil {
 		m.SetRoleID(*v)
+	}
+	if i.ClearPoliceStation {
+		m.ClearPoliceStation()
 	}
 	if v := i.PoliceStationID; v != nil {
 		m.SetPoliceStationID(*v)

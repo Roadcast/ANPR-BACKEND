@@ -16,6 +16,7 @@ import (
 	"go-ent-project/graph"
 	"go-ent-project/internal/ent"
 	"go-ent-project/utils/celery"
+	"go-ent-project/utils/db"
 	"go-ent-project/utils/middleware"
 	redisDB "go-ent-project/utils/redis"
 	"log"
@@ -62,7 +63,7 @@ func main() {
 
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
-			Client: client, // Pass the initialized Ent client
+			Client: db.Client, // Pass the initialized Ent client
 		},
 	}))
 	srv.AddTransport(transport.Options{})

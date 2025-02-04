@@ -4264,9 +4264,22 @@ func (m *UserMutation) OldPoliceStationID(ctx context.Context) (v uuid.UUID, err
 	return oldValue.PoliceStationID, nil
 }
 
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (m *UserMutation) ClearPoliceStationID() {
+	m.police_station = nil
+	m.clearedFields[user.FieldPoliceStationID] = struct{}{}
+}
+
+// PoliceStationIDCleared returns if the "police_station_id" field was cleared in this mutation.
+func (m *UserMutation) PoliceStationIDCleared() bool {
+	_, ok := m.clearedFields[user.FieldPoliceStationID]
+	return ok
+}
+
 // ResetPoliceStationID resets all changes to the "police_station_id" field.
 func (m *UserMutation) ResetPoliceStationID() {
 	m.police_station = nil
+	delete(m.clearedFields, user.FieldPoliceStationID)
 }
 
 // ClearRole clears the "role" edge to the Role entity.
@@ -4304,7 +4317,7 @@ func (m *UserMutation) ClearPoliceStation() {
 
 // PoliceStationCleared reports if the "police_station" edge to the PoliceStation entity was cleared.
 func (m *UserMutation) PoliceStationCleared() bool {
-	return m.clearedpolice_station
+	return m.PoliceStationIDCleared() || m.clearedpolice_station
 }
 
 // PoliceStationIDs returns the "police_station" edge IDs in the mutation.
@@ -4543,6 +4556,9 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldPhone) {
 		fields = append(fields, user.FieldPhone)
 	}
+	if m.FieldCleared(user.FieldPoliceStationID) {
+		fields = append(fields, user.FieldPoliceStationID)
+	}
 	return fields
 }
 
@@ -4559,6 +4575,9 @@ func (m *UserMutation) ClearField(name string) error {
 	switch name {
 	case user.FieldPhone:
 		m.ClearPhone()
+		return nil
+	case user.FieldPoliceStationID:
+		m.ClearPoliceStationID()
 		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)

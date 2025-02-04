@@ -152,7 +152,7 @@ var (
 		{Name: "password", Type: field.TypeString},
 		{Name: "phone", Type: field.TypeString, Nullable: true},
 		{Name: "active", Type: field.TypeBool, Default: true},
-		{Name: "police_station_id", Type: field.TypeUUID},
+		{Name: "police_station_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "role_id", Type: field.TypeUUID},
 	}
 	// UsersTable holds the schema information for the "users" table.
@@ -165,7 +165,7 @@ var (
 				Symbol:     "users_police_stations_users",
 				Columns:    []*schema.Column{UsersColumns[8]},
 				RefColumns: []*schema.Column{PoliceStationsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "users_roles_users",

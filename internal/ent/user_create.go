@@ -112,6 +112,14 @@ func (uc *UserCreate) SetPoliceStationID(u uuid.UUID) *UserCreate {
 	return uc
 }
 
+// SetNillablePoliceStationID sets the "police_station_id" field if the given value is not nil.
+func (uc *UserCreate) SetNillablePoliceStationID(u *uuid.UUID) *UserCreate {
+	if u != nil {
+		uc.SetPoliceStationID(*u)
+	}
+	return uc
+}
+
 // SetID sets the "id" field.
 func (uc *UserCreate) SetID(u uuid.UUID) *UserCreate {
 	uc.mutation.SetID(u)
@@ -239,14 +247,8 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.RoleID(); !ok {
 		return &ValidationError{Name: "role_id", err: errors.New(`ent: missing required field "User.role_id"`)}
 	}
-	if _, ok := uc.mutation.PoliceStationID(); !ok {
-		return &ValidationError{Name: "police_station_id", err: errors.New(`ent: missing required field "User.police_station_id"`)}
-	}
 	if len(uc.mutation.RoleIDs()) == 0 {
 		return &ValidationError{Name: "role", err: errors.New(`ent: missing required edge "User.role"`)}
-	}
-	if len(uc.mutation.PoliceStationIDs()) == 0 {
-		return &ValidationError{Name: "police_station", err: errors.New(`ent: missing required edge "User.police_station"`)}
 	}
 	return nil
 }
@@ -500,6 +502,12 @@ func (u *UserUpsert) UpdatePoliceStationID() *UserUpsert {
 	return u
 }
 
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (u *UserUpsert) ClearPoliceStationID() *UserUpsert {
+	u.SetNull(user.FieldPoliceStationID)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -667,6 +675,13 @@ func (u *UserUpsertOne) SetPoliceStationID(v uuid.UUID) *UserUpsertOne {
 func (u *UserUpsertOne) UpdatePoliceStationID() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdatePoliceStationID()
+	})
+}
+
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (u *UserUpsertOne) ClearPoliceStationID() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearPoliceStationID()
 	})
 }
 
@@ -1004,6 +1019,13 @@ func (u *UserUpsertBulk) SetPoliceStationID(v uuid.UUID) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdatePoliceStationID() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdatePoliceStationID()
+	})
+}
+
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (u *UserUpsertBulk) ClearPoliceStationID() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearPoliceStationID()
 	})
 }
 

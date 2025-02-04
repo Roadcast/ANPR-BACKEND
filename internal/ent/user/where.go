@@ -501,6 +501,16 @@ func PoliceStationIDNotIn(vs ...uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldNotIn(FieldPoliceStationID, vs...))
 }
 
+// PoliceStationIDIsNil applies the IsNil predicate on the "police_station_id" field.
+func PoliceStationIDIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldPoliceStationID))
+}
+
+// PoliceStationIDNotNil applies the NotNil predicate on the "police_station_id" field.
+func PoliceStationIDNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldPoliceStationID))
+}
+
 // HasRole applies the HasEdge predicate on the "role" edge.
 func HasRole() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
