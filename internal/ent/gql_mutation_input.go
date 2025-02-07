@@ -174,6 +174,264 @@ func (c *CarUpdateOne) SetInput(i UpdateCarInput) *CarUpdateOne {
 	return c
 }
 
+// CreateEventInput represents a mutation input for creating events.
+type CreateEventInput struct {
+	CreatedAt            *time.Time
+	UpdatedAt            *time.Time
+	PlateBoundingBox     []int
+	PlateChannel         *int
+	PlateIsExist         *bool
+	PlateColor           *string
+	PlateNumber          *string
+	PlateType            *string
+	PlateRegion          *string
+	PlateUploadNum       *int
+	SnapAllowUser        *bool
+	SnapAllowUserEndTime *string
+	SnapDefenceCode      *string
+	SnapDeviceID         *string
+	SnapInCarPeopleNum   *int
+	SnapLanNo            *int
+	SnapOpenStrobe       *bool
+	VehicleBoundingBox   []int
+	VehicleSeries        *string
+}
+
+// Mutate applies the CreateEventInput on the EventMutation builder.
+func (i *CreateEventInput) Mutate(m *EventMutation) {
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	if v := i.PlateBoundingBox; v != nil {
+		m.SetPlateBoundingBox(v)
+	}
+	if v := i.PlateChannel; v != nil {
+		m.SetPlateChannel(*v)
+	}
+	if v := i.PlateIsExist; v != nil {
+		m.SetPlateIsExist(*v)
+	}
+	if v := i.PlateColor; v != nil {
+		m.SetPlateColor(*v)
+	}
+	if v := i.PlateNumber; v != nil {
+		m.SetPlateNumber(*v)
+	}
+	if v := i.PlateType; v != nil {
+		m.SetPlateType(*v)
+	}
+	if v := i.PlateRegion; v != nil {
+		m.SetPlateRegion(*v)
+	}
+	if v := i.PlateUploadNum; v != nil {
+		m.SetPlateUploadNum(*v)
+	}
+	if v := i.SnapAllowUser; v != nil {
+		m.SetSnapAllowUser(*v)
+	}
+	if v := i.SnapAllowUserEndTime; v != nil {
+		m.SetSnapAllowUserEndTime(*v)
+	}
+	if v := i.SnapDefenceCode; v != nil {
+		m.SetSnapDefenceCode(*v)
+	}
+	if v := i.SnapDeviceID; v != nil {
+		m.SetSnapDeviceID(*v)
+	}
+	if v := i.SnapInCarPeopleNum; v != nil {
+		m.SetSnapInCarPeopleNum(*v)
+	}
+	if v := i.SnapLanNo; v != nil {
+		m.SetSnapLanNo(*v)
+	}
+	if v := i.SnapOpenStrobe; v != nil {
+		m.SetSnapOpenStrobe(*v)
+	}
+	if v := i.VehicleBoundingBox; v != nil {
+		m.SetVehicleBoundingBox(v)
+	}
+	if v := i.VehicleSeries; v != nil {
+		m.SetVehicleSeries(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateEventInput on the EventCreate builder.
+func (c *EventCreate) SetInput(i CreateEventInput) *EventCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateEventInput represents a mutation input for updating events.
+type UpdateEventInput struct {
+	UpdatedAt                 *time.Time
+	ClearPlateBoundingBox     bool
+	PlateBoundingBox          []int
+	AppendPlateBoundingBox    []int
+	ClearPlateChannel         bool
+	PlateChannel              *int
+	ClearPlateIsExist         bool
+	PlateIsExist              *bool
+	ClearPlateColor           bool
+	PlateColor                *string
+	ClearPlateNumber          bool
+	PlateNumber               *string
+	ClearPlateType            bool
+	PlateType                 *string
+	ClearPlateRegion          bool
+	PlateRegion               *string
+	ClearPlateUploadNum       bool
+	PlateUploadNum            *int
+	ClearSnapAllowUser        bool
+	SnapAllowUser             *bool
+	ClearSnapAllowUserEndTime bool
+	SnapAllowUserEndTime      *string
+	ClearSnapDefenceCode      bool
+	SnapDefenceCode           *string
+	ClearSnapDeviceID         bool
+	SnapDeviceID              *string
+	ClearSnapInCarPeopleNum   bool
+	SnapInCarPeopleNum        *int
+	ClearSnapLanNo            bool
+	SnapLanNo                 *int
+	ClearSnapOpenStrobe       bool
+	SnapOpenStrobe            *bool
+	ClearVehicleBoundingBox   bool
+	VehicleBoundingBox        []int
+	AppendVehicleBoundingBox  []int
+	ClearVehicleSeries        bool
+	VehicleSeries             *string
+}
+
+// Mutate applies the UpdateEventInput on the EventMutation builder.
+func (i *UpdateEventInput) Mutate(m *EventMutation) {
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	if i.ClearPlateBoundingBox {
+		m.ClearPlateBoundingBox()
+	}
+	if v := i.PlateBoundingBox; v != nil {
+		m.SetPlateBoundingBox(v)
+	}
+	if i.AppendPlateBoundingBox != nil {
+		m.AppendPlateBoundingBox(i.PlateBoundingBox)
+	}
+	if i.ClearPlateChannel {
+		m.ClearPlateChannel()
+	}
+	if v := i.PlateChannel; v != nil {
+		m.SetPlateChannel(*v)
+	}
+	if i.ClearPlateIsExist {
+		m.ClearPlateIsExist()
+	}
+	if v := i.PlateIsExist; v != nil {
+		m.SetPlateIsExist(*v)
+	}
+	if i.ClearPlateColor {
+		m.ClearPlateColor()
+	}
+	if v := i.PlateColor; v != nil {
+		m.SetPlateColor(*v)
+	}
+	if i.ClearPlateNumber {
+		m.ClearPlateNumber()
+	}
+	if v := i.PlateNumber; v != nil {
+		m.SetPlateNumber(*v)
+	}
+	if i.ClearPlateType {
+		m.ClearPlateType()
+	}
+	if v := i.PlateType; v != nil {
+		m.SetPlateType(*v)
+	}
+	if i.ClearPlateRegion {
+		m.ClearPlateRegion()
+	}
+	if v := i.PlateRegion; v != nil {
+		m.SetPlateRegion(*v)
+	}
+	if i.ClearPlateUploadNum {
+		m.ClearPlateUploadNum()
+	}
+	if v := i.PlateUploadNum; v != nil {
+		m.SetPlateUploadNum(*v)
+	}
+	if i.ClearSnapAllowUser {
+		m.ClearSnapAllowUser()
+	}
+	if v := i.SnapAllowUser; v != nil {
+		m.SetSnapAllowUser(*v)
+	}
+	if i.ClearSnapAllowUserEndTime {
+		m.ClearSnapAllowUserEndTime()
+	}
+	if v := i.SnapAllowUserEndTime; v != nil {
+		m.SetSnapAllowUserEndTime(*v)
+	}
+	if i.ClearSnapDefenceCode {
+		m.ClearSnapDefenceCode()
+	}
+	if v := i.SnapDefenceCode; v != nil {
+		m.SetSnapDefenceCode(*v)
+	}
+	if i.ClearSnapDeviceID {
+		m.ClearSnapDeviceID()
+	}
+	if v := i.SnapDeviceID; v != nil {
+		m.SetSnapDeviceID(*v)
+	}
+	if i.ClearSnapInCarPeopleNum {
+		m.ClearSnapInCarPeopleNum()
+	}
+	if v := i.SnapInCarPeopleNum; v != nil {
+		m.SetSnapInCarPeopleNum(*v)
+	}
+	if i.ClearSnapLanNo {
+		m.ClearSnapLanNo()
+	}
+	if v := i.SnapLanNo; v != nil {
+		m.SetSnapLanNo(*v)
+	}
+	if i.ClearSnapOpenStrobe {
+		m.ClearSnapOpenStrobe()
+	}
+	if v := i.SnapOpenStrobe; v != nil {
+		m.SetSnapOpenStrobe(*v)
+	}
+	if i.ClearVehicleBoundingBox {
+		m.ClearVehicleBoundingBox()
+	}
+	if v := i.VehicleBoundingBox; v != nil {
+		m.SetVehicleBoundingBox(v)
+	}
+	if i.AppendVehicleBoundingBox != nil {
+		m.AppendVehicleBoundingBox(i.VehicleBoundingBox)
+	}
+	if i.ClearVehicleSeries {
+		m.ClearVehicleSeries()
+	}
+	if v := i.VehicleSeries; v != nil {
+		m.SetVehicleSeries(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateEventInput on the EventUpdate builder.
+func (c *EventUpdate) SetInput(i UpdateEventInput) *EventUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateEventInput on the EventUpdateOne builder.
+func (c *EventUpdateOne) SetInput(i UpdateEventInput) *EventUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
 // CreatePermissionInput represents a mutation input for creating permissions.
 type CreatePermissionInput struct {
 	CreatedAt *time.Time
@@ -576,264 +834,6 @@ func (c *UserUpdate) SetInput(i UpdateUserInput) *UserUpdate {
 
 // SetInput applies the change-set in the UpdateUserInput on the UserUpdateOne builder.
 func (c *UserUpdateOne) SetInput(i UpdateUserInput) *UserUpdateOne {
-	i.Mutate(c.Mutation())
-	return c
-}
-
-// CreateVehicleDataInput represents a mutation input for creating vehicledataslice.
-type CreateVehicleDataInput struct {
-	CreatedAt            *time.Time
-	UpdatedAt            *time.Time
-	PlateBoundingBox     []int
-	PlateChannel         *int
-	PlateIsExist         *bool
-	PlateColor           *string
-	PlateNumber          *string
-	PlateType            *string
-	PlateRegion          *string
-	PlateUploadNum       *int
-	SnapAllowUser        *bool
-	SnapAllowUserEndTime *string
-	SnapDefenceCode      *string
-	SnapDeviceID         *string
-	SnapInCarPeopleNum   *int
-	SnapLanNo            *int
-	SnapOpenStrobe       *bool
-	VehicleBoundingBox   []int
-	VehicleSeries        *string
-}
-
-// Mutate applies the CreateVehicleDataInput on the VehicleDataMutation builder.
-func (i *CreateVehicleDataInput) Mutate(m *VehicleDataMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.PlateBoundingBox; v != nil {
-		m.SetPlateBoundingBox(v)
-	}
-	if v := i.PlateChannel; v != nil {
-		m.SetPlateChannel(*v)
-	}
-	if v := i.PlateIsExist; v != nil {
-		m.SetPlateIsExist(*v)
-	}
-	if v := i.PlateColor; v != nil {
-		m.SetPlateColor(*v)
-	}
-	if v := i.PlateNumber; v != nil {
-		m.SetPlateNumber(*v)
-	}
-	if v := i.PlateType; v != nil {
-		m.SetPlateType(*v)
-	}
-	if v := i.PlateRegion; v != nil {
-		m.SetPlateRegion(*v)
-	}
-	if v := i.PlateUploadNum; v != nil {
-		m.SetPlateUploadNum(*v)
-	}
-	if v := i.SnapAllowUser; v != nil {
-		m.SetSnapAllowUser(*v)
-	}
-	if v := i.SnapAllowUserEndTime; v != nil {
-		m.SetSnapAllowUserEndTime(*v)
-	}
-	if v := i.SnapDefenceCode; v != nil {
-		m.SetSnapDefenceCode(*v)
-	}
-	if v := i.SnapDeviceID; v != nil {
-		m.SetSnapDeviceID(*v)
-	}
-	if v := i.SnapInCarPeopleNum; v != nil {
-		m.SetSnapInCarPeopleNum(*v)
-	}
-	if v := i.SnapLanNo; v != nil {
-		m.SetSnapLanNo(*v)
-	}
-	if v := i.SnapOpenStrobe; v != nil {
-		m.SetSnapOpenStrobe(*v)
-	}
-	if v := i.VehicleBoundingBox; v != nil {
-		m.SetVehicleBoundingBox(v)
-	}
-	if v := i.VehicleSeries; v != nil {
-		m.SetVehicleSeries(*v)
-	}
-}
-
-// SetInput applies the change-set in the CreateVehicleDataInput on the VehicleDataCreate builder.
-func (c *VehicleDataCreate) SetInput(i CreateVehicleDataInput) *VehicleDataCreate {
-	i.Mutate(c.Mutation())
-	return c
-}
-
-// UpdateVehicleDataInput represents a mutation input for updating vehicledataslice.
-type UpdateVehicleDataInput struct {
-	UpdatedAt                 *time.Time
-	ClearPlateBoundingBox     bool
-	PlateBoundingBox          []int
-	AppendPlateBoundingBox    []int
-	ClearPlateChannel         bool
-	PlateChannel              *int
-	ClearPlateIsExist         bool
-	PlateIsExist              *bool
-	ClearPlateColor           bool
-	PlateColor                *string
-	ClearPlateNumber          bool
-	PlateNumber               *string
-	ClearPlateType            bool
-	PlateType                 *string
-	ClearPlateRegion          bool
-	PlateRegion               *string
-	ClearPlateUploadNum       bool
-	PlateUploadNum            *int
-	ClearSnapAllowUser        bool
-	SnapAllowUser             *bool
-	ClearSnapAllowUserEndTime bool
-	SnapAllowUserEndTime      *string
-	ClearSnapDefenceCode      bool
-	SnapDefenceCode           *string
-	ClearSnapDeviceID         bool
-	SnapDeviceID              *string
-	ClearSnapInCarPeopleNum   bool
-	SnapInCarPeopleNum        *int
-	ClearSnapLanNo            bool
-	SnapLanNo                 *int
-	ClearSnapOpenStrobe       bool
-	SnapOpenStrobe            *bool
-	ClearVehicleBoundingBox   bool
-	VehicleBoundingBox        []int
-	AppendVehicleBoundingBox  []int
-	ClearVehicleSeries        bool
-	VehicleSeries             *string
-}
-
-// Mutate applies the UpdateVehicleDataInput on the VehicleDataMutation builder.
-func (i *UpdateVehicleDataInput) Mutate(m *VehicleDataMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if i.ClearPlateBoundingBox {
-		m.ClearPlateBoundingBox()
-	}
-	if v := i.PlateBoundingBox; v != nil {
-		m.SetPlateBoundingBox(v)
-	}
-	if i.AppendPlateBoundingBox != nil {
-		m.AppendPlateBoundingBox(i.PlateBoundingBox)
-	}
-	if i.ClearPlateChannel {
-		m.ClearPlateChannel()
-	}
-	if v := i.PlateChannel; v != nil {
-		m.SetPlateChannel(*v)
-	}
-	if i.ClearPlateIsExist {
-		m.ClearPlateIsExist()
-	}
-	if v := i.PlateIsExist; v != nil {
-		m.SetPlateIsExist(*v)
-	}
-	if i.ClearPlateColor {
-		m.ClearPlateColor()
-	}
-	if v := i.PlateColor; v != nil {
-		m.SetPlateColor(*v)
-	}
-	if i.ClearPlateNumber {
-		m.ClearPlateNumber()
-	}
-	if v := i.PlateNumber; v != nil {
-		m.SetPlateNumber(*v)
-	}
-	if i.ClearPlateType {
-		m.ClearPlateType()
-	}
-	if v := i.PlateType; v != nil {
-		m.SetPlateType(*v)
-	}
-	if i.ClearPlateRegion {
-		m.ClearPlateRegion()
-	}
-	if v := i.PlateRegion; v != nil {
-		m.SetPlateRegion(*v)
-	}
-	if i.ClearPlateUploadNum {
-		m.ClearPlateUploadNum()
-	}
-	if v := i.PlateUploadNum; v != nil {
-		m.SetPlateUploadNum(*v)
-	}
-	if i.ClearSnapAllowUser {
-		m.ClearSnapAllowUser()
-	}
-	if v := i.SnapAllowUser; v != nil {
-		m.SetSnapAllowUser(*v)
-	}
-	if i.ClearSnapAllowUserEndTime {
-		m.ClearSnapAllowUserEndTime()
-	}
-	if v := i.SnapAllowUserEndTime; v != nil {
-		m.SetSnapAllowUserEndTime(*v)
-	}
-	if i.ClearSnapDefenceCode {
-		m.ClearSnapDefenceCode()
-	}
-	if v := i.SnapDefenceCode; v != nil {
-		m.SetSnapDefenceCode(*v)
-	}
-	if i.ClearSnapDeviceID {
-		m.ClearSnapDeviceID()
-	}
-	if v := i.SnapDeviceID; v != nil {
-		m.SetSnapDeviceID(*v)
-	}
-	if i.ClearSnapInCarPeopleNum {
-		m.ClearSnapInCarPeopleNum()
-	}
-	if v := i.SnapInCarPeopleNum; v != nil {
-		m.SetSnapInCarPeopleNum(*v)
-	}
-	if i.ClearSnapLanNo {
-		m.ClearSnapLanNo()
-	}
-	if v := i.SnapLanNo; v != nil {
-		m.SetSnapLanNo(*v)
-	}
-	if i.ClearSnapOpenStrobe {
-		m.ClearSnapOpenStrobe()
-	}
-	if v := i.SnapOpenStrobe; v != nil {
-		m.SetSnapOpenStrobe(*v)
-	}
-	if i.ClearVehicleBoundingBox {
-		m.ClearVehicleBoundingBox()
-	}
-	if v := i.VehicleBoundingBox; v != nil {
-		m.SetVehicleBoundingBox(v)
-	}
-	if i.AppendVehicleBoundingBox != nil {
-		m.AppendVehicleBoundingBox(i.VehicleBoundingBox)
-	}
-	if i.ClearVehicleSeries {
-		m.ClearVehicleSeries()
-	}
-	if v := i.VehicleSeries; v != nil {
-		m.SetVehicleSeries(*v)
-	}
-}
-
-// SetInput applies the change-set in the UpdateVehicleDataInput on the VehicleDataUpdate builder.
-func (c *VehicleDataUpdate) SetInput(i UpdateVehicleDataInput) *VehicleDataUpdate {
-	i.Mutate(c.Mutation())
-	return c
-}
-
-// SetInput applies the change-set in the UpdateVehicleDataInput on the VehicleDataUpdateOne builder.
-func (c *VehicleDataUpdateOne) SetInput(i UpdateVehicleDataInput) *VehicleDataUpdateOne {
 	i.Mutate(c.Mutation())
 	return c
 }

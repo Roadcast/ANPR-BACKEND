@@ -2,6 +2,25 @@
 
 package model
 
+import (
+	"go-ent-project/internal/ent"
+
+	"entgo.io/contrib/entgql"
+	"github.com/google/uuid"
+)
+
+type CustomEvent struct {
+	Camera       *ent.Camera `json:"camera,omitempty"`
+	PlateColor   *string     `json:"plate_color,omitempty"`
+	PlateNumber  *string     `json:"plate_number,omitempty"`
+	SnapDeviceID *string     `json:"snap_device_id,omitempty"`
+}
+
+type EventList struct {
+	PageInfo *entgql.PageInfo[uuid.UUID] `json:"pageInfo"`
+	Node     []*CustomEvent              `json:"node"`
+}
+
 type Location struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`

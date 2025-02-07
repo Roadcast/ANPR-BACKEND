@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"go-ent-project/internal/ent/camera"
 	"go-ent-project/internal/ent/car"
+	"go-ent-project/internal/ent/event"
 	"go-ent-project/internal/ent/permission"
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
-	"go-ent-project/internal/ent/vehicledata"
 	"reflect"
 	"sync"
 
@@ -81,11 +81,11 @@ func checkColumn(table, column string) error {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			camera.Table:        camera.ValidColumn,
 			car.Table:           car.ValidColumn,
+			event.Table:         event.ValidColumn,
 			permission.Table:    permission.ValidColumn,
 			policestation.Table: policestation.ValidColumn,
 			role.Table:          role.ValidColumn,
 			user.Table:          user.ValidColumn,
-			vehicledata.Table:   vehicledata.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

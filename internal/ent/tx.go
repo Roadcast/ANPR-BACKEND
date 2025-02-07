@@ -16,6 +16,8 @@ type Tx struct {
 	Camera *CameraClient
 	// Car is the client for interacting with the Car builders.
 	Car *CarClient
+	// Event is the client for interacting with the Event builders.
+	Event *EventClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// PoliceStation is the client for interacting with the PoliceStation builders.
@@ -24,8 +26,6 @@ type Tx struct {
 	Role *RoleClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
-	// VehicleData is the client for interacting with the VehicleData builders.
-	VehicleData *VehicleDataClient
 
 	// lazily loaded.
 	client     *Client
@@ -159,11 +159,11 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Camera = NewCameraClient(tx.config)
 	tx.Car = NewCarClient(tx.config)
+	tx.Event = NewEventClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.PoliceStation = NewPoliceStationClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.User = NewUserClient(tx.config)
-	tx.VehicleData = NewVehicleDataClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

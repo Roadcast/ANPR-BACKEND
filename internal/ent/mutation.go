@@ -8,12 +8,12 @@ import (
 	"fmt"
 	"go-ent-project/internal/ent/camera"
 	"go-ent-project/internal/ent/car"
+	"go-ent-project/internal/ent/event"
 	"go-ent-project/internal/ent/permission"
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/predicate"
 	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
-	"go-ent-project/internal/ent/vehicledata"
 	"sync"
 	"time"
 
@@ -33,11 +33,11 @@ const (
 	// Node types.
 	TypeCamera        = "Camera"
 	TypeCar           = "Car"
+	TypeEvent         = "Event"
 	TypePermission    = "Permission"
 	TypePoliceStation = "PoliceStation"
 	TypeRole          = "Role"
 	TypeUser          = "User"
-	TypeVehicleData   = "VehicleData"
 )
 
 // CameraMutation represents an operation that mutates the Camera nodes in the graph.
@@ -1516,6 +1516,1809 @@ func (m *CarMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *CarMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Car edge %s", name)
+}
+
+// EventMutation represents an operation that mutates the Event nodes in the graph.
+type EventMutation struct {
+	config
+	op                         Op
+	typ                        string
+	id                         *uuid.UUID
+	created_at                 *time.Time
+	updated_at                 *time.Time
+	plate_bounding_box         *[]int
+	appendplate_bounding_box   []int
+	plate_channel              *int
+	addplate_channel           *int
+	plate_is_exist             *bool
+	plate_color                *string
+	plate_number               *string
+	plate_type                 *string
+	plate_region               *string
+	plate_upload_num           *int
+	addplate_upload_num        *int
+	snap_allow_user            *bool
+	snap_allow_user_end_time   *string
+	snap_defence_code          *string
+	snap_device_id             *string
+	snap_in_car_people_num     *int
+	addsnap_in_car_people_num  *int
+	snap_lan_no                *int
+	addsnap_lan_no             *int
+	snap_open_strobe           *bool
+	vehicle_bounding_box       *[]int
+	appendvehicle_bounding_box []int
+	vehicle_series             *string
+	clearedFields              map[string]struct{}
+	done                       bool
+	oldValue                   func(context.Context) (*Event, error)
+	predicates                 []predicate.Event
+}
+
+var _ ent.Mutation = (*EventMutation)(nil)
+
+// eventOption allows management of the mutation configuration using functional options.
+type eventOption func(*EventMutation)
+
+// newEventMutation creates new mutation for the Event entity.
+func newEventMutation(c config, op Op, opts ...eventOption) *EventMutation {
+	m := &EventMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeEvent,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withEventID sets the ID field of the mutation.
+func withEventID(id uuid.UUID) eventOption {
+	return func(m *EventMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Event
+		)
+		m.oldValue = func(ctx context.Context) (*Event, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Event.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withEvent sets the old Event of the mutation.
+func withEvent(node *Event) eventOption {
+	return func(m *EventMutation) {
+		m.oldValue = func(context.Context) (*Event, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m EventMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m EventMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Event entities.
+func (m *EventMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *EventMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *EventMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Event.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *EventMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *EventMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *EventMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *EventMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *EventMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *EventMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetPlateBoundingBox sets the "plate_bounding_box" field.
+func (m *EventMutation) SetPlateBoundingBox(i []int) {
+	m.plate_bounding_box = &i
+	m.appendplate_bounding_box = nil
+}
+
+// PlateBoundingBox returns the value of the "plate_bounding_box" field in the mutation.
+func (m *EventMutation) PlateBoundingBox() (r []int, exists bool) {
+	v := m.plate_bounding_box
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlateBoundingBox returns the old "plate_bounding_box" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldPlateBoundingBox(ctx context.Context) (v []int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlateBoundingBox is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlateBoundingBox requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlateBoundingBox: %w", err)
+	}
+	return oldValue.PlateBoundingBox, nil
+}
+
+// AppendPlateBoundingBox adds i to the "plate_bounding_box" field.
+func (m *EventMutation) AppendPlateBoundingBox(i []int) {
+	m.appendplate_bounding_box = append(m.appendplate_bounding_box, i...)
+}
+
+// AppendedPlateBoundingBox returns the list of values that were appended to the "plate_bounding_box" field in this mutation.
+func (m *EventMutation) AppendedPlateBoundingBox() ([]int, bool) {
+	if len(m.appendplate_bounding_box) == 0 {
+		return nil, false
+	}
+	return m.appendplate_bounding_box, true
+}
+
+// ClearPlateBoundingBox clears the value of the "plate_bounding_box" field.
+func (m *EventMutation) ClearPlateBoundingBox() {
+	m.plate_bounding_box = nil
+	m.appendplate_bounding_box = nil
+	m.clearedFields[event.FieldPlateBoundingBox] = struct{}{}
+}
+
+// PlateBoundingBoxCleared returns if the "plate_bounding_box" field was cleared in this mutation.
+func (m *EventMutation) PlateBoundingBoxCleared() bool {
+	_, ok := m.clearedFields[event.FieldPlateBoundingBox]
+	return ok
+}
+
+// ResetPlateBoundingBox resets all changes to the "plate_bounding_box" field.
+func (m *EventMutation) ResetPlateBoundingBox() {
+	m.plate_bounding_box = nil
+	m.appendplate_bounding_box = nil
+	delete(m.clearedFields, event.FieldPlateBoundingBox)
+}
+
+// SetPlateChannel sets the "plate_channel" field.
+func (m *EventMutation) SetPlateChannel(i int) {
+	m.plate_channel = &i
+	m.addplate_channel = nil
+}
+
+// PlateChannel returns the value of the "plate_channel" field in the mutation.
+func (m *EventMutation) PlateChannel() (r int, exists bool) {
+	v := m.plate_channel
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlateChannel returns the old "plate_channel" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldPlateChannel(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlateChannel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlateChannel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlateChannel: %w", err)
+	}
+	return oldValue.PlateChannel, nil
+}
+
+// AddPlateChannel adds i to the "plate_channel" field.
+func (m *EventMutation) AddPlateChannel(i int) {
+	if m.addplate_channel != nil {
+		*m.addplate_channel += i
+	} else {
+		m.addplate_channel = &i
+	}
+}
+
+// AddedPlateChannel returns the value that was added to the "plate_channel" field in this mutation.
+func (m *EventMutation) AddedPlateChannel() (r int, exists bool) {
+	v := m.addplate_channel
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearPlateChannel clears the value of the "plate_channel" field.
+func (m *EventMutation) ClearPlateChannel() {
+	m.plate_channel = nil
+	m.addplate_channel = nil
+	m.clearedFields[event.FieldPlateChannel] = struct{}{}
+}
+
+// PlateChannelCleared returns if the "plate_channel" field was cleared in this mutation.
+func (m *EventMutation) PlateChannelCleared() bool {
+	_, ok := m.clearedFields[event.FieldPlateChannel]
+	return ok
+}
+
+// ResetPlateChannel resets all changes to the "plate_channel" field.
+func (m *EventMutation) ResetPlateChannel() {
+	m.plate_channel = nil
+	m.addplate_channel = nil
+	delete(m.clearedFields, event.FieldPlateChannel)
+}
+
+// SetPlateIsExist sets the "plate_is_exist" field.
+func (m *EventMutation) SetPlateIsExist(b bool) {
+	m.plate_is_exist = &b
+}
+
+// PlateIsExist returns the value of the "plate_is_exist" field in the mutation.
+func (m *EventMutation) PlateIsExist() (r bool, exists bool) {
+	v := m.plate_is_exist
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlateIsExist returns the old "plate_is_exist" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldPlateIsExist(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlateIsExist is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlateIsExist requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlateIsExist: %w", err)
+	}
+	return oldValue.PlateIsExist, nil
+}
+
+// ClearPlateIsExist clears the value of the "plate_is_exist" field.
+func (m *EventMutation) ClearPlateIsExist() {
+	m.plate_is_exist = nil
+	m.clearedFields[event.FieldPlateIsExist] = struct{}{}
+}
+
+// PlateIsExistCleared returns if the "plate_is_exist" field was cleared in this mutation.
+func (m *EventMutation) PlateIsExistCleared() bool {
+	_, ok := m.clearedFields[event.FieldPlateIsExist]
+	return ok
+}
+
+// ResetPlateIsExist resets all changes to the "plate_is_exist" field.
+func (m *EventMutation) ResetPlateIsExist() {
+	m.plate_is_exist = nil
+	delete(m.clearedFields, event.FieldPlateIsExist)
+}
+
+// SetPlateColor sets the "plate_color" field.
+func (m *EventMutation) SetPlateColor(s string) {
+	m.plate_color = &s
+}
+
+// PlateColor returns the value of the "plate_color" field in the mutation.
+func (m *EventMutation) PlateColor() (r string, exists bool) {
+	v := m.plate_color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlateColor returns the old "plate_color" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldPlateColor(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlateColor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlateColor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlateColor: %w", err)
+	}
+	return oldValue.PlateColor, nil
+}
+
+// ClearPlateColor clears the value of the "plate_color" field.
+func (m *EventMutation) ClearPlateColor() {
+	m.plate_color = nil
+	m.clearedFields[event.FieldPlateColor] = struct{}{}
+}
+
+// PlateColorCleared returns if the "plate_color" field was cleared in this mutation.
+func (m *EventMutation) PlateColorCleared() bool {
+	_, ok := m.clearedFields[event.FieldPlateColor]
+	return ok
+}
+
+// ResetPlateColor resets all changes to the "plate_color" field.
+func (m *EventMutation) ResetPlateColor() {
+	m.plate_color = nil
+	delete(m.clearedFields, event.FieldPlateColor)
+}
+
+// SetPlateNumber sets the "plate_number" field.
+func (m *EventMutation) SetPlateNumber(s string) {
+	m.plate_number = &s
+}
+
+// PlateNumber returns the value of the "plate_number" field in the mutation.
+func (m *EventMutation) PlateNumber() (r string, exists bool) {
+	v := m.plate_number
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlateNumber returns the old "plate_number" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldPlateNumber(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlateNumber is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlateNumber requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlateNumber: %w", err)
+	}
+	return oldValue.PlateNumber, nil
+}
+
+// ClearPlateNumber clears the value of the "plate_number" field.
+func (m *EventMutation) ClearPlateNumber() {
+	m.plate_number = nil
+	m.clearedFields[event.FieldPlateNumber] = struct{}{}
+}
+
+// PlateNumberCleared returns if the "plate_number" field was cleared in this mutation.
+func (m *EventMutation) PlateNumberCleared() bool {
+	_, ok := m.clearedFields[event.FieldPlateNumber]
+	return ok
+}
+
+// ResetPlateNumber resets all changes to the "plate_number" field.
+func (m *EventMutation) ResetPlateNumber() {
+	m.plate_number = nil
+	delete(m.clearedFields, event.FieldPlateNumber)
+}
+
+// SetPlateType sets the "plate_type" field.
+func (m *EventMutation) SetPlateType(s string) {
+	m.plate_type = &s
+}
+
+// PlateType returns the value of the "plate_type" field in the mutation.
+func (m *EventMutation) PlateType() (r string, exists bool) {
+	v := m.plate_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlateType returns the old "plate_type" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldPlateType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlateType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlateType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlateType: %w", err)
+	}
+	return oldValue.PlateType, nil
+}
+
+// ClearPlateType clears the value of the "plate_type" field.
+func (m *EventMutation) ClearPlateType() {
+	m.plate_type = nil
+	m.clearedFields[event.FieldPlateType] = struct{}{}
+}
+
+// PlateTypeCleared returns if the "plate_type" field was cleared in this mutation.
+func (m *EventMutation) PlateTypeCleared() bool {
+	_, ok := m.clearedFields[event.FieldPlateType]
+	return ok
+}
+
+// ResetPlateType resets all changes to the "plate_type" field.
+func (m *EventMutation) ResetPlateType() {
+	m.plate_type = nil
+	delete(m.clearedFields, event.FieldPlateType)
+}
+
+// SetPlateRegion sets the "plate_region" field.
+func (m *EventMutation) SetPlateRegion(s string) {
+	m.plate_region = &s
+}
+
+// PlateRegion returns the value of the "plate_region" field in the mutation.
+func (m *EventMutation) PlateRegion() (r string, exists bool) {
+	v := m.plate_region
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlateRegion returns the old "plate_region" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldPlateRegion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlateRegion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlateRegion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlateRegion: %w", err)
+	}
+	return oldValue.PlateRegion, nil
+}
+
+// ClearPlateRegion clears the value of the "plate_region" field.
+func (m *EventMutation) ClearPlateRegion() {
+	m.plate_region = nil
+	m.clearedFields[event.FieldPlateRegion] = struct{}{}
+}
+
+// PlateRegionCleared returns if the "plate_region" field was cleared in this mutation.
+func (m *EventMutation) PlateRegionCleared() bool {
+	_, ok := m.clearedFields[event.FieldPlateRegion]
+	return ok
+}
+
+// ResetPlateRegion resets all changes to the "plate_region" field.
+func (m *EventMutation) ResetPlateRegion() {
+	m.plate_region = nil
+	delete(m.clearedFields, event.FieldPlateRegion)
+}
+
+// SetPlateUploadNum sets the "plate_upload_num" field.
+func (m *EventMutation) SetPlateUploadNum(i int) {
+	m.plate_upload_num = &i
+	m.addplate_upload_num = nil
+}
+
+// PlateUploadNum returns the value of the "plate_upload_num" field in the mutation.
+func (m *EventMutation) PlateUploadNum() (r int, exists bool) {
+	v := m.plate_upload_num
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlateUploadNum returns the old "plate_upload_num" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldPlateUploadNum(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlateUploadNum is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlateUploadNum requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlateUploadNum: %w", err)
+	}
+	return oldValue.PlateUploadNum, nil
+}
+
+// AddPlateUploadNum adds i to the "plate_upload_num" field.
+func (m *EventMutation) AddPlateUploadNum(i int) {
+	if m.addplate_upload_num != nil {
+		*m.addplate_upload_num += i
+	} else {
+		m.addplate_upload_num = &i
+	}
+}
+
+// AddedPlateUploadNum returns the value that was added to the "plate_upload_num" field in this mutation.
+func (m *EventMutation) AddedPlateUploadNum() (r int, exists bool) {
+	v := m.addplate_upload_num
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearPlateUploadNum clears the value of the "plate_upload_num" field.
+func (m *EventMutation) ClearPlateUploadNum() {
+	m.plate_upload_num = nil
+	m.addplate_upload_num = nil
+	m.clearedFields[event.FieldPlateUploadNum] = struct{}{}
+}
+
+// PlateUploadNumCleared returns if the "plate_upload_num" field was cleared in this mutation.
+func (m *EventMutation) PlateUploadNumCleared() bool {
+	_, ok := m.clearedFields[event.FieldPlateUploadNum]
+	return ok
+}
+
+// ResetPlateUploadNum resets all changes to the "plate_upload_num" field.
+func (m *EventMutation) ResetPlateUploadNum() {
+	m.plate_upload_num = nil
+	m.addplate_upload_num = nil
+	delete(m.clearedFields, event.FieldPlateUploadNum)
+}
+
+// SetSnapAllowUser sets the "snap_allow_user" field.
+func (m *EventMutation) SetSnapAllowUser(b bool) {
+	m.snap_allow_user = &b
+}
+
+// SnapAllowUser returns the value of the "snap_allow_user" field in the mutation.
+func (m *EventMutation) SnapAllowUser() (r bool, exists bool) {
+	v := m.snap_allow_user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapAllowUser returns the old "snap_allow_user" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldSnapAllowUser(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapAllowUser is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapAllowUser requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapAllowUser: %w", err)
+	}
+	return oldValue.SnapAllowUser, nil
+}
+
+// ClearSnapAllowUser clears the value of the "snap_allow_user" field.
+func (m *EventMutation) ClearSnapAllowUser() {
+	m.snap_allow_user = nil
+	m.clearedFields[event.FieldSnapAllowUser] = struct{}{}
+}
+
+// SnapAllowUserCleared returns if the "snap_allow_user" field was cleared in this mutation.
+func (m *EventMutation) SnapAllowUserCleared() bool {
+	_, ok := m.clearedFields[event.FieldSnapAllowUser]
+	return ok
+}
+
+// ResetSnapAllowUser resets all changes to the "snap_allow_user" field.
+func (m *EventMutation) ResetSnapAllowUser() {
+	m.snap_allow_user = nil
+	delete(m.clearedFields, event.FieldSnapAllowUser)
+}
+
+// SetSnapAllowUserEndTime sets the "snap_allow_user_end_time" field.
+func (m *EventMutation) SetSnapAllowUserEndTime(s string) {
+	m.snap_allow_user_end_time = &s
+}
+
+// SnapAllowUserEndTime returns the value of the "snap_allow_user_end_time" field in the mutation.
+func (m *EventMutation) SnapAllowUserEndTime() (r string, exists bool) {
+	v := m.snap_allow_user_end_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapAllowUserEndTime returns the old "snap_allow_user_end_time" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldSnapAllowUserEndTime(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapAllowUserEndTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapAllowUserEndTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapAllowUserEndTime: %w", err)
+	}
+	return oldValue.SnapAllowUserEndTime, nil
+}
+
+// ClearSnapAllowUserEndTime clears the value of the "snap_allow_user_end_time" field.
+func (m *EventMutation) ClearSnapAllowUserEndTime() {
+	m.snap_allow_user_end_time = nil
+	m.clearedFields[event.FieldSnapAllowUserEndTime] = struct{}{}
+}
+
+// SnapAllowUserEndTimeCleared returns if the "snap_allow_user_end_time" field was cleared in this mutation.
+func (m *EventMutation) SnapAllowUserEndTimeCleared() bool {
+	_, ok := m.clearedFields[event.FieldSnapAllowUserEndTime]
+	return ok
+}
+
+// ResetSnapAllowUserEndTime resets all changes to the "snap_allow_user_end_time" field.
+func (m *EventMutation) ResetSnapAllowUserEndTime() {
+	m.snap_allow_user_end_time = nil
+	delete(m.clearedFields, event.FieldSnapAllowUserEndTime)
+}
+
+// SetSnapDefenceCode sets the "snap_defence_code" field.
+func (m *EventMutation) SetSnapDefenceCode(s string) {
+	m.snap_defence_code = &s
+}
+
+// SnapDefenceCode returns the value of the "snap_defence_code" field in the mutation.
+func (m *EventMutation) SnapDefenceCode() (r string, exists bool) {
+	v := m.snap_defence_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapDefenceCode returns the old "snap_defence_code" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldSnapDefenceCode(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapDefenceCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapDefenceCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapDefenceCode: %w", err)
+	}
+	return oldValue.SnapDefenceCode, nil
+}
+
+// ClearSnapDefenceCode clears the value of the "snap_defence_code" field.
+func (m *EventMutation) ClearSnapDefenceCode() {
+	m.snap_defence_code = nil
+	m.clearedFields[event.FieldSnapDefenceCode] = struct{}{}
+}
+
+// SnapDefenceCodeCleared returns if the "snap_defence_code" field was cleared in this mutation.
+func (m *EventMutation) SnapDefenceCodeCleared() bool {
+	_, ok := m.clearedFields[event.FieldSnapDefenceCode]
+	return ok
+}
+
+// ResetSnapDefenceCode resets all changes to the "snap_defence_code" field.
+func (m *EventMutation) ResetSnapDefenceCode() {
+	m.snap_defence_code = nil
+	delete(m.clearedFields, event.FieldSnapDefenceCode)
+}
+
+// SetSnapDeviceID sets the "snap_device_id" field.
+func (m *EventMutation) SetSnapDeviceID(s string) {
+	m.snap_device_id = &s
+}
+
+// SnapDeviceID returns the value of the "snap_device_id" field in the mutation.
+func (m *EventMutation) SnapDeviceID() (r string, exists bool) {
+	v := m.snap_device_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapDeviceID returns the old "snap_device_id" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldSnapDeviceID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapDeviceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapDeviceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapDeviceID: %w", err)
+	}
+	return oldValue.SnapDeviceID, nil
+}
+
+// ClearSnapDeviceID clears the value of the "snap_device_id" field.
+func (m *EventMutation) ClearSnapDeviceID() {
+	m.snap_device_id = nil
+	m.clearedFields[event.FieldSnapDeviceID] = struct{}{}
+}
+
+// SnapDeviceIDCleared returns if the "snap_device_id" field was cleared in this mutation.
+func (m *EventMutation) SnapDeviceIDCleared() bool {
+	_, ok := m.clearedFields[event.FieldSnapDeviceID]
+	return ok
+}
+
+// ResetSnapDeviceID resets all changes to the "snap_device_id" field.
+func (m *EventMutation) ResetSnapDeviceID() {
+	m.snap_device_id = nil
+	delete(m.clearedFields, event.FieldSnapDeviceID)
+}
+
+// SetSnapInCarPeopleNum sets the "snap_in_car_people_num" field.
+func (m *EventMutation) SetSnapInCarPeopleNum(i int) {
+	m.snap_in_car_people_num = &i
+	m.addsnap_in_car_people_num = nil
+}
+
+// SnapInCarPeopleNum returns the value of the "snap_in_car_people_num" field in the mutation.
+func (m *EventMutation) SnapInCarPeopleNum() (r int, exists bool) {
+	v := m.snap_in_car_people_num
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapInCarPeopleNum returns the old "snap_in_car_people_num" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldSnapInCarPeopleNum(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapInCarPeopleNum is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapInCarPeopleNum requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapInCarPeopleNum: %w", err)
+	}
+	return oldValue.SnapInCarPeopleNum, nil
+}
+
+// AddSnapInCarPeopleNum adds i to the "snap_in_car_people_num" field.
+func (m *EventMutation) AddSnapInCarPeopleNum(i int) {
+	if m.addsnap_in_car_people_num != nil {
+		*m.addsnap_in_car_people_num += i
+	} else {
+		m.addsnap_in_car_people_num = &i
+	}
+}
+
+// AddedSnapInCarPeopleNum returns the value that was added to the "snap_in_car_people_num" field in this mutation.
+func (m *EventMutation) AddedSnapInCarPeopleNum() (r int, exists bool) {
+	v := m.addsnap_in_car_people_num
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearSnapInCarPeopleNum clears the value of the "snap_in_car_people_num" field.
+func (m *EventMutation) ClearSnapInCarPeopleNum() {
+	m.snap_in_car_people_num = nil
+	m.addsnap_in_car_people_num = nil
+	m.clearedFields[event.FieldSnapInCarPeopleNum] = struct{}{}
+}
+
+// SnapInCarPeopleNumCleared returns if the "snap_in_car_people_num" field was cleared in this mutation.
+func (m *EventMutation) SnapInCarPeopleNumCleared() bool {
+	_, ok := m.clearedFields[event.FieldSnapInCarPeopleNum]
+	return ok
+}
+
+// ResetSnapInCarPeopleNum resets all changes to the "snap_in_car_people_num" field.
+func (m *EventMutation) ResetSnapInCarPeopleNum() {
+	m.snap_in_car_people_num = nil
+	m.addsnap_in_car_people_num = nil
+	delete(m.clearedFields, event.FieldSnapInCarPeopleNum)
+}
+
+// SetSnapLanNo sets the "snap_lan_no" field.
+func (m *EventMutation) SetSnapLanNo(i int) {
+	m.snap_lan_no = &i
+	m.addsnap_lan_no = nil
+}
+
+// SnapLanNo returns the value of the "snap_lan_no" field in the mutation.
+func (m *EventMutation) SnapLanNo() (r int, exists bool) {
+	v := m.snap_lan_no
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapLanNo returns the old "snap_lan_no" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldSnapLanNo(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapLanNo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapLanNo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapLanNo: %w", err)
+	}
+	return oldValue.SnapLanNo, nil
+}
+
+// AddSnapLanNo adds i to the "snap_lan_no" field.
+func (m *EventMutation) AddSnapLanNo(i int) {
+	if m.addsnap_lan_no != nil {
+		*m.addsnap_lan_no += i
+	} else {
+		m.addsnap_lan_no = &i
+	}
+}
+
+// AddedSnapLanNo returns the value that was added to the "snap_lan_no" field in this mutation.
+func (m *EventMutation) AddedSnapLanNo() (r int, exists bool) {
+	v := m.addsnap_lan_no
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearSnapLanNo clears the value of the "snap_lan_no" field.
+func (m *EventMutation) ClearSnapLanNo() {
+	m.snap_lan_no = nil
+	m.addsnap_lan_no = nil
+	m.clearedFields[event.FieldSnapLanNo] = struct{}{}
+}
+
+// SnapLanNoCleared returns if the "snap_lan_no" field was cleared in this mutation.
+func (m *EventMutation) SnapLanNoCleared() bool {
+	_, ok := m.clearedFields[event.FieldSnapLanNo]
+	return ok
+}
+
+// ResetSnapLanNo resets all changes to the "snap_lan_no" field.
+func (m *EventMutation) ResetSnapLanNo() {
+	m.snap_lan_no = nil
+	m.addsnap_lan_no = nil
+	delete(m.clearedFields, event.FieldSnapLanNo)
+}
+
+// SetSnapOpenStrobe sets the "snap_open_strobe" field.
+func (m *EventMutation) SetSnapOpenStrobe(b bool) {
+	m.snap_open_strobe = &b
+}
+
+// SnapOpenStrobe returns the value of the "snap_open_strobe" field in the mutation.
+func (m *EventMutation) SnapOpenStrobe() (r bool, exists bool) {
+	v := m.snap_open_strobe
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapOpenStrobe returns the old "snap_open_strobe" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldSnapOpenStrobe(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapOpenStrobe is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapOpenStrobe requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapOpenStrobe: %w", err)
+	}
+	return oldValue.SnapOpenStrobe, nil
+}
+
+// ClearSnapOpenStrobe clears the value of the "snap_open_strobe" field.
+func (m *EventMutation) ClearSnapOpenStrobe() {
+	m.snap_open_strobe = nil
+	m.clearedFields[event.FieldSnapOpenStrobe] = struct{}{}
+}
+
+// SnapOpenStrobeCleared returns if the "snap_open_strobe" field was cleared in this mutation.
+func (m *EventMutation) SnapOpenStrobeCleared() bool {
+	_, ok := m.clearedFields[event.FieldSnapOpenStrobe]
+	return ok
+}
+
+// ResetSnapOpenStrobe resets all changes to the "snap_open_strobe" field.
+func (m *EventMutation) ResetSnapOpenStrobe() {
+	m.snap_open_strobe = nil
+	delete(m.clearedFields, event.FieldSnapOpenStrobe)
+}
+
+// SetVehicleBoundingBox sets the "vehicle_bounding_box" field.
+func (m *EventMutation) SetVehicleBoundingBox(i []int) {
+	m.vehicle_bounding_box = &i
+	m.appendvehicle_bounding_box = nil
+}
+
+// VehicleBoundingBox returns the value of the "vehicle_bounding_box" field in the mutation.
+func (m *EventMutation) VehicleBoundingBox() (r []int, exists bool) {
+	v := m.vehicle_bounding_box
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVehicleBoundingBox returns the old "vehicle_bounding_box" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldVehicleBoundingBox(ctx context.Context) (v []int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVehicleBoundingBox is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVehicleBoundingBox requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVehicleBoundingBox: %w", err)
+	}
+	return oldValue.VehicleBoundingBox, nil
+}
+
+// AppendVehicleBoundingBox adds i to the "vehicle_bounding_box" field.
+func (m *EventMutation) AppendVehicleBoundingBox(i []int) {
+	m.appendvehicle_bounding_box = append(m.appendvehicle_bounding_box, i...)
+}
+
+// AppendedVehicleBoundingBox returns the list of values that were appended to the "vehicle_bounding_box" field in this mutation.
+func (m *EventMutation) AppendedVehicleBoundingBox() ([]int, bool) {
+	if len(m.appendvehicle_bounding_box) == 0 {
+		return nil, false
+	}
+	return m.appendvehicle_bounding_box, true
+}
+
+// ClearVehicleBoundingBox clears the value of the "vehicle_bounding_box" field.
+func (m *EventMutation) ClearVehicleBoundingBox() {
+	m.vehicle_bounding_box = nil
+	m.appendvehicle_bounding_box = nil
+	m.clearedFields[event.FieldVehicleBoundingBox] = struct{}{}
+}
+
+// VehicleBoundingBoxCleared returns if the "vehicle_bounding_box" field was cleared in this mutation.
+func (m *EventMutation) VehicleBoundingBoxCleared() bool {
+	_, ok := m.clearedFields[event.FieldVehicleBoundingBox]
+	return ok
+}
+
+// ResetVehicleBoundingBox resets all changes to the "vehicle_bounding_box" field.
+func (m *EventMutation) ResetVehicleBoundingBox() {
+	m.vehicle_bounding_box = nil
+	m.appendvehicle_bounding_box = nil
+	delete(m.clearedFields, event.FieldVehicleBoundingBox)
+}
+
+// SetVehicleSeries sets the "vehicle_series" field.
+func (m *EventMutation) SetVehicleSeries(s string) {
+	m.vehicle_series = &s
+}
+
+// VehicleSeries returns the value of the "vehicle_series" field in the mutation.
+func (m *EventMutation) VehicleSeries() (r string, exists bool) {
+	v := m.vehicle_series
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVehicleSeries returns the old "vehicle_series" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldVehicleSeries(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVehicleSeries is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVehicleSeries requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVehicleSeries: %w", err)
+	}
+	return oldValue.VehicleSeries, nil
+}
+
+// ClearVehicleSeries clears the value of the "vehicle_series" field.
+func (m *EventMutation) ClearVehicleSeries() {
+	m.vehicle_series = nil
+	m.clearedFields[event.FieldVehicleSeries] = struct{}{}
+}
+
+// VehicleSeriesCleared returns if the "vehicle_series" field was cleared in this mutation.
+func (m *EventMutation) VehicleSeriesCleared() bool {
+	_, ok := m.clearedFields[event.FieldVehicleSeries]
+	return ok
+}
+
+// ResetVehicleSeries resets all changes to the "vehicle_series" field.
+func (m *EventMutation) ResetVehicleSeries() {
+	m.vehicle_series = nil
+	delete(m.clearedFields, event.FieldVehicleSeries)
+}
+
+// Where appends a list predicates to the EventMutation builder.
+func (m *EventMutation) Where(ps ...predicate.Event) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the EventMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *EventMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Event, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *EventMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *EventMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Event).
+func (m *EventMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *EventMutation) Fields() []string {
+	fields := make([]string, 0, 19)
+	if m.created_at != nil {
+		fields = append(fields, event.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, event.FieldUpdatedAt)
+	}
+	if m.plate_bounding_box != nil {
+		fields = append(fields, event.FieldPlateBoundingBox)
+	}
+	if m.plate_channel != nil {
+		fields = append(fields, event.FieldPlateChannel)
+	}
+	if m.plate_is_exist != nil {
+		fields = append(fields, event.FieldPlateIsExist)
+	}
+	if m.plate_color != nil {
+		fields = append(fields, event.FieldPlateColor)
+	}
+	if m.plate_number != nil {
+		fields = append(fields, event.FieldPlateNumber)
+	}
+	if m.plate_type != nil {
+		fields = append(fields, event.FieldPlateType)
+	}
+	if m.plate_region != nil {
+		fields = append(fields, event.FieldPlateRegion)
+	}
+	if m.plate_upload_num != nil {
+		fields = append(fields, event.FieldPlateUploadNum)
+	}
+	if m.snap_allow_user != nil {
+		fields = append(fields, event.FieldSnapAllowUser)
+	}
+	if m.snap_allow_user_end_time != nil {
+		fields = append(fields, event.FieldSnapAllowUserEndTime)
+	}
+	if m.snap_defence_code != nil {
+		fields = append(fields, event.FieldSnapDefenceCode)
+	}
+	if m.snap_device_id != nil {
+		fields = append(fields, event.FieldSnapDeviceID)
+	}
+	if m.snap_in_car_people_num != nil {
+		fields = append(fields, event.FieldSnapInCarPeopleNum)
+	}
+	if m.snap_lan_no != nil {
+		fields = append(fields, event.FieldSnapLanNo)
+	}
+	if m.snap_open_strobe != nil {
+		fields = append(fields, event.FieldSnapOpenStrobe)
+	}
+	if m.vehicle_bounding_box != nil {
+		fields = append(fields, event.FieldVehicleBoundingBox)
+	}
+	if m.vehicle_series != nil {
+		fields = append(fields, event.FieldVehicleSeries)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *EventMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case event.FieldCreatedAt:
+		return m.CreatedAt()
+	case event.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case event.FieldPlateBoundingBox:
+		return m.PlateBoundingBox()
+	case event.FieldPlateChannel:
+		return m.PlateChannel()
+	case event.FieldPlateIsExist:
+		return m.PlateIsExist()
+	case event.FieldPlateColor:
+		return m.PlateColor()
+	case event.FieldPlateNumber:
+		return m.PlateNumber()
+	case event.FieldPlateType:
+		return m.PlateType()
+	case event.FieldPlateRegion:
+		return m.PlateRegion()
+	case event.FieldPlateUploadNum:
+		return m.PlateUploadNum()
+	case event.FieldSnapAllowUser:
+		return m.SnapAllowUser()
+	case event.FieldSnapAllowUserEndTime:
+		return m.SnapAllowUserEndTime()
+	case event.FieldSnapDefenceCode:
+		return m.SnapDefenceCode()
+	case event.FieldSnapDeviceID:
+		return m.SnapDeviceID()
+	case event.FieldSnapInCarPeopleNum:
+		return m.SnapInCarPeopleNum()
+	case event.FieldSnapLanNo:
+		return m.SnapLanNo()
+	case event.FieldSnapOpenStrobe:
+		return m.SnapOpenStrobe()
+	case event.FieldVehicleBoundingBox:
+		return m.VehicleBoundingBox()
+	case event.FieldVehicleSeries:
+		return m.VehicleSeries()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case event.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case event.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case event.FieldPlateBoundingBox:
+		return m.OldPlateBoundingBox(ctx)
+	case event.FieldPlateChannel:
+		return m.OldPlateChannel(ctx)
+	case event.FieldPlateIsExist:
+		return m.OldPlateIsExist(ctx)
+	case event.FieldPlateColor:
+		return m.OldPlateColor(ctx)
+	case event.FieldPlateNumber:
+		return m.OldPlateNumber(ctx)
+	case event.FieldPlateType:
+		return m.OldPlateType(ctx)
+	case event.FieldPlateRegion:
+		return m.OldPlateRegion(ctx)
+	case event.FieldPlateUploadNum:
+		return m.OldPlateUploadNum(ctx)
+	case event.FieldSnapAllowUser:
+		return m.OldSnapAllowUser(ctx)
+	case event.FieldSnapAllowUserEndTime:
+		return m.OldSnapAllowUserEndTime(ctx)
+	case event.FieldSnapDefenceCode:
+		return m.OldSnapDefenceCode(ctx)
+	case event.FieldSnapDeviceID:
+		return m.OldSnapDeviceID(ctx)
+	case event.FieldSnapInCarPeopleNum:
+		return m.OldSnapInCarPeopleNum(ctx)
+	case event.FieldSnapLanNo:
+		return m.OldSnapLanNo(ctx)
+	case event.FieldSnapOpenStrobe:
+		return m.OldSnapOpenStrobe(ctx)
+	case event.FieldVehicleBoundingBox:
+		return m.OldVehicleBoundingBox(ctx)
+	case event.FieldVehicleSeries:
+		return m.OldVehicleSeries(ctx)
+	}
+	return nil, fmt.Errorf("unknown Event field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EventMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case event.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case event.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case event.FieldPlateBoundingBox:
+		v, ok := value.([]int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlateBoundingBox(v)
+		return nil
+	case event.FieldPlateChannel:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlateChannel(v)
+		return nil
+	case event.FieldPlateIsExist:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlateIsExist(v)
+		return nil
+	case event.FieldPlateColor:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlateColor(v)
+		return nil
+	case event.FieldPlateNumber:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlateNumber(v)
+		return nil
+	case event.FieldPlateType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlateType(v)
+		return nil
+	case event.FieldPlateRegion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlateRegion(v)
+		return nil
+	case event.FieldPlateUploadNum:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlateUploadNum(v)
+		return nil
+	case event.FieldSnapAllowUser:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapAllowUser(v)
+		return nil
+	case event.FieldSnapAllowUserEndTime:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapAllowUserEndTime(v)
+		return nil
+	case event.FieldSnapDefenceCode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapDefenceCode(v)
+		return nil
+	case event.FieldSnapDeviceID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapDeviceID(v)
+		return nil
+	case event.FieldSnapInCarPeopleNum:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapInCarPeopleNum(v)
+		return nil
+	case event.FieldSnapLanNo:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapLanNo(v)
+		return nil
+	case event.FieldSnapOpenStrobe:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapOpenStrobe(v)
+		return nil
+	case event.FieldVehicleBoundingBox:
+		v, ok := value.([]int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVehicleBoundingBox(v)
+		return nil
+	case event.FieldVehicleSeries:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVehicleSeries(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Event field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *EventMutation) AddedFields() []string {
+	var fields []string
+	if m.addplate_channel != nil {
+		fields = append(fields, event.FieldPlateChannel)
+	}
+	if m.addplate_upload_num != nil {
+		fields = append(fields, event.FieldPlateUploadNum)
+	}
+	if m.addsnap_in_car_people_num != nil {
+		fields = append(fields, event.FieldSnapInCarPeopleNum)
+	}
+	if m.addsnap_lan_no != nil {
+		fields = append(fields, event.FieldSnapLanNo)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case event.FieldPlateChannel:
+		return m.AddedPlateChannel()
+	case event.FieldPlateUploadNum:
+		return m.AddedPlateUploadNum()
+	case event.FieldSnapInCarPeopleNum:
+		return m.AddedSnapInCarPeopleNum()
+	case event.FieldSnapLanNo:
+		return m.AddedSnapLanNo()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EventMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case event.FieldPlateChannel:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPlateChannel(v)
+		return nil
+	case event.FieldPlateUploadNum:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPlateUploadNum(v)
+		return nil
+	case event.FieldSnapInCarPeopleNum:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSnapInCarPeopleNum(v)
+		return nil
+	case event.FieldSnapLanNo:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSnapLanNo(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Event numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *EventMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(event.FieldPlateBoundingBox) {
+		fields = append(fields, event.FieldPlateBoundingBox)
+	}
+	if m.FieldCleared(event.FieldPlateChannel) {
+		fields = append(fields, event.FieldPlateChannel)
+	}
+	if m.FieldCleared(event.FieldPlateIsExist) {
+		fields = append(fields, event.FieldPlateIsExist)
+	}
+	if m.FieldCleared(event.FieldPlateColor) {
+		fields = append(fields, event.FieldPlateColor)
+	}
+	if m.FieldCleared(event.FieldPlateNumber) {
+		fields = append(fields, event.FieldPlateNumber)
+	}
+	if m.FieldCleared(event.FieldPlateType) {
+		fields = append(fields, event.FieldPlateType)
+	}
+	if m.FieldCleared(event.FieldPlateRegion) {
+		fields = append(fields, event.FieldPlateRegion)
+	}
+	if m.FieldCleared(event.FieldPlateUploadNum) {
+		fields = append(fields, event.FieldPlateUploadNum)
+	}
+	if m.FieldCleared(event.FieldSnapAllowUser) {
+		fields = append(fields, event.FieldSnapAllowUser)
+	}
+	if m.FieldCleared(event.FieldSnapAllowUserEndTime) {
+		fields = append(fields, event.FieldSnapAllowUserEndTime)
+	}
+	if m.FieldCleared(event.FieldSnapDefenceCode) {
+		fields = append(fields, event.FieldSnapDefenceCode)
+	}
+	if m.FieldCleared(event.FieldSnapDeviceID) {
+		fields = append(fields, event.FieldSnapDeviceID)
+	}
+	if m.FieldCleared(event.FieldSnapInCarPeopleNum) {
+		fields = append(fields, event.FieldSnapInCarPeopleNum)
+	}
+	if m.FieldCleared(event.FieldSnapLanNo) {
+		fields = append(fields, event.FieldSnapLanNo)
+	}
+	if m.FieldCleared(event.FieldSnapOpenStrobe) {
+		fields = append(fields, event.FieldSnapOpenStrobe)
+	}
+	if m.FieldCleared(event.FieldVehicleBoundingBox) {
+		fields = append(fields, event.FieldVehicleBoundingBox)
+	}
+	if m.FieldCleared(event.FieldVehicleSeries) {
+		fields = append(fields, event.FieldVehicleSeries)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *EventMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *EventMutation) ClearField(name string) error {
+	switch name {
+	case event.FieldPlateBoundingBox:
+		m.ClearPlateBoundingBox()
+		return nil
+	case event.FieldPlateChannel:
+		m.ClearPlateChannel()
+		return nil
+	case event.FieldPlateIsExist:
+		m.ClearPlateIsExist()
+		return nil
+	case event.FieldPlateColor:
+		m.ClearPlateColor()
+		return nil
+	case event.FieldPlateNumber:
+		m.ClearPlateNumber()
+		return nil
+	case event.FieldPlateType:
+		m.ClearPlateType()
+		return nil
+	case event.FieldPlateRegion:
+		m.ClearPlateRegion()
+		return nil
+	case event.FieldPlateUploadNum:
+		m.ClearPlateUploadNum()
+		return nil
+	case event.FieldSnapAllowUser:
+		m.ClearSnapAllowUser()
+		return nil
+	case event.FieldSnapAllowUserEndTime:
+		m.ClearSnapAllowUserEndTime()
+		return nil
+	case event.FieldSnapDefenceCode:
+		m.ClearSnapDefenceCode()
+		return nil
+	case event.FieldSnapDeviceID:
+		m.ClearSnapDeviceID()
+		return nil
+	case event.FieldSnapInCarPeopleNum:
+		m.ClearSnapInCarPeopleNum()
+		return nil
+	case event.FieldSnapLanNo:
+		m.ClearSnapLanNo()
+		return nil
+	case event.FieldSnapOpenStrobe:
+		m.ClearSnapOpenStrobe()
+		return nil
+	case event.FieldVehicleBoundingBox:
+		m.ClearVehicleBoundingBox()
+		return nil
+	case event.FieldVehicleSeries:
+		m.ClearVehicleSeries()
+		return nil
+	}
+	return fmt.Errorf("unknown Event nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *EventMutation) ResetField(name string) error {
+	switch name {
+	case event.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case event.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case event.FieldPlateBoundingBox:
+		m.ResetPlateBoundingBox()
+		return nil
+	case event.FieldPlateChannel:
+		m.ResetPlateChannel()
+		return nil
+	case event.FieldPlateIsExist:
+		m.ResetPlateIsExist()
+		return nil
+	case event.FieldPlateColor:
+		m.ResetPlateColor()
+		return nil
+	case event.FieldPlateNumber:
+		m.ResetPlateNumber()
+		return nil
+	case event.FieldPlateType:
+		m.ResetPlateType()
+		return nil
+	case event.FieldPlateRegion:
+		m.ResetPlateRegion()
+		return nil
+	case event.FieldPlateUploadNum:
+		m.ResetPlateUploadNum()
+		return nil
+	case event.FieldSnapAllowUser:
+		m.ResetSnapAllowUser()
+		return nil
+	case event.FieldSnapAllowUserEndTime:
+		m.ResetSnapAllowUserEndTime()
+		return nil
+	case event.FieldSnapDefenceCode:
+		m.ResetSnapDefenceCode()
+		return nil
+	case event.FieldSnapDeviceID:
+		m.ResetSnapDeviceID()
+		return nil
+	case event.FieldSnapInCarPeopleNum:
+		m.ResetSnapInCarPeopleNum()
+		return nil
+	case event.FieldSnapLanNo:
+		m.ResetSnapLanNo()
+		return nil
+	case event.FieldSnapOpenStrobe:
+		m.ResetSnapOpenStrobe()
+		return nil
+	case event.FieldVehicleBoundingBox:
+		m.ResetVehicleBoundingBox()
+		return nil
+	case event.FieldVehicleSeries:
+		m.ResetVehicleSeries()
+		return nil
+	}
+	return fmt.Errorf("unknown Event field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *EventMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *EventMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *EventMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *EventMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *EventMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *EventMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *EventMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Event unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *EventMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Event edge %s", name)
 }
 
 // PermissionMutation represents an operation that mutates the Permission nodes in the graph.
@@ -4708,1807 +6511,4 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)
-}
-
-// VehicleDataMutation represents an operation that mutates the VehicleData nodes in the graph.
-type VehicleDataMutation struct {
-	config
-	op                         Op
-	typ                        string
-	id                         *uuid.UUID
-	created_at                 *time.Time
-	updated_at                 *time.Time
-	plate_bounding_box         *[]int
-	appendplate_bounding_box   []int
-	plate_channel              *int
-	addplate_channel           *int
-	plate_is_exist             *bool
-	plate_color                *string
-	plate_number               *string
-	plate_type                 *string
-	plate_region               *string
-	plate_upload_num           *int
-	addplate_upload_num        *int
-	snap_allow_user            *bool
-	snap_allow_user_end_time   *string
-	snap_defence_code          *string
-	snap_device_id             *string
-	snap_in_car_people_num     *int
-	addsnap_in_car_people_num  *int
-	snap_lan_no                *int
-	addsnap_lan_no             *int
-	snap_open_strobe           *bool
-	vehicle_bounding_box       *[]int
-	appendvehicle_bounding_box []int
-	vehicle_series             *string
-	clearedFields              map[string]struct{}
-	done                       bool
-	oldValue                   func(context.Context) (*VehicleData, error)
-	predicates                 []predicate.VehicleData
-}
-
-var _ ent.Mutation = (*VehicleDataMutation)(nil)
-
-// vehicledataOption allows management of the mutation configuration using functional options.
-type vehicledataOption func(*VehicleDataMutation)
-
-// newVehicleDataMutation creates new mutation for the VehicleData entity.
-func newVehicleDataMutation(c config, op Op, opts ...vehicledataOption) *VehicleDataMutation {
-	m := &VehicleDataMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeVehicleData,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withVehicleDataID sets the ID field of the mutation.
-func withVehicleDataID(id uuid.UUID) vehicledataOption {
-	return func(m *VehicleDataMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *VehicleData
-		)
-		m.oldValue = func(ctx context.Context) (*VehicleData, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().VehicleData.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withVehicleData sets the old VehicleData of the mutation.
-func withVehicleData(node *VehicleData) vehicledataOption {
-	return func(m *VehicleDataMutation) {
-		m.oldValue = func(context.Context) (*VehicleData, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m VehicleDataMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m VehicleDataMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of VehicleData entities.
-func (m *VehicleDataMutation) SetID(id uuid.UUID) {
-	m.id = &id
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *VehicleDataMutation) ID() (id uuid.UUID, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *VehicleDataMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []uuid.UUID{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().VehicleData.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (m *VehicleDataMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
-}
-
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *VehicleDataMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedAt returns the old "created_at" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
-	}
-	return oldValue.CreatedAt, nil
-}
-
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *VehicleDataMutation) ResetCreatedAt() {
-	m.created_at = nil
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *VehicleDataMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *VehicleDataMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *VehicleDataMutation) ResetUpdatedAt() {
-	m.updated_at = nil
-}
-
-// SetPlateBoundingBox sets the "plate_bounding_box" field.
-func (m *VehicleDataMutation) SetPlateBoundingBox(i []int) {
-	m.plate_bounding_box = &i
-	m.appendplate_bounding_box = nil
-}
-
-// PlateBoundingBox returns the value of the "plate_bounding_box" field in the mutation.
-func (m *VehicleDataMutation) PlateBoundingBox() (r []int, exists bool) {
-	v := m.plate_bounding_box
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPlateBoundingBox returns the old "plate_bounding_box" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldPlateBoundingBox(ctx context.Context) (v []int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPlateBoundingBox is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPlateBoundingBox requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPlateBoundingBox: %w", err)
-	}
-	return oldValue.PlateBoundingBox, nil
-}
-
-// AppendPlateBoundingBox adds i to the "plate_bounding_box" field.
-func (m *VehicleDataMutation) AppendPlateBoundingBox(i []int) {
-	m.appendplate_bounding_box = append(m.appendplate_bounding_box, i...)
-}
-
-// AppendedPlateBoundingBox returns the list of values that were appended to the "plate_bounding_box" field in this mutation.
-func (m *VehicleDataMutation) AppendedPlateBoundingBox() ([]int, bool) {
-	if len(m.appendplate_bounding_box) == 0 {
-		return nil, false
-	}
-	return m.appendplate_bounding_box, true
-}
-
-// ClearPlateBoundingBox clears the value of the "plate_bounding_box" field.
-func (m *VehicleDataMutation) ClearPlateBoundingBox() {
-	m.plate_bounding_box = nil
-	m.appendplate_bounding_box = nil
-	m.clearedFields[vehicledata.FieldPlateBoundingBox] = struct{}{}
-}
-
-// PlateBoundingBoxCleared returns if the "plate_bounding_box" field was cleared in this mutation.
-func (m *VehicleDataMutation) PlateBoundingBoxCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldPlateBoundingBox]
-	return ok
-}
-
-// ResetPlateBoundingBox resets all changes to the "plate_bounding_box" field.
-func (m *VehicleDataMutation) ResetPlateBoundingBox() {
-	m.plate_bounding_box = nil
-	m.appendplate_bounding_box = nil
-	delete(m.clearedFields, vehicledata.FieldPlateBoundingBox)
-}
-
-// SetPlateChannel sets the "plate_channel" field.
-func (m *VehicleDataMutation) SetPlateChannel(i int) {
-	m.plate_channel = &i
-	m.addplate_channel = nil
-}
-
-// PlateChannel returns the value of the "plate_channel" field in the mutation.
-func (m *VehicleDataMutation) PlateChannel() (r int, exists bool) {
-	v := m.plate_channel
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPlateChannel returns the old "plate_channel" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldPlateChannel(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPlateChannel is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPlateChannel requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPlateChannel: %w", err)
-	}
-	return oldValue.PlateChannel, nil
-}
-
-// AddPlateChannel adds i to the "plate_channel" field.
-func (m *VehicleDataMutation) AddPlateChannel(i int) {
-	if m.addplate_channel != nil {
-		*m.addplate_channel += i
-	} else {
-		m.addplate_channel = &i
-	}
-}
-
-// AddedPlateChannel returns the value that was added to the "plate_channel" field in this mutation.
-func (m *VehicleDataMutation) AddedPlateChannel() (r int, exists bool) {
-	v := m.addplate_channel
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearPlateChannel clears the value of the "plate_channel" field.
-func (m *VehicleDataMutation) ClearPlateChannel() {
-	m.plate_channel = nil
-	m.addplate_channel = nil
-	m.clearedFields[vehicledata.FieldPlateChannel] = struct{}{}
-}
-
-// PlateChannelCleared returns if the "plate_channel" field was cleared in this mutation.
-func (m *VehicleDataMutation) PlateChannelCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldPlateChannel]
-	return ok
-}
-
-// ResetPlateChannel resets all changes to the "plate_channel" field.
-func (m *VehicleDataMutation) ResetPlateChannel() {
-	m.plate_channel = nil
-	m.addplate_channel = nil
-	delete(m.clearedFields, vehicledata.FieldPlateChannel)
-}
-
-// SetPlateIsExist sets the "plate_is_exist" field.
-func (m *VehicleDataMutation) SetPlateIsExist(b bool) {
-	m.plate_is_exist = &b
-}
-
-// PlateIsExist returns the value of the "plate_is_exist" field in the mutation.
-func (m *VehicleDataMutation) PlateIsExist() (r bool, exists bool) {
-	v := m.plate_is_exist
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPlateIsExist returns the old "plate_is_exist" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldPlateIsExist(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPlateIsExist is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPlateIsExist requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPlateIsExist: %w", err)
-	}
-	return oldValue.PlateIsExist, nil
-}
-
-// ClearPlateIsExist clears the value of the "plate_is_exist" field.
-func (m *VehicleDataMutation) ClearPlateIsExist() {
-	m.plate_is_exist = nil
-	m.clearedFields[vehicledata.FieldPlateIsExist] = struct{}{}
-}
-
-// PlateIsExistCleared returns if the "plate_is_exist" field was cleared in this mutation.
-func (m *VehicleDataMutation) PlateIsExistCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldPlateIsExist]
-	return ok
-}
-
-// ResetPlateIsExist resets all changes to the "plate_is_exist" field.
-func (m *VehicleDataMutation) ResetPlateIsExist() {
-	m.plate_is_exist = nil
-	delete(m.clearedFields, vehicledata.FieldPlateIsExist)
-}
-
-// SetPlateColor sets the "plate_color" field.
-func (m *VehicleDataMutation) SetPlateColor(s string) {
-	m.plate_color = &s
-}
-
-// PlateColor returns the value of the "plate_color" field in the mutation.
-func (m *VehicleDataMutation) PlateColor() (r string, exists bool) {
-	v := m.plate_color
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPlateColor returns the old "plate_color" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldPlateColor(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPlateColor is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPlateColor requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPlateColor: %w", err)
-	}
-	return oldValue.PlateColor, nil
-}
-
-// ClearPlateColor clears the value of the "plate_color" field.
-func (m *VehicleDataMutation) ClearPlateColor() {
-	m.plate_color = nil
-	m.clearedFields[vehicledata.FieldPlateColor] = struct{}{}
-}
-
-// PlateColorCleared returns if the "plate_color" field was cleared in this mutation.
-func (m *VehicleDataMutation) PlateColorCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldPlateColor]
-	return ok
-}
-
-// ResetPlateColor resets all changes to the "plate_color" field.
-func (m *VehicleDataMutation) ResetPlateColor() {
-	m.plate_color = nil
-	delete(m.clearedFields, vehicledata.FieldPlateColor)
-}
-
-// SetPlateNumber sets the "plate_number" field.
-func (m *VehicleDataMutation) SetPlateNumber(s string) {
-	m.plate_number = &s
-}
-
-// PlateNumber returns the value of the "plate_number" field in the mutation.
-func (m *VehicleDataMutation) PlateNumber() (r string, exists bool) {
-	v := m.plate_number
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPlateNumber returns the old "plate_number" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldPlateNumber(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPlateNumber is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPlateNumber requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPlateNumber: %w", err)
-	}
-	return oldValue.PlateNumber, nil
-}
-
-// ClearPlateNumber clears the value of the "plate_number" field.
-func (m *VehicleDataMutation) ClearPlateNumber() {
-	m.plate_number = nil
-	m.clearedFields[vehicledata.FieldPlateNumber] = struct{}{}
-}
-
-// PlateNumberCleared returns if the "plate_number" field was cleared in this mutation.
-func (m *VehicleDataMutation) PlateNumberCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldPlateNumber]
-	return ok
-}
-
-// ResetPlateNumber resets all changes to the "plate_number" field.
-func (m *VehicleDataMutation) ResetPlateNumber() {
-	m.plate_number = nil
-	delete(m.clearedFields, vehicledata.FieldPlateNumber)
-}
-
-// SetPlateType sets the "plate_type" field.
-func (m *VehicleDataMutation) SetPlateType(s string) {
-	m.plate_type = &s
-}
-
-// PlateType returns the value of the "plate_type" field in the mutation.
-func (m *VehicleDataMutation) PlateType() (r string, exists bool) {
-	v := m.plate_type
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPlateType returns the old "plate_type" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldPlateType(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPlateType is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPlateType requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPlateType: %w", err)
-	}
-	return oldValue.PlateType, nil
-}
-
-// ClearPlateType clears the value of the "plate_type" field.
-func (m *VehicleDataMutation) ClearPlateType() {
-	m.plate_type = nil
-	m.clearedFields[vehicledata.FieldPlateType] = struct{}{}
-}
-
-// PlateTypeCleared returns if the "plate_type" field was cleared in this mutation.
-func (m *VehicleDataMutation) PlateTypeCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldPlateType]
-	return ok
-}
-
-// ResetPlateType resets all changes to the "plate_type" field.
-func (m *VehicleDataMutation) ResetPlateType() {
-	m.plate_type = nil
-	delete(m.clearedFields, vehicledata.FieldPlateType)
-}
-
-// SetPlateRegion sets the "plate_region" field.
-func (m *VehicleDataMutation) SetPlateRegion(s string) {
-	m.plate_region = &s
-}
-
-// PlateRegion returns the value of the "plate_region" field in the mutation.
-func (m *VehicleDataMutation) PlateRegion() (r string, exists bool) {
-	v := m.plate_region
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPlateRegion returns the old "plate_region" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldPlateRegion(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPlateRegion is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPlateRegion requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPlateRegion: %w", err)
-	}
-	return oldValue.PlateRegion, nil
-}
-
-// ClearPlateRegion clears the value of the "plate_region" field.
-func (m *VehicleDataMutation) ClearPlateRegion() {
-	m.plate_region = nil
-	m.clearedFields[vehicledata.FieldPlateRegion] = struct{}{}
-}
-
-// PlateRegionCleared returns if the "plate_region" field was cleared in this mutation.
-func (m *VehicleDataMutation) PlateRegionCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldPlateRegion]
-	return ok
-}
-
-// ResetPlateRegion resets all changes to the "plate_region" field.
-func (m *VehicleDataMutation) ResetPlateRegion() {
-	m.plate_region = nil
-	delete(m.clearedFields, vehicledata.FieldPlateRegion)
-}
-
-// SetPlateUploadNum sets the "plate_upload_num" field.
-func (m *VehicleDataMutation) SetPlateUploadNum(i int) {
-	m.plate_upload_num = &i
-	m.addplate_upload_num = nil
-}
-
-// PlateUploadNum returns the value of the "plate_upload_num" field in the mutation.
-func (m *VehicleDataMutation) PlateUploadNum() (r int, exists bool) {
-	v := m.plate_upload_num
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPlateUploadNum returns the old "plate_upload_num" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldPlateUploadNum(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPlateUploadNum is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPlateUploadNum requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPlateUploadNum: %w", err)
-	}
-	return oldValue.PlateUploadNum, nil
-}
-
-// AddPlateUploadNum adds i to the "plate_upload_num" field.
-func (m *VehicleDataMutation) AddPlateUploadNum(i int) {
-	if m.addplate_upload_num != nil {
-		*m.addplate_upload_num += i
-	} else {
-		m.addplate_upload_num = &i
-	}
-}
-
-// AddedPlateUploadNum returns the value that was added to the "plate_upload_num" field in this mutation.
-func (m *VehicleDataMutation) AddedPlateUploadNum() (r int, exists bool) {
-	v := m.addplate_upload_num
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearPlateUploadNum clears the value of the "plate_upload_num" field.
-func (m *VehicleDataMutation) ClearPlateUploadNum() {
-	m.plate_upload_num = nil
-	m.addplate_upload_num = nil
-	m.clearedFields[vehicledata.FieldPlateUploadNum] = struct{}{}
-}
-
-// PlateUploadNumCleared returns if the "plate_upload_num" field was cleared in this mutation.
-func (m *VehicleDataMutation) PlateUploadNumCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldPlateUploadNum]
-	return ok
-}
-
-// ResetPlateUploadNum resets all changes to the "plate_upload_num" field.
-func (m *VehicleDataMutation) ResetPlateUploadNum() {
-	m.plate_upload_num = nil
-	m.addplate_upload_num = nil
-	delete(m.clearedFields, vehicledata.FieldPlateUploadNum)
-}
-
-// SetSnapAllowUser sets the "snap_allow_user" field.
-func (m *VehicleDataMutation) SetSnapAllowUser(b bool) {
-	m.snap_allow_user = &b
-}
-
-// SnapAllowUser returns the value of the "snap_allow_user" field in the mutation.
-func (m *VehicleDataMutation) SnapAllowUser() (r bool, exists bool) {
-	v := m.snap_allow_user
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSnapAllowUser returns the old "snap_allow_user" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldSnapAllowUser(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSnapAllowUser is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSnapAllowUser requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSnapAllowUser: %w", err)
-	}
-	return oldValue.SnapAllowUser, nil
-}
-
-// ClearSnapAllowUser clears the value of the "snap_allow_user" field.
-func (m *VehicleDataMutation) ClearSnapAllowUser() {
-	m.snap_allow_user = nil
-	m.clearedFields[vehicledata.FieldSnapAllowUser] = struct{}{}
-}
-
-// SnapAllowUserCleared returns if the "snap_allow_user" field was cleared in this mutation.
-func (m *VehicleDataMutation) SnapAllowUserCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldSnapAllowUser]
-	return ok
-}
-
-// ResetSnapAllowUser resets all changes to the "snap_allow_user" field.
-func (m *VehicleDataMutation) ResetSnapAllowUser() {
-	m.snap_allow_user = nil
-	delete(m.clearedFields, vehicledata.FieldSnapAllowUser)
-}
-
-// SetSnapAllowUserEndTime sets the "snap_allow_user_end_time" field.
-func (m *VehicleDataMutation) SetSnapAllowUserEndTime(s string) {
-	m.snap_allow_user_end_time = &s
-}
-
-// SnapAllowUserEndTime returns the value of the "snap_allow_user_end_time" field in the mutation.
-func (m *VehicleDataMutation) SnapAllowUserEndTime() (r string, exists bool) {
-	v := m.snap_allow_user_end_time
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSnapAllowUserEndTime returns the old "snap_allow_user_end_time" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldSnapAllowUserEndTime(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSnapAllowUserEndTime is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSnapAllowUserEndTime requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSnapAllowUserEndTime: %w", err)
-	}
-	return oldValue.SnapAllowUserEndTime, nil
-}
-
-// ClearSnapAllowUserEndTime clears the value of the "snap_allow_user_end_time" field.
-func (m *VehicleDataMutation) ClearSnapAllowUserEndTime() {
-	m.snap_allow_user_end_time = nil
-	m.clearedFields[vehicledata.FieldSnapAllowUserEndTime] = struct{}{}
-}
-
-// SnapAllowUserEndTimeCleared returns if the "snap_allow_user_end_time" field was cleared in this mutation.
-func (m *VehicleDataMutation) SnapAllowUserEndTimeCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldSnapAllowUserEndTime]
-	return ok
-}
-
-// ResetSnapAllowUserEndTime resets all changes to the "snap_allow_user_end_time" field.
-func (m *VehicleDataMutation) ResetSnapAllowUserEndTime() {
-	m.snap_allow_user_end_time = nil
-	delete(m.clearedFields, vehicledata.FieldSnapAllowUserEndTime)
-}
-
-// SetSnapDefenceCode sets the "snap_defence_code" field.
-func (m *VehicleDataMutation) SetSnapDefenceCode(s string) {
-	m.snap_defence_code = &s
-}
-
-// SnapDefenceCode returns the value of the "snap_defence_code" field in the mutation.
-func (m *VehicleDataMutation) SnapDefenceCode() (r string, exists bool) {
-	v := m.snap_defence_code
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSnapDefenceCode returns the old "snap_defence_code" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldSnapDefenceCode(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSnapDefenceCode is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSnapDefenceCode requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSnapDefenceCode: %w", err)
-	}
-	return oldValue.SnapDefenceCode, nil
-}
-
-// ClearSnapDefenceCode clears the value of the "snap_defence_code" field.
-func (m *VehicleDataMutation) ClearSnapDefenceCode() {
-	m.snap_defence_code = nil
-	m.clearedFields[vehicledata.FieldSnapDefenceCode] = struct{}{}
-}
-
-// SnapDefenceCodeCleared returns if the "snap_defence_code" field was cleared in this mutation.
-func (m *VehicleDataMutation) SnapDefenceCodeCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldSnapDefenceCode]
-	return ok
-}
-
-// ResetSnapDefenceCode resets all changes to the "snap_defence_code" field.
-func (m *VehicleDataMutation) ResetSnapDefenceCode() {
-	m.snap_defence_code = nil
-	delete(m.clearedFields, vehicledata.FieldSnapDefenceCode)
-}
-
-// SetSnapDeviceID sets the "snap_device_id" field.
-func (m *VehicleDataMutation) SetSnapDeviceID(s string) {
-	m.snap_device_id = &s
-}
-
-// SnapDeviceID returns the value of the "snap_device_id" field in the mutation.
-func (m *VehicleDataMutation) SnapDeviceID() (r string, exists bool) {
-	v := m.snap_device_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSnapDeviceID returns the old "snap_device_id" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldSnapDeviceID(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSnapDeviceID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSnapDeviceID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSnapDeviceID: %w", err)
-	}
-	return oldValue.SnapDeviceID, nil
-}
-
-// ClearSnapDeviceID clears the value of the "snap_device_id" field.
-func (m *VehicleDataMutation) ClearSnapDeviceID() {
-	m.snap_device_id = nil
-	m.clearedFields[vehicledata.FieldSnapDeviceID] = struct{}{}
-}
-
-// SnapDeviceIDCleared returns if the "snap_device_id" field was cleared in this mutation.
-func (m *VehicleDataMutation) SnapDeviceIDCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldSnapDeviceID]
-	return ok
-}
-
-// ResetSnapDeviceID resets all changes to the "snap_device_id" field.
-func (m *VehicleDataMutation) ResetSnapDeviceID() {
-	m.snap_device_id = nil
-	delete(m.clearedFields, vehicledata.FieldSnapDeviceID)
-}
-
-// SetSnapInCarPeopleNum sets the "snap_in_car_people_num" field.
-func (m *VehicleDataMutation) SetSnapInCarPeopleNum(i int) {
-	m.snap_in_car_people_num = &i
-	m.addsnap_in_car_people_num = nil
-}
-
-// SnapInCarPeopleNum returns the value of the "snap_in_car_people_num" field in the mutation.
-func (m *VehicleDataMutation) SnapInCarPeopleNum() (r int, exists bool) {
-	v := m.snap_in_car_people_num
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSnapInCarPeopleNum returns the old "snap_in_car_people_num" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldSnapInCarPeopleNum(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSnapInCarPeopleNum is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSnapInCarPeopleNum requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSnapInCarPeopleNum: %w", err)
-	}
-	return oldValue.SnapInCarPeopleNum, nil
-}
-
-// AddSnapInCarPeopleNum adds i to the "snap_in_car_people_num" field.
-func (m *VehicleDataMutation) AddSnapInCarPeopleNum(i int) {
-	if m.addsnap_in_car_people_num != nil {
-		*m.addsnap_in_car_people_num += i
-	} else {
-		m.addsnap_in_car_people_num = &i
-	}
-}
-
-// AddedSnapInCarPeopleNum returns the value that was added to the "snap_in_car_people_num" field in this mutation.
-func (m *VehicleDataMutation) AddedSnapInCarPeopleNum() (r int, exists bool) {
-	v := m.addsnap_in_car_people_num
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearSnapInCarPeopleNum clears the value of the "snap_in_car_people_num" field.
-func (m *VehicleDataMutation) ClearSnapInCarPeopleNum() {
-	m.snap_in_car_people_num = nil
-	m.addsnap_in_car_people_num = nil
-	m.clearedFields[vehicledata.FieldSnapInCarPeopleNum] = struct{}{}
-}
-
-// SnapInCarPeopleNumCleared returns if the "snap_in_car_people_num" field was cleared in this mutation.
-func (m *VehicleDataMutation) SnapInCarPeopleNumCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldSnapInCarPeopleNum]
-	return ok
-}
-
-// ResetSnapInCarPeopleNum resets all changes to the "snap_in_car_people_num" field.
-func (m *VehicleDataMutation) ResetSnapInCarPeopleNum() {
-	m.snap_in_car_people_num = nil
-	m.addsnap_in_car_people_num = nil
-	delete(m.clearedFields, vehicledata.FieldSnapInCarPeopleNum)
-}
-
-// SetSnapLanNo sets the "snap_lan_no" field.
-func (m *VehicleDataMutation) SetSnapLanNo(i int) {
-	m.snap_lan_no = &i
-	m.addsnap_lan_no = nil
-}
-
-// SnapLanNo returns the value of the "snap_lan_no" field in the mutation.
-func (m *VehicleDataMutation) SnapLanNo() (r int, exists bool) {
-	v := m.snap_lan_no
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSnapLanNo returns the old "snap_lan_no" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldSnapLanNo(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSnapLanNo is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSnapLanNo requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSnapLanNo: %w", err)
-	}
-	return oldValue.SnapLanNo, nil
-}
-
-// AddSnapLanNo adds i to the "snap_lan_no" field.
-func (m *VehicleDataMutation) AddSnapLanNo(i int) {
-	if m.addsnap_lan_no != nil {
-		*m.addsnap_lan_no += i
-	} else {
-		m.addsnap_lan_no = &i
-	}
-}
-
-// AddedSnapLanNo returns the value that was added to the "snap_lan_no" field in this mutation.
-func (m *VehicleDataMutation) AddedSnapLanNo() (r int, exists bool) {
-	v := m.addsnap_lan_no
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearSnapLanNo clears the value of the "snap_lan_no" field.
-func (m *VehicleDataMutation) ClearSnapLanNo() {
-	m.snap_lan_no = nil
-	m.addsnap_lan_no = nil
-	m.clearedFields[vehicledata.FieldSnapLanNo] = struct{}{}
-}
-
-// SnapLanNoCleared returns if the "snap_lan_no" field was cleared in this mutation.
-func (m *VehicleDataMutation) SnapLanNoCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldSnapLanNo]
-	return ok
-}
-
-// ResetSnapLanNo resets all changes to the "snap_lan_no" field.
-func (m *VehicleDataMutation) ResetSnapLanNo() {
-	m.snap_lan_no = nil
-	m.addsnap_lan_no = nil
-	delete(m.clearedFields, vehicledata.FieldSnapLanNo)
-}
-
-// SetSnapOpenStrobe sets the "snap_open_strobe" field.
-func (m *VehicleDataMutation) SetSnapOpenStrobe(b bool) {
-	m.snap_open_strobe = &b
-}
-
-// SnapOpenStrobe returns the value of the "snap_open_strobe" field in the mutation.
-func (m *VehicleDataMutation) SnapOpenStrobe() (r bool, exists bool) {
-	v := m.snap_open_strobe
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSnapOpenStrobe returns the old "snap_open_strobe" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldSnapOpenStrobe(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSnapOpenStrobe is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSnapOpenStrobe requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSnapOpenStrobe: %w", err)
-	}
-	return oldValue.SnapOpenStrobe, nil
-}
-
-// ClearSnapOpenStrobe clears the value of the "snap_open_strobe" field.
-func (m *VehicleDataMutation) ClearSnapOpenStrobe() {
-	m.snap_open_strobe = nil
-	m.clearedFields[vehicledata.FieldSnapOpenStrobe] = struct{}{}
-}
-
-// SnapOpenStrobeCleared returns if the "snap_open_strobe" field was cleared in this mutation.
-func (m *VehicleDataMutation) SnapOpenStrobeCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldSnapOpenStrobe]
-	return ok
-}
-
-// ResetSnapOpenStrobe resets all changes to the "snap_open_strobe" field.
-func (m *VehicleDataMutation) ResetSnapOpenStrobe() {
-	m.snap_open_strobe = nil
-	delete(m.clearedFields, vehicledata.FieldSnapOpenStrobe)
-}
-
-// SetVehicleBoundingBox sets the "vehicle_bounding_box" field.
-func (m *VehicleDataMutation) SetVehicleBoundingBox(i []int) {
-	m.vehicle_bounding_box = &i
-	m.appendvehicle_bounding_box = nil
-}
-
-// VehicleBoundingBox returns the value of the "vehicle_bounding_box" field in the mutation.
-func (m *VehicleDataMutation) VehicleBoundingBox() (r []int, exists bool) {
-	v := m.vehicle_bounding_box
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldVehicleBoundingBox returns the old "vehicle_bounding_box" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldVehicleBoundingBox(ctx context.Context) (v []int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldVehicleBoundingBox is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldVehicleBoundingBox requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldVehicleBoundingBox: %w", err)
-	}
-	return oldValue.VehicleBoundingBox, nil
-}
-
-// AppendVehicleBoundingBox adds i to the "vehicle_bounding_box" field.
-func (m *VehicleDataMutation) AppendVehicleBoundingBox(i []int) {
-	m.appendvehicle_bounding_box = append(m.appendvehicle_bounding_box, i...)
-}
-
-// AppendedVehicleBoundingBox returns the list of values that were appended to the "vehicle_bounding_box" field in this mutation.
-func (m *VehicleDataMutation) AppendedVehicleBoundingBox() ([]int, bool) {
-	if len(m.appendvehicle_bounding_box) == 0 {
-		return nil, false
-	}
-	return m.appendvehicle_bounding_box, true
-}
-
-// ClearVehicleBoundingBox clears the value of the "vehicle_bounding_box" field.
-func (m *VehicleDataMutation) ClearVehicleBoundingBox() {
-	m.vehicle_bounding_box = nil
-	m.appendvehicle_bounding_box = nil
-	m.clearedFields[vehicledata.FieldVehicleBoundingBox] = struct{}{}
-}
-
-// VehicleBoundingBoxCleared returns if the "vehicle_bounding_box" field was cleared in this mutation.
-func (m *VehicleDataMutation) VehicleBoundingBoxCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldVehicleBoundingBox]
-	return ok
-}
-
-// ResetVehicleBoundingBox resets all changes to the "vehicle_bounding_box" field.
-func (m *VehicleDataMutation) ResetVehicleBoundingBox() {
-	m.vehicle_bounding_box = nil
-	m.appendvehicle_bounding_box = nil
-	delete(m.clearedFields, vehicledata.FieldVehicleBoundingBox)
-}
-
-// SetVehicleSeries sets the "vehicle_series" field.
-func (m *VehicleDataMutation) SetVehicleSeries(s string) {
-	m.vehicle_series = &s
-}
-
-// VehicleSeries returns the value of the "vehicle_series" field in the mutation.
-func (m *VehicleDataMutation) VehicleSeries() (r string, exists bool) {
-	v := m.vehicle_series
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldVehicleSeries returns the old "vehicle_series" field's value of the VehicleData entity.
-// If the VehicleData object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *VehicleDataMutation) OldVehicleSeries(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldVehicleSeries is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldVehicleSeries requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldVehicleSeries: %w", err)
-	}
-	return oldValue.VehicleSeries, nil
-}
-
-// ClearVehicleSeries clears the value of the "vehicle_series" field.
-func (m *VehicleDataMutation) ClearVehicleSeries() {
-	m.vehicle_series = nil
-	m.clearedFields[vehicledata.FieldVehicleSeries] = struct{}{}
-}
-
-// VehicleSeriesCleared returns if the "vehicle_series" field was cleared in this mutation.
-func (m *VehicleDataMutation) VehicleSeriesCleared() bool {
-	_, ok := m.clearedFields[vehicledata.FieldVehicleSeries]
-	return ok
-}
-
-// ResetVehicleSeries resets all changes to the "vehicle_series" field.
-func (m *VehicleDataMutation) ResetVehicleSeries() {
-	m.vehicle_series = nil
-	delete(m.clearedFields, vehicledata.FieldVehicleSeries)
-}
-
-// Where appends a list predicates to the VehicleDataMutation builder.
-func (m *VehicleDataMutation) Where(ps ...predicate.VehicleData) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// WhereP appends storage-level predicates to the VehicleDataMutation builder. Using this method,
-// users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *VehicleDataMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.VehicleData, len(ps))
-	for i := range ps {
-		p[i] = ps[i]
-	}
-	m.Where(p...)
-}
-
-// Op returns the operation name.
-func (m *VehicleDataMutation) Op() Op {
-	return m.op
-}
-
-// SetOp allows setting the mutation operation.
-func (m *VehicleDataMutation) SetOp(op Op) {
-	m.op = op
-}
-
-// Type returns the node type of this mutation (VehicleData).
-func (m *VehicleDataMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *VehicleDataMutation) Fields() []string {
-	fields := make([]string, 0, 19)
-	if m.created_at != nil {
-		fields = append(fields, vehicledata.FieldCreatedAt)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, vehicledata.FieldUpdatedAt)
-	}
-	if m.plate_bounding_box != nil {
-		fields = append(fields, vehicledata.FieldPlateBoundingBox)
-	}
-	if m.plate_channel != nil {
-		fields = append(fields, vehicledata.FieldPlateChannel)
-	}
-	if m.plate_is_exist != nil {
-		fields = append(fields, vehicledata.FieldPlateIsExist)
-	}
-	if m.plate_color != nil {
-		fields = append(fields, vehicledata.FieldPlateColor)
-	}
-	if m.plate_number != nil {
-		fields = append(fields, vehicledata.FieldPlateNumber)
-	}
-	if m.plate_type != nil {
-		fields = append(fields, vehicledata.FieldPlateType)
-	}
-	if m.plate_region != nil {
-		fields = append(fields, vehicledata.FieldPlateRegion)
-	}
-	if m.plate_upload_num != nil {
-		fields = append(fields, vehicledata.FieldPlateUploadNum)
-	}
-	if m.snap_allow_user != nil {
-		fields = append(fields, vehicledata.FieldSnapAllowUser)
-	}
-	if m.snap_allow_user_end_time != nil {
-		fields = append(fields, vehicledata.FieldSnapAllowUserEndTime)
-	}
-	if m.snap_defence_code != nil {
-		fields = append(fields, vehicledata.FieldSnapDefenceCode)
-	}
-	if m.snap_device_id != nil {
-		fields = append(fields, vehicledata.FieldSnapDeviceID)
-	}
-	if m.snap_in_car_people_num != nil {
-		fields = append(fields, vehicledata.FieldSnapInCarPeopleNum)
-	}
-	if m.snap_lan_no != nil {
-		fields = append(fields, vehicledata.FieldSnapLanNo)
-	}
-	if m.snap_open_strobe != nil {
-		fields = append(fields, vehicledata.FieldSnapOpenStrobe)
-	}
-	if m.vehicle_bounding_box != nil {
-		fields = append(fields, vehicledata.FieldVehicleBoundingBox)
-	}
-	if m.vehicle_series != nil {
-		fields = append(fields, vehicledata.FieldVehicleSeries)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *VehicleDataMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case vehicledata.FieldCreatedAt:
-		return m.CreatedAt()
-	case vehicledata.FieldUpdatedAt:
-		return m.UpdatedAt()
-	case vehicledata.FieldPlateBoundingBox:
-		return m.PlateBoundingBox()
-	case vehicledata.FieldPlateChannel:
-		return m.PlateChannel()
-	case vehicledata.FieldPlateIsExist:
-		return m.PlateIsExist()
-	case vehicledata.FieldPlateColor:
-		return m.PlateColor()
-	case vehicledata.FieldPlateNumber:
-		return m.PlateNumber()
-	case vehicledata.FieldPlateType:
-		return m.PlateType()
-	case vehicledata.FieldPlateRegion:
-		return m.PlateRegion()
-	case vehicledata.FieldPlateUploadNum:
-		return m.PlateUploadNum()
-	case vehicledata.FieldSnapAllowUser:
-		return m.SnapAllowUser()
-	case vehicledata.FieldSnapAllowUserEndTime:
-		return m.SnapAllowUserEndTime()
-	case vehicledata.FieldSnapDefenceCode:
-		return m.SnapDefenceCode()
-	case vehicledata.FieldSnapDeviceID:
-		return m.SnapDeviceID()
-	case vehicledata.FieldSnapInCarPeopleNum:
-		return m.SnapInCarPeopleNum()
-	case vehicledata.FieldSnapLanNo:
-		return m.SnapLanNo()
-	case vehicledata.FieldSnapOpenStrobe:
-		return m.SnapOpenStrobe()
-	case vehicledata.FieldVehicleBoundingBox:
-		return m.VehicleBoundingBox()
-	case vehicledata.FieldVehicleSeries:
-		return m.VehicleSeries()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *VehicleDataMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case vehicledata.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case vehicledata.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
-	case vehicledata.FieldPlateBoundingBox:
-		return m.OldPlateBoundingBox(ctx)
-	case vehicledata.FieldPlateChannel:
-		return m.OldPlateChannel(ctx)
-	case vehicledata.FieldPlateIsExist:
-		return m.OldPlateIsExist(ctx)
-	case vehicledata.FieldPlateColor:
-		return m.OldPlateColor(ctx)
-	case vehicledata.FieldPlateNumber:
-		return m.OldPlateNumber(ctx)
-	case vehicledata.FieldPlateType:
-		return m.OldPlateType(ctx)
-	case vehicledata.FieldPlateRegion:
-		return m.OldPlateRegion(ctx)
-	case vehicledata.FieldPlateUploadNum:
-		return m.OldPlateUploadNum(ctx)
-	case vehicledata.FieldSnapAllowUser:
-		return m.OldSnapAllowUser(ctx)
-	case vehicledata.FieldSnapAllowUserEndTime:
-		return m.OldSnapAllowUserEndTime(ctx)
-	case vehicledata.FieldSnapDefenceCode:
-		return m.OldSnapDefenceCode(ctx)
-	case vehicledata.FieldSnapDeviceID:
-		return m.OldSnapDeviceID(ctx)
-	case vehicledata.FieldSnapInCarPeopleNum:
-		return m.OldSnapInCarPeopleNum(ctx)
-	case vehicledata.FieldSnapLanNo:
-		return m.OldSnapLanNo(ctx)
-	case vehicledata.FieldSnapOpenStrobe:
-		return m.OldSnapOpenStrobe(ctx)
-	case vehicledata.FieldVehicleBoundingBox:
-		return m.OldVehicleBoundingBox(ctx)
-	case vehicledata.FieldVehicleSeries:
-		return m.OldVehicleSeries(ctx)
-	}
-	return nil, fmt.Errorf("unknown VehicleData field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *VehicleDataMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case vehicledata.FieldCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedAt(v)
-		return nil
-	case vehicledata.FieldUpdatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
-		return nil
-	case vehicledata.FieldPlateBoundingBox:
-		v, ok := value.([]int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPlateBoundingBox(v)
-		return nil
-	case vehicledata.FieldPlateChannel:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPlateChannel(v)
-		return nil
-	case vehicledata.FieldPlateIsExist:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPlateIsExist(v)
-		return nil
-	case vehicledata.FieldPlateColor:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPlateColor(v)
-		return nil
-	case vehicledata.FieldPlateNumber:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPlateNumber(v)
-		return nil
-	case vehicledata.FieldPlateType:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPlateType(v)
-		return nil
-	case vehicledata.FieldPlateRegion:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPlateRegion(v)
-		return nil
-	case vehicledata.FieldPlateUploadNum:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPlateUploadNum(v)
-		return nil
-	case vehicledata.FieldSnapAllowUser:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSnapAllowUser(v)
-		return nil
-	case vehicledata.FieldSnapAllowUserEndTime:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSnapAllowUserEndTime(v)
-		return nil
-	case vehicledata.FieldSnapDefenceCode:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSnapDefenceCode(v)
-		return nil
-	case vehicledata.FieldSnapDeviceID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSnapDeviceID(v)
-		return nil
-	case vehicledata.FieldSnapInCarPeopleNum:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSnapInCarPeopleNum(v)
-		return nil
-	case vehicledata.FieldSnapLanNo:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSnapLanNo(v)
-		return nil
-	case vehicledata.FieldSnapOpenStrobe:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSnapOpenStrobe(v)
-		return nil
-	case vehicledata.FieldVehicleBoundingBox:
-		v, ok := value.([]int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetVehicleBoundingBox(v)
-		return nil
-	case vehicledata.FieldVehicleSeries:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetVehicleSeries(v)
-		return nil
-	}
-	return fmt.Errorf("unknown VehicleData field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *VehicleDataMutation) AddedFields() []string {
-	var fields []string
-	if m.addplate_channel != nil {
-		fields = append(fields, vehicledata.FieldPlateChannel)
-	}
-	if m.addplate_upload_num != nil {
-		fields = append(fields, vehicledata.FieldPlateUploadNum)
-	}
-	if m.addsnap_in_car_people_num != nil {
-		fields = append(fields, vehicledata.FieldSnapInCarPeopleNum)
-	}
-	if m.addsnap_lan_no != nil {
-		fields = append(fields, vehicledata.FieldSnapLanNo)
-	}
-	return fields
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *VehicleDataMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case vehicledata.FieldPlateChannel:
-		return m.AddedPlateChannel()
-	case vehicledata.FieldPlateUploadNum:
-		return m.AddedPlateUploadNum()
-	case vehicledata.FieldSnapInCarPeopleNum:
-		return m.AddedSnapInCarPeopleNum()
-	case vehicledata.FieldSnapLanNo:
-		return m.AddedSnapLanNo()
-	}
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *VehicleDataMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	case vehicledata.FieldPlateChannel:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddPlateChannel(v)
-		return nil
-	case vehicledata.FieldPlateUploadNum:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddPlateUploadNum(v)
-		return nil
-	case vehicledata.FieldSnapInCarPeopleNum:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddSnapInCarPeopleNum(v)
-		return nil
-	case vehicledata.FieldSnapLanNo:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddSnapLanNo(v)
-		return nil
-	}
-	return fmt.Errorf("unknown VehicleData numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *VehicleDataMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(vehicledata.FieldPlateBoundingBox) {
-		fields = append(fields, vehicledata.FieldPlateBoundingBox)
-	}
-	if m.FieldCleared(vehicledata.FieldPlateChannel) {
-		fields = append(fields, vehicledata.FieldPlateChannel)
-	}
-	if m.FieldCleared(vehicledata.FieldPlateIsExist) {
-		fields = append(fields, vehicledata.FieldPlateIsExist)
-	}
-	if m.FieldCleared(vehicledata.FieldPlateColor) {
-		fields = append(fields, vehicledata.FieldPlateColor)
-	}
-	if m.FieldCleared(vehicledata.FieldPlateNumber) {
-		fields = append(fields, vehicledata.FieldPlateNumber)
-	}
-	if m.FieldCleared(vehicledata.FieldPlateType) {
-		fields = append(fields, vehicledata.FieldPlateType)
-	}
-	if m.FieldCleared(vehicledata.FieldPlateRegion) {
-		fields = append(fields, vehicledata.FieldPlateRegion)
-	}
-	if m.FieldCleared(vehicledata.FieldPlateUploadNum) {
-		fields = append(fields, vehicledata.FieldPlateUploadNum)
-	}
-	if m.FieldCleared(vehicledata.FieldSnapAllowUser) {
-		fields = append(fields, vehicledata.FieldSnapAllowUser)
-	}
-	if m.FieldCleared(vehicledata.FieldSnapAllowUserEndTime) {
-		fields = append(fields, vehicledata.FieldSnapAllowUserEndTime)
-	}
-	if m.FieldCleared(vehicledata.FieldSnapDefenceCode) {
-		fields = append(fields, vehicledata.FieldSnapDefenceCode)
-	}
-	if m.FieldCleared(vehicledata.FieldSnapDeviceID) {
-		fields = append(fields, vehicledata.FieldSnapDeviceID)
-	}
-	if m.FieldCleared(vehicledata.FieldSnapInCarPeopleNum) {
-		fields = append(fields, vehicledata.FieldSnapInCarPeopleNum)
-	}
-	if m.FieldCleared(vehicledata.FieldSnapLanNo) {
-		fields = append(fields, vehicledata.FieldSnapLanNo)
-	}
-	if m.FieldCleared(vehicledata.FieldSnapOpenStrobe) {
-		fields = append(fields, vehicledata.FieldSnapOpenStrobe)
-	}
-	if m.FieldCleared(vehicledata.FieldVehicleBoundingBox) {
-		fields = append(fields, vehicledata.FieldVehicleBoundingBox)
-	}
-	if m.FieldCleared(vehicledata.FieldVehicleSeries) {
-		fields = append(fields, vehicledata.FieldVehicleSeries)
-	}
-	return fields
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *VehicleDataMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *VehicleDataMutation) ClearField(name string) error {
-	switch name {
-	case vehicledata.FieldPlateBoundingBox:
-		m.ClearPlateBoundingBox()
-		return nil
-	case vehicledata.FieldPlateChannel:
-		m.ClearPlateChannel()
-		return nil
-	case vehicledata.FieldPlateIsExist:
-		m.ClearPlateIsExist()
-		return nil
-	case vehicledata.FieldPlateColor:
-		m.ClearPlateColor()
-		return nil
-	case vehicledata.FieldPlateNumber:
-		m.ClearPlateNumber()
-		return nil
-	case vehicledata.FieldPlateType:
-		m.ClearPlateType()
-		return nil
-	case vehicledata.FieldPlateRegion:
-		m.ClearPlateRegion()
-		return nil
-	case vehicledata.FieldPlateUploadNum:
-		m.ClearPlateUploadNum()
-		return nil
-	case vehicledata.FieldSnapAllowUser:
-		m.ClearSnapAllowUser()
-		return nil
-	case vehicledata.FieldSnapAllowUserEndTime:
-		m.ClearSnapAllowUserEndTime()
-		return nil
-	case vehicledata.FieldSnapDefenceCode:
-		m.ClearSnapDefenceCode()
-		return nil
-	case vehicledata.FieldSnapDeviceID:
-		m.ClearSnapDeviceID()
-		return nil
-	case vehicledata.FieldSnapInCarPeopleNum:
-		m.ClearSnapInCarPeopleNum()
-		return nil
-	case vehicledata.FieldSnapLanNo:
-		m.ClearSnapLanNo()
-		return nil
-	case vehicledata.FieldSnapOpenStrobe:
-		m.ClearSnapOpenStrobe()
-		return nil
-	case vehicledata.FieldVehicleBoundingBox:
-		m.ClearVehicleBoundingBox()
-		return nil
-	case vehicledata.FieldVehicleSeries:
-		m.ClearVehicleSeries()
-		return nil
-	}
-	return fmt.Errorf("unknown VehicleData nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *VehicleDataMutation) ResetField(name string) error {
-	switch name {
-	case vehicledata.FieldCreatedAt:
-		m.ResetCreatedAt()
-		return nil
-	case vehicledata.FieldUpdatedAt:
-		m.ResetUpdatedAt()
-		return nil
-	case vehicledata.FieldPlateBoundingBox:
-		m.ResetPlateBoundingBox()
-		return nil
-	case vehicledata.FieldPlateChannel:
-		m.ResetPlateChannel()
-		return nil
-	case vehicledata.FieldPlateIsExist:
-		m.ResetPlateIsExist()
-		return nil
-	case vehicledata.FieldPlateColor:
-		m.ResetPlateColor()
-		return nil
-	case vehicledata.FieldPlateNumber:
-		m.ResetPlateNumber()
-		return nil
-	case vehicledata.FieldPlateType:
-		m.ResetPlateType()
-		return nil
-	case vehicledata.FieldPlateRegion:
-		m.ResetPlateRegion()
-		return nil
-	case vehicledata.FieldPlateUploadNum:
-		m.ResetPlateUploadNum()
-		return nil
-	case vehicledata.FieldSnapAllowUser:
-		m.ResetSnapAllowUser()
-		return nil
-	case vehicledata.FieldSnapAllowUserEndTime:
-		m.ResetSnapAllowUserEndTime()
-		return nil
-	case vehicledata.FieldSnapDefenceCode:
-		m.ResetSnapDefenceCode()
-		return nil
-	case vehicledata.FieldSnapDeviceID:
-		m.ResetSnapDeviceID()
-		return nil
-	case vehicledata.FieldSnapInCarPeopleNum:
-		m.ResetSnapInCarPeopleNum()
-		return nil
-	case vehicledata.FieldSnapLanNo:
-		m.ResetSnapLanNo()
-		return nil
-	case vehicledata.FieldSnapOpenStrobe:
-		m.ResetSnapOpenStrobe()
-		return nil
-	case vehicledata.FieldVehicleBoundingBox:
-		m.ResetVehicleBoundingBox()
-		return nil
-	case vehicledata.FieldVehicleSeries:
-		m.ResetVehicleSeries()
-		return nil
-	}
-	return fmt.Errorf("unknown VehicleData field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *VehicleDataMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *VehicleDataMutation) AddedIDs(name string) []ent.Value {
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *VehicleDataMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *VehicleDataMutation) RemovedIDs(name string) []ent.Value {
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *VehicleDataMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *VehicleDataMutation) EdgeCleared(name string) bool {
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *VehicleDataMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown VehicleData unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *VehicleDataMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown VehicleData edge %s", name)
 }

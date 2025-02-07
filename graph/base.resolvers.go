@@ -7,12 +7,14 @@ package graph
 import (
 	"context"
 	"fmt"
+	"go-ent-project/graph/model"
 	"go-ent-project/internal/ent"
 	"go-ent-project/internal/ent/camera"
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/user"
 	"go-ent-project/utils/constant"
 
+	"entgo.io/contrib/entgql"
 	"github.com/google/uuid"
 )
 
@@ -171,4 +173,38 @@ func (r *queryResolver) GetPoliceStation(ctx context.Context, id uuid.UUID) (*en
 		return nil, fmt.Errorf("user not found %v", err)
 	}
 	return u, nil
+}
+
+// GetEvents is the resolver for the getEvents field.
+func (r *queryResolver) GetEvents(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.EventOrder, where *ent.EventWhereInput) (*model.EventList, error) {
+	fmt.Printf("where: %v\n", where)
+	//ctx = context.WithValue(ctx, constant.BypassPrivacyKey, true)
+	d := r.Client.Event.Query().AllX(ctx)
+	paginate, err := r.Client.Event.Query().Paginate(ctx, after, first, before, last, ent.WithEventFilter(where.Filter), ent.WithEventOrder(orderBy))
+	if err != nil {
+		return nil, err
+	}
+	if paginate == nil {
+		return nil, fmt.Errorf("no results found")
+
+	}
+	fmt.Printf("paginate: %v\n", paginate)
+
+	var data []*model.CustomEvent
+	for _, v := range d {
+		data = append(data, &model.CustomEvent{
+			PlateColor:  &v.PlateColor,
+			PlateNumber: &v.PlateNumber,
+			Camera:      r.Client.Camera.Query().Where(camera.ImeiEQ(v.SnapDeviceID)).OnlyX(ctx),
+		})
+	}
+	return &model.EventList{
+		PageInfo: &ent.PageInfo{
+			HasNextPage:     paginate.PageInfo.HasNextPage,
+			HasPreviousPage: paginate.PageInfo.HasPreviousPage,
+			StartCursor:     paginate.PageInfo.StartCursor,
+			EndCursor:       paginate.PageInfo.EndCursor,
+		},
+		Node: data,
+	}, nil
 }

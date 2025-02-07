@@ -6,19 +6,19 @@ import (
 	"go-ent-project/utils/base"
 )
 
-// VehicleData holds the schema definition for the VehicleData entity.
-type VehicleData struct {
+// Event holds the schema definition for the Event entity.
+type Event struct {
 	ent.Schema
 }
 
-func (VehicleData) Mixin() []ent.Mixin {
+func (Event) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		base.BMixin{},
 	}
 }
 
-// Fields of the VehicleData.
-func (VehicleData) Fields() []ent.Field {
+// Fields of the Event.
+func (Event) Fields() []ent.Field {
 	return []ent.Field{
 		// Plate fields
 		field.JSON("plate_bounding_box", []int{}).
@@ -96,8 +96,8 @@ func (VehicleData) Fields() []ent.Field {
 	}
 }
 
-// Edges of the VehicleData.
-func (VehicleData) Edges() []ent.Edge {
+// Edges of the Event.
+func (Event) Edges() []ent.Edge {
 	return []ent.Edge{
 		// Define any relationships (edges) here if needed in the future.
 	}

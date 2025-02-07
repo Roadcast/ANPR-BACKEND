@@ -12,6 +12,9 @@ type Camera func(*sql.Selector)
 // Car is the predicate function for car builders.
 type Car func(*sql.Selector)
 
+// Event is the predicate function for event builders.
+type Event func(*sql.Selector)
+
 // Permission is the predicate function for permission builders.
 type Permission func(*sql.Selector)
 
@@ -23,6 +26,3 @@ type Role func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
-
-// VehicleData is the predicate function for vehicledata builders.
-type VehicleData func(*sql.Selector)

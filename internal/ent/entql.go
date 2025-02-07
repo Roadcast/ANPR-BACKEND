@@ -5,12 +5,12 @@ package ent
 import (
 	"go-ent-project/internal/ent/camera"
 	"go-ent-project/internal/ent/car"
+	"go-ent-project/internal/ent/event"
 	"go-ent-project/internal/ent/permission"
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/predicate"
 	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
-	"go-ent-project/internal/ent/vehicledata"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -64,6 +64,38 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   event.Table,
+			Columns: event.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUUID,
+				Column: event.FieldID,
+			},
+		},
+		Type: "Event",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			event.FieldCreatedAt:            {Type: field.TypeTime, Column: event.FieldCreatedAt},
+			event.FieldUpdatedAt:            {Type: field.TypeTime, Column: event.FieldUpdatedAt},
+			event.FieldPlateBoundingBox:     {Type: field.TypeJSON, Column: event.FieldPlateBoundingBox},
+			event.FieldPlateChannel:         {Type: field.TypeInt, Column: event.FieldPlateChannel},
+			event.FieldPlateIsExist:         {Type: field.TypeBool, Column: event.FieldPlateIsExist},
+			event.FieldPlateColor:           {Type: field.TypeString, Column: event.FieldPlateColor},
+			event.FieldPlateNumber:          {Type: field.TypeString, Column: event.FieldPlateNumber},
+			event.FieldPlateType:            {Type: field.TypeString, Column: event.FieldPlateType},
+			event.FieldPlateRegion:          {Type: field.TypeString, Column: event.FieldPlateRegion},
+			event.FieldPlateUploadNum:       {Type: field.TypeInt, Column: event.FieldPlateUploadNum},
+			event.FieldSnapAllowUser:        {Type: field.TypeBool, Column: event.FieldSnapAllowUser},
+			event.FieldSnapAllowUserEndTime: {Type: field.TypeString, Column: event.FieldSnapAllowUserEndTime},
+			event.FieldSnapDefenceCode:      {Type: field.TypeString, Column: event.FieldSnapDefenceCode},
+			event.FieldSnapDeviceID:         {Type: field.TypeString, Column: event.FieldSnapDeviceID},
+			event.FieldSnapInCarPeopleNum:   {Type: field.TypeInt, Column: event.FieldSnapInCarPeopleNum},
+			event.FieldSnapLanNo:            {Type: field.TypeInt, Column: event.FieldSnapLanNo},
+			event.FieldSnapOpenStrobe:       {Type: field.TypeBool, Column: event.FieldSnapOpenStrobe},
+			event.FieldVehicleBoundingBox:   {Type: field.TypeJSON, Column: event.FieldVehicleBoundingBox},
+			event.FieldVehicleSeries:        {Type: field.TypeString, Column: event.FieldVehicleSeries},
+		},
+	}
+	graph.Nodes[3] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   permission.Table,
 			Columns: permission.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -82,7 +114,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permission.FieldCanDelete: {Type: field.TypeBool, Column: permission.FieldCanDelete},
 		},
 	}
-	graph.Nodes[3] = &sqlgraph.Node{
+	graph.Nodes[4] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   policestation.Table,
 			Columns: policestation.Columns,
@@ -102,7 +134,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			policestation.FieldParentStationID: {Type: field.TypeUUID, Column: policestation.FieldParentStationID},
 		},
 	}
-	graph.Nodes[4] = &sqlgraph.Node{
+	graph.Nodes[5] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   role.Table,
 			Columns: role.Columns,
@@ -118,7 +150,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			role.FieldName:      {Type: field.TypeString, Column: role.FieldName},
 		},
 	}
-	graph.Nodes[5] = &sqlgraph.Node{
+	graph.Nodes[6] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   user.Table,
 			Columns: user.Columns,
@@ -138,38 +170,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			user.FieldActive:          {Type: field.TypeBool, Column: user.FieldActive},
 			user.FieldRoleID:          {Type: field.TypeUUID, Column: user.FieldRoleID},
 			user.FieldPoliceStationID: {Type: field.TypeUUID, Column: user.FieldPoliceStationID},
-		},
-	}
-	graph.Nodes[6] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   vehicledata.Table,
-			Columns: vehicledata.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: vehicledata.FieldID,
-			},
-		},
-		Type: "VehicleData",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			vehicledata.FieldCreatedAt:            {Type: field.TypeTime, Column: vehicledata.FieldCreatedAt},
-			vehicledata.FieldUpdatedAt:            {Type: field.TypeTime, Column: vehicledata.FieldUpdatedAt},
-			vehicledata.FieldPlateBoundingBox:     {Type: field.TypeJSON, Column: vehicledata.FieldPlateBoundingBox},
-			vehicledata.FieldPlateChannel:         {Type: field.TypeInt, Column: vehicledata.FieldPlateChannel},
-			vehicledata.FieldPlateIsExist:         {Type: field.TypeBool, Column: vehicledata.FieldPlateIsExist},
-			vehicledata.FieldPlateColor:           {Type: field.TypeString, Column: vehicledata.FieldPlateColor},
-			vehicledata.FieldPlateNumber:          {Type: field.TypeString, Column: vehicledata.FieldPlateNumber},
-			vehicledata.FieldPlateType:            {Type: field.TypeString, Column: vehicledata.FieldPlateType},
-			vehicledata.FieldPlateRegion:          {Type: field.TypeString, Column: vehicledata.FieldPlateRegion},
-			vehicledata.FieldPlateUploadNum:       {Type: field.TypeInt, Column: vehicledata.FieldPlateUploadNum},
-			vehicledata.FieldSnapAllowUser:        {Type: field.TypeBool, Column: vehicledata.FieldSnapAllowUser},
-			vehicledata.FieldSnapAllowUserEndTime: {Type: field.TypeString, Column: vehicledata.FieldSnapAllowUserEndTime},
-			vehicledata.FieldSnapDefenceCode:      {Type: field.TypeString, Column: vehicledata.FieldSnapDefenceCode},
-			vehicledata.FieldSnapDeviceID:         {Type: field.TypeString, Column: vehicledata.FieldSnapDeviceID},
-			vehicledata.FieldSnapInCarPeopleNum:   {Type: field.TypeInt, Column: vehicledata.FieldSnapInCarPeopleNum},
-			vehicledata.FieldSnapLanNo:            {Type: field.TypeInt, Column: vehicledata.FieldSnapLanNo},
-			vehicledata.FieldSnapOpenStrobe:       {Type: field.TypeBool, Column: vehicledata.FieldSnapOpenStrobe},
-			vehicledata.FieldVehicleBoundingBox:   {Type: field.TypeJSON, Column: vehicledata.FieldVehicleBoundingBox},
-			vehicledata.FieldVehicleSeries:        {Type: field.TypeString, Column: vehicledata.FieldVehicleSeries},
 		},
 	}
 	graph.MustAddE(
@@ -459,6 +459,141 @@ func (f *CarFilter) WhereColor(p entql.StringP) {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (eq *EventQuery) addPredicate(pred func(s *sql.Selector)) {
+	eq.predicates = append(eq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the EventQuery builder.
+func (eq *EventQuery) Filter() *EventFilter {
+	return &EventFilter{config: eq.config, predicateAdder: eq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *EventMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the EventMutation builder.
+func (m *EventMutation) Filter() *EventFilter {
+	return &EventFilter{config: m.config, predicateAdder: m}
+}
+
+// EventFilter provides a generic filtering capability at runtime for EventQuery.
+type EventFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *EventFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *EventFilter) WhereID(p entql.ValueP) {
+	f.Where(p.Field(event.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *EventFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(event.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *EventFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(event.FieldUpdatedAt))
+}
+
+// WherePlateBoundingBox applies the entql json.RawMessage predicate on the plate_bounding_box field.
+func (f *EventFilter) WherePlateBoundingBox(p entql.BytesP) {
+	f.Where(p.Field(event.FieldPlateBoundingBox))
+}
+
+// WherePlateChannel applies the entql int predicate on the plate_channel field.
+func (f *EventFilter) WherePlateChannel(p entql.IntP) {
+	f.Where(p.Field(event.FieldPlateChannel))
+}
+
+// WherePlateIsExist applies the entql bool predicate on the plate_is_exist field.
+func (f *EventFilter) WherePlateIsExist(p entql.BoolP) {
+	f.Where(p.Field(event.FieldPlateIsExist))
+}
+
+// WherePlateColor applies the entql string predicate on the plate_color field.
+func (f *EventFilter) WherePlateColor(p entql.StringP) {
+	f.Where(p.Field(event.FieldPlateColor))
+}
+
+// WherePlateNumber applies the entql string predicate on the plate_number field.
+func (f *EventFilter) WherePlateNumber(p entql.StringP) {
+	f.Where(p.Field(event.FieldPlateNumber))
+}
+
+// WherePlateType applies the entql string predicate on the plate_type field.
+func (f *EventFilter) WherePlateType(p entql.StringP) {
+	f.Where(p.Field(event.FieldPlateType))
+}
+
+// WherePlateRegion applies the entql string predicate on the plate_region field.
+func (f *EventFilter) WherePlateRegion(p entql.StringP) {
+	f.Where(p.Field(event.FieldPlateRegion))
+}
+
+// WherePlateUploadNum applies the entql int predicate on the plate_upload_num field.
+func (f *EventFilter) WherePlateUploadNum(p entql.IntP) {
+	f.Where(p.Field(event.FieldPlateUploadNum))
+}
+
+// WhereSnapAllowUser applies the entql bool predicate on the snap_allow_user field.
+func (f *EventFilter) WhereSnapAllowUser(p entql.BoolP) {
+	f.Where(p.Field(event.FieldSnapAllowUser))
+}
+
+// WhereSnapAllowUserEndTime applies the entql string predicate on the snap_allow_user_end_time field.
+func (f *EventFilter) WhereSnapAllowUserEndTime(p entql.StringP) {
+	f.Where(p.Field(event.FieldSnapAllowUserEndTime))
+}
+
+// WhereSnapDefenceCode applies the entql string predicate on the snap_defence_code field.
+func (f *EventFilter) WhereSnapDefenceCode(p entql.StringP) {
+	f.Where(p.Field(event.FieldSnapDefenceCode))
+}
+
+// WhereSnapDeviceID applies the entql string predicate on the snap_device_id field.
+func (f *EventFilter) WhereSnapDeviceID(p entql.StringP) {
+	f.Where(p.Field(event.FieldSnapDeviceID))
+}
+
+// WhereSnapInCarPeopleNum applies the entql int predicate on the snap_in_car_people_num field.
+func (f *EventFilter) WhereSnapInCarPeopleNum(p entql.IntP) {
+	f.Where(p.Field(event.FieldSnapInCarPeopleNum))
+}
+
+// WhereSnapLanNo applies the entql int predicate on the snap_lan_no field.
+func (f *EventFilter) WhereSnapLanNo(p entql.IntP) {
+	f.Where(p.Field(event.FieldSnapLanNo))
+}
+
+// WhereSnapOpenStrobe applies the entql bool predicate on the snap_open_strobe field.
+func (f *EventFilter) WhereSnapOpenStrobe(p entql.BoolP) {
+	f.Where(p.Field(event.FieldSnapOpenStrobe))
+}
+
+// WhereVehicleBoundingBox applies the entql json.RawMessage predicate on the vehicle_bounding_box field.
+func (f *EventFilter) WhereVehicleBoundingBox(p entql.BytesP) {
+	f.Where(p.Field(event.FieldVehicleBoundingBox))
+}
+
+// WhereVehicleSeries applies the entql string predicate on the vehicle_series field.
+func (f *EventFilter) WhereVehicleSeries(p entql.StringP) {
+	f.Where(p.Field(event.FieldVehicleSeries))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (pq *PermissionQuery) addPredicate(pred func(s *sql.Selector)) {
 	pq.predicates = append(pq.predicates, pred)
 }
@@ -487,7 +622,7 @@ type PermissionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PermissionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -562,7 +697,7 @@ type PoliceStationFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PoliceStationFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -693,7 +828,7 @@ type RoleFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RoleFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -776,7 +911,7 @@ type UserFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -858,139 +993,4 @@ func (f *UserFilter) WhereHasPoliceStationWith(preds ...predicate.PoliceStation)
 			p(s)
 		}
 	})))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (vdq *VehicleDataQuery) addPredicate(pred func(s *sql.Selector)) {
-	vdq.predicates = append(vdq.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the VehicleDataQuery builder.
-func (vdq *VehicleDataQuery) Filter() *VehicleDataFilter {
-	return &VehicleDataFilter{config: vdq.config, predicateAdder: vdq}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *VehicleDataMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the VehicleDataMutation builder.
-func (m *VehicleDataMutation) Filter() *VehicleDataFilter {
-	return &VehicleDataFilter{config: m.config, predicateAdder: m}
-}
-
-// VehicleDataFilter provides a generic filtering capability at runtime for VehicleDataQuery.
-type VehicleDataFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *VehicleDataFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *VehicleDataFilter) WhereID(p entql.ValueP) {
-	f.Where(p.Field(vehicledata.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *VehicleDataFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(vehicledata.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *VehicleDataFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(vehicledata.FieldUpdatedAt))
-}
-
-// WherePlateBoundingBox applies the entql json.RawMessage predicate on the plate_bounding_box field.
-func (f *VehicleDataFilter) WherePlateBoundingBox(p entql.BytesP) {
-	f.Where(p.Field(vehicledata.FieldPlateBoundingBox))
-}
-
-// WherePlateChannel applies the entql int predicate on the plate_channel field.
-func (f *VehicleDataFilter) WherePlateChannel(p entql.IntP) {
-	f.Where(p.Field(vehicledata.FieldPlateChannel))
-}
-
-// WherePlateIsExist applies the entql bool predicate on the plate_is_exist field.
-func (f *VehicleDataFilter) WherePlateIsExist(p entql.BoolP) {
-	f.Where(p.Field(vehicledata.FieldPlateIsExist))
-}
-
-// WherePlateColor applies the entql string predicate on the plate_color field.
-func (f *VehicleDataFilter) WherePlateColor(p entql.StringP) {
-	f.Where(p.Field(vehicledata.FieldPlateColor))
-}
-
-// WherePlateNumber applies the entql string predicate on the plate_number field.
-func (f *VehicleDataFilter) WherePlateNumber(p entql.StringP) {
-	f.Where(p.Field(vehicledata.FieldPlateNumber))
-}
-
-// WherePlateType applies the entql string predicate on the plate_type field.
-func (f *VehicleDataFilter) WherePlateType(p entql.StringP) {
-	f.Where(p.Field(vehicledata.FieldPlateType))
-}
-
-// WherePlateRegion applies the entql string predicate on the plate_region field.
-func (f *VehicleDataFilter) WherePlateRegion(p entql.StringP) {
-	f.Where(p.Field(vehicledata.FieldPlateRegion))
-}
-
-// WherePlateUploadNum applies the entql int predicate on the plate_upload_num field.
-func (f *VehicleDataFilter) WherePlateUploadNum(p entql.IntP) {
-	f.Where(p.Field(vehicledata.FieldPlateUploadNum))
-}
-
-// WhereSnapAllowUser applies the entql bool predicate on the snap_allow_user field.
-func (f *VehicleDataFilter) WhereSnapAllowUser(p entql.BoolP) {
-	f.Where(p.Field(vehicledata.FieldSnapAllowUser))
-}
-
-// WhereSnapAllowUserEndTime applies the entql string predicate on the snap_allow_user_end_time field.
-func (f *VehicleDataFilter) WhereSnapAllowUserEndTime(p entql.StringP) {
-	f.Where(p.Field(vehicledata.FieldSnapAllowUserEndTime))
-}
-
-// WhereSnapDefenceCode applies the entql string predicate on the snap_defence_code field.
-func (f *VehicleDataFilter) WhereSnapDefenceCode(p entql.StringP) {
-	f.Where(p.Field(vehicledata.FieldSnapDefenceCode))
-}
-
-// WhereSnapDeviceID applies the entql string predicate on the snap_device_id field.
-func (f *VehicleDataFilter) WhereSnapDeviceID(p entql.StringP) {
-	f.Where(p.Field(vehicledata.FieldSnapDeviceID))
-}
-
-// WhereSnapInCarPeopleNum applies the entql int predicate on the snap_in_car_people_num field.
-func (f *VehicleDataFilter) WhereSnapInCarPeopleNum(p entql.IntP) {
-	f.Where(p.Field(vehicledata.FieldSnapInCarPeopleNum))
-}
-
-// WhereSnapLanNo applies the entql int predicate on the snap_lan_no field.
-func (f *VehicleDataFilter) WhereSnapLanNo(p entql.IntP) {
-	f.Where(p.Field(vehicledata.FieldSnapLanNo))
-}
-
-// WhereSnapOpenStrobe applies the entql bool predicate on the snap_open_strobe field.
-func (f *VehicleDataFilter) WhereSnapOpenStrobe(p entql.BoolP) {
-	f.Where(p.Field(vehicledata.FieldSnapOpenStrobe))
-}
-
-// WhereVehicleBoundingBox applies the entql json.RawMessage predicate on the vehicle_bounding_box field.
-func (f *VehicleDataFilter) WhereVehicleBoundingBox(p entql.BytesP) {
-	f.Where(p.Field(vehicledata.FieldVehicleBoundingBox))
-}
-
-// WhereVehicleSeries applies the entql string predicate on the vehicle_series field.
-func (f *VehicleDataFilter) WhereVehicleSeries(p entql.StringP) {
-	f.Where(p.Field(vehicledata.FieldVehicleSeries))
 }

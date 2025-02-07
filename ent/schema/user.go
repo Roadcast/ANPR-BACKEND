@@ -9,8 +9,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"github.com/google/uuid"
-	hook "go-ent-project/ent/hooks"
-	"go-ent-project/ent/privacy"
 	"go-ent-project/utils/base"
 )
 
@@ -83,10 +81,10 @@ func (User) Indexes() []ent.Index {
 	}
 }
 
-func (User) Hooks() []ent.Hook {
-	return hook.MakeHooks()
-}
-
-func (User) Policy() ent.Policy {
-	return privacy.UserPolicy
-}
+//func (User) Hooks() []ent.Hook {
+//	return hook.MakeHooks()
+//}
+//
+//func (User) Policy() ent.Policy {
+//	return privacy.UserPolicy
+//}

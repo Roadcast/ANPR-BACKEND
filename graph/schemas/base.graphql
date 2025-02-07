@@ -1,7 +1,22 @@
 extend type Query {
     getCamera(id: ID!): Camera!
     getPoliceStation(id: ID!): PoliceStation!
+    getEvents(after: Cursor, first: Int, before: Cursor, last: Int, orderBy: [EventOrder], where: EventWhereInput) : EventList!
 }
+
+type EventList {
+    pageInfo: PageInfo!
+    node: [CustomEvent]!
+}
+
+type CustomEvent {
+    camera: Camera
+    plate_color: String
+    plate_number: String
+    snap_device_id: String
+
+}
+
 
 extend type Mutation {
     addUserToPoliceStation(

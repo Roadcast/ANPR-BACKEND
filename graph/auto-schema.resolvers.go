@@ -45,6 +45,11 @@ func (r *queryResolver) Cars(ctx context.Context, after *entgql.Cursor[uuid.UUID
 	panic(fmt.Errorf("not implemented: Cars - cars"))
 }
 
+// Events is the resolver for the events field.
+func (r *queryResolver) Events(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.EventOrder, where *ent.EventWhereInput) (*ent.EventConnection, error) {
+	panic(fmt.Errorf("not implemented: Events - events"))
+}
+
 // Permissions is the resolver for the permissions field.
 func (r *queryResolver) Permissions(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.PermissionOrder, where *ent.PermissionWhereInput) (*ent.PermissionConnection, error) {
 	panic(fmt.Errorf("not implemented: Permissions - permissions"))
@@ -76,22 +81,6 @@ func (r *queryResolver) Users(ctx context.Context, after *entgql.Cursor[uuid.UUI
 	fmt.Printf("where: %v\n", where)
 	ctx = context.WithValue(ctx, constant.BypassPrivacyKey, true)
 	paginate, err := r.Client.User.Query().Paginate(ctx, after, first, before, last, ent.WithUserFilter(where.Filter), ent.WithUserOrder(orderBy))
-	fmt.Printf("paginate: %v\n", paginate)
-	if err != nil {
-		return nil, err
-	}
-	if paginate == nil {
-		return nil, fmt.Errorf("no results found")
-
-	}
-	return paginate, nil
-}
-
-// VehicleDataSlice is the resolver for the vehicleDataSlice field.
-func (r *queryResolver) VehicleDataSlice(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.VehicleDataOrder, where *ent.VehicleDataWhereInput) (*ent.VehicleDataConnection, error) {
-	fmt.Printf("where: %v\n", where)
-	ctx = context.WithValue(ctx, constant.BypassPrivacyKey, true)
-	paginate, err := r.Client.VehicleData.Query().Paginate(ctx, after, first, before, last, ent.WithVehicleDataFilter(where.Filter), ent.WithVehicleDataOrder(orderBy))
 	fmt.Printf("paginate: %v\n", paginate)
 	if err != nil {
 		return nil, err

@@ -159,6 +159,30 @@ func (f CarMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) e
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.CarMutation", m)
 }
 
+// The EventQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type EventQueryRuleFunc func(context.Context, *ent.EventQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f EventQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.EventQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.EventQuery", q)
+}
+
+// The EventMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type EventMutationRuleFunc func(context.Context, *ent.EventMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f EventMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.EventMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.EventMutation", m)
+}
+
 // The PermissionQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type PermissionQueryRuleFunc func(context.Context, *ent.PermissionQuery) error
@@ -255,30 +279,6 @@ func (f UserMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) 
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.UserMutation", m)
 }
 
-// The VehicleDataQueryRuleFunc type is an adapter to allow the use of ordinary
-// functions as a query rule.
-type VehicleDataQueryRuleFunc func(context.Context, *ent.VehicleDataQuery) error
-
-// EvalQuery return f(ctx, q).
-func (f VehicleDataQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.VehicleDataQuery); ok {
-		return f(ctx, q)
-	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.VehicleDataQuery", q)
-}
-
-// The VehicleDataMutationRuleFunc type is an adapter to allow the use of ordinary
-// functions as a mutation rule.
-type VehicleDataMutationRuleFunc func(context.Context, *ent.VehicleDataMutation) error
-
-// EvalMutation calls f(ctx, m).
-func (f VehicleDataMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.VehicleDataMutation); ok {
-		return f(ctx, m)
-	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.VehicleDataMutation", m)
-}
-
 type (
 	// Filter is the interface that wraps the Where function
 	// for filtering nodes in queries and mutations.
@@ -318,6 +318,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.CarQuery:
 		return q.Filter(), nil
+	case *ent.EventQuery:
+		return q.Filter(), nil
 	case *ent.PermissionQuery:
 		return q.Filter(), nil
 	case *ent.PoliceStationQuery:
@@ -325,8 +327,6 @@ func queryFilter(q ent.Query) (Filter, error) {
 	case *ent.RoleQuery:
 		return q.Filter(), nil
 	case *ent.UserQuery:
-		return q.Filter(), nil
-	case *ent.VehicleDataQuery:
 		return q.Filter(), nil
 	default:
 		return nil, Denyf("ent/privacy: unexpected query type %T for query filter", q)
@@ -339,6 +339,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 		return m.Filter(), nil
 	case *ent.CarMutation:
 		return m.Filter(), nil
+	case *ent.EventMutation:
+		return m.Filter(), nil
 	case *ent.PermissionMutation:
 		return m.Filter(), nil
 	case *ent.PoliceStationMutation:
@@ -346,8 +348,6 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.RoleMutation:
 		return m.Filter(), nil
 	case *ent.UserMutation:
-		return m.Filter(), nil
-	case *ent.VehicleDataMutation:
 		return m.Filter(), nil
 	default:
 		return nil, Denyf("ent/privacy: unexpected mutation type %T for mutation filter", m)

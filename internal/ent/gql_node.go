@@ -7,11 +7,11 @@ import (
 	"fmt"
 	"go-ent-project/internal/ent/camera"
 	"go-ent-project/internal/ent/car"
+	"go-ent-project/internal/ent/event"
 	"go-ent-project/internal/ent/permission"
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
-	"go-ent-project/internal/ent/vehicledata"
 
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
@@ -34,6 +34,11 @@ var carImplementors = []string{"Car", "Node"}
 // IsNode implements the Node interface check for GQLGen.
 func (*Car) IsNode() {}
 
+var eventImplementors = []string{"Event", "Node"}
+
+// IsNode implements the Node interface check for GQLGen.
+func (*Event) IsNode() {}
+
 var permissionImplementors = []string{"Permission", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
@@ -53,11 +58,6 @@ var userImplementors = []string{"User", "Node"}
 
 // IsNode implements the Node interface check for GQLGen.
 func (*User) IsNode() {}
-
-var vehicledataImplementors = []string{"VehicleData", "Node"}
-
-// IsNode implements the Node interface check for GQLGen.
-func (*VehicleData) IsNode() {}
 
 var errNodeInvalidID = &NotFoundError{"node"}
 
@@ -135,6 +135,15 @@ func (c *Client) noder(ctx context.Context, table string, id uuid.UUID) (Noder, 
 			}
 		}
 		return query.Only(ctx)
+	case event.Table:
+		query := c.Event.Query().
+			Where(event.ID(id))
+		if fc := graphql.GetFieldContext(ctx); fc != nil {
+			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, eventImplementors...); err != nil {
+				return nil, err
+			}
+		}
+		return query.Only(ctx)
 	case permission.Table:
 		query := c.Permission.Query().
 			Where(permission.ID(id))
@@ -167,15 +176,6 @@ func (c *Client) noder(ctx context.Context, table string, id uuid.UUID) (Noder, 
 			Where(user.ID(id))
 		if fc := graphql.GetFieldContext(ctx); fc != nil {
 			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, userImplementors...); err != nil {
-				return nil, err
-			}
-		}
-		return query.Only(ctx)
-	case vehicledata.Table:
-		query := c.VehicleData.Query().
-			Where(vehicledata.ID(id))
-		if fc := graphql.GetFieldContext(ctx); fc != nil {
-			if err := query.collectField(ctx, true, graphql.GetOperationContext(ctx), fc.Field, nil, vehicledataImplementors...); err != nil {
 				return nil, err
 			}
 		}
@@ -285,6 +285,22 @@ func (c *Client) noders(ctx context.Context, table string, ids []uuid.UUID) ([]N
 				*noder = node
 			}
 		}
+	case event.Table:
+		query := c.Event.Query().
+			Where(event.IDIn(ids...))
+		query, err := query.CollectFields(ctx, eventImplementors...)
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
 	case permission.Table:
 		query := c.Permission.Query().
 			Where(permission.IDIn(ids...))
@@ -337,22 +353,6 @@ func (c *Client) noders(ctx context.Context, table string, ids []uuid.UUID) ([]N
 		query := c.User.Query().
 			Where(user.IDIn(ids...))
 		query, err := query.CollectFields(ctx, userImplementors...)
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case vehicledata.Table:
-		query := c.VehicleData.Query().
-			Where(vehicledata.IDIn(ids...))
-		query, err := query.CollectFields(ctx, vehicledataImplementors...)
 		if err != nil {
 			return nil, err
 		}
