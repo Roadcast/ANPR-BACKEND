@@ -178,7 +178,7 @@ func (r *queryResolver) GetPoliceStation(ctx context.Context, id uuid.UUID) (*en
 // GetEvents is the resolver for the getEvents field.
 func (r *queryResolver) GetEvents(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.EventOrder, where *ent.EventWhereInput) (*model.EventList, error) {
 	fmt.Printf("where: %v\n", where)
-	//ctx = context.WithValue(ctx, constant.BypassPrivacyKey, true)
+	ctx = context.WithValue(ctx, constant.BypassPrivacyKey, true)
 	d := r.Client.Event.Query().AllX(ctx)
 	paginate, err := r.Client.Event.Query().Paginate(ctx, after, first, before, last, ent.WithEventFilter(where.Filter), ent.WithEventOrder(orderBy))
 	if err != nil {
