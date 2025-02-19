@@ -118,3 +118,30 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, userID uuid.UUID) (bo
 	}
 	return true, nil
 }
+
+// AddRole is the resolver for the addRole field.
+func (r *mutationResolver) AddRole(ctx context.Context, role *ent.CreateRoleInput) (*ent.Role, error) {
+	newRole, err := r.Client.Role.Create().SetInput(*role).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return newRole, nil
+}
+
+// UpdateRole is the resolver for the updateRole field.
+func (r *mutationResolver) UpdateRole(ctx context.Context, roleID uuid.UUID, role *ent.UpdateRoleInput) (*ent.Role, error) {
+	existingRole, err := r.Client.Role.UpdateOneID(roleID).SetInput(*role).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return existingRole, nil
+}
+
+// DeleteRole is the resolver for the deleteRole field.
+func (r *mutationResolver) DeleteRole(ctx context.Context, roleID uuid.UUID) (bool, error) {
+	err := r.Client.Role.DeleteOneID(roleID).Exec(ctx)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}

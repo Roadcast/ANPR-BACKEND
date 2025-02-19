@@ -11,10 +11,7 @@ type EventList {
 
 type CustomEvent {
     camera: Camera
-    plate_color: String
-    plate_number: String
-    snap_device_id: String
-
+    event: Event
 }
 
 

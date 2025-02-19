@@ -76,14 +76,18 @@ type ComplexityRoot struct {
 	}
 
 	Car struct {
-		Color        func(childComplexity int) int
-		CreatedAt    func(childComplexity int) int
-		ID           func(childComplexity int) int
-		Make         func(childComplexity int) int
-		Model        func(childComplexity int) int
-		Registration func(childComplexity int) int
-		UpdatedAt    func(childComplexity int) int
-		Year         func(childComplexity int) int
+		Color           func(childComplexity int) int
+		CreatedAt       func(childComplexity int) int
+		FirNumber       func(childComplexity int) int
+		ID              func(childComplexity int) int
+		Make            func(childComplexity int) int
+		Model           func(childComplexity int) int
+		PoliceStation   func(childComplexity int) int
+		PoliceStationID func(childComplexity int) int
+		Registration    func(childComplexity int) int
+		StolenDate      func(childComplexity int) int
+		UpdatedAt       func(childComplexity int) int
+		Year            func(childComplexity int) int
 	}
 
 	CarConnection struct {
@@ -98,10 +102,8 @@ type ComplexityRoot struct {
 	}
 
 	CustomEvent struct {
-		Camera       func(childComplexity int) int
-		PlateColor   func(childComplexity int) int
-		PlateNumber  func(childComplexity int) int
-		SnapDeviceID func(childComplexity int) int
+		Camera func(childComplexity int) int
+		Event  func(childComplexity int) int
 	}
 
 	Event struct {
@@ -161,11 +163,13 @@ type ComplexityRoot struct {
 		AddParentPoliceStationToChildPoliceStation      func(childComplexity int, parentPoliceStationID uuid.UUID, childPoliceStationID uuid.UUID) int
 		AddPoliceStation                                func(childComplexity int, policeStation *ent.CreatePoliceStationInput) int
 		AddPoliceStationToUser                          func(childComplexity int, userID uuid.UUID, policeStationID uuid.UUID) int
+		AddRole                                         func(childComplexity int, role *ent.CreateRoleInput) int
 		AddUser                                         func(childComplexity int, user *ent.CreateUserInput) int
 		AddUserToPoliceStation                          func(childComplexity int, userID uuid.UUID, policeStationID uuid.UUID) int
 		DeleteCamera                                    func(childComplexity int, cameraID uuid.UUID) int
 		DeleteCar                                       func(childComplexity int, carID uuid.UUID) int
 		DeletePoliceStation                             func(childComplexity int, policeStationID uuid.UUID) int
+		DeleteRole                                      func(childComplexity int, roleID uuid.UUID) int
 		DeleteUser                                      func(childComplexity int, userID uuid.UUID) int
 		Login                                           func(childComplexity int, email string, password string) int
 		Logout                                          func(childComplexity int) int
@@ -178,6 +182,7 @@ type ComplexityRoot struct {
 		UpdateCamera                                    func(childComplexity int, cameraID uuid.UUID, camera *ent.UpdateCameraInput) int
 		UpdateCar                                       func(childComplexity int, carID uuid.UUID, car *ent.UpdateCarInput) int
 		UpdatePoliceStation                             func(childComplexity int, policeStationID uuid.UUID, policeStation *ent.UpdatePoliceStationInput) int
+		UpdateRole                                      func(childComplexity int, roleID uuid.UUID, role *ent.UpdateRoleInput) int
 		UpdateUser                                      func(childComplexity int, userID uuid.UUID, user *ent.UpdateUserInput) int
 		UpdateUserPassword                              func(childComplexity int, userID uuid.UUID, password string) int
 	}
@@ -213,6 +218,7 @@ type ComplexityRoot struct {
 
 	PoliceStation struct {
 		Camera          func(childComplexity int) int
+		Car             func(childComplexity int) int
 		ChildStations   func(childComplexity int) int
 		Code            func(childComplexity int) int
 		CreatedAt       func(childComplexity int) int
@@ -334,6 +340,9 @@ type MutationResolver interface {
 	AddUser(ctx context.Context, user *ent.CreateUserInput) (*ent.User, error)
 	UpdateUser(ctx context.Context, userID uuid.UUID, user *ent.UpdateUserInput) (*ent.User, error)
 	DeleteUser(ctx context.Context, userID uuid.UUID) (bool, error)
+	AddRole(ctx context.Context, role *ent.CreateRoleInput) (*ent.Role, error)
+	UpdateRole(ctx context.Context, roleID uuid.UUID, role *ent.UpdateRoleInput) (*ent.Role, error)
+	DeleteRole(ctx context.Context, roleID uuid.UUID) (bool, error)
 	UpdateUserPassword(ctx context.Context, userID uuid.UUID, password string) (*ent.User, error)
 }
 type QueryResolver interface {
@@ -494,6 +503,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Car.CreatedAt(childComplexity), true
 
+	case "Car.firNumber":
+		if e.complexity.Car.FirNumber == nil {
+			break
+		}
+
+		return e.complexity.Car.FirNumber(childComplexity), true
+
 	case "Car.id":
 		if e.complexity.Car.ID == nil {
 			break
@@ -515,12 +531,33 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Car.Model(childComplexity), true
 
+	case "Car.policeStation":
+		if e.complexity.Car.PoliceStation == nil {
+			break
+		}
+
+		return e.complexity.Car.PoliceStation(childComplexity), true
+
+	case "Car.policeStationID":
+		if e.complexity.Car.PoliceStationID == nil {
+			break
+		}
+
+		return e.complexity.Car.PoliceStationID(childComplexity), true
+
 	case "Car.registration":
 		if e.complexity.Car.Registration == nil {
 			break
 		}
 
 		return e.complexity.Car.Registration(childComplexity), true
+
+	case "Car.stolenDate":
+		if e.complexity.Car.StolenDate == nil {
+			break
+		}
+
+		return e.complexity.Car.StolenDate(childComplexity), true
 
 	case "Car.updatedAt":
 		if e.complexity.Car.UpdatedAt == nil {
@@ -578,26 +615,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CustomEvent.Camera(childComplexity), true
 
-	case "CustomEvent.plate_color":
-		if e.complexity.CustomEvent.PlateColor == nil {
+	case "CustomEvent.event":
+		if e.complexity.CustomEvent.Event == nil {
 			break
 		}
 
-		return e.complexity.CustomEvent.PlateColor(childComplexity), true
-
-	case "CustomEvent.plate_number":
-		if e.complexity.CustomEvent.PlateNumber == nil {
-			break
-		}
-
-		return e.complexity.CustomEvent.PlateNumber(childComplexity), true
-
-	case "CustomEvent.snap_device_id":
-		if e.complexity.CustomEvent.SnapDeviceID == nil {
-			break
-		}
-
-		return e.complexity.CustomEvent.SnapDeviceID(childComplexity), true
+		return e.complexity.CustomEvent.Event(childComplexity), true
 
 	case "Event.createdAt":
 		if e.complexity.Event.CreatedAt == nil {
@@ -900,6 +923,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.AddPoliceStationToUser(childComplexity, args["user_id"].(uuid.UUID), args["police_station_id"].(uuid.UUID)), true
 
+	case "Mutation.addRole":
+		if e.complexity.Mutation.AddRole == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addRole_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddRole(childComplexity, args["role"].(*ent.CreateRoleInput)), true
+
 	case "Mutation.addUser":
 		if e.complexity.Mutation.AddUser == nil {
 			break
@@ -959,6 +994,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeletePoliceStation(childComplexity, args["policeStationId"].(uuid.UUID)), true
+
+	case "Mutation.deleteRole":
+		if e.complexity.Mutation.DeleteRole == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteRole_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteRole(childComplexity, args["roleId"].(uuid.UUID)), true
 
 	case "Mutation.deleteUser":
 		if e.complexity.Mutation.DeleteUser == nil {
@@ -1098,6 +1145,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdatePoliceStation(childComplexity, args["policeStationId"].(uuid.UUID), args["policeStation"].(*ent.UpdatePoliceStationInput)), true
+
+	case "Mutation.updateRole":
+		if e.complexity.Mutation.UpdateRole == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateRole_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateRole(childComplexity, args["roleId"].(uuid.UUID), args["role"].(*ent.UpdateRoleInput)), true
 
 	case "Mutation.updateUser":
 		if e.complexity.Mutation.UpdateUser == nil {
@@ -1248,6 +1307,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PoliceStation.Camera(childComplexity), true
+
+	case "PoliceStation.car":
+		if e.complexity.PoliceStation.Car == nil {
+			break
+		}
+
+		return e.complexity.PoliceStation.Car(childComplexity), true
 
 	case "PoliceStation.childStations":
 		if e.complexity.PoliceStation.ChildStations == nil {
@@ -2049,11 +2115,15 @@ type Car implements Node {
   id: ID!
   createdAt: Time!
   updatedAt: Time!
-  make: String!
-  model: String!
-  year: Int!
+  make: String
+  model: String
+  year: Int
   registration: String!
-  color: String!
+  color: String
+  policeStationID: ID
+  stolenDate: Time
+  firNumber: String
+  policeStation: PoliceStation
 }
 """
 A connection to a list of items.
@@ -2127,6 +2197,8 @@ input CarWhereInput {
   makeContains: String
   makeHasPrefix: String
   makeHasSuffix: String
+  makeIsNil: Boolean
+  makeNotNil: Boolean
   makeEqualFold: String
   makeContainsFold: String
   """
@@ -2143,6 +2215,8 @@ input CarWhereInput {
   modelContains: String
   modelHasPrefix: String
   modelHasSuffix: String
+  modelIsNil: Boolean
+  modelNotNil: Boolean
   modelEqualFold: String
   modelContainsFold: String
   """
@@ -2156,6 +2230,8 @@ input CarWhereInput {
   yearGTE: Int
   yearLT: Int
   yearLTE: Int
+  yearIsNil: Boolean
+  yearNotNil: Boolean
   """
   registration field predicates
   """
@@ -2186,8 +2262,46 @@ input CarWhereInput {
   colorContains: String
   colorHasPrefix: String
   colorHasSuffix: String
+  colorIsNil: Boolean
+  colorNotNil: Boolean
   colorEqualFold: String
   colorContainsFold: String
+  """
+  stolen_date field predicates
+  """
+  stolenDate: Time
+  stolenDateNEQ: Time
+  stolenDateIn: [Time!]
+  stolenDateNotIn: [Time!]
+  stolenDateGT: Time
+  stolenDateGTE: Time
+  stolenDateLT: Time
+  stolenDateLTE: Time
+  stolenDateIsNil: Boolean
+  stolenDateNotNil: Boolean
+  """
+  fir_number field predicates
+  """
+  firNumber: String
+  firNumberNEQ: String
+  firNumberIn: [String!]
+  firNumberNotIn: [String!]
+  firNumberGT: String
+  firNumberGTE: String
+  firNumberLT: String
+  firNumberLTE: String
+  firNumberContains: String
+  firNumberHasPrefix: String
+  firNumberHasSuffix: String
+  firNumberIsNil: Boolean
+  firNumberNotNil: Boolean
+  firNumberEqualFold: String
+  firNumberContainsFold: String
+  """
+  police_station edge predicates
+  """
+  hasPoliceStation: Boolean
+  hasPoliceStationWith: [PoliceStationWhereInput!]
 }
 """
 CreateCameraInput is used for create Camera object.
@@ -2210,11 +2324,14 @@ Input was generated by ent.
 input CreateCarInput {
   createdAt: Time
   updatedAt: Time
-  make: String!
-  model: String!
-  year: Int!
+  make: String
+  model: String
+  year: Int
   registration: String!
-  color: String!
+  color: String
+  stolenDate: Time
+  firNumber: String
+  policeStationID: ID
 }
 """
 CreateEventInput is used for create Event object.
@@ -2318,6 +2435,7 @@ input CreatePoliceStationInput {
   identifier: String!
   userIDs: [ID!]
   cameraIDs: [ID!]
+  carIDs: [ID!]
   parentID: ID
   childStationIDs: [ID!]
 }
@@ -2842,6 +2960,7 @@ type PoliceStation implements Node {
   parentStationID: ID
   users: [User!]
   camera: [Camera!]
+  car: [Car!]
   parent: PoliceStation
   childStations: [PoliceStation!]
 }
@@ -2971,6 +3090,11 @@ input PoliceStationWhereInput {
   """
   hasCamera: Boolean
   hasCameraWith: [CameraWhereInput!]
+  """
+  car edge predicates
+  """
+  hasCar: Boolean
+  hasCarWith: [CarWhereInput!]
   """
   parent edge predicates
   """
@@ -3337,10 +3461,20 @@ Input was generated by ent.
 input UpdateCarInput {
   updatedAt: Time
   make: String
+  clearMake: Boolean
   model: String
+  clearModel: Boolean
   year: Int
+  clearYear: Boolean
   registration: String
   color: String
+  clearColor: Boolean
+  stolenDate: Time
+  clearStolenDate: Boolean
+  firNumber: String
+  clearFirNumber: Boolean
+  policeStationID: ID
+  clearPoliceStation: Boolean
 }
 """
 UpdateEventInput is used for update Event object.
@@ -3465,6 +3599,9 @@ input UpdatePoliceStationInput {
   addCameraIDs: [ID!]
   removeCameraIDs: [ID!]
   clearCamera: Boolean
+  addCarIDs: [ID!]
+  removeCarIDs: [ID!]
+  clearCar: Boolean
   parentID: ID
   clearParent: Boolean
   addChildStationIDs: [ID!]
@@ -3865,6 +4002,29 @@ func (ec *executionContext) field_Mutation_addPoliceStation_argsPoliceStation(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_Mutation_addRole_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_addRole_argsRole(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["role"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_addRole_argsRole(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*ent.CreateRoleInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
+	if tmp, ok := rawArgs["role"]; ok {
+		return ec.unmarshalOCreateRoleInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCreateRoleInput(ctx, tmp)
+	}
+
+	var zeroVal *ent.CreateRoleInput
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_Mutation_addUserToPoliceStation_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -3991,6 +4151,29 @@ func (ec *executionContext) field_Mutation_deletePoliceStation_argsPoliceStation
 ) (uuid.UUID, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("policeStationId"))
 	if tmp, ok := rawArgs["policeStationId"]; ok {
+		return ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+	}
+
+	var zeroVal uuid.UUID
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteRole_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_deleteRole_argsRoleID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["roleId"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteRole_argsRoleID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (uuid.UUID, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("roleId"))
+	if tmp, ok := rawArgs["roleId"]; ok {
 		return ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
 	}
 
@@ -4374,6 +4557,47 @@ func (ec *executionContext) field_Mutation_updatePoliceStation_argsPoliceStation
 	}
 
 	var zeroVal *ent.UpdatePoliceStationInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updateRole_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_updateRole_argsRoleID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["roleId"] = arg0
+	arg1, err := ec.field_Mutation_updateRole_argsRole(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["role"] = arg1
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateRole_argsRoleID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (uuid.UUID, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("roleId"))
+	if tmp, ok := rawArgs["roleId"]; ok {
+		return ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+	}
+
+	var zeroVal uuid.UUID
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updateRole_argsRole(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*ent.UpdateRoleInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
+	if tmp, ok := rawArgs["role"]; ok {
+		return ec.unmarshalOUpdateRoleInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUpdateRoleInput(ctx, tmp)
+	}
+
+	var zeroVal *ent.UpdateRoleInput
 	return zeroVal, nil
 }
 
@@ -6181,6 +6405,8 @@ func (ec *executionContext) fieldContext_Camera_policeStation(_ context.Context,
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -6597,14 +6823,11 @@ func (ec *executionContext) _Car_make(ctx context.Context, field graphql.Collect
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Car_make(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6641,14 +6864,11 @@ func (ec *executionContext) _Car_model(ctx context.Context, field graphql.Collec
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Car_model(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6685,14 +6905,11 @@ func (ec *executionContext) _Car_year(ctx context.Context, field graphql.Collect
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalOInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Car_year(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6773,14 +6990,11 @@ func (ec *executionContext) _Car_color(ctx context.Context, field graphql.Collec
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Car_color(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6791,6 +7005,198 @@ func (ec *executionContext) fieldContext_Car_color(_ context.Context, field grap
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Car_policeStationID(ctx context.Context, field graphql.CollectedField, obj *ent.Car) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Car_policeStationID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PoliceStationID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*uuid.UUID)
+	fc.Result = res
+	return ec.marshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Car_policeStationID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Car",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Car_stolenDate(ctx context.Context, field graphql.CollectedField, obj *ent.Car) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Car_stolenDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StolenDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Car_stolenDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Car",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Car_firNumber(ctx context.Context, field graphql.CollectedField, obj *ent.Car) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Car_firNumber(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FirNumber, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Car_firNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Car",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Car_policeStation(ctx context.Context, field graphql.CollectedField, obj *ent.Car) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Car_policeStation(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PoliceStation(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.PoliceStation)
+	fc.Result = res
+	return ec.marshalOPoliceStation2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Car_policeStation(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Car",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_PoliceStation_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_PoliceStation_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_PoliceStation_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_PoliceStation_name(ctx, field)
+			case "location":
+				return ec.fieldContext_PoliceStation_location(ctx, field)
+			case "code":
+				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "identifier":
+				return ec.fieldContext_PoliceStation_identifier(ctx, field)
+			case "parentStationID":
+				return ec.fieldContext_PoliceStation_parentStationID(ctx, field)
+			case "users":
+				return ec.fieldContext_PoliceStation_users(ctx, field)
+			case "camera":
+				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
+			case "parent":
+				return ec.fieldContext_PoliceStation_parent(ctx, field)
+			case "childStations":
+				return ec.fieldContext_PoliceStation_childStations(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PoliceStation", field.Name)
 		},
 	}
 	return fc, nil
@@ -6993,6 +7399,14 @@ func (ec *executionContext) fieldContext_CarEdge_node(_ context.Context, field g
 				return ec.fieldContext_Car_registration(ctx, field)
 			case "color":
 				return ec.fieldContext_Car_color(ctx, field)
+			case "policeStationID":
+				return ec.fieldContext_Car_policeStationID(ctx, field)
+			case "stolenDate":
+				return ec.fieldContext_Car_stolenDate(ctx, field)
+			case "firNumber":
+				return ec.fieldContext_Car_firNumber(ctx, field)
+			case "policeStation":
+				return ec.fieldContext_Car_policeStation(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Car", field.Name)
 		},
@@ -7107,8 +7521,8 @@ func (ec *executionContext) fieldContext_CustomEvent_camera(_ context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _CustomEvent_plate_color(ctx context.Context, field graphql.CollectedField, obj *model.CustomEvent) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_CustomEvent_plate_color(ctx, field)
+func (ec *executionContext) _CustomEvent_event(ctx context.Context, field graphql.CollectedField, obj *model.CustomEvent) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CustomEvent_event(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -7121,7 +7535,7 @@ func (ec *executionContext) _CustomEvent_plate_color(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.PlateColor, nil
+		return obj.Event, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7130,101 +7544,61 @@ func (ec *executionContext) _CustomEvent_plate_color(ctx context.Context, field 
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*ent.Event)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalOEvent2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐEvent(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_CustomEvent_plate_color(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_CustomEvent_event(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "CustomEvent",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _CustomEvent_plate_number(ctx context.Context, field graphql.CollectedField, obj *model.CustomEvent) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_CustomEvent_plate_number(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.PlateNumber, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_CustomEvent_plate_number(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CustomEvent",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _CustomEvent_snap_device_id(ctx context.Context, field graphql.CollectedField, obj *model.CustomEvent) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_CustomEvent_snap_device_id(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SnapDeviceID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_CustomEvent_snap_device_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "CustomEvent",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Event_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Event_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Event_updatedAt(ctx, field)
+			case "plateBoundingBox":
+				return ec.fieldContext_Event_plateBoundingBox(ctx, field)
+			case "plateChannel":
+				return ec.fieldContext_Event_plateChannel(ctx, field)
+			case "plateIsExist":
+				return ec.fieldContext_Event_plateIsExist(ctx, field)
+			case "plateColor":
+				return ec.fieldContext_Event_plateColor(ctx, field)
+			case "plateNumber":
+				return ec.fieldContext_Event_plateNumber(ctx, field)
+			case "plateType":
+				return ec.fieldContext_Event_plateType(ctx, field)
+			case "plateRegion":
+				return ec.fieldContext_Event_plateRegion(ctx, field)
+			case "plateUploadNum":
+				return ec.fieldContext_Event_plateUploadNum(ctx, field)
+			case "snapAllowUser":
+				return ec.fieldContext_Event_snapAllowUser(ctx, field)
+			case "snapAllowUserEndTime":
+				return ec.fieldContext_Event_snapAllowUserEndTime(ctx, field)
+			case "snapDefenceCode":
+				return ec.fieldContext_Event_snapDefenceCode(ctx, field)
+			case "snapDeviceID":
+				return ec.fieldContext_Event_snapDeviceID(ctx, field)
+			case "snapInCarPeopleNum":
+				return ec.fieldContext_Event_snapInCarPeopleNum(ctx, field)
+			case "snapLanNo":
+				return ec.fieldContext_Event_snapLanNo(ctx, field)
+			case "snapOpenStrobe":
+				return ec.fieldContext_Event_snapOpenStrobe(ctx, field)
+			case "vehicleBoundingBox":
+				return ec.fieldContext_Event_vehicleBoundingBox(ctx, field)
+			case "vehicleSeries":
+				return ec.fieldContext_Event_vehicleSeries(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Event", field.Name)
 		},
 	}
 	return fc, nil
@@ -8426,12 +8800,8 @@ func (ec *executionContext) fieldContext_EventList_node(_ context.Context, field
 			switch field.Name {
 			case "camera":
 				return ec.fieldContext_CustomEvent_camera(ctx, field)
-			case "plate_color":
-				return ec.fieldContext_CustomEvent_plate_color(ctx, field)
-			case "plate_number":
-				return ec.fieldContext_CustomEvent_plate_number(ctx, field)
-			case "snap_device_id":
-				return ec.fieldContext_CustomEvent_snap_device_id(ctx, field)
+			case "event":
+				return ec.fieldContext_CustomEvent_event(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CustomEvent", field.Name)
 		},
@@ -8840,6 +9210,8 @@ func (ec *executionContext) fieldContext_Mutation_addUserToPoliceStation(ctx con
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -9077,6 +9449,8 @@ func (ec *executionContext) fieldContext_Mutation_addChildPoliceStationToParentP
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -9158,6 +9532,8 @@ func (ec *executionContext) fieldContext_Mutation_addParentPoliceStationToChildP
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -9239,6 +9615,8 @@ func (ec *executionContext) fieldContext_Mutation_removeUserFromPoliceStation(ct
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -9476,6 +9854,8 @@ func (ec *executionContext) fieldContext_Mutation_removeChildPoliceStationFromPa
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -9557,6 +9937,8 @@ func (ec *executionContext) fieldContext_Mutation_removeParentPoliceStationFromC
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -9843,6 +10225,14 @@ func (ec *executionContext) fieldContext_Mutation_addCar(ctx context.Context, fi
 				return ec.fieldContext_Car_registration(ctx, field)
 			case "color":
 				return ec.fieldContext_Car_color(ctx, field)
+			case "policeStationID":
+				return ec.fieldContext_Car_policeStationID(ctx, field)
+			case "stolenDate":
+				return ec.fieldContext_Car_stolenDate(ctx, field)
+			case "firNumber":
+				return ec.fieldContext_Car_firNumber(ctx, field)
+			case "policeStation":
+				return ec.fieldContext_Car_policeStation(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Car", field.Name)
 		},
@@ -9916,6 +10306,14 @@ func (ec *executionContext) fieldContext_Mutation_updateCar(ctx context.Context,
 				return ec.fieldContext_Car_registration(ctx, field)
 			case "color":
 				return ec.fieldContext_Car_color(ctx, field)
+			case "policeStationID":
+				return ec.fieldContext_Car_policeStationID(ctx, field)
+			case "stolenDate":
+				return ec.fieldContext_Car_stolenDate(ctx, field)
+			case "firNumber":
+				return ec.fieldContext_Car_firNumber(ctx, field)
+			case "policeStation":
+				return ec.fieldContext_Car_policeStation(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Car", field.Name)
 		},
@@ -10048,6 +10446,8 @@ func (ec *executionContext) fieldContext_Mutation_addPoliceStation(ctx context.C
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -10129,6 +10529,8 @@ func (ec *executionContext) fieldContext_Mutation_updatePoliceStation(ctx contex
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -10413,6 +10815,199 @@ func (ec *executionContext) fieldContext_Mutation_deleteUser(ctx context.Context
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_addRole(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_addRole(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddRole(rctx, fc.Args["role"].(*ent.CreateRoleInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Role)
+	fc.Result = res
+	return ec.marshalNRole2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐRole(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_addRole(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Role_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Role_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Role_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_Role_name(ctx, field)
+			case "permissions":
+				return ec.fieldContext_Role_permissions(ctx, field)
+			case "users":
+				return ec.fieldContext_Role_users(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Role", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_addRole_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateRole(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateRole(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateRole(rctx, fc.Args["roleId"].(uuid.UUID), fc.Args["role"].(*ent.UpdateRoleInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Role)
+	fc.Result = res
+	return ec.marshalNRole2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐRole(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateRole(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Role_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Role_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Role_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_Role_name(ctx, field)
+			case "permissions":
+				return ec.fieldContext_Role_permissions(ctx, field)
+			case "users":
+				return ec.fieldContext_Role_users(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Role", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateRole_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteRole(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteRole(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteRole(rctx, fc.Args["roleId"].(uuid.UUID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteRole(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteRole_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -11739,6 +12334,73 @@ func (ec *executionContext) fieldContext_PoliceStation_camera(_ context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _PoliceStation_car(ctx context.Context, field graphql.CollectedField, obj *ent.PoliceStation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PoliceStation_car(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Car(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.Car)
+	fc.Result = res
+	return ec.marshalOCar2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐCarᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PoliceStation_car(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PoliceStation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Car_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Car_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Car_updatedAt(ctx, field)
+			case "make":
+				return ec.fieldContext_Car_make(ctx, field)
+			case "model":
+				return ec.fieldContext_Car_model(ctx, field)
+			case "year":
+				return ec.fieldContext_Car_year(ctx, field)
+			case "registration":
+				return ec.fieldContext_Car_registration(ctx, field)
+			case "color":
+				return ec.fieldContext_Car_color(ctx, field)
+			case "policeStationID":
+				return ec.fieldContext_Car_policeStationID(ctx, field)
+			case "stolenDate":
+				return ec.fieldContext_Car_stolenDate(ctx, field)
+			case "firNumber":
+				return ec.fieldContext_Car_firNumber(ctx, field)
+			case "policeStation":
+				return ec.fieldContext_Car_policeStation(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Car", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PoliceStation_parent(ctx context.Context, field graphql.CollectedField, obj *ent.PoliceStation) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PoliceStation_parent(ctx, field)
 	if err != nil {
@@ -11795,6 +12457,8 @@ func (ec *executionContext) fieldContext_PoliceStation_parent(_ context.Context,
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -11862,6 +12526,8 @@ func (ec *executionContext) fieldContext_PoliceStation_childStations(_ context.C
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -12074,6 +12740,8 @@ func (ec *executionContext) fieldContext_PoliceStationEdge_node(_ context.Contex
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -12813,6 +13481,8 @@ func (ec *executionContext) fieldContext_Query_getPoliceStation(ctx context.Cont
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -13102,6 +13772,8 @@ func (ec *executionContext) fieldContext_Query_getPoliceStationByName(ctx contex
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -14542,6 +15214,8 @@ func (ec *executionContext) fieldContext_User_policeStation(_ context.Context, f
 				return ec.fieldContext_PoliceStation_users(ctx, field)
 			case "camera":
 				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "car":
+				return ec.fieldContext_PoliceStation_car(ctx, field)
 			case "parent":
 				return ec.fieldContext_PoliceStation_parent(ctx, field)
 			case "childStations":
@@ -17005,7 +17679,7 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "make", "makeNEQ", "makeIn", "makeNotIn", "makeGT", "makeGTE", "makeLT", "makeLTE", "makeContains", "makeHasPrefix", "makeHasSuffix", "makeEqualFold", "makeContainsFold", "model", "modelNEQ", "modelIn", "modelNotIn", "modelGT", "modelGTE", "modelLT", "modelLTE", "modelContains", "modelHasPrefix", "modelHasSuffix", "modelEqualFold", "modelContainsFold", "year", "yearNEQ", "yearIn", "yearNotIn", "yearGT", "yearGTE", "yearLT", "yearLTE", "registration", "registrationNEQ", "registrationIn", "registrationNotIn", "registrationGT", "registrationGTE", "registrationLT", "registrationLTE", "registrationContains", "registrationHasPrefix", "registrationHasSuffix", "registrationEqualFold", "registrationContainsFold", "color", "colorNEQ", "colorIn", "colorNotIn", "colorGT", "colorGTE", "colorLT", "colorLTE", "colorContains", "colorHasPrefix", "colorHasSuffix", "colorEqualFold", "colorContainsFold"}
+	fieldsInOrder := [...]string{"not", "and", "or", "make", "makeNEQ", "makeIn", "makeNotIn", "makeGT", "makeGTE", "makeLT", "makeLTE", "makeContains", "makeHasPrefix", "makeHasSuffix", "makeIsNil", "makeNotNil", "makeEqualFold", "makeContainsFold", "model", "modelNEQ", "modelIn", "modelNotIn", "modelGT", "modelGTE", "modelLT", "modelLTE", "modelContains", "modelHasPrefix", "modelHasSuffix", "modelIsNil", "modelNotNil", "modelEqualFold", "modelContainsFold", "year", "yearNEQ", "yearIn", "yearNotIn", "yearGT", "yearGTE", "yearLT", "yearLTE", "yearIsNil", "yearNotNil", "registration", "registrationNEQ", "registrationIn", "registrationNotIn", "registrationGT", "registrationGTE", "registrationLT", "registrationLTE", "registrationContains", "registrationHasPrefix", "registrationHasSuffix", "registrationEqualFold", "registrationContainsFold", "color", "colorNEQ", "colorIn", "colorNotIn", "colorGT", "colorGTE", "colorLT", "colorLTE", "colorContains", "colorHasPrefix", "colorHasSuffix", "colorIsNil", "colorNotNil", "colorEqualFold", "colorContainsFold", "stolenDate", "stolenDateNEQ", "stolenDateIn", "stolenDateNotIn", "stolenDateGT", "stolenDateGTE", "stolenDateLT", "stolenDateLTE", "stolenDateIsNil", "stolenDateNotNil", "firNumber", "firNumberNEQ", "firNumberIn", "firNumberNotIn", "firNumberGT", "firNumberGTE", "firNumberLT", "firNumberLTE", "firNumberContains", "firNumberHasPrefix", "firNumberHasSuffix", "firNumberIsNil", "firNumberNotNil", "firNumberEqualFold", "firNumberContainsFold", "hasPoliceStation", "hasPoliceStationWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -17110,6 +17784,20 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 				return it, err
 			}
 			it.MakeHasSuffix = data
+		case "makeIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("makeIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MakeIsNil = data
+		case "makeNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("makeNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MakeNotNil = data
 		case "makeEqualFold":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("makeEqualFold"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -17201,6 +17889,20 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 				return it, err
 			}
 			it.ModelHasSuffix = data
+		case "modelIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("modelIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ModelIsNil = data
+		case "modelNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("modelNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ModelNotNil = data
 		case "modelEqualFold":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("modelEqualFold"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -17271,6 +17973,20 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 				return it, err
 			}
 			it.YearLTE = data
+		case "yearIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("yearIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.YearIsNil = data
+		case "yearNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("yearNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.YearNotNil = data
 		case "registration":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("registration"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -17439,6 +18155,20 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 				return it, err
 			}
 			it.ColorHasSuffix = data
+		case "colorIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ColorIsNil = data
+		case "colorNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ColorNotNil = data
 		case "colorEqualFold":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorEqualFold"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -17453,6 +18183,195 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 				return it, err
 			}
 			it.ColorContainsFold = data
+		case "stolenDate":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stolenDate"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StolenDate = data
+		case "stolenDateNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stolenDateNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StolenDateNEQ = data
+		case "stolenDateIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stolenDateIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StolenDateIn = data
+		case "stolenDateNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stolenDateNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StolenDateNotIn = data
+		case "stolenDateGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stolenDateGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StolenDateGT = data
+		case "stolenDateGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stolenDateGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StolenDateGTE = data
+		case "stolenDateLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stolenDateLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StolenDateLT = data
+		case "stolenDateLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stolenDateLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StolenDateLTE = data
+		case "stolenDateIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stolenDateIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StolenDateIsNil = data
+		case "stolenDateNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stolenDateNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StolenDateNotNil = data
+		case "firNumber":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumber"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumber = data
+		case "firNumberNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumberNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumberNEQ = data
+		case "firNumberIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumberIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumberIn = data
+		case "firNumberNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumberNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumberNotIn = data
+		case "firNumberGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumberGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumberGT = data
+		case "firNumberGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumberGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumberGTE = data
+		case "firNumberLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumberLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumberLT = data
+		case "firNumberLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumberLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumberLTE = data
+		case "firNumberContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumberContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumberContains = data
+		case "firNumberHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumberHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumberHasPrefix = data
+		case "firNumberHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumberHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumberHasSuffix = data
+		case "firNumberIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumberIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumberIsNil = data
+		case "firNumberNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumberNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumberNotNil = data
+		case "firNumberEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumberEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumberEqualFold = data
+		case "firNumberContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumberContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumberContainsFold = data
+		case "hasPoliceStation":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasPoliceStation"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasPoliceStation = data
+		case "hasPoliceStationWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasPoliceStationWith"))
+			data, err := ec.unmarshalOPoliceStationWhereInput2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStationWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasPoliceStationWith = data
 		}
 	}
 
@@ -17542,7 +18461,7 @@ func (ec *executionContext) unmarshalInputCreateCarInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "make", "model", "year", "registration", "color"}
+	fieldsInOrder := [...]string{"createdAt", "updatedAt", "make", "model", "year", "registration", "color", "stolenDate", "firNumber", "policeStationID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -17565,21 +18484,21 @@ func (ec *executionContext) unmarshalInputCreateCarInput(ctx context.Context, ob
 			it.UpdatedAt = data
 		case "make":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("make"))
-			data, err := ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Make = data
 		case "model":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("model"))
-			data, err := ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Model = data
 		case "year":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("year"))
-			data, err := ec.unmarshalNInt2int(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -17593,11 +18512,32 @@ func (ec *executionContext) unmarshalInputCreateCarInput(ctx context.Context, ob
 			it.Registration = data
 		case "color":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("color"))
-			data, err := ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Color = data
+		case "stolenDate":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stolenDate"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StolenDate = data
+		case "firNumber":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumber"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumber = data
+		case "policeStationID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("policeStationID"))
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PoliceStationID = data
 		}
 	}
 
@@ -17833,7 +18773,7 @@ func (ec *executionContext) unmarshalInputCreatePoliceStationInput(ctx context.C
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "name", "location", "code", "identifier", "userIDs", "cameraIDs", "parentID", "childStationIDs"}
+	fieldsInOrder := [...]string{"createdAt", "updatedAt", "name", "location", "code", "identifier", "userIDs", "cameraIDs", "carIDs", "parentID", "childStationIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -17896,6 +18836,13 @@ func (ec *executionContext) unmarshalInputCreatePoliceStationInput(ctx context.C
 				return it, err
 			}
 			it.CameraIDs = data
+		case "carIDs":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("carIDs"))
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgoogleᚋuuidᚐUUIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CarIDs = data
 		case "parentID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentID"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
@@ -19586,7 +20533,7 @@ func (ec *executionContext) unmarshalInputPoliceStationWhereInput(ctx context.Co
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "identifier", "identifierNEQ", "identifierIn", "identifierNotIn", "identifierGT", "identifierGTE", "identifierLT", "identifierLTE", "identifierContains", "identifierHasPrefix", "identifierHasSuffix", "identifierEqualFold", "identifierContainsFold", "parentStationID", "parentStationIDNEQ", "parentStationIDIn", "parentStationIDNotIn", "parentStationIDIsNil", "parentStationIDNotNil", "hasUsers", "hasUsersWith", "hasCamera", "hasCameraWith", "hasParent", "hasParentWith", "hasChildStations", "hasChildStationsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "identifier", "identifierNEQ", "identifierIn", "identifierNotIn", "identifierGT", "identifierGTE", "identifierLT", "identifierLTE", "identifierContains", "identifierHasPrefix", "identifierHasSuffix", "identifierEqualFold", "identifierContainsFold", "parentStationID", "parentStationIDNEQ", "parentStationIDIn", "parentStationIDNotIn", "parentStationIDIsNil", "parentStationIDNotNil", "hasUsers", "hasUsersWith", "hasCamera", "hasCameraWith", "hasCar", "hasCarWith", "hasParent", "hasParentWith", "hasChildStations", "hasChildStationsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -19957,6 +20904,20 @@ func (ec *executionContext) unmarshalInputPoliceStationWhereInput(ctx context.Co
 				return it, err
 			}
 			it.HasCameraWith = data
+		case "hasCar":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasCar"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasCar = data
+		case "hasCarWith":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasCarWith"))
+			data, err := ec.unmarshalOCarWhereInput2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐCarWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasCarWith = data
 		case "hasParent":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParent"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -20272,7 +21233,7 @@ func (ec *executionContext) unmarshalInputUpdateCarInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "make", "model", "year", "registration", "color"}
+	fieldsInOrder := [...]string{"updatedAt", "make", "clearMake", "model", "clearModel", "year", "clearYear", "registration", "color", "clearColor", "stolenDate", "clearStolenDate", "firNumber", "clearFirNumber", "policeStationID", "clearPoliceStation"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -20293,6 +21254,13 @@ func (ec *executionContext) unmarshalInputUpdateCarInput(ctx context.Context, ob
 				return it, err
 			}
 			it.Make = data
+		case "clearMake":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearMake"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearMake = data
 		case "model":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("model"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -20300,6 +21268,13 @@ func (ec *executionContext) unmarshalInputUpdateCarInput(ctx context.Context, ob
 				return it, err
 			}
 			it.Model = data
+		case "clearModel":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearModel"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearModel = data
 		case "year":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("year"))
 			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
@@ -20307,6 +21282,13 @@ func (ec *executionContext) unmarshalInputUpdateCarInput(ctx context.Context, ob
 				return it, err
 			}
 			it.Year = data
+		case "clearYear":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearYear"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearYear = data
 		case "registration":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("registration"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -20321,6 +21303,55 @@ func (ec *executionContext) unmarshalInputUpdateCarInput(ctx context.Context, ob
 				return it, err
 			}
 			it.Color = data
+		case "clearColor":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearColor"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearColor = data
+		case "stolenDate":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stolenDate"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.StolenDate = data
+		case "clearStolenDate":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearStolenDate"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearStolenDate = data
+		case "firNumber":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firNumber"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FirNumber = data
+		case "clearFirNumber":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearFirNumber"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearFirNumber = data
+		case "policeStationID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("policeStationID"))
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PoliceStationID = data
+		case "clearPoliceStation":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearPoliceStation"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearPoliceStation = data
 		}
 	}
 
@@ -20675,7 +21706,7 @@ func (ec *executionContext) unmarshalInputUpdatePoliceStationInput(ctx context.C
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "name", "location", "clearLocation", "code", "identifier", "addUserIDs", "removeUserIDs", "clearUsers", "addCameraIDs", "removeCameraIDs", "clearCamera", "parentID", "clearParent", "addChildStationIDs", "removeChildStationIDs", "clearChildStations"}
+	fieldsInOrder := [...]string{"updatedAt", "name", "location", "clearLocation", "code", "identifier", "addUserIDs", "removeUserIDs", "clearUsers", "addCameraIDs", "removeCameraIDs", "clearCamera", "addCarIDs", "removeCarIDs", "clearCar", "parentID", "clearParent", "addChildStationIDs", "removeChildStationIDs", "clearChildStations"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -20766,6 +21797,27 @@ func (ec *executionContext) unmarshalInputUpdatePoliceStationInput(ctx context.C
 				return it, err
 			}
 			it.ClearCamera = data
+		case "addCarIDs":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addCarIDs"))
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgoogleᚋuuidᚐUUIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddCarIDs = data
+		case "removeCarIDs":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeCarIDs"))
+			data, err := ec.unmarshalOID2ᚕgithubᚗcomᚋgoogleᚋuuidᚐUUIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RemoveCarIDs = data
+		case "clearCar":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearCar"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearCar = data
 		case "parentID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentID"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
@@ -21552,43 +22604,70 @@ func (ec *executionContext) _Car(ctx context.Context, sel ast.SelectionSet, obj 
 		case "id":
 			out.Values[i] = ec._Car_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "createdAt":
 			out.Values[i] = ec._Car_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "updatedAt":
 			out.Values[i] = ec._Car_updatedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "make":
 			out.Values[i] = ec._Car_make(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "model":
 			out.Values[i] = ec._Car_model(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "year":
 			out.Values[i] = ec._Car_year(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "registration":
 			out.Values[i] = ec._Car_registration(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				out.Invalids++
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "color":
 			out.Values[i] = ec._Car_color(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
+		case "policeStationID":
+			out.Values[i] = ec._Car_policeStationID(ctx, field, obj)
+		case "stolenDate":
+			out.Values[i] = ec._Car_stolenDate(ctx, field, obj)
+		case "firNumber":
+			out.Values[i] = ec._Car_firNumber(ctx, field, obj)
+		case "policeStation":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Car_policeStation(ctx, field, obj)
+				return res
 			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -21712,12 +22791,8 @@ func (ec *executionContext) _CustomEvent(ctx context.Context, sel ast.SelectionS
 			out.Values[i] = graphql.MarshalString("CustomEvent")
 		case "camera":
 			out.Values[i] = ec._CustomEvent_camera(ctx, field, obj)
-		case "plate_color":
-			out.Values[i] = ec._CustomEvent_plate_color(ctx, field, obj)
-		case "plate_number":
-			out.Values[i] = ec._CustomEvent_plate_number(ctx, field, obj)
-		case "snap_device_id":
-			out.Values[i] = ec._CustomEvent_snap_device_id(ctx, field, obj)
+		case "event":
+			out.Values[i] = ec._CustomEvent_event(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -22237,6 +23312,27 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "addRole":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_addRole(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateRole":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateRole(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteRole":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteRole(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "update_user_password":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_update_user_password(ctx, field)
@@ -22561,6 +23657,39 @@ func (ec *executionContext) _PoliceStation(ctx context.Context, sel ast.Selectio
 					}
 				}()
 				res = ec._PoliceStation_camera(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "car":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._PoliceStation_car(ctx, field, obj)
 				return res
 			}
 
@@ -24556,6 +25685,10 @@ func (ec *executionContext) marshalNRefreshTokenResponse2ᚖgoᚑentᚑproject�
 	return ec._RefreshTokenResponse(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNRole2goᚑentᚑprojectᚋinternalᚋentᚐRole(ctx context.Context, sel ast.SelectionSet, v ent.Role) graphql.Marshaler {
+	return ec._Role(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNRole2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐRole(ctx context.Context, sel ast.SelectionSet, v *ent.Role) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -25157,6 +26290,53 @@ func (ec *executionContext) unmarshalOCameraWhereInput2ᚖgoᚑentᚑprojectᚋi
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalOCar2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐCarᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Car) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCar2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCar(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalOCar2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCar(ctx context.Context, sel ast.SelectionSet, v *ent.Car) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -25281,6 +26461,14 @@ func (ec *executionContext) unmarshalOCreatePoliceStationInput2ᚖgoᚑentᚑpro
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputCreatePoliceStationInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOCreateRoleInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCreateRoleInput(ctx context.Context, v any) (*ent.CreateRoleInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputCreateRoleInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -26048,6 +27236,54 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return res
 }
 
+func (ec *executionContext) unmarshalOTime2timeᚐTime(ctx context.Context, v any) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx context.Context, v any) ([]time.Time, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]time.Time, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNTime2timeᚐTime(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOTime2ᚕtimeᚐTimeᚄ(ctx context.Context, sel ast.SelectionSet, v []time.Time) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNTime2timeᚐTime(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v any) (*time.Time, error) {
 	if v == nil {
 		return nil, nil
@@ -26085,6 +27321,14 @@ func (ec *executionContext) unmarshalOUpdatePoliceStationInput2ᚖgoᚑentᚑpro
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputUpdatePoliceStationInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOUpdateRoleInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUpdateRoleInput(ctx context.Context, v any) (*ent.UpdateRoleInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputUpdateRoleInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 

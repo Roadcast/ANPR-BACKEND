@@ -53,17 +53,28 @@ var (
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
-		{Name: "make", Type: field.TypeString},
-		{Name: "model", Type: field.TypeString},
-		{Name: "year", Type: field.TypeInt},
+		{Name: "make", Type: field.TypeString, Nullable: true},
+		{Name: "model", Type: field.TypeString, Nullable: true},
+		{Name: "year", Type: field.TypeInt, Nullable: true},
 		{Name: "registration", Type: field.TypeString, Unique: true},
-		{Name: "color", Type: field.TypeString},
+		{Name: "color", Type: field.TypeString, Nullable: true},
+		{Name: "stolen_date", Type: field.TypeTime, Nullable: true},
+		{Name: "fir_number", Type: field.TypeString, Nullable: true},
+		{Name: "police_station_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// CarsTable holds the schema information for the "cars" table.
 	CarsTable = &schema.Table{
 		Name:       "cars",
 		Columns:    CarsColumns,
 		PrimaryKey: []*schema.Column{CarsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "cars_police_stations_car",
+				Columns:    []*schema.Column{CarsColumns[10]},
+				RefColumns: []*schema.Column{PoliceStationsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// EventsColumns holds the columns for the "events" table.
 	EventsColumns = []*schema.Column{
@@ -231,6 +242,7 @@ var (
 
 func init() {
 	CamerasTable.ForeignKeys[0].RefTable = PoliceStationsTable
+	CarsTable.ForeignKeys[0].RefTable = PoliceStationsTable
 	PermissionsTable.ForeignKeys[0].RefTable = RolesTable
 	PoliceStationsTable.ForeignKeys[0].RefTable = PoliceStationsTable
 	UsersTable.ForeignKeys[0].RefTable = PoliceStationsTable

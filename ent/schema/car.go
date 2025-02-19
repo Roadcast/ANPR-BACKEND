@@ -1,8 +1,11 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"go-ent-project/utils/base"
 )
 
@@ -23,19 +26,19 @@ func (Car) Fields() []ent.Field {
 	return []ent.Field{
 		// Make of the car
 		field.String("make").
-			NotEmpty().
+			Optional().
 			Annotations(
 			// Expose in GraphQL
 			),
 
 		// Model of the car
 		field.String("model").
-			NotEmpty().
+			Optional().
 			Annotations(),
 
 		// Year of manufacture
 		field.Int("year").
-			Positive().
+			Optional().
 			Annotations(),
 
 		// Registration number of the car
@@ -46,15 +49,22 @@ func (Car) Fields() []ent.Field {
 
 		// Color of the car
 		field.String("color").
-			NotEmpty().
+			Optional().
 			Annotations(),
+
+		field.UUID("police_station_id", uuid.UUID{}).Nillable().
+			Optional().Annotations(entgql.Type("ID"), entgql.Skip(entgql.SkipWhereInput)),
+
+		field.Time("stolen_date").Optional().Annotations(),
+		field.String("fir_number").Optional().Annotations(),
 	}
 }
 
 // Edges of the Car.
 func (Car) Edges() []ent.Edge {
 	return []ent.Edge{
-		// Owner edge: A car belongs to a single user
-
+		edge.From("police_station", PoliceStation.Type).
+			Ref("car").Field("police_station_id").Unique().
+			Annotations(),
 	}
 }

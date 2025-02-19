@@ -100,13 +100,16 @@ func (c *CameraUpdateOne) SetInput(i UpdateCameraInput) *CameraUpdateOne {
 
 // CreateCarInput represents a mutation input for creating cars.
 type CreateCarInput struct {
-	CreatedAt    *time.Time
-	UpdatedAt    *time.Time
-	Make         string
-	Model        string
-	Year         int
-	Registration string
-	Color        string
+	CreatedAt       *time.Time
+	UpdatedAt       *time.Time
+	Make            *string
+	Model           *string
+	Year            *int
+	Registration    string
+	Color           *string
+	StolenDate      *time.Time
+	FirNumber       *string
+	PoliceStationID *uuid.UUID
 }
 
 // Mutate applies the CreateCarInput on the CarMutation builder.
@@ -114,34 +117,6 @@ func (i *CreateCarInput) Mutate(m *CarMutation) {
 	if v := i.CreatedAt; v != nil {
 		m.SetCreatedAt(*v)
 	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	m.SetMake(i.Make)
-	m.SetModel(i.Model)
-	m.SetYear(i.Year)
-	m.SetRegistration(i.Registration)
-	m.SetColor(i.Color)
-}
-
-// SetInput applies the change-set in the CreateCarInput on the CarCreate builder.
-func (c *CarCreate) SetInput(i CreateCarInput) *CarCreate {
-	i.Mutate(c.Mutation())
-	return c
-}
-
-// UpdateCarInput represents a mutation input for updating cars.
-type UpdateCarInput struct {
-	UpdatedAt    *time.Time
-	Make         *string
-	Model        *string
-	Year         *int
-	Registration *string
-	Color        *string
-}
-
-// Mutate applies the UpdateCarInput on the CarMutation builder.
-func (i *UpdateCarInput) Mutate(m *CarMutation) {
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)
 	}
@@ -154,11 +129,96 @@ func (i *UpdateCarInput) Mutate(m *CarMutation) {
 	if v := i.Year; v != nil {
 		m.SetYear(*v)
 	}
+	m.SetRegistration(i.Registration)
+	if v := i.Color; v != nil {
+		m.SetColor(*v)
+	}
+	if v := i.StolenDate; v != nil {
+		m.SetStolenDate(*v)
+	}
+	if v := i.FirNumber; v != nil {
+		m.SetFirNumber(*v)
+	}
+	if v := i.PoliceStationID; v != nil {
+		m.SetPoliceStationID(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateCarInput on the CarCreate builder.
+func (c *CarCreate) SetInput(i CreateCarInput) *CarCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateCarInput represents a mutation input for updating cars.
+type UpdateCarInput struct {
+	UpdatedAt          *time.Time
+	ClearMake          bool
+	Make               *string
+	ClearModel         bool
+	Model              *string
+	ClearYear          bool
+	Year               *int
+	Registration       *string
+	ClearColor         bool
+	Color              *string
+	ClearStolenDate    bool
+	StolenDate         *time.Time
+	ClearFirNumber     bool
+	FirNumber          *string
+	ClearPoliceStation bool
+	PoliceStationID    *uuid.UUID
+}
+
+// Mutate applies the UpdateCarInput on the CarMutation builder.
+func (i *UpdateCarInput) Mutate(m *CarMutation) {
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	if i.ClearMake {
+		m.ClearMake()
+	}
+	if v := i.Make; v != nil {
+		m.SetMake(*v)
+	}
+	if i.ClearModel {
+		m.ClearModel()
+	}
+	if v := i.Model; v != nil {
+		m.SetModel(*v)
+	}
+	if i.ClearYear {
+		m.ClearYear()
+	}
+	if v := i.Year; v != nil {
+		m.SetYear(*v)
+	}
 	if v := i.Registration; v != nil {
 		m.SetRegistration(*v)
 	}
+	if i.ClearColor {
+		m.ClearColor()
+	}
 	if v := i.Color; v != nil {
 		m.SetColor(*v)
+	}
+	if i.ClearStolenDate {
+		m.ClearStolenDate()
+	}
+	if v := i.StolenDate; v != nil {
+		m.SetStolenDate(*v)
+	}
+	if i.ClearFirNumber {
+		m.ClearFirNumber()
+	}
+	if v := i.FirNumber; v != nil {
+		m.SetFirNumber(*v)
+	}
+	if i.ClearPoliceStation {
+		m.ClearPoliceStation()
+	}
+	if v := i.PoliceStationID; v != nil {
+		m.SetPoliceStationID(*v)
 	}
 }
 
@@ -526,6 +586,7 @@ type CreatePoliceStationInput struct {
 	Identifier      string
 	UserIDs         []uuid.UUID
 	CameraIDs       []uuid.UUID
+	CarIDs          []uuid.UUID
 	ParentID        *uuid.UUID
 	ChildStationIDs []uuid.UUID
 }
@@ -549,6 +610,9 @@ func (i *CreatePoliceStationInput) Mutate(m *PoliceStationMutation) {
 	}
 	if v := i.CameraIDs; len(v) > 0 {
 		m.AddCameraIDs(v...)
+	}
+	if v := i.CarIDs; len(v) > 0 {
+		m.AddCarIDs(v...)
 	}
 	if v := i.ParentID; v != nil {
 		m.SetParentID(*v)
@@ -578,6 +642,9 @@ type UpdatePoliceStationInput struct {
 	ClearCamera           bool
 	AddCameraIDs          []uuid.UUID
 	RemoveCameraIDs       []uuid.UUID
+	ClearCar              bool
+	AddCarIDs             []uuid.UUID
+	RemoveCarIDs          []uuid.UUID
 	ClearParent           bool
 	ParentID              *uuid.UUID
 	ClearChildStations    bool
@@ -622,6 +689,15 @@ func (i *UpdatePoliceStationInput) Mutate(m *PoliceStationMutation) {
 	}
 	if v := i.RemoveCameraIDs; len(v) > 0 {
 		m.RemoveCameraIDs(v...)
+	}
+	if i.ClearCar {
+		m.ClearCar()
+	}
+	if v := i.AddCarIDs; len(v) > 0 {
+		m.AddCarIDs(v...)
+	}
+	if v := i.RemoveCarIDs; len(v) > 0 {
+		m.RemoveCarIDs(v...)
 	}
 	if i.ClearParent {
 		m.ClearParent()

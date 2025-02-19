@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go-ent-project/internal/ent/car"
+	"go-ent-project/internal/ent/policestation"
 	"time"
 
 	"entgo.io/ent/dialect"
@@ -58,15 +59,39 @@ func (cc *CarCreate) SetMake(s string) *CarCreate {
 	return cc
 }
 
+// SetNillableMake sets the "make" field if the given value is not nil.
+func (cc *CarCreate) SetNillableMake(s *string) *CarCreate {
+	if s != nil {
+		cc.SetMake(*s)
+	}
+	return cc
+}
+
 // SetModel sets the "model" field.
 func (cc *CarCreate) SetModel(s string) *CarCreate {
 	cc.mutation.SetModel(s)
 	return cc
 }
 
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (cc *CarCreate) SetNillableModel(s *string) *CarCreate {
+	if s != nil {
+		cc.SetModel(*s)
+	}
+	return cc
+}
+
 // SetYear sets the "year" field.
 func (cc *CarCreate) SetYear(i int) *CarCreate {
 	cc.mutation.SetYear(i)
+	return cc
+}
+
+// SetNillableYear sets the "year" field if the given value is not nil.
+func (cc *CarCreate) SetNillableYear(i *int) *CarCreate {
+	if i != nil {
+		cc.SetYear(*i)
+	}
 	return cc
 }
 
@@ -82,6 +107,56 @@ func (cc *CarCreate) SetColor(s string) *CarCreate {
 	return cc
 }
 
+// SetNillableColor sets the "color" field if the given value is not nil.
+func (cc *CarCreate) SetNillableColor(s *string) *CarCreate {
+	if s != nil {
+		cc.SetColor(*s)
+	}
+	return cc
+}
+
+// SetPoliceStationID sets the "police_station_id" field.
+func (cc *CarCreate) SetPoliceStationID(u uuid.UUID) *CarCreate {
+	cc.mutation.SetPoliceStationID(u)
+	return cc
+}
+
+// SetNillablePoliceStationID sets the "police_station_id" field if the given value is not nil.
+func (cc *CarCreate) SetNillablePoliceStationID(u *uuid.UUID) *CarCreate {
+	if u != nil {
+		cc.SetPoliceStationID(*u)
+	}
+	return cc
+}
+
+// SetStolenDate sets the "stolen_date" field.
+func (cc *CarCreate) SetStolenDate(t time.Time) *CarCreate {
+	cc.mutation.SetStolenDate(t)
+	return cc
+}
+
+// SetNillableStolenDate sets the "stolen_date" field if the given value is not nil.
+func (cc *CarCreate) SetNillableStolenDate(t *time.Time) *CarCreate {
+	if t != nil {
+		cc.SetStolenDate(*t)
+	}
+	return cc
+}
+
+// SetFirNumber sets the "fir_number" field.
+func (cc *CarCreate) SetFirNumber(s string) *CarCreate {
+	cc.mutation.SetFirNumber(s)
+	return cc
+}
+
+// SetNillableFirNumber sets the "fir_number" field if the given value is not nil.
+func (cc *CarCreate) SetNillableFirNumber(s *string) *CarCreate {
+	if s != nil {
+		cc.SetFirNumber(*s)
+	}
+	return cc
+}
+
 // SetID sets the "id" field.
 func (cc *CarCreate) SetID(u uuid.UUID) *CarCreate {
 	cc.mutation.SetID(u)
@@ -94,6 +169,11 @@ func (cc *CarCreate) SetNillableID(u *uuid.UUID) *CarCreate {
 		cc.SetID(*u)
 	}
 	return cc
+}
+
+// SetPoliceStation sets the "police_station" edge to the PoliceStation entity.
+func (cc *CarCreate) SetPoliceStation(p *PoliceStation) *CarCreate {
+	return cc.SetPoliceStationID(p.ID)
 }
 
 // Mutation returns the CarMutation object of the builder.
@@ -153,44 +233,12 @@ func (cc *CarCreate) check() error {
 	if _, ok := cc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Car.updated_at"`)}
 	}
-	if _, ok := cc.mutation.Make(); !ok {
-		return &ValidationError{Name: "make", err: errors.New(`ent: missing required field "Car.make"`)}
-	}
-	if v, ok := cc.mutation.Make(); ok {
-		if err := car.MakeValidator(v); err != nil {
-			return &ValidationError{Name: "make", err: fmt.Errorf(`ent: validator failed for field "Car.make": %w`, err)}
-		}
-	}
-	if _, ok := cc.mutation.Model(); !ok {
-		return &ValidationError{Name: "model", err: errors.New(`ent: missing required field "Car.model"`)}
-	}
-	if v, ok := cc.mutation.Model(); ok {
-		if err := car.ModelValidator(v); err != nil {
-			return &ValidationError{Name: "model", err: fmt.Errorf(`ent: validator failed for field "Car.model": %w`, err)}
-		}
-	}
-	if _, ok := cc.mutation.Year(); !ok {
-		return &ValidationError{Name: "year", err: errors.New(`ent: missing required field "Car.year"`)}
-	}
-	if v, ok := cc.mutation.Year(); ok {
-		if err := car.YearValidator(v); err != nil {
-			return &ValidationError{Name: "year", err: fmt.Errorf(`ent: validator failed for field "Car.year": %w`, err)}
-		}
-	}
 	if _, ok := cc.mutation.Registration(); !ok {
 		return &ValidationError{Name: "registration", err: errors.New(`ent: missing required field "Car.registration"`)}
 	}
 	if v, ok := cc.mutation.Registration(); ok {
 		if err := car.RegistrationValidator(v); err != nil {
 			return &ValidationError{Name: "registration", err: fmt.Errorf(`ent: validator failed for field "Car.registration": %w`, err)}
-		}
-	}
-	if _, ok := cc.mutation.Color(); !ok {
-		return &ValidationError{Name: "color", err: errors.New(`ent: missing required field "Car.color"`)}
-	}
-	if v, ok := cc.mutation.Color(); ok {
-		if err := car.ColorValidator(v); err != nil {
-			return &ValidationError{Name: "color", err: fmt.Errorf(`ent: validator failed for field "Car.color": %w`, err)}
 		}
 	}
 	return nil
@@ -256,6 +304,31 @@ func (cc *CarCreate) createSpec() (*Car, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.Color(); ok {
 		_spec.SetField(car.FieldColor, field.TypeString, value)
 		_node.Color = value
+	}
+	if value, ok := cc.mutation.StolenDate(); ok {
+		_spec.SetField(car.FieldStolenDate, field.TypeTime, value)
+		_node.StolenDate = value
+	}
+	if value, ok := cc.mutation.FirNumber(); ok {
+		_spec.SetField(car.FieldFirNumber, field.TypeString, value)
+		_node.FirNumber = value
+	}
+	if nodes := cc.mutation.PoliceStationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   car.PoliceStationTable,
+			Columns: []string{car.PoliceStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.PoliceStationID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -333,6 +406,12 @@ func (u *CarUpsert) UpdateMake() *CarUpsert {
 	return u
 }
 
+// ClearMake clears the value of the "make" field.
+func (u *CarUpsert) ClearMake() *CarUpsert {
+	u.SetNull(car.FieldMake)
+	return u
+}
+
 // SetModel sets the "model" field.
 func (u *CarUpsert) SetModel(v string) *CarUpsert {
 	u.Set(car.FieldModel, v)
@@ -342,6 +421,12 @@ func (u *CarUpsert) SetModel(v string) *CarUpsert {
 // UpdateModel sets the "model" field to the value that was provided on create.
 func (u *CarUpsert) UpdateModel() *CarUpsert {
 	u.SetExcluded(car.FieldModel)
+	return u
+}
+
+// ClearModel clears the value of the "model" field.
+func (u *CarUpsert) ClearModel() *CarUpsert {
+	u.SetNull(car.FieldModel)
 	return u
 }
 
@@ -360,6 +445,12 @@ func (u *CarUpsert) UpdateYear() *CarUpsert {
 // AddYear adds v to the "year" field.
 func (u *CarUpsert) AddYear(v int) *CarUpsert {
 	u.Add(car.FieldYear, v)
+	return u
+}
+
+// ClearYear clears the value of the "year" field.
+func (u *CarUpsert) ClearYear() *CarUpsert {
+	u.SetNull(car.FieldYear)
 	return u
 }
 
@@ -384,6 +475,66 @@ func (u *CarUpsert) SetColor(v string) *CarUpsert {
 // UpdateColor sets the "color" field to the value that was provided on create.
 func (u *CarUpsert) UpdateColor() *CarUpsert {
 	u.SetExcluded(car.FieldColor)
+	return u
+}
+
+// ClearColor clears the value of the "color" field.
+func (u *CarUpsert) ClearColor() *CarUpsert {
+	u.SetNull(car.FieldColor)
+	return u
+}
+
+// SetPoliceStationID sets the "police_station_id" field.
+func (u *CarUpsert) SetPoliceStationID(v uuid.UUID) *CarUpsert {
+	u.Set(car.FieldPoliceStationID, v)
+	return u
+}
+
+// UpdatePoliceStationID sets the "police_station_id" field to the value that was provided on create.
+func (u *CarUpsert) UpdatePoliceStationID() *CarUpsert {
+	u.SetExcluded(car.FieldPoliceStationID)
+	return u
+}
+
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (u *CarUpsert) ClearPoliceStationID() *CarUpsert {
+	u.SetNull(car.FieldPoliceStationID)
+	return u
+}
+
+// SetStolenDate sets the "stolen_date" field.
+func (u *CarUpsert) SetStolenDate(v time.Time) *CarUpsert {
+	u.Set(car.FieldStolenDate, v)
+	return u
+}
+
+// UpdateStolenDate sets the "stolen_date" field to the value that was provided on create.
+func (u *CarUpsert) UpdateStolenDate() *CarUpsert {
+	u.SetExcluded(car.FieldStolenDate)
+	return u
+}
+
+// ClearStolenDate clears the value of the "stolen_date" field.
+func (u *CarUpsert) ClearStolenDate() *CarUpsert {
+	u.SetNull(car.FieldStolenDate)
+	return u
+}
+
+// SetFirNumber sets the "fir_number" field.
+func (u *CarUpsert) SetFirNumber(v string) *CarUpsert {
+	u.Set(car.FieldFirNumber, v)
+	return u
+}
+
+// UpdateFirNumber sets the "fir_number" field to the value that was provided on create.
+func (u *CarUpsert) UpdateFirNumber() *CarUpsert {
+	u.SetExcluded(car.FieldFirNumber)
+	return u
+}
+
+// ClearFirNumber clears the value of the "fir_number" field.
+func (u *CarUpsert) ClearFirNumber() *CarUpsert {
+	u.SetNull(car.FieldFirNumber)
 	return u
 }
 
@@ -466,6 +617,13 @@ func (u *CarUpsertOne) UpdateMake() *CarUpsertOne {
 	})
 }
 
+// ClearMake clears the value of the "make" field.
+func (u *CarUpsertOne) ClearMake() *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.ClearMake()
+	})
+}
+
 // SetModel sets the "model" field.
 func (u *CarUpsertOne) SetModel(v string) *CarUpsertOne {
 	return u.Update(func(s *CarUpsert) {
@@ -477,6 +635,13 @@ func (u *CarUpsertOne) SetModel(v string) *CarUpsertOne {
 func (u *CarUpsertOne) UpdateModel() *CarUpsertOne {
 	return u.Update(func(s *CarUpsert) {
 		s.UpdateModel()
+	})
+}
+
+// ClearModel clears the value of the "model" field.
+func (u *CarUpsertOne) ClearModel() *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.ClearModel()
 	})
 }
 
@@ -498,6 +663,13 @@ func (u *CarUpsertOne) AddYear(v int) *CarUpsertOne {
 func (u *CarUpsertOne) UpdateYear() *CarUpsertOne {
 	return u.Update(func(s *CarUpsert) {
 		s.UpdateYear()
+	})
+}
+
+// ClearYear clears the value of the "year" field.
+func (u *CarUpsertOne) ClearYear() *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.ClearYear()
 	})
 }
 
@@ -526,6 +698,76 @@ func (u *CarUpsertOne) SetColor(v string) *CarUpsertOne {
 func (u *CarUpsertOne) UpdateColor() *CarUpsertOne {
 	return u.Update(func(s *CarUpsert) {
 		s.UpdateColor()
+	})
+}
+
+// ClearColor clears the value of the "color" field.
+func (u *CarUpsertOne) ClearColor() *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.ClearColor()
+	})
+}
+
+// SetPoliceStationID sets the "police_station_id" field.
+func (u *CarUpsertOne) SetPoliceStationID(v uuid.UUID) *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.SetPoliceStationID(v)
+	})
+}
+
+// UpdatePoliceStationID sets the "police_station_id" field to the value that was provided on create.
+func (u *CarUpsertOne) UpdatePoliceStationID() *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.UpdatePoliceStationID()
+	})
+}
+
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (u *CarUpsertOne) ClearPoliceStationID() *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.ClearPoliceStationID()
+	})
+}
+
+// SetStolenDate sets the "stolen_date" field.
+func (u *CarUpsertOne) SetStolenDate(v time.Time) *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.SetStolenDate(v)
+	})
+}
+
+// UpdateStolenDate sets the "stolen_date" field to the value that was provided on create.
+func (u *CarUpsertOne) UpdateStolenDate() *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.UpdateStolenDate()
+	})
+}
+
+// ClearStolenDate clears the value of the "stolen_date" field.
+func (u *CarUpsertOne) ClearStolenDate() *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.ClearStolenDate()
+	})
+}
+
+// SetFirNumber sets the "fir_number" field.
+func (u *CarUpsertOne) SetFirNumber(v string) *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.SetFirNumber(v)
+	})
+}
+
+// UpdateFirNumber sets the "fir_number" field to the value that was provided on create.
+func (u *CarUpsertOne) UpdateFirNumber() *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.UpdateFirNumber()
+	})
+}
+
+// ClearFirNumber clears the value of the "fir_number" field.
+func (u *CarUpsertOne) ClearFirNumber() *CarUpsertOne {
+	return u.Update(func(s *CarUpsert) {
+		s.ClearFirNumber()
 	})
 }
 
@@ -775,6 +1017,13 @@ func (u *CarUpsertBulk) UpdateMake() *CarUpsertBulk {
 	})
 }
 
+// ClearMake clears the value of the "make" field.
+func (u *CarUpsertBulk) ClearMake() *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.ClearMake()
+	})
+}
+
 // SetModel sets the "model" field.
 func (u *CarUpsertBulk) SetModel(v string) *CarUpsertBulk {
 	return u.Update(func(s *CarUpsert) {
@@ -786,6 +1035,13 @@ func (u *CarUpsertBulk) SetModel(v string) *CarUpsertBulk {
 func (u *CarUpsertBulk) UpdateModel() *CarUpsertBulk {
 	return u.Update(func(s *CarUpsert) {
 		s.UpdateModel()
+	})
+}
+
+// ClearModel clears the value of the "model" field.
+func (u *CarUpsertBulk) ClearModel() *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.ClearModel()
 	})
 }
 
@@ -807,6 +1063,13 @@ func (u *CarUpsertBulk) AddYear(v int) *CarUpsertBulk {
 func (u *CarUpsertBulk) UpdateYear() *CarUpsertBulk {
 	return u.Update(func(s *CarUpsert) {
 		s.UpdateYear()
+	})
+}
+
+// ClearYear clears the value of the "year" field.
+func (u *CarUpsertBulk) ClearYear() *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.ClearYear()
 	})
 }
 
@@ -835,6 +1098,76 @@ func (u *CarUpsertBulk) SetColor(v string) *CarUpsertBulk {
 func (u *CarUpsertBulk) UpdateColor() *CarUpsertBulk {
 	return u.Update(func(s *CarUpsert) {
 		s.UpdateColor()
+	})
+}
+
+// ClearColor clears the value of the "color" field.
+func (u *CarUpsertBulk) ClearColor() *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.ClearColor()
+	})
+}
+
+// SetPoliceStationID sets the "police_station_id" field.
+func (u *CarUpsertBulk) SetPoliceStationID(v uuid.UUID) *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.SetPoliceStationID(v)
+	})
+}
+
+// UpdatePoliceStationID sets the "police_station_id" field to the value that was provided on create.
+func (u *CarUpsertBulk) UpdatePoliceStationID() *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.UpdatePoliceStationID()
+	})
+}
+
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (u *CarUpsertBulk) ClearPoliceStationID() *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.ClearPoliceStationID()
+	})
+}
+
+// SetStolenDate sets the "stolen_date" field.
+func (u *CarUpsertBulk) SetStolenDate(v time.Time) *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.SetStolenDate(v)
+	})
+}
+
+// UpdateStolenDate sets the "stolen_date" field to the value that was provided on create.
+func (u *CarUpsertBulk) UpdateStolenDate() *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.UpdateStolenDate()
+	})
+}
+
+// ClearStolenDate clears the value of the "stolen_date" field.
+func (u *CarUpsertBulk) ClearStolenDate() *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.ClearStolenDate()
+	})
+}
+
+// SetFirNumber sets the "fir_number" field.
+func (u *CarUpsertBulk) SetFirNumber(v string) *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.SetFirNumber(v)
+	})
+}
+
+// UpdateFirNumber sets the "fir_number" field to the value that was provided on create.
+func (u *CarUpsertBulk) UpdateFirNumber() *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.UpdateFirNumber()
+	})
+}
+
+// ClearFirNumber clears the value of the "fir_number" field.
+func (u *CarUpsertBulk) ClearFirNumber() *CarUpsertBulk {
+	return u.Update(func(s *CarUpsert) {
+		s.ClearFirNumber()
 	})
 }
 

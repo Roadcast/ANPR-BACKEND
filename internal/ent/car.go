@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"go-ent-project/internal/ent/car"
+	"go-ent-project/internal/ent/policestation"
 	"strings"
 	"time"
 
@@ -31,8 +32,39 @@ type Car struct {
 	// Registration holds the value of the "registration" field.
 	Registration string `json:"registration,omitempty"`
 	// Color holds the value of the "color" field.
-	Color        string `json:"color,omitempty"`
+	Color string `json:"color,omitempty"`
+	// PoliceStationID holds the value of the "police_station_id" field.
+	PoliceStationID *uuid.UUID `json:"police_station_id,omitempty"`
+	// StolenDate holds the value of the "stolen_date" field.
+	StolenDate time.Time `json:"stolen_date,omitempty"`
+	// FirNumber holds the value of the "fir_number" field.
+	FirNumber string `json:"fir_number,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the CarQuery when eager-loading is set.
+	Edges        CarEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// CarEdges holds the relations/edges for other nodes in the graph.
+type CarEdges struct {
+	// PoliceStation holds the value of the police_station edge.
+	PoliceStation *PoliceStation `json:"police_station,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+	// totalCount holds the count of the edges above.
+	totalCount [1]map[string]int
+}
+
+// PoliceStationOrErr returns the PoliceStation value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CarEdges) PoliceStationOrErr() (*PoliceStation, error) {
+	if e.PoliceStation != nil {
+		return e.PoliceStation, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: policestation.Label}
+	}
+	return nil, &NotLoadedError{edge: "police_station"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -40,11 +72,13 @@ func (*Car) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case car.FieldPoliceStationID:
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		case car.FieldYear:
 			values[i] = new(sql.NullInt64)
-		case car.FieldMake, car.FieldModel, car.FieldRegistration, car.FieldColor:
+		case car.FieldMake, car.FieldModel, car.FieldRegistration, car.FieldColor, car.FieldFirNumber:
 			values[i] = new(sql.NullString)
-		case car.FieldCreatedAt, car.FieldUpdatedAt:
+		case car.FieldCreatedAt, car.FieldUpdatedAt, car.FieldStolenDate:
 			values[i] = new(sql.NullTime)
 		case car.FieldID:
 			values[i] = new(uuid.UUID)
@@ -111,6 +145,25 @@ func (c *Car) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.Color = value.String
 			}
+		case car.FieldPoliceStationID:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field police_station_id", values[i])
+			} else if value.Valid {
+				c.PoliceStationID = new(uuid.UUID)
+				*c.PoliceStationID = *value.S.(*uuid.UUID)
+			}
+		case car.FieldStolenDate:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field stolen_date", values[i])
+			} else if value.Valid {
+				c.StolenDate = value.Time
+			}
+		case car.FieldFirNumber:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field fir_number", values[i])
+			} else if value.Valid {
+				c.FirNumber = value.String
+			}
 		default:
 			c.selectValues.Set(columns[i], values[i])
 		}
@@ -122,6 +175,11 @@ func (c *Car) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (c *Car) Value(name string) (ent.Value, error) {
 	return c.selectValues.Get(name)
+}
+
+// QueryPoliceStation queries the "police_station" edge of the Car entity.
+func (c *Car) QueryPoliceStation() *PoliceStationQuery {
+	return NewCarClient(c.config).QueryPoliceStation(c)
 }
 
 // Update returns a builder for updating this Car.
@@ -167,6 +225,17 @@ func (c *Car) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("color=")
 	builder.WriteString(c.Color)
+	builder.WriteString(", ")
+	if v := c.PoliceStationID; v != nil {
+		builder.WriteString("police_station_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	builder.WriteString("stolen_date=")
+	builder.WriteString(c.StolenDate.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("fir_number=")
+	builder.WriteString(c.FirNumber)
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -512,6 +512,22 @@ func (c *CarClient) GetX(ctx context.Context, id uuid.UUID) *Car {
 	return obj
 }
 
+// QueryPoliceStation queries the police_station edge of a Car.
+func (c *CarClient) QueryPoliceStation(ca *Car) *PoliceStationQuery {
+	query := (&PoliceStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(car.Table, car.FieldID, id),
+			sqlgraph.To(policestation.Table, policestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, car.PoliceStationTable, car.PoliceStationColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CarClient) Hooks() []Hook {
 	return c.hooks.Car
@@ -936,6 +952,22 @@ func (c *PoliceStationClient) QueryCamera(ps *PoliceStation) *CameraQuery {
 			sqlgraph.From(policestation.Table, policestation.FieldID, id),
 			sqlgraph.To(camera.Table, camera.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, policestation.CameraTable, policestation.CameraColumn),
+		)
+		fromV = sqlgraph.Neighbors(ps.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCar queries the car edge of a PoliceStation.
+func (c *PoliceStationClient) QueryCar(ps *PoliceStation) *CarQuery {
+	query := (&CarClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ps.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(policestation.Table, policestation.FieldID, id),
+			sqlgraph.To(car.Table, car.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, policestation.CarTable, policestation.CarColumn),
 		)
 		fromV = sqlgraph.Neighbors(ps.driver.Dialect(), step)
 		return fromV, nil

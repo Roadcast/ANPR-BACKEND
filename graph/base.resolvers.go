@@ -193,9 +193,8 @@ func (r *queryResolver) GetEvents(ctx context.Context, after *entgql.Cursor[uuid
 	var data []*model.CustomEvent
 	for _, v := range d {
 		data = append(data, &model.CustomEvent{
-			PlateColor:  &v.PlateColor,
-			PlateNumber: &v.PlateNumber,
-			Camera:      r.Client.Camera.Query().Where(camera.ImeiEQ(v.SnapDeviceID)).OnlyX(ctx),
+			Event:  v,
+			Camera: r.Client.Camera.Query().Where(camera.ImeiEQ(v.SnapDeviceID)).OnlyX(ctx),
 		})
 	}
 	return &model.EventList{

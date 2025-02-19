@@ -44,18 +44,21 @@ type PoliceStationEdges struct {
 	Users []*User `json:"users,omitempty"`
 	// Camera holds the value of the camera edge.
 	Camera []*Camera `json:"camera,omitempty"`
+	// Car holds the value of the car edge.
+	Car []*Car `json:"car,omitempty"`
 	// Parent holds the value of the parent edge.
 	Parent *PoliceStation `json:"parent,omitempty"`
 	// ChildStations holds the value of the child_stations edge.
 	ChildStations []*PoliceStation `json:"child_stations,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 	// totalCount holds the count of the edges above.
-	totalCount [4]map[string]int
+	totalCount [5]map[string]int
 
 	namedUsers         map[string][]*User
 	namedCamera        map[string][]*Camera
+	namedCar           map[string][]*Car
 	namedChildStations map[string][]*PoliceStation
 }
 
@@ -77,12 +80,21 @@ func (e PoliceStationEdges) CameraOrErr() ([]*Camera, error) {
 	return nil, &NotLoadedError{edge: "camera"}
 }
 
+// CarOrErr returns the Car value or an error if the edge
+// was not loaded in eager-loading.
+func (e PoliceStationEdges) CarOrErr() ([]*Car, error) {
+	if e.loadedTypes[2] {
+		return e.Car, nil
+	}
+	return nil, &NotLoadedError{edge: "car"}
+}
+
 // ParentOrErr returns the Parent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PoliceStationEdges) ParentOrErr() (*PoliceStation, error) {
 	if e.Parent != nil {
 		return e.Parent, nil
-	} else if e.loadedTypes[2] {
+	} else if e.loadedTypes[3] {
 		return nil, &NotFoundError{label: policestation.Label}
 	}
 	return nil, &NotLoadedError{edge: "parent"}
@@ -91,7 +103,7 @@ func (e PoliceStationEdges) ParentOrErr() (*PoliceStation, error) {
 // ChildStationsOrErr returns the ChildStations value or an error if the edge
 // was not loaded in eager-loading.
 func (e PoliceStationEdges) ChildStationsOrErr() ([]*PoliceStation, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.ChildStations, nil
 	}
 	return nil, &NotLoadedError{edge: "child_stations"}
@@ -196,6 +208,11 @@ func (ps *PoliceStation) QueryUsers() *UserQuery {
 // QueryCamera queries the "camera" edge of the PoliceStation entity.
 func (ps *PoliceStation) QueryCamera() *CameraQuery {
 	return NewPoliceStationClient(ps.config).QueryCamera(ps)
+}
+
+// QueryCar queries the "car" edge of the PoliceStation entity.
+func (ps *PoliceStation) QueryCar() *CarQuery {
+	return NewPoliceStationClient(ps.config).QueryCar(ps)
 }
 
 // QueryParent queries the "parent" edge of the PoliceStation entity.
@@ -304,6 +321,30 @@ func (ps *PoliceStation) appendNamedCamera(name string, edges ...*Camera) {
 		ps.Edges.namedCamera[name] = []*Camera{}
 	} else {
 		ps.Edges.namedCamera[name] = append(ps.Edges.namedCamera[name], edges...)
+	}
+}
+
+// NamedCar returns the Car named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (ps *PoliceStation) NamedCar(name string) ([]*Car, error) {
+	if ps.Edges.namedCar == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := ps.Edges.namedCar[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (ps *PoliceStation) appendNamedCar(name string, edges ...*Car) {
+	if ps.Edges.namedCar == nil {
+		ps.Edges.namedCar = make(map[string][]*Car)
+	}
+	if len(edges) == 0 {
+		ps.Edges.namedCar[name] = []*Car{}
+	} else {
+		ps.Edges.namedCar[name] = append(ps.Edges.namedCar[name], edges...)
 	}
 }
 

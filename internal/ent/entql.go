@@ -53,13 +53,16 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Car",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			car.FieldCreatedAt:    {Type: field.TypeTime, Column: car.FieldCreatedAt},
-			car.FieldUpdatedAt:    {Type: field.TypeTime, Column: car.FieldUpdatedAt},
-			car.FieldMake:         {Type: field.TypeString, Column: car.FieldMake},
-			car.FieldModel:        {Type: field.TypeString, Column: car.FieldModel},
-			car.FieldYear:         {Type: field.TypeInt, Column: car.FieldYear},
-			car.FieldRegistration: {Type: field.TypeString, Column: car.FieldRegistration},
-			car.FieldColor:        {Type: field.TypeString, Column: car.FieldColor},
+			car.FieldCreatedAt:       {Type: field.TypeTime, Column: car.FieldCreatedAt},
+			car.FieldUpdatedAt:       {Type: field.TypeTime, Column: car.FieldUpdatedAt},
+			car.FieldMake:            {Type: field.TypeString, Column: car.FieldMake},
+			car.FieldModel:           {Type: field.TypeString, Column: car.FieldModel},
+			car.FieldYear:            {Type: field.TypeInt, Column: car.FieldYear},
+			car.FieldRegistration:    {Type: field.TypeString, Column: car.FieldRegistration},
+			car.FieldColor:           {Type: field.TypeString, Column: car.FieldColor},
+			car.FieldPoliceStationID: {Type: field.TypeUUID, Column: car.FieldPoliceStationID},
+			car.FieldStolenDate:      {Type: field.TypeTime, Column: car.FieldStolenDate},
+			car.FieldFirNumber:       {Type: field.TypeString, Column: car.FieldFirNumber},
 		},
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
@@ -185,6 +188,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"PoliceStation",
 	)
 	graph.MustAddE(
+		"police_station",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   car.PoliceStationTable,
+			Columns: []string{car.PoliceStationColumn},
+			Bidi:    false,
+		},
+		"Car",
+		"PoliceStation",
+	)
+	graph.MustAddE(
 		"users",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -207,6 +222,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"PoliceStation",
 		"Camera",
+	)
+	graph.MustAddE(
+		"car",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CarTable,
+			Columns: []string{policestation.CarColumn},
+			Bidi:    false,
+		},
+		"PoliceStation",
+		"Car",
 	)
 	graph.MustAddE(
 		"parent",
@@ -456,6 +483,35 @@ func (f *CarFilter) WhereRegistration(p entql.StringP) {
 // WhereColor applies the entql string predicate on the color field.
 func (f *CarFilter) WhereColor(p entql.StringP) {
 	f.Where(p.Field(car.FieldColor))
+}
+
+// WherePoliceStationID applies the entql [16]byte predicate on the police_station_id field.
+func (f *CarFilter) WherePoliceStationID(p entql.ValueP) {
+	f.Where(p.Field(car.FieldPoliceStationID))
+}
+
+// WhereStolenDate applies the entql time.Time predicate on the stolen_date field.
+func (f *CarFilter) WhereStolenDate(p entql.TimeP) {
+	f.Where(p.Field(car.FieldStolenDate))
+}
+
+// WhereFirNumber applies the entql string predicate on the fir_number field.
+func (f *CarFilter) WhereFirNumber(p entql.StringP) {
+	f.Where(p.Field(car.FieldFirNumber))
+}
+
+// WhereHasPoliceStation applies a predicate to check if query has an edge police_station.
+func (f *CarFilter) WhereHasPoliceStation() {
+	f.Where(entql.HasEdge("police_station"))
+}
+
+// WhereHasPoliceStationWith applies a predicate to check if query has an edge police_station with a given conditions (other predicates).
+func (f *CarFilter) WhereHasPoliceStationWith(preds ...predicate.PoliceStation) {
+	f.Where(entql.HasEdgeWith("police_station", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // addPredicate implements the predicateAdder interface.
@@ -765,6 +821,20 @@ func (f *PoliceStationFilter) WhereHasCamera() {
 // WhereHasCameraWith applies a predicate to check if query has an edge camera with a given conditions (other predicates).
 func (f *PoliceStationFilter) WhereHasCameraWith(preds ...predicate.Camera) {
 	f.Where(entql.HasEdgeWith("camera", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCar applies a predicate to check if query has an edge car.
+func (f *PoliceStationFilter) WhereHasCar() {
+	f.Where(entql.HasEdge("car"))
+}
+
+// WhereHasCarWith applies a predicate to check if query has an edge car with a given conditions (other predicates).
+func (f *PoliceStationFilter) WhereHasCarWith(preds ...predicate.Car) {
+	f.Where(entql.HasEdgeWith("car", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

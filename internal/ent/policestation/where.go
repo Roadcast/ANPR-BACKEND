@@ -517,6 +517,29 @@ func HasCameraWith(preds ...predicate.Camera) predicate.PoliceStation {
 	})
 }
 
+// HasCar applies the HasEdge predicate on the "car" edge.
+func HasCar() predicate.PoliceStation {
+	return predicate.PoliceStation(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CarTable, CarColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCarWith applies the HasEdge predicate on the "car" edge with a given conditions (other predicates).
+func HasCarWith(preds ...predicate.Car) predicate.PoliceStation {
+	return predicate.PoliceStation(func(s *sql.Selector) {
+		step := newCarStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasParent applies the HasEdge predicate on the "parent" edge.
 func HasParent() predicate.PoliceStation {
 	return predicate.PoliceStation(func(s *sql.Selector) {

@@ -182,6 +182,21 @@ func (c *CarQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphq
 	)
 	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
 		switch field.Name {
+
+		case "policeStation":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&PoliceStationClient{config: c.config}).Query()
+			)
+			if err := query.collectField(ctx, oneNode, opCtx, field, path, mayAddCondition(satisfies, policestationImplementors)...); err != nil {
+				return err
+			}
+			c.withPoliceStation = query
+			if _, ok := fieldSeen[car.FieldPoliceStationID]; !ok {
+				selectedFields = append(selectedFields, car.FieldPoliceStationID)
+				fieldSeen[car.FieldPoliceStationID] = struct{}{}
+			}
 		case "createdAt":
 			if _, ok := fieldSeen[car.FieldCreatedAt]; !ok {
 				selectedFields = append(selectedFields, car.FieldCreatedAt)
@@ -216,6 +231,21 @@ func (c *CarQuery) collectField(ctx context.Context, oneNode bool, opCtx *graphq
 			if _, ok := fieldSeen[car.FieldColor]; !ok {
 				selectedFields = append(selectedFields, car.FieldColor)
 				fieldSeen[car.FieldColor] = struct{}{}
+			}
+		case "policeStationID":
+			if _, ok := fieldSeen[car.FieldPoliceStationID]; !ok {
+				selectedFields = append(selectedFields, car.FieldPoliceStationID)
+				fieldSeen[car.FieldPoliceStationID] = struct{}{}
+			}
+		case "stolenDate":
+			if _, ok := fieldSeen[car.FieldStolenDate]; !ok {
+				selectedFields = append(selectedFields, car.FieldStolenDate)
+				fieldSeen[car.FieldStolenDate] = struct{}{}
+			}
+		case "firNumber":
+			if _, ok := fieldSeen[car.FieldFirNumber]; !ok {
+				selectedFields = append(selectedFields, car.FieldFirNumber)
+				fieldSeen[car.FieldFirNumber] = struct{}{}
 			}
 		case "id":
 		case "__typename":
@@ -641,6 +671,19 @@ func (ps *PoliceStationQuery) collectField(ctx context.Context, oneNode bool, op
 				return err
 			}
 			ps.WithNamedCamera(alias, func(wq *CameraQuery) {
+				*wq = *query
+			})
+
+		case "car":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = (&CarClient{config: ps.config}).Query()
+			)
+			if err := query.collectField(ctx, false, opCtx, field, path, mayAddCondition(satisfies, carImplementors)...); err != nil {
+				return err
+			}
+			ps.WithNamedCar(alias, func(wq *CarQuery) {
 				*wq = *query
 			})
 

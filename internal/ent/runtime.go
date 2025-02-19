@@ -70,26 +70,10 @@ func init() {
 	car.DefaultUpdatedAt = carDescUpdatedAt.Default.(func() time.Time)
 	// car.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	car.UpdateDefaultUpdatedAt = carDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// carDescMake is the schema descriptor for make field.
-	carDescMake := carFields[0].Descriptor()
-	// car.MakeValidator is a validator for the "make" field. It is called by the builders before save.
-	car.MakeValidator = carDescMake.Validators[0].(func(string) error)
-	// carDescModel is the schema descriptor for model field.
-	carDescModel := carFields[1].Descriptor()
-	// car.ModelValidator is a validator for the "model" field. It is called by the builders before save.
-	car.ModelValidator = carDescModel.Validators[0].(func(string) error)
-	// carDescYear is the schema descriptor for year field.
-	carDescYear := carFields[2].Descriptor()
-	// car.YearValidator is a validator for the "year" field. It is called by the builders before save.
-	car.YearValidator = carDescYear.Validators[0].(func(int) error)
 	// carDescRegistration is the schema descriptor for registration field.
 	carDescRegistration := carFields[3].Descriptor()
 	// car.RegistrationValidator is a validator for the "registration" field. It is called by the builders before save.
 	car.RegistrationValidator = carDescRegistration.Validators[0].(func(string) error)
-	// carDescColor is the schema descriptor for color field.
-	carDescColor := carFields[4].Descriptor()
-	// car.ColorValidator is a validator for the "color" field. It is called by the builders before save.
-	car.ColorValidator = carDescColor.Validators[0].(func(string) error)
 	// carDescID is the schema descriptor for id field.
 	carDescID := carMixinFields0[0].Descriptor()
 	// car.DefaultID holds the default value on creation for the id field.

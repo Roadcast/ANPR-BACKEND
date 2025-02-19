@@ -16,6 +16,14 @@ func (c *Camera) PoliceStation(ctx context.Context) (*PoliceStation, error) {
 	return result, MaskNotFound(err)
 }
 
+func (c *Car) PoliceStation(ctx context.Context) (*PoliceStation, error) {
+	result, err := c.Edges.PoliceStationOrErr()
+	if IsNotLoaded(err) {
+		result, err = c.QueryPoliceStation().Only(ctx)
+	}
+	return result, MaskNotFound(err)
+}
+
 func (ps *PoliceStation) Users(ctx context.Context) (result []*User, err error) {
 	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
 		result, err = ps.NamedUsers(graphql.GetFieldContext(ctx).Field.Alias)
@@ -36,6 +44,18 @@ func (ps *PoliceStation) Camera(ctx context.Context) (result []*Camera, err erro
 	}
 	if IsNotLoaded(err) {
 		result, err = ps.QueryCamera().All(ctx)
+	}
+	return result, err
+}
+
+func (ps *PoliceStation) Car(ctx context.Context) (result []*Car, err error) {
+	if fc := graphql.GetFieldContext(ctx); fc != nil && fc.Field.Alias != "" {
+		result, err = ps.NamedCar(graphql.GetFieldContext(ctx).Field.Alias)
+	} else {
+		result, err = ps.Edges.CarOrErr()
+	}
+	if IsNotLoaded(err) {
+		result, err = ps.QueryCar().All(ctx)
 	}
 	return result, err
 }

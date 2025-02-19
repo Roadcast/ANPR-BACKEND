@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go-ent-project/internal/ent/camera"
+	"go-ent-project/internal/ent/car"
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/user"
 	"time"
@@ -142,6 +143,21 @@ func (psc *PoliceStationCreate) AddCamera(c ...*Camera) *PoliceStationCreate {
 		ids[i] = c[i].ID
 	}
 	return psc.AddCameraIDs(ids...)
+}
+
+// AddCarIDs adds the "car" edge to the Car entity by IDs.
+func (psc *PoliceStationCreate) AddCarIDs(ids ...uuid.UUID) *PoliceStationCreate {
+	psc.mutation.AddCarIDs(ids...)
+	return psc
+}
+
+// AddCar adds the "car" edges to the Car entity.
+func (psc *PoliceStationCreate) AddCar(c ...*Car) *PoliceStationCreate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return psc.AddCarIDs(ids...)
 }
 
 // SetParentID sets the "parent" edge to the PoliceStation entity by ID.
@@ -344,6 +360,22 @@ func (psc *PoliceStationCreate) createSpec() (*PoliceStation, *sqlgraph.CreateSp
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(camera.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := psc.mutation.CarIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CarTable,
+			Columns: []string{policestation.CarColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(car.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

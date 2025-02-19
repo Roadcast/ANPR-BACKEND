@@ -56,7 +56,8 @@ func (Camera) Fields() []ent.Field {
 			Default(true).
 			Annotations(),
 
-		field.UUID("police_station_id", uuid.UUID{}).Nillable().Optional().Annotations(entgql.Type("ID"), entgql.Skip(entgql.SkipWhereInput)),
+		field.UUID("police_station_id", uuid.UUID{}).Nillable().
+			Optional().Annotations(entgql.Type("ID"), entgql.Skip(entgql.SkipWhereInput)),
 	}
 }
 

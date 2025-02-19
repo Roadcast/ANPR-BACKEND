@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go-ent-project/internal/ent/camera"
+	"go-ent-project/internal/ent/car"
 	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/predicate"
 	"go-ent-project/internal/ent/user"
@@ -149,6 +150,21 @@ func (psu *PoliceStationUpdate) AddCamera(c ...*Camera) *PoliceStationUpdate {
 	return psu.AddCameraIDs(ids...)
 }
 
+// AddCarIDs adds the "car" edge to the Car entity by IDs.
+func (psu *PoliceStationUpdate) AddCarIDs(ids ...uuid.UUID) *PoliceStationUpdate {
+	psu.mutation.AddCarIDs(ids...)
+	return psu
+}
+
+// AddCar adds the "car" edges to the Car entity.
+func (psu *PoliceStationUpdate) AddCar(c ...*Car) *PoliceStationUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return psu.AddCarIDs(ids...)
+}
+
 // SetParentID sets the "parent" edge to the PoliceStation entity by ID.
 func (psu *PoliceStationUpdate) SetParentID(id uuid.UUID) *PoliceStationUpdate {
 	psu.mutation.SetParentID(id)
@@ -228,6 +244,27 @@ func (psu *PoliceStationUpdate) RemoveCamera(c ...*Camera) *PoliceStationUpdate 
 		ids[i] = c[i].ID
 	}
 	return psu.RemoveCameraIDs(ids...)
+}
+
+// ClearCar clears all "car" edges to the Car entity.
+func (psu *PoliceStationUpdate) ClearCar() *PoliceStationUpdate {
+	psu.mutation.ClearCar()
+	return psu
+}
+
+// RemoveCarIDs removes the "car" edge to Car entities by IDs.
+func (psu *PoliceStationUpdate) RemoveCarIDs(ids ...uuid.UUID) *PoliceStationUpdate {
+	psu.mutation.RemoveCarIDs(ids...)
+	return psu
+}
+
+// RemoveCar removes "car" edges to Car entities.
+func (psu *PoliceStationUpdate) RemoveCar(c ...*Car) *PoliceStationUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return psu.RemoveCarIDs(ids...)
 }
 
 // ClearParent clears the "parent" edge to the PoliceStation entity.
@@ -426,6 +463,51 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(camera.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if psu.mutation.CarCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CarTable,
+			Columns: []string{policestation.CarColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(car.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := psu.mutation.RemovedCarIDs(); len(nodes) > 0 && !psu.mutation.CarCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CarTable,
+			Columns: []string{policestation.CarColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(car.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := psu.mutation.CarIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CarTable,
+			Columns: []string{policestation.CarColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(car.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -645,6 +727,21 @@ func (psuo *PoliceStationUpdateOne) AddCamera(c ...*Camera) *PoliceStationUpdate
 	return psuo.AddCameraIDs(ids...)
 }
 
+// AddCarIDs adds the "car" edge to the Car entity by IDs.
+func (psuo *PoliceStationUpdateOne) AddCarIDs(ids ...uuid.UUID) *PoliceStationUpdateOne {
+	psuo.mutation.AddCarIDs(ids...)
+	return psuo
+}
+
+// AddCar adds the "car" edges to the Car entity.
+func (psuo *PoliceStationUpdateOne) AddCar(c ...*Car) *PoliceStationUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return psuo.AddCarIDs(ids...)
+}
+
 // SetParentID sets the "parent" edge to the PoliceStation entity by ID.
 func (psuo *PoliceStationUpdateOne) SetParentID(id uuid.UUID) *PoliceStationUpdateOne {
 	psuo.mutation.SetParentID(id)
@@ -724,6 +821,27 @@ func (psuo *PoliceStationUpdateOne) RemoveCamera(c ...*Camera) *PoliceStationUpd
 		ids[i] = c[i].ID
 	}
 	return psuo.RemoveCameraIDs(ids...)
+}
+
+// ClearCar clears all "car" edges to the Car entity.
+func (psuo *PoliceStationUpdateOne) ClearCar() *PoliceStationUpdateOne {
+	psuo.mutation.ClearCar()
+	return psuo
+}
+
+// RemoveCarIDs removes the "car" edge to Car entities by IDs.
+func (psuo *PoliceStationUpdateOne) RemoveCarIDs(ids ...uuid.UUID) *PoliceStationUpdateOne {
+	psuo.mutation.RemoveCarIDs(ids...)
+	return psuo
+}
+
+// RemoveCar removes "car" edges to Car entities.
+func (psuo *PoliceStationUpdateOne) RemoveCar(c ...*Car) *PoliceStationUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return psuo.RemoveCarIDs(ids...)
 }
 
 // ClearParent clears the "parent" edge to the PoliceStation entity.
@@ -952,6 +1070,51 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(camera.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if psuo.mutation.CarCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CarTable,
+			Columns: []string{policestation.CarColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(car.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := psuo.mutation.RemovedCarIDs(); len(nodes) > 0 && !psuo.mutation.CarCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CarTable,
+			Columns: []string{policestation.CarColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(car.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := psuo.mutation.CarIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   policestation.CarTable,
+			Columns: []string{policestation.CarColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(car.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

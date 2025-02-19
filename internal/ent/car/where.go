@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -88,6 +89,21 @@ func Registration(v string) predicate.Car {
 // Color applies equality check predicate on the "color" field. It's identical to ColorEQ.
 func Color(v string) predicate.Car {
 	return predicate.Car(sql.FieldEQ(FieldColor, v))
+}
+
+// PoliceStationID applies equality check predicate on the "police_station_id" field. It's identical to PoliceStationIDEQ.
+func PoliceStationID(v uuid.UUID) predicate.Car {
+	return predicate.Car(sql.FieldEQ(FieldPoliceStationID, v))
+}
+
+// StolenDate applies equality check predicate on the "stolen_date" field. It's identical to StolenDateEQ.
+func StolenDate(v time.Time) predicate.Car {
+	return predicate.Car(sql.FieldEQ(FieldStolenDate, v))
+}
+
+// FirNumber applies equality check predicate on the "fir_number" field. It's identical to FirNumberEQ.
+func FirNumber(v string) predicate.Car {
+	return predicate.Car(sql.FieldEQ(FieldFirNumber, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -225,6 +241,16 @@ func MakeHasSuffix(v string) predicate.Car {
 	return predicate.Car(sql.FieldHasSuffix(FieldMake, v))
 }
 
+// MakeIsNil applies the IsNil predicate on the "make" field.
+func MakeIsNil() predicate.Car {
+	return predicate.Car(sql.FieldIsNull(FieldMake))
+}
+
+// MakeNotNil applies the NotNil predicate on the "make" field.
+func MakeNotNil() predicate.Car {
+	return predicate.Car(sql.FieldNotNull(FieldMake))
+}
+
 // MakeEqualFold applies the EqualFold predicate on the "make" field.
 func MakeEqualFold(v string) predicate.Car {
 	return predicate.Car(sql.FieldEqualFold(FieldMake, v))
@@ -290,6 +316,16 @@ func ModelHasSuffix(v string) predicate.Car {
 	return predicate.Car(sql.FieldHasSuffix(FieldModel, v))
 }
 
+// ModelIsNil applies the IsNil predicate on the "model" field.
+func ModelIsNil() predicate.Car {
+	return predicate.Car(sql.FieldIsNull(FieldModel))
+}
+
+// ModelNotNil applies the NotNil predicate on the "model" field.
+func ModelNotNil() predicate.Car {
+	return predicate.Car(sql.FieldNotNull(FieldModel))
+}
+
 // ModelEqualFold applies the EqualFold predicate on the "model" field.
 func ModelEqualFold(v string) predicate.Car {
 	return predicate.Car(sql.FieldEqualFold(FieldModel, v))
@@ -338,6 +374,16 @@ func YearLT(v int) predicate.Car {
 // YearLTE applies the LTE predicate on the "year" field.
 func YearLTE(v int) predicate.Car {
 	return predicate.Car(sql.FieldLTE(FieldYear, v))
+}
+
+// YearIsNil applies the IsNil predicate on the "year" field.
+func YearIsNil() predicate.Car {
+	return predicate.Car(sql.FieldIsNull(FieldYear))
+}
+
+// YearNotNil applies the NotNil predicate on the "year" field.
+func YearNotNil() predicate.Car {
+	return predicate.Car(sql.FieldNotNull(FieldYear))
 }
 
 // RegistrationEQ applies the EQ predicate on the "registration" field.
@@ -460,6 +506,16 @@ func ColorHasSuffix(v string) predicate.Car {
 	return predicate.Car(sql.FieldHasSuffix(FieldColor, v))
 }
 
+// ColorIsNil applies the IsNil predicate on the "color" field.
+func ColorIsNil() predicate.Car {
+	return predicate.Car(sql.FieldIsNull(FieldColor))
+}
+
+// ColorNotNil applies the NotNil predicate on the "color" field.
+func ColorNotNil() predicate.Car {
+	return predicate.Car(sql.FieldNotNull(FieldColor))
+}
+
 // ColorEqualFold applies the EqualFold predicate on the "color" field.
 func ColorEqualFold(v string) predicate.Car {
 	return predicate.Car(sql.FieldEqualFold(FieldColor, v))
@@ -468,6 +524,184 @@ func ColorEqualFold(v string) predicate.Car {
 // ColorContainsFold applies the ContainsFold predicate on the "color" field.
 func ColorContainsFold(v string) predicate.Car {
 	return predicate.Car(sql.FieldContainsFold(FieldColor, v))
+}
+
+// PoliceStationIDEQ applies the EQ predicate on the "police_station_id" field.
+func PoliceStationIDEQ(v uuid.UUID) predicate.Car {
+	return predicate.Car(sql.FieldEQ(FieldPoliceStationID, v))
+}
+
+// PoliceStationIDNEQ applies the NEQ predicate on the "police_station_id" field.
+func PoliceStationIDNEQ(v uuid.UUID) predicate.Car {
+	return predicate.Car(sql.FieldNEQ(FieldPoliceStationID, v))
+}
+
+// PoliceStationIDIn applies the In predicate on the "police_station_id" field.
+func PoliceStationIDIn(vs ...uuid.UUID) predicate.Car {
+	return predicate.Car(sql.FieldIn(FieldPoliceStationID, vs...))
+}
+
+// PoliceStationIDNotIn applies the NotIn predicate on the "police_station_id" field.
+func PoliceStationIDNotIn(vs ...uuid.UUID) predicate.Car {
+	return predicate.Car(sql.FieldNotIn(FieldPoliceStationID, vs...))
+}
+
+// PoliceStationIDIsNil applies the IsNil predicate on the "police_station_id" field.
+func PoliceStationIDIsNil() predicate.Car {
+	return predicate.Car(sql.FieldIsNull(FieldPoliceStationID))
+}
+
+// PoliceStationIDNotNil applies the NotNil predicate on the "police_station_id" field.
+func PoliceStationIDNotNil() predicate.Car {
+	return predicate.Car(sql.FieldNotNull(FieldPoliceStationID))
+}
+
+// StolenDateEQ applies the EQ predicate on the "stolen_date" field.
+func StolenDateEQ(v time.Time) predicate.Car {
+	return predicate.Car(sql.FieldEQ(FieldStolenDate, v))
+}
+
+// StolenDateNEQ applies the NEQ predicate on the "stolen_date" field.
+func StolenDateNEQ(v time.Time) predicate.Car {
+	return predicate.Car(sql.FieldNEQ(FieldStolenDate, v))
+}
+
+// StolenDateIn applies the In predicate on the "stolen_date" field.
+func StolenDateIn(vs ...time.Time) predicate.Car {
+	return predicate.Car(sql.FieldIn(FieldStolenDate, vs...))
+}
+
+// StolenDateNotIn applies the NotIn predicate on the "stolen_date" field.
+func StolenDateNotIn(vs ...time.Time) predicate.Car {
+	return predicate.Car(sql.FieldNotIn(FieldStolenDate, vs...))
+}
+
+// StolenDateGT applies the GT predicate on the "stolen_date" field.
+func StolenDateGT(v time.Time) predicate.Car {
+	return predicate.Car(sql.FieldGT(FieldStolenDate, v))
+}
+
+// StolenDateGTE applies the GTE predicate on the "stolen_date" field.
+func StolenDateGTE(v time.Time) predicate.Car {
+	return predicate.Car(sql.FieldGTE(FieldStolenDate, v))
+}
+
+// StolenDateLT applies the LT predicate on the "stolen_date" field.
+func StolenDateLT(v time.Time) predicate.Car {
+	return predicate.Car(sql.FieldLT(FieldStolenDate, v))
+}
+
+// StolenDateLTE applies the LTE predicate on the "stolen_date" field.
+func StolenDateLTE(v time.Time) predicate.Car {
+	return predicate.Car(sql.FieldLTE(FieldStolenDate, v))
+}
+
+// StolenDateIsNil applies the IsNil predicate on the "stolen_date" field.
+func StolenDateIsNil() predicate.Car {
+	return predicate.Car(sql.FieldIsNull(FieldStolenDate))
+}
+
+// StolenDateNotNil applies the NotNil predicate on the "stolen_date" field.
+func StolenDateNotNil() predicate.Car {
+	return predicate.Car(sql.FieldNotNull(FieldStolenDate))
+}
+
+// FirNumberEQ applies the EQ predicate on the "fir_number" field.
+func FirNumberEQ(v string) predicate.Car {
+	return predicate.Car(sql.FieldEQ(FieldFirNumber, v))
+}
+
+// FirNumberNEQ applies the NEQ predicate on the "fir_number" field.
+func FirNumberNEQ(v string) predicate.Car {
+	return predicate.Car(sql.FieldNEQ(FieldFirNumber, v))
+}
+
+// FirNumberIn applies the In predicate on the "fir_number" field.
+func FirNumberIn(vs ...string) predicate.Car {
+	return predicate.Car(sql.FieldIn(FieldFirNumber, vs...))
+}
+
+// FirNumberNotIn applies the NotIn predicate on the "fir_number" field.
+func FirNumberNotIn(vs ...string) predicate.Car {
+	return predicate.Car(sql.FieldNotIn(FieldFirNumber, vs...))
+}
+
+// FirNumberGT applies the GT predicate on the "fir_number" field.
+func FirNumberGT(v string) predicate.Car {
+	return predicate.Car(sql.FieldGT(FieldFirNumber, v))
+}
+
+// FirNumberGTE applies the GTE predicate on the "fir_number" field.
+func FirNumberGTE(v string) predicate.Car {
+	return predicate.Car(sql.FieldGTE(FieldFirNumber, v))
+}
+
+// FirNumberLT applies the LT predicate on the "fir_number" field.
+func FirNumberLT(v string) predicate.Car {
+	return predicate.Car(sql.FieldLT(FieldFirNumber, v))
+}
+
+// FirNumberLTE applies the LTE predicate on the "fir_number" field.
+func FirNumberLTE(v string) predicate.Car {
+	return predicate.Car(sql.FieldLTE(FieldFirNumber, v))
+}
+
+// FirNumberContains applies the Contains predicate on the "fir_number" field.
+func FirNumberContains(v string) predicate.Car {
+	return predicate.Car(sql.FieldContains(FieldFirNumber, v))
+}
+
+// FirNumberHasPrefix applies the HasPrefix predicate on the "fir_number" field.
+func FirNumberHasPrefix(v string) predicate.Car {
+	return predicate.Car(sql.FieldHasPrefix(FieldFirNumber, v))
+}
+
+// FirNumberHasSuffix applies the HasSuffix predicate on the "fir_number" field.
+func FirNumberHasSuffix(v string) predicate.Car {
+	return predicate.Car(sql.FieldHasSuffix(FieldFirNumber, v))
+}
+
+// FirNumberIsNil applies the IsNil predicate on the "fir_number" field.
+func FirNumberIsNil() predicate.Car {
+	return predicate.Car(sql.FieldIsNull(FieldFirNumber))
+}
+
+// FirNumberNotNil applies the NotNil predicate on the "fir_number" field.
+func FirNumberNotNil() predicate.Car {
+	return predicate.Car(sql.FieldNotNull(FieldFirNumber))
+}
+
+// FirNumberEqualFold applies the EqualFold predicate on the "fir_number" field.
+func FirNumberEqualFold(v string) predicate.Car {
+	return predicate.Car(sql.FieldEqualFold(FieldFirNumber, v))
+}
+
+// FirNumberContainsFold applies the ContainsFold predicate on the "fir_number" field.
+func FirNumberContainsFold(v string) predicate.Car {
+	return predicate.Car(sql.FieldContainsFold(FieldFirNumber, v))
+}
+
+// HasPoliceStation applies the HasEdge predicate on the "police_station" edge.
+func HasPoliceStation() predicate.Car {
+	return predicate.Car(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, PoliceStationTable, PoliceStationColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPoliceStationWith applies the HasEdge predicate on the "police_station" edge with a given conditions (other predicates).
+func HasPoliceStationWith(preds ...predicate.PoliceStation) predicate.Car {
+	return predicate.Car(func(s *sql.Selector) {
+		step := newPoliceStationStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

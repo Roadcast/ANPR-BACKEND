@@ -7,12 +7,14 @@ import (
 	"errors"
 	"fmt"
 	"go-ent-project/internal/ent/car"
+	"go-ent-project/internal/ent/policestation"
 	"go-ent-project/internal/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // CarUpdate is the builder for updating Car entities.
@@ -48,6 +50,12 @@ func (cu *CarUpdate) SetNillableMake(s *string) *CarUpdate {
 	return cu
 }
 
+// ClearMake clears the value of the "make" field.
+func (cu *CarUpdate) ClearMake() *CarUpdate {
+	cu.mutation.ClearMake()
+	return cu
+}
+
 // SetModel sets the "model" field.
 func (cu *CarUpdate) SetModel(s string) *CarUpdate {
 	cu.mutation.SetModel(s)
@@ -59,6 +67,12 @@ func (cu *CarUpdate) SetNillableModel(s *string) *CarUpdate {
 	if s != nil {
 		cu.SetModel(*s)
 	}
+	return cu
+}
+
+// ClearModel clears the value of the "model" field.
+func (cu *CarUpdate) ClearModel() *CarUpdate {
+	cu.mutation.ClearModel()
 	return cu
 }
 
@@ -80,6 +94,12 @@ func (cu *CarUpdate) SetNillableYear(i *int) *CarUpdate {
 // AddYear adds i to the "year" field.
 func (cu *CarUpdate) AddYear(i int) *CarUpdate {
 	cu.mutation.AddYear(i)
+	return cu
+}
+
+// ClearYear clears the value of the "year" field.
+func (cu *CarUpdate) ClearYear() *CarUpdate {
+	cu.mutation.ClearYear()
 	return cu
 }
 
@@ -111,9 +131,86 @@ func (cu *CarUpdate) SetNillableColor(s *string) *CarUpdate {
 	return cu
 }
 
+// ClearColor clears the value of the "color" field.
+func (cu *CarUpdate) ClearColor() *CarUpdate {
+	cu.mutation.ClearColor()
+	return cu
+}
+
+// SetPoliceStationID sets the "police_station_id" field.
+func (cu *CarUpdate) SetPoliceStationID(u uuid.UUID) *CarUpdate {
+	cu.mutation.SetPoliceStationID(u)
+	return cu
+}
+
+// SetNillablePoliceStationID sets the "police_station_id" field if the given value is not nil.
+func (cu *CarUpdate) SetNillablePoliceStationID(u *uuid.UUID) *CarUpdate {
+	if u != nil {
+		cu.SetPoliceStationID(*u)
+	}
+	return cu
+}
+
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (cu *CarUpdate) ClearPoliceStationID() *CarUpdate {
+	cu.mutation.ClearPoliceStationID()
+	return cu
+}
+
+// SetStolenDate sets the "stolen_date" field.
+func (cu *CarUpdate) SetStolenDate(t time.Time) *CarUpdate {
+	cu.mutation.SetStolenDate(t)
+	return cu
+}
+
+// SetNillableStolenDate sets the "stolen_date" field if the given value is not nil.
+func (cu *CarUpdate) SetNillableStolenDate(t *time.Time) *CarUpdate {
+	if t != nil {
+		cu.SetStolenDate(*t)
+	}
+	return cu
+}
+
+// ClearStolenDate clears the value of the "stolen_date" field.
+func (cu *CarUpdate) ClearStolenDate() *CarUpdate {
+	cu.mutation.ClearStolenDate()
+	return cu
+}
+
+// SetFirNumber sets the "fir_number" field.
+func (cu *CarUpdate) SetFirNumber(s string) *CarUpdate {
+	cu.mutation.SetFirNumber(s)
+	return cu
+}
+
+// SetNillableFirNumber sets the "fir_number" field if the given value is not nil.
+func (cu *CarUpdate) SetNillableFirNumber(s *string) *CarUpdate {
+	if s != nil {
+		cu.SetFirNumber(*s)
+	}
+	return cu
+}
+
+// ClearFirNumber clears the value of the "fir_number" field.
+func (cu *CarUpdate) ClearFirNumber() *CarUpdate {
+	cu.mutation.ClearFirNumber()
+	return cu
+}
+
+// SetPoliceStation sets the "police_station" edge to the PoliceStation entity.
+func (cu *CarUpdate) SetPoliceStation(p *PoliceStation) *CarUpdate {
+	return cu.SetPoliceStationID(p.ID)
+}
+
 // Mutation returns the CarMutation object of the builder.
 func (cu *CarUpdate) Mutation() *CarMutation {
 	return cu.mutation
+}
+
+// ClearPoliceStation clears the "police_station" edge to the PoliceStation entity.
+func (cu *CarUpdate) ClearPoliceStation() *CarUpdate {
+	cu.mutation.ClearPoliceStation()
+	return cu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -154,29 +251,9 @@ func (cu *CarUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (cu *CarUpdate) check() error {
-	if v, ok := cu.mutation.Make(); ok {
-		if err := car.MakeValidator(v); err != nil {
-			return &ValidationError{Name: "make", err: fmt.Errorf(`ent: validator failed for field "Car.make": %w`, err)}
-		}
-	}
-	if v, ok := cu.mutation.Model(); ok {
-		if err := car.ModelValidator(v); err != nil {
-			return &ValidationError{Name: "model", err: fmt.Errorf(`ent: validator failed for field "Car.model": %w`, err)}
-		}
-	}
-	if v, ok := cu.mutation.Year(); ok {
-		if err := car.YearValidator(v); err != nil {
-			return &ValidationError{Name: "year", err: fmt.Errorf(`ent: validator failed for field "Car.year": %w`, err)}
-		}
-	}
 	if v, ok := cu.mutation.Registration(); ok {
 		if err := car.RegistrationValidator(v); err != nil {
 			return &ValidationError{Name: "registration", err: fmt.Errorf(`ent: validator failed for field "Car.registration": %w`, err)}
-		}
-	}
-	if v, ok := cu.mutation.Color(); ok {
-		if err := car.ColorValidator(v); err != nil {
-			return &ValidationError{Name: "color", err: fmt.Errorf(`ent: validator failed for field "Car.color": %w`, err)}
 		}
 	}
 	return nil
@@ -200,8 +277,14 @@ func (cu *CarUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := cu.mutation.Make(); ok {
 		_spec.SetField(car.FieldMake, field.TypeString, value)
 	}
+	if cu.mutation.MakeCleared() {
+		_spec.ClearField(car.FieldMake, field.TypeString)
+	}
 	if value, ok := cu.mutation.Model(); ok {
 		_spec.SetField(car.FieldModel, field.TypeString, value)
+	}
+	if cu.mutation.ModelCleared() {
+		_spec.ClearField(car.FieldModel, field.TypeString)
 	}
 	if value, ok := cu.mutation.Year(); ok {
 		_spec.SetField(car.FieldYear, field.TypeInt, value)
@@ -209,11 +292,58 @@ func (cu *CarUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := cu.mutation.AddedYear(); ok {
 		_spec.AddField(car.FieldYear, field.TypeInt, value)
 	}
+	if cu.mutation.YearCleared() {
+		_spec.ClearField(car.FieldYear, field.TypeInt)
+	}
 	if value, ok := cu.mutation.Registration(); ok {
 		_spec.SetField(car.FieldRegistration, field.TypeString, value)
 	}
 	if value, ok := cu.mutation.Color(); ok {
 		_spec.SetField(car.FieldColor, field.TypeString, value)
+	}
+	if cu.mutation.ColorCleared() {
+		_spec.ClearField(car.FieldColor, field.TypeString)
+	}
+	if value, ok := cu.mutation.StolenDate(); ok {
+		_spec.SetField(car.FieldStolenDate, field.TypeTime, value)
+	}
+	if cu.mutation.StolenDateCleared() {
+		_spec.ClearField(car.FieldStolenDate, field.TypeTime)
+	}
+	if value, ok := cu.mutation.FirNumber(); ok {
+		_spec.SetField(car.FieldFirNumber, field.TypeString, value)
+	}
+	if cu.mutation.FirNumberCleared() {
+		_spec.ClearField(car.FieldFirNumber, field.TypeString)
+	}
+	if cu.mutation.PoliceStationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   car.PoliceStationTable,
+			Columns: []string{car.PoliceStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.PoliceStationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   car.PoliceStationTable,
+			Columns: []string{car.PoliceStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -255,6 +385,12 @@ func (cuo *CarUpdateOne) SetNillableMake(s *string) *CarUpdateOne {
 	return cuo
 }
 
+// ClearMake clears the value of the "make" field.
+func (cuo *CarUpdateOne) ClearMake() *CarUpdateOne {
+	cuo.mutation.ClearMake()
+	return cuo
+}
+
 // SetModel sets the "model" field.
 func (cuo *CarUpdateOne) SetModel(s string) *CarUpdateOne {
 	cuo.mutation.SetModel(s)
@@ -266,6 +402,12 @@ func (cuo *CarUpdateOne) SetNillableModel(s *string) *CarUpdateOne {
 	if s != nil {
 		cuo.SetModel(*s)
 	}
+	return cuo
+}
+
+// ClearModel clears the value of the "model" field.
+func (cuo *CarUpdateOne) ClearModel() *CarUpdateOne {
+	cuo.mutation.ClearModel()
 	return cuo
 }
 
@@ -287,6 +429,12 @@ func (cuo *CarUpdateOne) SetNillableYear(i *int) *CarUpdateOne {
 // AddYear adds i to the "year" field.
 func (cuo *CarUpdateOne) AddYear(i int) *CarUpdateOne {
 	cuo.mutation.AddYear(i)
+	return cuo
+}
+
+// ClearYear clears the value of the "year" field.
+func (cuo *CarUpdateOne) ClearYear() *CarUpdateOne {
+	cuo.mutation.ClearYear()
 	return cuo
 }
 
@@ -318,9 +466,86 @@ func (cuo *CarUpdateOne) SetNillableColor(s *string) *CarUpdateOne {
 	return cuo
 }
 
+// ClearColor clears the value of the "color" field.
+func (cuo *CarUpdateOne) ClearColor() *CarUpdateOne {
+	cuo.mutation.ClearColor()
+	return cuo
+}
+
+// SetPoliceStationID sets the "police_station_id" field.
+func (cuo *CarUpdateOne) SetPoliceStationID(u uuid.UUID) *CarUpdateOne {
+	cuo.mutation.SetPoliceStationID(u)
+	return cuo
+}
+
+// SetNillablePoliceStationID sets the "police_station_id" field if the given value is not nil.
+func (cuo *CarUpdateOne) SetNillablePoliceStationID(u *uuid.UUID) *CarUpdateOne {
+	if u != nil {
+		cuo.SetPoliceStationID(*u)
+	}
+	return cuo
+}
+
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (cuo *CarUpdateOne) ClearPoliceStationID() *CarUpdateOne {
+	cuo.mutation.ClearPoliceStationID()
+	return cuo
+}
+
+// SetStolenDate sets the "stolen_date" field.
+func (cuo *CarUpdateOne) SetStolenDate(t time.Time) *CarUpdateOne {
+	cuo.mutation.SetStolenDate(t)
+	return cuo
+}
+
+// SetNillableStolenDate sets the "stolen_date" field if the given value is not nil.
+func (cuo *CarUpdateOne) SetNillableStolenDate(t *time.Time) *CarUpdateOne {
+	if t != nil {
+		cuo.SetStolenDate(*t)
+	}
+	return cuo
+}
+
+// ClearStolenDate clears the value of the "stolen_date" field.
+func (cuo *CarUpdateOne) ClearStolenDate() *CarUpdateOne {
+	cuo.mutation.ClearStolenDate()
+	return cuo
+}
+
+// SetFirNumber sets the "fir_number" field.
+func (cuo *CarUpdateOne) SetFirNumber(s string) *CarUpdateOne {
+	cuo.mutation.SetFirNumber(s)
+	return cuo
+}
+
+// SetNillableFirNumber sets the "fir_number" field if the given value is not nil.
+func (cuo *CarUpdateOne) SetNillableFirNumber(s *string) *CarUpdateOne {
+	if s != nil {
+		cuo.SetFirNumber(*s)
+	}
+	return cuo
+}
+
+// ClearFirNumber clears the value of the "fir_number" field.
+func (cuo *CarUpdateOne) ClearFirNumber() *CarUpdateOne {
+	cuo.mutation.ClearFirNumber()
+	return cuo
+}
+
+// SetPoliceStation sets the "police_station" edge to the PoliceStation entity.
+func (cuo *CarUpdateOne) SetPoliceStation(p *PoliceStation) *CarUpdateOne {
+	return cuo.SetPoliceStationID(p.ID)
+}
+
 // Mutation returns the CarMutation object of the builder.
 func (cuo *CarUpdateOne) Mutation() *CarMutation {
 	return cuo.mutation
+}
+
+// ClearPoliceStation clears the "police_station" edge to the PoliceStation entity.
+func (cuo *CarUpdateOne) ClearPoliceStation() *CarUpdateOne {
+	cuo.mutation.ClearPoliceStation()
+	return cuo
 }
 
 // Where appends a list predicates to the CarUpdate builder.
@@ -374,29 +599,9 @@ func (cuo *CarUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (cuo *CarUpdateOne) check() error {
-	if v, ok := cuo.mutation.Make(); ok {
-		if err := car.MakeValidator(v); err != nil {
-			return &ValidationError{Name: "make", err: fmt.Errorf(`ent: validator failed for field "Car.make": %w`, err)}
-		}
-	}
-	if v, ok := cuo.mutation.Model(); ok {
-		if err := car.ModelValidator(v); err != nil {
-			return &ValidationError{Name: "model", err: fmt.Errorf(`ent: validator failed for field "Car.model": %w`, err)}
-		}
-	}
-	if v, ok := cuo.mutation.Year(); ok {
-		if err := car.YearValidator(v); err != nil {
-			return &ValidationError{Name: "year", err: fmt.Errorf(`ent: validator failed for field "Car.year": %w`, err)}
-		}
-	}
 	if v, ok := cuo.mutation.Registration(); ok {
 		if err := car.RegistrationValidator(v); err != nil {
 			return &ValidationError{Name: "registration", err: fmt.Errorf(`ent: validator failed for field "Car.registration": %w`, err)}
-		}
-	}
-	if v, ok := cuo.mutation.Color(); ok {
-		if err := car.ColorValidator(v); err != nil {
-			return &ValidationError{Name: "color", err: fmt.Errorf(`ent: validator failed for field "Car.color": %w`, err)}
 		}
 	}
 	return nil
@@ -437,8 +642,14 @@ func (cuo *CarUpdateOne) sqlSave(ctx context.Context) (_node *Car, err error) {
 	if value, ok := cuo.mutation.Make(); ok {
 		_spec.SetField(car.FieldMake, field.TypeString, value)
 	}
+	if cuo.mutation.MakeCleared() {
+		_spec.ClearField(car.FieldMake, field.TypeString)
+	}
 	if value, ok := cuo.mutation.Model(); ok {
 		_spec.SetField(car.FieldModel, field.TypeString, value)
+	}
+	if cuo.mutation.ModelCleared() {
+		_spec.ClearField(car.FieldModel, field.TypeString)
 	}
 	if value, ok := cuo.mutation.Year(); ok {
 		_spec.SetField(car.FieldYear, field.TypeInt, value)
@@ -446,11 +657,58 @@ func (cuo *CarUpdateOne) sqlSave(ctx context.Context) (_node *Car, err error) {
 	if value, ok := cuo.mutation.AddedYear(); ok {
 		_spec.AddField(car.FieldYear, field.TypeInt, value)
 	}
+	if cuo.mutation.YearCleared() {
+		_spec.ClearField(car.FieldYear, field.TypeInt)
+	}
 	if value, ok := cuo.mutation.Registration(); ok {
 		_spec.SetField(car.FieldRegistration, field.TypeString, value)
 	}
 	if value, ok := cuo.mutation.Color(); ok {
 		_spec.SetField(car.FieldColor, field.TypeString, value)
+	}
+	if cuo.mutation.ColorCleared() {
+		_spec.ClearField(car.FieldColor, field.TypeString)
+	}
+	if value, ok := cuo.mutation.StolenDate(); ok {
+		_spec.SetField(car.FieldStolenDate, field.TypeTime, value)
+	}
+	if cuo.mutation.StolenDateCleared() {
+		_spec.ClearField(car.FieldStolenDate, field.TypeTime)
+	}
+	if value, ok := cuo.mutation.FirNumber(); ok {
+		_spec.SetField(car.FieldFirNumber, field.TypeString, value)
+	}
+	if cuo.mutation.FirNumberCleared() {
+		_spec.ClearField(car.FieldFirNumber, field.TypeString)
+	}
+	if cuo.mutation.PoliceStationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   car.PoliceStationTable,
+			Columns: []string{car.PoliceStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.PoliceStationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   car.PoliceStationTable,
+			Columns: []string{car.PoliceStationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(policestation.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Car{config: cuo.config}
 	_spec.Assign = _node.assignValues

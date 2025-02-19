@@ -13,6 +13,7 @@ import (
 	"go-ent-project/internal/ent/predicate"
 	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -320,6 +321,8 @@ type CarWhereInput struct {
 	MakeContains     *string  `json:"makeContains,omitempty"`
 	MakeHasPrefix    *string  `json:"makeHasPrefix,omitempty"`
 	MakeHasSuffix    *string  `json:"makeHasSuffix,omitempty"`
+	MakeIsNil        bool     `json:"makeIsNil,omitempty"`
+	MakeNotNil       bool     `json:"makeNotNil,omitempty"`
 	MakeEqualFold    *string  `json:"makeEqualFold,omitempty"`
 	MakeContainsFold *string  `json:"makeContainsFold,omitempty"`
 
@@ -335,18 +338,22 @@ type CarWhereInput struct {
 	ModelContains     *string  `json:"modelContains,omitempty"`
 	ModelHasPrefix    *string  `json:"modelHasPrefix,omitempty"`
 	ModelHasSuffix    *string  `json:"modelHasSuffix,omitempty"`
+	ModelIsNil        bool     `json:"modelIsNil,omitempty"`
+	ModelNotNil       bool     `json:"modelNotNil,omitempty"`
 	ModelEqualFold    *string  `json:"modelEqualFold,omitempty"`
 	ModelContainsFold *string  `json:"modelContainsFold,omitempty"`
 
 	// "year" field predicates.
-	Year      *int  `json:"year,omitempty"`
-	YearNEQ   *int  `json:"yearNEQ,omitempty"`
-	YearIn    []int `json:"yearIn,omitempty"`
-	YearNotIn []int `json:"yearNotIn,omitempty"`
-	YearGT    *int  `json:"yearGT,omitempty"`
-	YearGTE   *int  `json:"yearGTE,omitempty"`
-	YearLT    *int  `json:"yearLT,omitempty"`
-	YearLTE   *int  `json:"yearLTE,omitempty"`
+	Year       *int  `json:"year,omitempty"`
+	YearNEQ    *int  `json:"yearNEQ,omitempty"`
+	YearIn     []int `json:"yearIn,omitempty"`
+	YearNotIn  []int `json:"yearNotIn,omitempty"`
+	YearGT     *int  `json:"yearGT,omitempty"`
+	YearGTE    *int  `json:"yearGTE,omitempty"`
+	YearLT     *int  `json:"yearLT,omitempty"`
+	YearLTE    *int  `json:"yearLTE,omitempty"`
+	YearIsNil  bool  `json:"yearIsNil,omitempty"`
+	YearNotNil bool  `json:"yearNotNil,omitempty"`
 
 	// "registration" field predicates.
 	Registration             *string  `json:"registration,omitempty"`
@@ -375,8 +382,43 @@ type CarWhereInput struct {
 	ColorContains     *string  `json:"colorContains,omitempty"`
 	ColorHasPrefix    *string  `json:"colorHasPrefix,omitempty"`
 	ColorHasSuffix    *string  `json:"colorHasSuffix,omitempty"`
+	ColorIsNil        bool     `json:"colorIsNil,omitempty"`
+	ColorNotNil       bool     `json:"colorNotNil,omitempty"`
 	ColorEqualFold    *string  `json:"colorEqualFold,omitempty"`
 	ColorContainsFold *string  `json:"colorContainsFold,omitempty"`
+
+	// "stolen_date" field predicates.
+	StolenDate       *time.Time  `json:"stolenDate,omitempty"`
+	StolenDateNEQ    *time.Time  `json:"stolenDateNEQ,omitempty"`
+	StolenDateIn     []time.Time `json:"stolenDateIn,omitempty"`
+	StolenDateNotIn  []time.Time `json:"stolenDateNotIn,omitempty"`
+	StolenDateGT     *time.Time  `json:"stolenDateGT,omitempty"`
+	StolenDateGTE    *time.Time  `json:"stolenDateGTE,omitempty"`
+	StolenDateLT     *time.Time  `json:"stolenDateLT,omitempty"`
+	StolenDateLTE    *time.Time  `json:"stolenDateLTE,omitempty"`
+	StolenDateIsNil  bool        `json:"stolenDateIsNil,omitempty"`
+	StolenDateNotNil bool        `json:"stolenDateNotNil,omitempty"`
+
+	// "fir_number" field predicates.
+	FirNumber             *string  `json:"firNumber,omitempty"`
+	FirNumberNEQ          *string  `json:"firNumberNEQ,omitempty"`
+	FirNumberIn           []string `json:"firNumberIn,omitempty"`
+	FirNumberNotIn        []string `json:"firNumberNotIn,omitempty"`
+	FirNumberGT           *string  `json:"firNumberGT,omitempty"`
+	FirNumberGTE          *string  `json:"firNumberGTE,omitempty"`
+	FirNumberLT           *string  `json:"firNumberLT,omitempty"`
+	FirNumberLTE          *string  `json:"firNumberLTE,omitempty"`
+	FirNumberContains     *string  `json:"firNumberContains,omitempty"`
+	FirNumberHasPrefix    *string  `json:"firNumberHasPrefix,omitempty"`
+	FirNumberHasSuffix    *string  `json:"firNumberHasSuffix,omitempty"`
+	FirNumberIsNil        bool     `json:"firNumberIsNil,omitempty"`
+	FirNumberNotNil       bool     `json:"firNumberNotNil,omitempty"`
+	FirNumberEqualFold    *string  `json:"firNumberEqualFold,omitempty"`
+	FirNumberContainsFold *string  `json:"firNumberContainsFold,omitempty"`
+
+	// "police_station" edge predicates.
+	HasPoliceStation     *bool                      `json:"hasPoliceStation,omitempty"`
+	HasPoliceStationWith []*PoliceStationWhereInput `json:"hasPoliceStationWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -483,6 +525,12 @@ func (i *CarWhereInput) P() (predicate.Car, error) {
 	if i.MakeHasSuffix != nil {
 		predicates = append(predicates, car.MakeHasSuffix(*i.MakeHasSuffix))
 	}
+	if i.MakeIsNil {
+		predicates = append(predicates, car.MakeIsNil())
+	}
+	if i.MakeNotNil {
+		predicates = append(predicates, car.MakeNotNil())
+	}
 	if i.MakeEqualFold != nil {
 		predicates = append(predicates, car.MakeEqualFold(*i.MakeEqualFold))
 	}
@@ -522,6 +570,12 @@ func (i *CarWhereInput) P() (predicate.Car, error) {
 	if i.ModelHasSuffix != nil {
 		predicates = append(predicates, car.ModelHasSuffix(*i.ModelHasSuffix))
 	}
+	if i.ModelIsNil {
+		predicates = append(predicates, car.ModelIsNil())
+	}
+	if i.ModelNotNil {
+		predicates = append(predicates, car.ModelNotNil())
+	}
 	if i.ModelEqualFold != nil {
 		predicates = append(predicates, car.ModelEqualFold(*i.ModelEqualFold))
 	}
@@ -551,6 +605,12 @@ func (i *CarWhereInput) P() (predicate.Car, error) {
 	}
 	if i.YearLTE != nil {
 		predicates = append(predicates, car.YearLTE(*i.YearLTE))
+	}
+	if i.YearIsNil {
+		predicates = append(predicates, car.YearIsNil())
+	}
+	if i.YearNotNil {
+		predicates = append(predicates, car.YearNotNil())
 	}
 	if i.Registration != nil {
 		predicates = append(predicates, car.RegistrationEQ(*i.Registration))
@@ -624,13 +684,112 @@ func (i *CarWhereInput) P() (predicate.Car, error) {
 	if i.ColorHasSuffix != nil {
 		predicates = append(predicates, car.ColorHasSuffix(*i.ColorHasSuffix))
 	}
+	if i.ColorIsNil {
+		predicates = append(predicates, car.ColorIsNil())
+	}
+	if i.ColorNotNil {
+		predicates = append(predicates, car.ColorNotNil())
+	}
 	if i.ColorEqualFold != nil {
 		predicates = append(predicates, car.ColorEqualFold(*i.ColorEqualFold))
 	}
 	if i.ColorContainsFold != nil {
 		predicates = append(predicates, car.ColorContainsFold(*i.ColorContainsFold))
 	}
+	if i.StolenDate != nil {
+		predicates = append(predicates, car.StolenDateEQ(*i.StolenDate))
+	}
+	if i.StolenDateNEQ != nil {
+		predicates = append(predicates, car.StolenDateNEQ(*i.StolenDateNEQ))
+	}
+	if len(i.StolenDateIn) > 0 {
+		predicates = append(predicates, car.StolenDateIn(i.StolenDateIn...))
+	}
+	if len(i.StolenDateNotIn) > 0 {
+		predicates = append(predicates, car.StolenDateNotIn(i.StolenDateNotIn...))
+	}
+	if i.StolenDateGT != nil {
+		predicates = append(predicates, car.StolenDateGT(*i.StolenDateGT))
+	}
+	if i.StolenDateGTE != nil {
+		predicates = append(predicates, car.StolenDateGTE(*i.StolenDateGTE))
+	}
+	if i.StolenDateLT != nil {
+		predicates = append(predicates, car.StolenDateLT(*i.StolenDateLT))
+	}
+	if i.StolenDateLTE != nil {
+		predicates = append(predicates, car.StolenDateLTE(*i.StolenDateLTE))
+	}
+	if i.StolenDateIsNil {
+		predicates = append(predicates, car.StolenDateIsNil())
+	}
+	if i.StolenDateNotNil {
+		predicates = append(predicates, car.StolenDateNotNil())
+	}
+	if i.FirNumber != nil {
+		predicates = append(predicates, car.FirNumberEQ(*i.FirNumber))
+	}
+	if i.FirNumberNEQ != nil {
+		predicates = append(predicates, car.FirNumberNEQ(*i.FirNumberNEQ))
+	}
+	if len(i.FirNumberIn) > 0 {
+		predicates = append(predicates, car.FirNumberIn(i.FirNumberIn...))
+	}
+	if len(i.FirNumberNotIn) > 0 {
+		predicates = append(predicates, car.FirNumberNotIn(i.FirNumberNotIn...))
+	}
+	if i.FirNumberGT != nil {
+		predicates = append(predicates, car.FirNumberGT(*i.FirNumberGT))
+	}
+	if i.FirNumberGTE != nil {
+		predicates = append(predicates, car.FirNumberGTE(*i.FirNumberGTE))
+	}
+	if i.FirNumberLT != nil {
+		predicates = append(predicates, car.FirNumberLT(*i.FirNumberLT))
+	}
+	if i.FirNumberLTE != nil {
+		predicates = append(predicates, car.FirNumberLTE(*i.FirNumberLTE))
+	}
+	if i.FirNumberContains != nil {
+		predicates = append(predicates, car.FirNumberContains(*i.FirNumberContains))
+	}
+	if i.FirNumberHasPrefix != nil {
+		predicates = append(predicates, car.FirNumberHasPrefix(*i.FirNumberHasPrefix))
+	}
+	if i.FirNumberHasSuffix != nil {
+		predicates = append(predicates, car.FirNumberHasSuffix(*i.FirNumberHasSuffix))
+	}
+	if i.FirNumberIsNil {
+		predicates = append(predicates, car.FirNumberIsNil())
+	}
+	if i.FirNumberNotNil {
+		predicates = append(predicates, car.FirNumberNotNil())
+	}
+	if i.FirNumberEqualFold != nil {
+		predicates = append(predicates, car.FirNumberEqualFold(*i.FirNumberEqualFold))
+	}
+	if i.FirNumberContainsFold != nil {
+		predicates = append(predicates, car.FirNumberContainsFold(*i.FirNumberContainsFold))
+	}
 
+	if i.HasPoliceStation != nil {
+		p := car.HasPoliceStation()
+		if !*i.HasPoliceStation {
+			p = car.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasPoliceStationWith) > 0 {
+		with := make([]predicate.PoliceStation, 0, len(i.HasPoliceStationWith))
+		for _, w := range i.HasPoliceStationWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasPoliceStationWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, car.HasPoliceStationWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, ErrEmptyCarWhereInput
@@ -1661,6 +1820,10 @@ type PoliceStationWhereInput struct {
 	HasCamera     *bool               `json:"hasCamera,omitempty"`
 	HasCameraWith []*CameraWhereInput `json:"hasCameraWith,omitempty"`
 
+	// "car" edge predicates.
+	HasCar     *bool            `json:"hasCar,omitempty"`
+	HasCarWith []*CarWhereInput `json:"hasCarWith,omitempty"`
+
 	// "parent" edge predicates.
 	HasParent     *bool                      `json:"hasParent,omitempty"`
 	HasParentWith []*PoliceStationWhereInput `json:"hasParentWith,omitempty"`
@@ -1912,6 +2075,24 @@ func (i *PoliceStationWhereInput) P() (predicate.PoliceStation, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, policestation.HasCameraWith(with...))
+	}
+	if i.HasCar != nil {
+		p := policestation.HasCar()
+		if !*i.HasCar {
+			p = policestation.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasCarWith) > 0 {
+		with := make([]predicate.Car, 0, len(i.HasCarWith))
+		for _, w := range i.HasCarWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasCarWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, policestation.HasCarWith(with...))
 	}
 	if i.HasParent != nil {
 		p := policestation.HasParent()

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -28,8 +29,23 @@ const (
 	FieldRegistration = "registration"
 	// FieldColor holds the string denoting the color field in the database.
 	FieldColor = "color"
+	// FieldPoliceStationID holds the string denoting the police_station_id field in the database.
+	FieldPoliceStationID = "police_station_id"
+	// FieldStolenDate holds the string denoting the stolen_date field in the database.
+	FieldStolenDate = "stolen_date"
+	// FieldFirNumber holds the string denoting the fir_number field in the database.
+	FieldFirNumber = "fir_number"
+	// EdgePoliceStation holds the string denoting the police_station edge name in mutations.
+	EdgePoliceStation = "police_station"
 	// Table holds the table name of the car in the database.
 	Table = "cars"
+	// PoliceStationTable is the table that holds the police_station relation/edge.
+	PoliceStationTable = "cars"
+	// PoliceStationInverseTable is the table name for the PoliceStation entity.
+	// It exists in this package in order to avoid circular dependency with the "policestation" package.
+	PoliceStationInverseTable = "police_stations"
+	// PoliceStationColumn is the table column denoting the police_station relation/edge.
+	PoliceStationColumn = "police_station_id"
 )
 
 // Columns holds all SQL columns for car fields.
@@ -42,6 +58,9 @@ var Columns = []string{
 	FieldYear,
 	FieldRegistration,
 	FieldColor,
+	FieldPoliceStationID,
+	FieldStolenDate,
+	FieldFirNumber,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -61,16 +80,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// MakeValidator is a validator for the "make" field. It is called by the builders before save.
-	MakeValidator func(string) error
-	// ModelValidator is a validator for the "model" field. It is called by the builders before save.
-	ModelValidator func(string) error
-	// YearValidator is a validator for the "year" field. It is called by the builders before save.
-	YearValidator func(int) error
 	// RegistrationValidator is a validator for the "registration" field. It is called by the builders before save.
 	RegistrationValidator func(string) error
-	// ColorValidator is a validator for the "color" field. It is called by the builders before save.
-	ColorValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
@@ -116,4 +127,33 @@ func ByRegistration(opts ...sql.OrderTermOption) OrderOption {
 // ByColor orders the results by the color field.
 func ByColor(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldColor, opts...).ToFunc()
+}
+
+// ByPoliceStationID orders the results by the police_station_id field.
+func ByPoliceStationID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPoliceStationID, opts...).ToFunc()
+}
+
+// ByStolenDate orders the results by the stolen_date field.
+func ByStolenDate(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStolenDate, opts...).ToFunc()
+}
+
+// ByFirNumber orders the results by the fir_number field.
+func ByFirNumber(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFirNumber, opts...).ToFunc()
+}
+
+// ByPoliceStationField orders the results by police_station field.
+func ByPoliceStationField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPoliceStationStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newPoliceStationStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PoliceStationInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, PoliceStationTable, PoliceStationColumn),
+	)
 }

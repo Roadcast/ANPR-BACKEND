@@ -10,10 +10,8 @@ import (
 )
 
 type CustomEvent struct {
-	Camera       *ent.Camera `json:"camera,omitempty"`
-	PlateColor   *string     `json:"plate_color,omitempty"`
-	PlateNumber  *string     `json:"plate_number,omitempty"`
-	SnapDeviceID *string     `json:"snap_device_id,omitempty"`
+	Camera *ent.Camera `json:"camera,omitempty"`
+	Event  *ent.Event  `json:"event,omitempty"`
 }
 
 type EventList struct {

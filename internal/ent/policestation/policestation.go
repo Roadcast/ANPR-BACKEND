@@ -33,6 +33,8 @@ const (
 	EdgeUsers = "users"
 	// EdgeCamera holds the string denoting the camera edge name in mutations.
 	EdgeCamera = "camera"
+	// EdgeCar holds the string denoting the car edge name in mutations.
+	EdgeCar = "car"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
 	EdgeParent = "parent"
 	// EdgeChildStations holds the string denoting the child_stations edge name in mutations.
@@ -53,6 +55,13 @@ const (
 	CameraInverseTable = "cameras"
 	// CameraColumn is the table column denoting the camera relation/edge.
 	CameraColumn = "police_station_id"
+	// CarTable is the table that holds the car relation/edge.
+	CarTable = "cars"
+	// CarInverseTable is the table name for the Car entity.
+	// It exists in this package in order to avoid circular dependency with the "car" package.
+	CarInverseTable = "cars"
+	// CarColumn is the table column denoting the car relation/edge.
+	CarColumn = "police_station_id"
 	// ParentTable is the table that holds the parent relation/edge.
 	ParentTable = "police_stations"
 	// ParentColumn is the table column denoting the parent relation/edge.
@@ -173,6 +182,20 @@ func ByCamera(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByCarCount orders the results by car count.
+func ByCarCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCarStep(), opts...)
+	}
+}
+
+// ByCar orders the results by car terms.
+func ByCar(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCarStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByParentField orders the results by parent field.
 func ByParentField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -205,6 +228,13 @@ func newCameraStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CameraInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CameraTable, CameraColumn),
+	)
+}
+func newCarStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CarInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CarTable, CarColumn),
 	)
 }
 func newParentStep() *sqlgraph.Step {

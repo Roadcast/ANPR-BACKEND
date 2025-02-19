@@ -829,21 +829,25 @@ func (m *CameraMutation) ResetEdge(name string) error {
 // CarMutation represents an operation that mutates the Car nodes in the graph.
 type CarMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	created_at    *time.Time
-	updated_at    *time.Time
-	make          *string
-	model         *string
-	year          *int
-	addyear       *int
-	registration  *string
-	color         *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Car, error)
-	predicates    []predicate.Car
+	op                    Op
+	typ                   string
+	id                    *uuid.UUID
+	created_at            *time.Time
+	updated_at            *time.Time
+	make                  *string
+	model                 *string
+	year                  *int
+	addyear               *int
+	registration          *string
+	color                 *string
+	stolen_date           *time.Time
+	fir_number            *string
+	clearedFields         map[string]struct{}
+	police_station        *uuid.UUID
+	clearedpolice_station bool
+	done                  bool
+	oldValue              func(context.Context) (*Car, error)
+	predicates            []predicate.Car
 }
 
 var _ ent.Mutation = (*CarMutation)(nil)
@@ -1053,9 +1057,22 @@ func (m *CarMutation) OldMake(ctx context.Context) (v string, err error) {
 	return oldValue.Make, nil
 }
 
+// ClearMake clears the value of the "make" field.
+func (m *CarMutation) ClearMake() {
+	m.make = nil
+	m.clearedFields[car.FieldMake] = struct{}{}
+}
+
+// MakeCleared returns if the "make" field was cleared in this mutation.
+func (m *CarMutation) MakeCleared() bool {
+	_, ok := m.clearedFields[car.FieldMake]
+	return ok
+}
+
 // ResetMake resets all changes to the "make" field.
 func (m *CarMutation) ResetMake() {
 	m.make = nil
+	delete(m.clearedFields, car.FieldMake)
 }
 
 // SetModel sets the "model" field.
@@ -1089,9 +1106,22 @@ func (m *CarMutation) OldModel(ctx context.Context) (v string, err error) {
 	return oldValue.Model, nil
 }
 
+// ClearModel clears the value of the "model" field.
+func (m *CarMutation) ClearModel() {
+	m.model = nil
+	m.clearedFields[car.FieldModel] = struct{}{}
+}
+
+// ModelCleared returns if the "model" field was cleared in this mutation.
+func (m *CarMutation) ModelCleared() bool {
+	_, ok := m.clearedFields[car.FieldModel]
+	return ok
+}
+
 // ResetModel resets all changes to the "model" field.
 func (m *CarMutation) ResetModel() {
 	m.model = nil
+	delete(m.clearedFields, car.FieldModel)
 }
 
 // SetYear sets the "year" field.
@@ -1144,10 +1174,24 @@ func (m *CarMutation) AddedYear() (r int, exists bool) {
 	return *v, true
 }
 
+// ClearYear clears the value of the "year" field.
+func (m *CarMutation) ClearYear() {
+	m.year = nil
+	m.addyear = nil
+	m.clearedFields[car.FieldYear] = struct{}{}
+}
+
+// YearCleared returns if the "year" field was cleared in this mutation.
+func (m *CarMutation) YearCleared() bool {
+	_, ok := m.clearedFields[car.FieldYear]
+	return ok
+}
+
 // ResetYear resets all changes to the "year" field.
 func (m *CarMutation) ResetYear() {
 	m.year = nil
 	m.addyear = nil
+	delete(m.clearedFields, car.FieldYear)
 }
 
 // SetRegistration sets the "registration" field.
@@ -1217,9 +1261,196 @@ func (m *CarMutation) OldColor(ctx context.Context) (v string, err error) {
 	return oldValue.Color, nil
 }
 
+// ClearColor clears the value of the "color" field.
+func (m *CarMutation) ClearColor() {
+	m.color = nil
+	m.clearedFields[car.FieldColor] = struct{}{}
+}
+
+// ColorCleared returns if the "color" field was cleared in this mutation.
+func (m *CarMutation) ColorCleared() bool {
+	_, ok := m.clearedFields[car.FieldColor]
+	return ok
+}
+
 // ResetColor resets all changes to the "color" field.
 func (m *CarMutation) ResetColor() {
 	m.color = nil
+	delete(m.clearedFields, car.FieldColor)
+}
+
+// SetPoliceStationID sets the "police_station_id" field.
+func (m *CarMutation) SetPoliceStationID(u uuid.UUID) {
+	m.police_station = &u
+}
+
+// PoliceStationID returns the value of the "police_station_id" field in the mutation.
+func (m *CarMutation) PoliceStationID() (r uuid.UUID, exists bool) {
+	v := m.police_station
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPoliceStationID returns the old "police_station_id" field's value of the Car entity.
+// If the Car object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarMutation) OldPoliceStationID(ctx context.Context) (v *uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPoliceStationID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPoliceStationID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPoliceStationID: %w", err)
+	}
+	return oldValue.PoliceStationID, nil
+}
+
+// ClearPoliceStationID clears the value of the "police_station_id" field.
+func (m *CarMutation) ClearPoliceStationID() {
+	m.police_station = nil
+	m.clearedFields[car.FieldPoliceStationID] = struct{}{}
+}
+
+// PoliceStationIDCleared returns if the "police_station_id" field was cleared in this mutation.
+func (m *CarMutation) PoliceStationIDCleared() bool {
+	_, ok := m.clearedFields[car.FieldPoliceStationID]
+	return ok
+}
+
+// ResetPoliceStationID resets all changes to the "police_station_id" field.
+func (m *CarMutation) ResetPoliceStationID() {
+	m.police_station = nil
+	delete(m.clearedFields, car.FieldPoliceStationID)
+}
+
+// SetStolenDate sets the "stolen_date" field.
+func (m *CarMutation) SetStolenDate(t time.Time) {
+	m.stolen_date = &t
+}
+
+// StolenDate returns the value of the "stolen_date" field in the mutation.
+func (m *CarMutation) StolenDate() (r time.Time, exists bool) {
+	v := m.stolen_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStolenDate returns the old "stolen_date" field's value of the Car entity.
+// If the Car object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarMutation) OldStolenDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStolenDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStolenDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStolenDate: %w", err)
+	}
+	return oldValue.StolenDate, nil
+}
+
+// ClearStolenDate clears the value of the "stolen_date" field.
+func (m *CarMutation) ClearStolenDate() {
+	m.stolen_date = nil
+	m.clearedFields[car.FieldStolenDate] = struct{}{}
+}
+
+// StolenDateCleared returns if the "stolen_date" field was cleared in this mutation.
+func (m *CarMutation) StolenDateCleared() bool {
+	_, ok := m.clearedFields[car.FieldStolenDate]
+	return ok
+}
+
+// ResetStolenDate resets all changes to the "stolen_date" field.
+func (m *CarMutation) ResetStolenDate() {
+	m.stolen_date = nil
+	delete(m.clearedFields, car.FieldStolenDate)
+}
+
+// SetFirNumber sets the "fir_number" field.
+func (m *CarMutation) SetFirNumber(s string) {
+	m.fir_number = &s
+}
+
+// FirNumber returns the value of the "fir_number" field in the mutation.
+func (m *CarMutation) FirNumber() (r string, exists bool) {
+	v := m.fir_number
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFirNumber returns the old "fir_number" field's value of the Car entity.
+// If the Car object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CarMutation) OldFirNumber(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFirNumber is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFirNumber requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFirNumber: %w", err)
+	}
+	return oldValue.FirNumber, nil
+}
+
+// ClearFirNumber clears the value of the "fir_number" field.
+func (m *CarMutation) ClearFirNumber() {
+	m.fir_number = nil
+	m.clearedFields[car.FieldFirNumber] = struct{}{}
+}
+
+// FirNumberCleared returns if the "fir_number" field was cleared in this mutation.
+func (m *CarMutation) FirNumberCleared() bool {
+	_, ok := m.clearedFields[car.FieldFirNumber]
+	return ok
+}
+
+// ResetFirNumber resets all changes to the "fir_number" field.
+func (m *CarMutation) ResetFirNumber() {
+	m.fir_number = nil
+	delete(m.clearedFields, car.FieldFirNumber)
+}
+
+// ClearPoliceStation clears the "police_station" edge to the PoliceStation entity.
+func (m *CarMutation) ClearPoliceStation() {
+	m.clearedpolice_station = true
+	m.clearedFields[car.FieldPoliceStationID] = struct{}{}
+}
+
+// PoliceStationCleared reports if the "police_station" edge to the PoliceStation entity was cleared.
+func (m *CarMutation) PoliceStationCleared() bool {
+	return m.PoliceStationIDCleared() || m.clearedpolice_station
+}
+
+// PoliceStationIDs returns the "police_station" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PoliceStationID instead. It exists only for internal usage by the builders.
+func (m *CarMutation) PoliceStationIDs() (ids []uuid.UUID) {
+	if id := m.police_station; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPoliceStation resets all changes to the "police_station" edge.
+func (m *CarMutation) ResetPoliceStation() {
+	m.police_station = nil
+	m.clearedpolice_station = false
 }
 
 // Where appends a list predicates to the CarMutation builder.
@@ -1256,7 +1487,7 @@ func (m *CarMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CarMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, car.FieldCreatedAt)
 	}
@@ -1277,6 +1508,15 @@ func (m *CarMutation) Fields() []string {
 	}
 	if m.color != nil {
 		fields = append(fields, car.FieldColor)
+	}
+	if m.police_station != nil {
+		fields = append(fields, car.FieldPoliceStationID)
+	}
+	if m.stolen_date != nil {
+		fields = append(fields, car.FieldStolenDate)
+	}
+	if m.fir_number != nil {
+		fields = append(fields, car.FieldFirNumber)
 	}
 	return fields
 }
@@ -1300,6 +1540,12 @@ func (m *CarMutation) Field(name string) (ent.Value, bool) {
 		return m.Registration()
 	case car.FieldColor:
 		return m.Color()
+	case car.FieldPoliceStationID:
+		return m.PoliceStationID()
+	case car.FieldStolenDate:
+		return m.StolenDate()
+	case car.FieldFirNumber:
+		return m.FirNumber()
 	}
 	return nil, false
 }
@@ -1323,6 +1569,12 @@ func (m *CarMutation) OldField(ctx context.Context, name string) (ent.Value, err
 		return m.OldRegistration(ctx)
 	case car.FieldColor:
 		return m.OldColor(ctx)
+	case car.FieldPoliceStationID:
+		return m.OldPoliceStationID(ctx)
+	case car.FieldStolenDate:
+		return m.OldStolenDate(ctx)
+	case car.FieldFirNumber:
+		return m.OldFirNumber(ctx)
 	}
 	return nil, fmt.Errorf("unknown Car field %s", name)
 }
@@ -1381,6 +1633,27 @@ func (m *CarMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetColor(v)
 		return nil
+	case car.FieldPoliceStationID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPoliceStationID(v)
+		return nil
+	case car.FieldStolenDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStolenDate(v)
+		return nil
+	case car.FieldFirNumber:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFirNumber(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Car field %s", name)
 }
@@ -1425,7 +1698,29 @@ func (m *CarMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *CarMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(car.FieldMake) {
+		fields = append(fields, car.FieldMake)
+	}
+	if m.FieldCleared(car.FieldModel) {
+		fields = append(fields, car.FieldModel)
+	}
+	if m.FieldCleared(car.FieldYear) {
+		fields = append(fields, car.FieldYear)
+	}
+	if m.FieldCleared(car.FieldColor) {
+		fields = append(fields, car.FieldColor)
+	}
+	if m.FieldCleared(car.FieldPoliceStationID) {
+		fields = append(fields, car.FieldPoliceStationID)
+	}
+	if m.FieldCleared(car.FieldStolenDate) {
+		fields = append(fields, car.FieldStolenDate)
+	}
+	if m.FieldCleared(car.FieldFirNumber) {
+		fields = append(fields, car.FieldFirNumber)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1438,6 +1733,29 @@ func (m *CarMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *CarMutation) ClearField(name string) error {
+	switch name {
+	case car.FieldMake:
+		m.ClearMake()
+		return nil
+	case car.FieldModel:
+		m.ClearModel()
+		return nil
+	case car.FieldYear:
+		m.ClearYear()
+		return nil
+	case car.FieldColor:
+		m.ClearColor()
+		return nil
+	case car.FieldPoliceStationID:
+		m.ClearPoliceStationID()
+		return nil
+	case car.FieldStolenDate:
+		m.ClearStolenDate()
+		return nil
+	case car.FieldFirNumber:
+		m.ClearFirNumber()
+		return nil
+	}
 	return fmt.Errorf("unknown Car nullable field %s", name)
 }
 
@@ -1466,25 +1784,43 @@ func (m *CarMutation) ResetField(name string) error {
 	case car.FieldColor:
 		m.ResetColor()
 		return nil
+	case car.FieldPoliceStationID:
+		m.ResetPoliceStationID()
+		return nil
+	case car.FieldStolenDate:
+		m.ResetStolenDate()
+		return nil
+	case car.FieldFirNumber:
+		m.ResetFirNumber()
+		return nil
 	}
 	return fmt.Errorf("unknown Car field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CarMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.police_station != nil {
+		edges = append(edges, car.EdgePoliceStation)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *CarMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case car.EdgePoliceStation:
+		if id := m.police_station; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CarMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
 	return edges
 }
 
@@ -1496,25 +1832,42 @@ func (m *CarMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CarMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedpolice_station {
+		edges = append(edges, car.EdgePoliceStation)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *CarMutation) EdgeCleared(name string) bool {
+	switch name {
+	case car.EdgePoliceStation:
+		return m.clearedpolice_station
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *CarMutation) ClearEdge(name string) error {
+	switch name {
+	case car.EdgePoliceStation:
+		m.ClearPoliceStation()
+		return nil
+	}
 	return fmt.Errorf("unknown Car unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *CarMutation) ResetEdge(name string) error {
+	switch name {
+	case car.EdgePoliceStation:
+		m.ResetPoliceStation()
+		return nil
+	}
 	return fmt.Errorf("unknown Car edge %s", name)
 }
 
@@ -3996,6 +4349,9 @@ type PoliceStationMutation struct {
 	camera                map[uuid.UUID]struct{}
 	removedcamera         map[uuid.UUID]struct{}
 	clearedcamera         bool
+	car                   map[uuid.UUID]struct{}
+	removedcar            map[uuid.UUID]struct{}
+	clearedcar            bool
 	parent                *uuid.UUID
 	clearedparent         bool
 	child_stations        map[uuid.UUID]struct{}
@@ -4496,6 +4852,60 @@ func (m *PoliceStationMutation) ResetCamera() {
 	m.removedcamera = nil
 }
 
+// AddCarIDs adds the "car" edge to the Car entity by ids.
+func (m *PoliceStationMutation) AddCarIDs(ids ...uuid.UUID) {
+	if m.car == nil {
+		m.car = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.car[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCar clears the "car" edge to the Car entity.
+func (m *PoliceStationMutation) ClearCar() {
+	m.clearedcar = true
+}
+
+// CarCleared reports if the "car" edge to the Car entity was cleared.
+func (m *PoliceStationMutation) CarCleared() bool {
+	return m.clearedcar
+}
+
+// RemoveCarIDs removes the "car" edge to the Car entity by IDs.
+func (m *PoliceStationMutation) RemoveCarIDs(ids ...uuid.UUID) {
+	if m.removedcar == nil {
+		m.removedcar = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.car, ids[i])
+		m.removedcar[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCar returns the removed IDs of the "car" edge to the Car entity.
+func (m *PoliceStationMutation) RemovedCarIDs() (ids []uuid.UUID) {
+	for id := range m.removedcar {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CarIDs returns the "car" edge IDs in the mutation.
+func (m *PoliceStationMutation) CarIDs() (ids []uuid.UUID) {
+	for id := range m.car {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCar resets all changes to the "car" edge.
+func (m *PoliceStationMutation) ResetCar() {
+	m.car = nil
+	m.clearedcar = false
+	m.removedcar = nil
+}
+
 // SetParentID sets the "parent" edge to the PoliceStation entity by id.
 func (m *PoliceStationMutation) SetParentID(id uuid.UUID) {
 	m.parent = &id
@@ -4840,12 +5250,15 @@ func (m *PoliceStationMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PoliceStationMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.users != nil {
 		edges = append(edges, policestation.EdgeUsers)
 	}
 	if m.camera != nil {
 		edges = append(edges, policestation.EdgeCamera)
+	}
+	if m.car != nil {
+		edges = append(edges, policestation.EdgeCar)
 	}
 	if m.parent != nil {
 		edges = append(edges, policestation.EdgeParent)
@@ -4872,6 +5285,12 @@ func (m *PoliceStationMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case policestation.EdgeCar:
+		ids := make([]ent.Value, 0, len(m.car))
+		for id := range m.car {
+			ids = append(ids, id)
+		}
+		return ids
 	case policestation.EdgeParent:
 		if id := m.parent; id != nil {
 			return []ent.Value{*id}
@@ -4888,12 +5307,15 @@ func (m *PoliceStationMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PoliceStationMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedusers != nil {
 		edges = append(edges, policestation.EdgeUsers)
 	}
 	if m.removedcamera != nil {
 		edges = append(edges, policestation.EdgeCamera)
+	}
+	if m.removedcar != nil {
+		edges = append(edges, policestation.EdgeCar)
 	}
 	if m.removedchild_stations != nil {
 		edges = append(edges, policestation.EdgeChildStations)
@@ -4917,6 +5339,12 @@ func (m *PoliceStationMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case policestation.EdgeCar:
+		ids := make([]ent.Value, 0, len(m.removedcar))
+		for id := range m.removedcar {
+			ids = append(ids, id)
+		}
+		return ids
 	case policestation.EdgeChildStations:
 		ids := make([]ent.Value, 0, len(m.removedchild_stations))
 		for id := range m.removedchild_stations {
@@ -4929,12 +5357,15 @@ func (m *PoliceStationMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PoliceStationMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedusers {
 		edges = append(edges, policestation.EdgeUsers)
 	}
 	if m.clearedcamera {
 		edges = append(edges, policestation.EdgeCamera)
+	}
+	if m.clearedcar {
+		edges = append(edges, policestation.EdgeCar)
 	}
 	if m.clearedparent {
 		edges = append(edges, policestation.EdgeParent)
@@ -4953,6 +5384,8 @@ func (m *PoliceStationMutation) EdgeCleared(name string) bool {
 		return m.clearedusers
 	case policestation.EdgeCamera:
 		return m.clearedcamera
+	case policestation.EdgeCar:
+		return m.clearedcar
 	case policestation.EdgeParent:
 		return m.clearedparent
 	case policestation.EdgeChildStations:
@@ -4981,6 +5414,9 @@ func (m *PoliceStationMutation) ResetEdge(name string) error {
 		return nil
 	case policestation.EdgeCamera:
 		m.ResetCamera()
+		return nil
+	case policestation.EdgeCar:
+		m.ResetCar()
 		return nil
 	case policestation.EdgeParent:
 		m.ResetParent()

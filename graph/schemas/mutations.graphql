@@ -39,4 +39,14 @@ extend type Mutation {
     deleteUser(
         userId: ID!
     ): Boolean!
+    addRole(
+        role: CreateRoleInput
+    ): Role!
+    updateRole(
+        roleId: ID!,
+        role: UpdateRoleInput
+    ): Role!
+    deleteRole(
+        roleId: ID!
+    ): Boolean!
 }
