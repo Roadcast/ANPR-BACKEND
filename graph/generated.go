@@ -154,11 +154,19 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
+		AddCamera                                       func(childComplexity int, camera *ent.CreateCameraInput) int
 		AddCameraToPoliceStation                        func(childComplexity int, cameraID uuid.UUID, policeStationID uuid.UUID) int
+		AddCar                                          func(childComplexity int, car *ent.CreateCarInput) int
 		AddChildPoliceStationToParentPoliceStation      func(childComplexity int, parentPoliceStationID uuid.UUID, childPoliceStationID uuid.UUID) int
 		AddParentPoliceStationToChildPoliceStation      func(childComplexity int, parentPoliceStationID uuid.UUID, childPoliceStationID uuid.UUID) int
+		AddPoliceStation                                func(childComplexity int, policeStation *ent.CreatePoliceStationInput) int
 		AddPoliceStationToUser                          func(childComplexity int, userID uuid.UUID, policeStationID uuid.UUID) int
+		AddUser                                         func(childComplexity int, user *ent.CreateUserInput) int
 		AddUserToPoliceStation                          func(childComplexity int, userID uuid.UUID, policeStationID uuid.UUID) int
+		DeleteCamera                                    func(childComplexity int, cameraID uuid.UUID) int
+		DeleteCar                                       func(childComplexity int, carID uuid.UUID) int
+		DeletePoliceStation                             func(childComplexity int, policeStationID uuid.UUID) int
+		DeleteUser                                      func(childComplexity int, userID uuid.UUID) int
 		Login                                           func(childComplexity int, email string, password string) int
 		Logout                                          func(childComplexity int) int
 		RefreshToken                                    func(childComplexity int, refreshToken string) int
@@ -167,6 +175,10 @@ type ComplexityRoot struct {
 		RemoveParentPoliceStationFromChildPoliceStation func(childComplexity int, parentPoliceStationID uuid.UUID, childPoliceStationID uuid.UUID) int
 		RemovePoliceStationFromUser                     func(childComplexity int, userID uuid.UUID) int
 		RemoveUserFromPoliceStation                     func(childComplexity int, userID uuid.UUID, policeStationID uuid.UUID) int
+		UpdateCamera                                    func(childComplexity int, cameraID uuid.UUID, camera *ent.UpdateCameraInput) int
+		UpdateCar                                       func(childComplexity int, carID uuid.UUID, car *ent.UpdateCarInput) int
+		UpdatePoliceStation                             func(childComplexity int, policeStationID uuid.UUID, policeStation *ent.UpdatePoliceStationInput) int
+		UpdateUser                                      func(childComplexity int, userID uuid.UUID, user *ent.UpdateUserInput) int
 		UpdateUserPassword                              func(childComplexity int, userID uuid.UUID, password string) int
 	}
 
@@ -310,6 +322,18 @@ type MutationResolver interface {
 	RemovePoliceStationFromUser(ctx context.Context, userID uuid.UUID) (*ent.User, error)
 	RemoveChildPoliceStationFromParentPoliceStation(ctx context.Context, parentPoliceStationID uuid.UUID, childPoliceStationID uuid.UUID) (*ent.PoliceStation, error)
 	RemoveParentPoliceStationFromChildPoliceStation(ctx context.Context, parentPoliceStationID uuid.UUID, childPoliceStationID uuid.UUID) (*ent.PoliceStation, error)
+	AddCamera(ctx context.Context, camera *ent.CreateCameraInput) (*ent.Camera, error)
+	UpdateCamera(ctx context.Context, cameraID uuid.UUID, camera *ent.UpdateCameraInput) (*ent.Camera, error)
+	DeleteCamera(ctx context.Context, cameraID uuid.UUID) (bool, error)
+	AddCar(ctx context.Context, car *ent.CreateCarInput) (*ent.Car, error)
+	UpdateCar(ctx context.Context, carID uuid.UUID, car *ent.UpdateCarInput) (*ent.Car, error)
+	DeleteCar(ctx context.Context, carID uuid.UUID) (bool, error)
+	AddPoliceStation(ctx context.Context, policeStation *ent.CreatePoliceStationInput) (*ent.PoliceStation, error)
+	UpdatePoliceStation(ctx context.Context, policeStationID uuid.UUID, policeStation *ent.UpdatePoliceStationInput) (*ent.PoliceStation, error)
+	DeletePoliceStation(ctx context.Context, policeStationID uuid.UUID) (bool, error)
+	AddUser(ctx context.Context, user *ent.CreateUserInput) (*ent.User, error)
+	UpdateUser(ctx context.Context, userID uuid.UUID, user *ent.UpdateUserInput) (*ent.User, error)
+	DeleteUser(ctx context.Context, userID uuid.UUID) (bool, error)
 	UpdateUserPassword(ctx context.Context, userID uuid.UUID, password string) (*ent.User, error)
 }
 type QueryResolver interface {
@@ -792,6 +816,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.LoginResponse.RefreshToken(childComplexity), true
 
+	case "Mutation.addCamera":
+		if e.complexity.Mutation.AddCamera == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addCamera_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddCamera(childComplexity, args["camera"].(*ent.CreateCameraInput)), true
+
 	case "Mutation.addCameraToPoliceStation":
 		if e.complexity.Mutation.AddCameraToPoliceStation == nil {
 			break
@@ -803,6 +839,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.AddCameraToPoliceStation(childComplexity, args["camera_id"].(uuid.UUID), args["police_station_id"].(uuid.UUID)), true
+
+	case "Mutation.addCar":
+		if e.complexity.Mutation.AddCar == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addCar_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddCar(childComplexity, args["car"].(*ent.CreateCarInput)), true
 
 	case "Mutation.addChildPoliceStationToParentPoliceStation":
 		if e.complexity.Mutation.AddChildPoliceStationToParentPoliceStation == nil {
@@ -828,6 +876,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.AddParentPoliceStationToChildPoliceStation(childComplexity, args["parent_police_station_id"].(uuid.UUID), args["child_police_station_id"].(uuid.UUID)), true
 
+	case "Mutation.addPoliceStation":
+		if e.complexity.Mutation.AddPoliceStation == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addPoliceStation_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddPoliceStation(childComplexity, args["policeStation"].(*ent.CreatePoliceStationInput)), true
+
 	case "Mutation.addPoliceStationToUser":
 		if e.complexity.Mutation.AddPoliceStationToUser == nil {
 			break
@@ -840,6 +900,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.AddPoliceStationToUser(childComplexity, args["user_id"].(uuid.UUID), args["police_station_id"].(uuid.UUID)), true
 
+	case "Mutation.addUser":
+		if e.complexity.Mutation.AddUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddUser(childComplexity, args["user"].(*ent.CreateUserInput)), true
+
 	case "Mutation.addUserToPoliceStation":
 		if e.complexity.Mutation.AddUserToPoliceStation == nil {
 			break
@@ -851,6 +923,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.AddUserToPoliceStation(childComplexity, args["user_id"].(uuid.UUID), args["police_station_id"].(uuid.UUID)), true
+
+	case "Mutation.deleteCamera":
+		if e.complexity.Mutation.DeleteCamera == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteCamera_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteCamera(childComplexity, args["cameraId"].(uuid.UUID)), true
+
+	case "Mutation.deleteCar":
+		if e.complexity.Mutation.DeleteCar == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteCar_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteCar(childComplexity, args["carId"].(uuid.UUID)), true
+
+	case "Mutation.deletePoliceStation":
+		if e.complexity.Mutation.DeletePoliceStation == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deletePoliceStation_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeletePoliceStation(childComplexity, args["policeStationId"].(uuid.UUID)), true
+
+	case "Mutation.deleteUser":
+		if e.complexity.Mutation.DeleteUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteUser(childComplexity, args["userId"].(uuid.UUID)), true
 
 	case "Mutation.login":
 		if e.complexity.Mutation.Login == nil {
@@ -942,6 +1062,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.RemoveUserFromPoliceStation(childComplexity, args["user_id"].(uuid.UUID), args["police_station_id"].(uuid.UUID)), true
+
+	case "Mutation.updateCamera":
+		if e.complexity.Mutation.UpdateCamera == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateCamera_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateCamera(childComplexity, args["cameraId"].(uuid.UUID), args["camera"].(*ent.UpdateCameraInput)), true
+
+	case "Mutation.updateCar":
+		if e.complexity.Mutation.UpdateCar == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateCar_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateCar(childComplexity, args["carId"].(uuid.UUID), args["car"].(*ent.UpdateCarInput)), true
+
+	case "Mutation.updatePoliceStation":
+		if e.complexity.Mutation.UpdatePoliceStation == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updatePoliceStation_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdatePoliceStation(childComplexity, args["policeStationId"].(uuid.UUID), args["policeStation"].(*ent.UpdatePoliceStationInput)), true
+
+	case "Mutation.updateUser":
+		if e.complexity.Mutation.UpdateUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateUser(childComplexity, args["userId"].(uuid.UUID), args["user"].(*ent.UpdateUserInput)), true
 
 	case "Mutation.update_user_password":
 		if e.complexity.Mutation.UpdateUserPassword == nil {
@@ -1728,7 +1896,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
-//go:embed "schemas/base.graphql" "schemas/login.graphql" "schemas/search.graphql" "schemas/user.graphql"
+//go:embed "schemas/base.graphql" "schemas/login.graphql" "schemas/mutations.graphql" "schemas/search.graphql" "schemas/user.graphql"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -1742,6 +1910,7 @@ func sourceData(filename string) string {
 var sources = []*ast.Source{
 	{Name: "schemas/base.graphql", Input: sourceData("schemas/base.graphql"), BuiltIn: false},
 	{Name: "schemas/login.graphql", Input: sourceData("schemas/login.graphql"), BuiltIn: false},
+	{Name: "schemas/mutations.graphql", Input: sourceData("schemas/mutations.graphql"), BuiltIn: false},
 	{Name: "schemas/search.graphql", Input: sourceData("schemas/search.graphql"), BuiltIn: false},
 	{Name: "schemas/user.graphql", Input: sourceData("schemas/user.graphql"), BuiltIn: false},
 	{Name: "../internal/ent/auto-schema.graphql", Input: `directive @goField(forceResolver: Boolean, name: String, omittable: Boolean) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
@@ -3504,6 +3673,52 @@ func (ec *executionContext) field_Mutation_addCameraToPoliceStation_argsPoliceSt
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_Mutation_addCamera_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_addCamera_argsCamera(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["camera"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_addCamera_argsCamera(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*ent.CreateCameraInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("camera"))
+	if tmp, ok := rawArgs["camera"]; ok {
+		return ec.unmarshalOCreateCameraInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCreateCameraInput(ctx, tmp)
+	}
+
+	var zeroVal *ent.CreateCameraInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_addCar_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_addCar_argsCar(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["car"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_addCar_argsCar(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*ent.CreateCarInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("car"))
+	if tmp, ok := rawArgs["car"]; ok {
+		return ec.unmarshalOCreateCarInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCreateCarInput(ctx, tmp)
+	}
+
+	var zeroVal *ent.CreateCarInput
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_Mutation_addChildPoliceStationToParentPoliceStation_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -3627,6 +3842,29 @@ func (ec *executionContext) field_Mutation_addPoliceStationToUser_argsPoliceStat
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_Mutation_addPoliceStation_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_addPoliceStation_argsPoliceStation(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["policeStation"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_addPoliceStation_argsPoliceStation(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*ent.CreatePoliceStationInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("policeStation"))
+	if tmp, ok := rawArgs["policeStation"]; ok {
+		return ec.unmarshalOCreatePoliceStationInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCreatePoliceStationInput(ctx, tmp)
+	}
+
+	var zeroVal *ent.CreatePoliceStationInput
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_Mutation_addUserToPoliceStation_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -3661,6 +3899,121 @@ func (ec *executionContext) field_Mutation_addUserToPoliceStation_argsPoliceStat
 ) (uuid.UUID, error) {
 	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("police_station_id"))
 	if tmp, ok := rawArgs["police_station_id"]; ok {
+		return ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+	}
+
+	var zeroVal uuid.UUID
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_addUser_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_addUser_argsUser(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["user"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_addUser_argsUser(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*ent.CreateUserInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("user"))
+	if tmp, ok := rawArgs["user"]; ok {
+		return ec.unmarshalOCreateUserInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCreateUserInput(ctx, tmp)
+	}
+
+	var zeroVal *ent.CreateUserInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteCamera_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_deleteCamera_argsCameraID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["cameraId"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteCamera_argsCameraID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (uuid.UUID, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("cameraId"))
+	if tmp, ok := rawArgs["cameraId"]; ok {
+		return ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+	}
+
+	var zeroVal uuid.UUID
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteCar_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_deleteCar_argsCarID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["carId"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteCar_argsCarID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (uuid.UUID, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("carId"))
+	if tmp, ok := rawArgs["carId"]; ok {
+		return ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+	}
+
+	var zeroVal uuid.UUID
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_deletePoliceStation_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_deletePoliceStation_argsPoliceStationID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["policeStationId"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_deletePoliceStation_argsPoliceStationID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (uuid.UUID, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("policeStationId"))
+	if tmp, ok := rawArgs["policeStationId"]; ok {
+		return ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+	}
+
+	var zeroVal uuid.UUID
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteUser_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_deleteUser_argsUserID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["userId"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteUser_argsUserID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (uuid.UUID, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+	if tmp, ok := rawArgs["userId"]; ok {
 		return ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
 	}
 
@@ -3898,6 +4251,170 @@ func (ec *executionContext) field_Mutation_removeUserFromPoliceStation_argsPolic
 	}
 
 	var zeroVal uuid.UUID
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updateCamera_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_updateCamera_argsCameraID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["cameraId"] = arg0
+	arg1, err := ec.field_Mutation_updateCamera_argsCamera(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["camera"] = arg1
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateCamera_argsCameraID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (uuid.UUID, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("cameraId"))
+	if tmp, ok := rawArgs["cameraId"]; ok {
+		return ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+	}
+
+	var zeroVal uuid.UUID
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updateCamera_argsCamera(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*ent.UpdateCameraInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("camera"))
+	if tmp, ok := rawArgs["camera"]; ok {
+		return ec.unmarshalOUpdateCameraInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUpdateCameraInput(ctx, tmp)
+	}
+
+	var zeroVal *ent.UpdateCameraInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updateCar_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_updateCar_argsCarID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["carId"] = arg0
+	arg1, err := ec.field_Mutation_updateCar_argsCar(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["car"] = arg1
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateCar_argsCarID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (uuid.UUID, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("carId"))
+	if tmp, ok := rawArgs["carId"]; ok {
+		return ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+	}
+
+	var zeroVal uuid.UUID
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updateCar_argsCar(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*ent.UpdateCarInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("car"))
+	if tmp, ok := rawArgs["car"]; ok {
+		return ec.unmarshalOUpdateCarInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUpdateCarInput(ctx, tmp)
+	}
+
+	var zeroVal *ent.UpdateCarInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updatePoliceStation_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_updatePoliceStation_argsPoliceStationID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["policeStationId"] = arg0
+	arg1, err := ec.field_Mutation_updatePoliceStation_argsPoliceStation(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["policeStation"] = arg1
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_updatePoliceStation_argsPoliceStationID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (uuid.UUID, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("policeStationId"))
+	if tmp, ok := rawArgs["policeStationId"]; ok {
+		return ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+	}
+
+	var zeroVal uuid.UUID
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updatePoliceStation_argsPoliceStation(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*ent.UpdatePoliceStationInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("policeStation"))
+	if tmp, ok := rawArgs["policeStation"]; ok {
+		return ec.unmarshalOUpdatePoliceStationInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUpdatePoliceStationInput(ctx, tmp)
+	}
+
+	var zeroVal *ent.UpdatePoliceStationInput
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updateUser_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_updateUser_argsUserID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["userId"] = arg0
+	arg1, err := ec.field_Mutation_updateUser_argsUser(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["user"] = arg1
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateUser_argsUserID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (uuid.UUID, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+	if tmp, ok := rawArgs["userId"]; ok {
+		return ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+	}
+
+	var zeroVal uuid.UUID
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updateUser_argsUser(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*ent.UpdateUserInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("user"))
+	if tmp, ok := rawArgs["user"]; ok {
+		return ec.unmarshalOUpdateUserInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUpdateUserInput(ctx, tmp)
+	}
+
+	var zeroVal *ent.UpdateUserInput
 	return zeroVal, nil
 }
 
@@ -9056,6 +9573,846 @@ func (ec *executionContext) fieldContext_Mutation_removeParentPoliceStationFromC
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_removeParentPoliceStationFromChildPoliceStation_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_addCamera(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_addCamera(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddCamera(rctx, fc.Args["camera"].(*ent.CreateCameraInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Camera)
+	fc.Result = res
+	return ec.marshalNCamera2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCamera(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_addCamera(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Camera_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Camera_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Camera_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_Camera_name(ctx, field)
+			case "model":
+				return ec.fieldContext_Camera_model(ctx, field)
+			case "imei":
+				return ec.fieldContext_Camera_imei(ctx, field)
+			case "location":
+				return ec.fieldContext_Camera_location(ctx, field)
+			case "active":
+				return ec.fieldContext_Camera_active(ctx, field)
+			case "policeStationID":
+				return ec.fieldContext_Camera_policeStationID(ctx, field)
+			case "policeStation":
+				return ec.fieldContext_Camera_policeStation(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Camera", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_addCamera_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateCamera(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateCamera(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateCamera(rctx, fc.Args["cameraId"].(uuid.UUID), fc.Args["camera"].(*ent.UpdateCameraInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Camera)
+	fc.Result = res
+	return ec.marshalNCamera2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCamera(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateCamera(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Camera_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Camera_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Camera_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_Camera_name(ctx, field)
+			case "model":
+				return ec.fieldContext_Camera_model(ctx, field)
+			case "imei":
+				return ec.fieldContext_Camera_imei(ctx, field)
+			case "location":
+				return ec.fieldContext_Camera_location(ctx, field)
+			case "active":
+				return ec.fieldContext_Camera_active(ctx, field)
+			case "policeStationID":
+				return ec.fieldContext_Camera_policeStationID(ctx, field)
+			case "policeStation":
+				return ec.fieldContext_Camera_policeStation(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Camera", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateCamera_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteCamera(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteCamera(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteCamera(rctx, fc.Args["cameraId"].(uuid.UUID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteCamera(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteCamera_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_addCar(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_addCar(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddCar(rctx, fc.Args["car"].(*ent.CreateCarInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Car)
+	fc.Result = res
+	return ec.marshalNCar2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCar(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_addCar(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Car_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Car_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Car_updatedAt(ctx, field)
+			case "make":
+				return ec.fieldContext_Car_make(ctx, field)
+			case "model":
+				return ec.fieldContext_Car_model(ctx, field)
+			case "year":
+				return ec.fieldContext_Car_year(ctx, field)
+			case "registration":
+				return ec.fieldContext_Car_registration(ctx, field)
+			case "color":
+				return ec.fieldContext_Car_color(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Car", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_addCar_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateCar(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateCar(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateCar(rctx, fc.Args["carId"].(uuid.UUID), fc.Args["car"].(*ent.UpdateCarInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Car)
+	fc.Result = res
+	return ec.marshalNCar2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCar(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateCar(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Car_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Car_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Car_updatedAt(ctx, field)
+			case "make":
+				return ec.fieldContext_Car_make(ctx, field)
+			case "model":
+				return ec.fieldContext_Car_model(ctx, field)
+			case "year":
+				return ec.fieldContext_Car_year(ctx, field)
+			case "registration":
+				return ec.fieldContext_Car_registration(ctx, field)
+			case "color":
+				return ec.fieldContext_Car_color(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Car", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateCar_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteCar(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteCar(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteCar(rctx, fc.Args["carId"].(uuid.UUID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteCar(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteCar_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_addPoliceStation(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_addPoliceStation(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddPoliceStation(rctx, fc.Args["policeStation"].(*ent.CreatePoliceStationInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.PoliceStation)
+	fc.Result = res
+	return ec.marshalNPoliceStation2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_addPoliceStation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_PoliceStation_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_PoliceStation_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_PoliceStation_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_PoliceStation_name(ctx, field)
+			case "location":
+				return ec.fieldContext_PoliceStation_location(ctx, field)
+			case "code":
+				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "identifier":
+				return ec.fieldContext_PoliceStation_identifier(ctx, field)
+			case "parentStationID":
+				return ec.fieldContext_PoliceStation_parentStationID(ctx, field)
+			case "users":
+				return ec.fieldContext_PoliceStation_users(ctx, field)
+			case "camera":
+				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "parent":
+				return ec.fieldContext_PoliceStation_parent(ctx, field)
+			case "childStations":
+				return ec.fieldContext_PoliceStation_childStations(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PoliceStation", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_addPoliceStation_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updatePoliceStation(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updatePoliceStation(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdatePoliceStation(rctx, fc.Args["policeStationId"].(uuid.UUID), fc.Args["policeStation"].(*ent.UpdatePoliceStationInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.PoliceStation)
+	fc.Result = res
+	return ec.marshalNPoliceStation2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updatePoliceStation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_PoliceStation_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_PoliceStation_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_PoliceStation_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_PoliceStation_name(ctx, field)
+			case "location":
+				return ec.fieldContext_PoliceStation_location(ctx, field)
+			case "code":
+				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "identifier":
+				return ec.fieldContext_PoliceStation_identifier(ctx, field)
+			case "parentStationID":
+				return ec.fieldContext_PoliceStation_parentStationID(ctx, field)
+			case "users":
+				return ec.fieldContext_PoliceStation_users(ctx, field)
+			case "camera":
+				return ec.fieldContext_PoliceStation_camera(ctx, field)
+			case "parent":
+				return ec.fieldContext_PoliceStation_parent(ctx, field)
+			case "childStations":
+				return ec.fieldContext_PoliceStation_childStations(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PoliceStation", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updatePoliceStation_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deletePoliceStation(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deletePoliceStation(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeletePoliceStation(rctx, fc.Args["policeStationId"].(uuid.UUID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deletePoliceStation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deletePoliceStation_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_addUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_addUser(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddUser(rctx, fc.Args["user"].(*ent.CreateUserInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_addUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_User_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_User_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "phone":
+				return ec.fieldContext_User_phone(ctx, field)
+			case "active":
+				return ec.fieldContext_User_active(ctx, field)
+			case "roleID":
+				return ec.fieldContext_User_roleID(ctx, field)
+			case "policeStationID":
+				return ec.fieldContext_User_policeStationID(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			case "policeStation":
+				return ec.fieldContext_User_policeStation(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_addUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateUser(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateUser(rctx, fc.Args["userId"].(uuid.UUID), fc.Args["user"].(*ent.UpdateUserInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_User_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_User_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "phone":
+				return ec.fieldContext_User_phone(ctx, field)
+			case "active":
+				return ec.fieldContext_User_active(ctx, field)
+			case "roleID":
+				return ec.fieldContext_User_roleID(ctx, field)
+			case "policeStationID":
+				return ec.fieldContext_User_policeStationID(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			case "policeStation":
+				return ec.fieldContext_User_policeStation(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteUser(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteUser(rctx, fc.Args["userId"].(uuid.UUID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -20796,6 +22153,90 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "addCamera":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_addCamera(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateCamera":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateCamera(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteCamera":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteCamera(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "addCar":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_addCar(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateCar":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateCar(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteCar":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteCar(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "addPoliceStation":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_addPoliceStation(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updatePoliceStation":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updatePoliceStation(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deletePoliceStation":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deletePoliceStation(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "addUser":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_addUser(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateUser":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateUser(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteUser":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteUser(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "update_user_password":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_update_user_password(ctx, field)
@@ -22650,6 +24091,20 @@ func (ec *executionContext) unmarshalNCameraWhereInput2ᚖgoᚑentᚑprojectᚋi
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNCar2goᚑentᚑprojectᚋinternalᚋentᚐCar(ctx context.Context, sel ast.SelectionSet, v ent.Car) graphql.Marshaler {
+	return ec._Car(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCar2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCar(ctx context.Context, sel ast.SelectionSet, v *ent.Car) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Car(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNCarConnection2goᚑentᚑprojectᚋinternalᚋentᚐCarConnection(ctx context.Context, sel ast.SelectionSet, v ent.CarConnection) graphql.Marshaler {
 	return ec._CarConnection(ctx, sel, &v)
 }
@@ -23805,6 +25260,38 @@ func (ec *executionContext) unmarshalOCarWhereInput2ᚖgoᚑentᚑprojectᚋinte
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalOCreateCameraInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCreateCameraInput(ctx context.Context, v any) (*ent.CreateCameraInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputCreateCameraInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOCreateCarInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCreateCarInput(ctx context.Context, v any) (*ent.CreateCarInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputCreateCarInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOCreatePoliceStationInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCreatePoliceStationInput(ctx context.Context, v any) (*ent.CreatePoliceStationInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputCreatePoliceStationInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOCreateUserInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCreateUserInput(ctx context.Context, v any) (*ent.CreateUserInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputCreateUserInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, v any) (*entgql.Cursor[uuid.UUID], error) {
 	if v == nil {
 		return nil, nil
@@ -24575,6 +26062,38 @@ func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel
 	}
 	res := graphql.MarshalTime(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOUpdateCameraInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUpdateCameraInput(ctx context.Context, v any) (*ent.UpdateCameraInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputUpdateCameraInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOUpdateCarInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUpdateCarInput(ctx context.Context, v any) (*ent.UpdateCarInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputUpdateCarInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOUpdatePoliceStationInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUpdatePoliceStationInput(ctx context.Context, v any) (*ent.UpdatePoliceStationInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputUpdatePoliceStationInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOUpdateUserInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐUpdateUserInput(ctx context.Context, v any) (*ent.UpdateUserInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputUpdateUserInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOUser2ᚕᚖgoᚑentᚑprojectᚋinternalᚋentᚐUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.User) graphql.Marshaler {

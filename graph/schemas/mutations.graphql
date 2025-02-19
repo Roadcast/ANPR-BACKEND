@@ -1,0 +1,42 @@
+extend type Mutation {
+    addCamera(
+        camera: CreateCameraInput
+    ): Camera!
+    updateCamera(
+        cameraId: ID!,
+        camera: UpdateCameraInput
+    ): Camera!
+    deleteCamera(
+        cameraId: ID!
+    ): Boolean!
+    addCar(
+        car: CreateCarInput
+    ): Car!
+    updateCar(
+        carId: ID!,
+        car: UpdateCarInput
+    ): Car!
+    deleteCar(
+        carId: ID!
+    ): Boolean!
+    addPoliceStation(
+        policeStation: CreatePoliceStationInput
+    ): PoliceStation!
+    updatePoliceStation(
+        policeStationId: ID!,
+        policeStation: UpdatePoliceStationInput
+    ): PoliceStation!
+    deletePoliceStation(
+        policeStationId: ID!
+    ): Boolean!
+    addUser(
+        user: CreateUserInput
+    ): User!
+    updateUser(
+        userId: ID!,
+        user: UpdateUserInput
+    ): User!
+    deleteUser(
+        userId: ID!
+    ): Boolean!
+}
