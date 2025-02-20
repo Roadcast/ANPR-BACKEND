@@ -42,12 +42,26 @@ func (r *queryResolver) Cameras(ctx context.Context, after *entgql.Cursor[uuid.U
 
 // Cars is the resolver for the cars field.
 func (r *queryResolver) Cars(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.CarOrder, where *ent.CarWhereInput) (*ent.CarConnection, error) {
-	panic(fmt.Errorf("not implemented: Cars - cars"))
+	pagination, err := r.Client.Car.Query().Paginate(ctx, after, first, before, last, ent.WithCarFilter(where.Filter), ent.WithCarOrder(orderBy))
+	if err != nil {
+		return nil, err
+	}
+	if pagination == nil {
+		return nil, fmt.Errorf("no results found")
+	}
+	return pagination, nil
 }
 
 // Events is the resolver for the events field.
 func (r *queryResolver) Events(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.EventOrder, where *ent.EventWhereInput) (*ent.EventConnection, error) {
-	panic(fmt.Errorf("not implemented: Events - events"))
+	pagination, err := r.Client.Event.Query().Paginate(ctx, after, first, before, last, ent.WithEventFilter(where.Filter), ent.WithEventOrder(orderBy))
+	if err != nil {
+		return nil, err
+	}
+	if pagination == nil {
+		return nil, fmt.Errorf("no results found")
+	}
+	return pagination, nil
 }
 
 // Permissions is the resolver for the permissions field.
@@ -73,7 +87,14 @@ func (r *queryResolver) PoliceStations(ctx context.Context, after *entgql.Cursor
 
 // Roles is the resolver for the roles field.
 func (r *queryResolver) Roles(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.RoleOrder, where *ent.RoleWhereInput) (*ent.RoleConnection, error) {
-	panic(fmt.Errorf("not implemented: Roles - roles"))
+	pagination, err := r.Client.Role.Query().Paginate(ctx, after, first, before, last, ent.WithRoleFilter(where.Filter), ent.WithRoleOrder(orderBy))
+	if err != nil {
+		return nil, err
+	}
+	if pagination == nil {
+		return nil, fmt.Errorf("no results found")
+	}
+	return pagination, nil
 }
 
 // Users is the resolver for the users field.
