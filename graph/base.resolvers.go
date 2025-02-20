@@ -11,7 +11,6 @@ import (
 	"go-ent-project/internal/ent"
 	"go-ent-project/internal/ent/camera"
 	"go-ent-project/internal/ent/policestation"
-	"go-ent-project/internal/ent/user"
 	"go-ent-project/utils/constant"
 
 	"entgo.io/contrib/entgql"
@@ -20,11 +19,7 @@ import (
 
 // AddUserToPoliceStation is the resolver for the addUserToPoliceStation field.
 func (r *mutationResolver) AddUserToPoliceStation(ctx context.Context, userID uuid.UUID, policeStationID uuid.UUID) (*ent.PoliceStation, error) {
-	ps, err := r.Client.PoliceStation.Query().Where(policestation.IDEQ(policeStationID)).Only(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("police station not found %v", err)
-	}
-	_, err = ps.Update().AddUserIDs(userID).Save(ctx)
+	ps, err := r.Client.PoliceStation.UpdateOneID(policeStationID).AddUserIDs(userID).Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to add user to police station %v", err)
 	}
@@ -33,13 +28,7 @@ func (r *mutationResolver) AddUserToPoliceStation(ctx context.Context, userID uu
 
 // AddCameraToPoliceStation is the resolver for the addCameraToPoliceStation field.
 func (r *mutationResolver) AddCameraToPoliceStation(ctx context.Context, cameraID uuid.UUID, policeStationID uuid.UUID) (*ent.Camera, error) {
-	ctx = context.WithValue(ctx, constant.BypassPrivacyKey, true)
-
-	c, err := r.Client.Camera.Query().Where(camera.IDEQ(cameraID)).Only(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("police station not found %v", err)
-	}
-	_, err = c.Update().SetPoliceStationID(policeStationID).Save(ctx)
+	c, err := r.Client.Camera.UpdateOneID(cameraID).SetPoliceStationID(policeStationID).Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to add camera to police station %v", err)
 	}
@@ -48,111 +37,72 @@ func (r *mutationResolver) AddCameraToPoliceStation(ctx context.Context, cameraI
 
 // AddPoliceStationToUser is the resolver for the addPoliceStationToUser field.
 func (r *mutationResolver) AddPoliceStationToUser(ctx context.Context, userID uuid.UUID, policeStationID uuid.UUID) (*ent.User, error) {
-	u, err := r.Client.User.Query().Where(user.IDEQ(userID)).Only(ctx)
+	u, err := r.Client.User.UpdateOneID(userID).SetPoliceStationID(policeStationID).Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("user not found %v", err)
+		return nil, fmt.Errorf("failed to add police station to user %v", err)
 	}
-	u, err = u.Update().SetPoliceStationID(policeStationID).Save(ctx)
 	return u, nil
 }
 
 // AddChildPoliceStationToParentPoliceStation is the resolver for the addChildPoliceStationToParentPoliceStation field.
 func (r *mutationResolver) AddChildPoliceStationToParentPoliceStation(ctx context.Context, parentPoliceStationID uuid.UUID, childPoliceStationID uuid.UUID) (*ent.PoliceStation, error) {
-	childPS, err := r.Client.PoliceStation.Query().Where(policestation.IDEQ(childPoliceStationID)).Only(ctx)
+	ps, err := r.Client.PoliceStation.UpdateOneID(parentPoliceStationID).AddChildStationIDs(childPoliceStationID).Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("child police station not found %v", err)
+		return nil, fmt.Errorf("failed to add child police station to parent police station %v", err)
 	}
-	childPS, err = childPS.Update().SetParentID(parentPoliceStationID).Save(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to add parent police station to child police station %v", err)
-	}
-	parentPS, err := r.Client.PoliceStation.Query().Where(policestation.IDEQ(parentPoliceStationID)).Only(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("parent police station not found %v", err)
-	}
-
-	return parentPS, nil
+	return ps, nil
 }
 
 // AddParentPoliceStationToChildPoliceStation is the resolver for the addParentPoliceStationToChildPoliceStation field.
 func (r *mutationResolver) AddParentPoliceStationToChildPoliceStation(ctx context.Context, parentPoliceStationID uuid.UUID, childPoliceStationID uuid.UUID) (*ent.PoliceStation, error) {
-	childPS, err := r.Client.PoliceStation.Query().Where(policestation.IDEQ(childPoliceStationID)).Only(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("child police station not found %v", err)
-	}
-	parentPS, err := r.Client.PoliceStation.Query().Where(policestation.IDEQ(parentPoliceStationID)).Only(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("parent police station not found %v", err)
-	}
-	_, err = childPS.Update().SetParent(parentPS).Save(ctx)
+	ps, err := r.Client.PoliceStation.UpdateOneID(childPoliceStationID).SetParentID(parentPoliceStationID).Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to add parent police station to child police station %v", err)
 	}
-	return childPS, nil
+	return ps, nil
 }
 
 // RemoveUserFromPoliceStation is the resolver for the removeUserFromPoliceStation field.
 func (r *mutationResolver) RemoveUserFromPoliceStation(ctx context.Context, userID uuid.UUID, policeStationID uuid.UUID) (*ent.PoliceStation, error) {
-	ps, err := r.Client.PoliceStation.Query().Where(policestation.IDEQ(policeStationID)).Only(ctx)
+	ps, err := r.Client.PoliceStation.UpdateOneID(policeStationID).RemoveUserIDs(userID).Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("police station not found %v", err)
-	}
-	_, err = ps.Update().RemoveUserIDs(userID).Save(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to add user to police station %v", err)
+		return nil, fmt.Errorf("failed to remove user from police station %v", err)
 	}
 	return ps, nil
 }
 
 // RemoveCameraFromPoliceStation is the resolver for the removeCameraFromPoliceStation field.
 func (r *mutationResolver) RemoveCameraFromPoliceStation(ctx context.Context, cameraID uuid.UUID) (*ent.Camera, error) {
-	c, err := r.Client.Camera.Query().Where(camera.IDEQ(cameraID)).Only(ctx)
+	c, err := r.Client.Camera.UpdateOneID(cameraID).ClearPoliceStation().Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("police station not found %v", err)
-	}
-	_, err = c.Update().ClearPoliceStationID().Save(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to add camera to police station %v", err)
+		return nil, fmt.Errorf("failed to remove camera from police station %v", err)
 	}
 	return c, nil
 }
 
 // RemovePoliceStationFromUser is the resolver for the removePoliceStationFromUser field.
 func (r *mutationResolver) RemovePoliceStationFromUser(ctx context.Context, userID uuid.UUID) (*ent.User, error) {
-	u, err := r.Client.User.Query().Where(user.IDEQ(userID)).Only(ctx)
+	u, err := r.Client.User.UpdateOneID(userID).ClearPoliceStation().Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("user not found %v", err)
+		return nil, fmt.Errorf("failed to remove police station from user %v", err)
 	}
-	u, err = u.Update().ClearPoliceStation().Save(ctx)
 	return u, nil
 }
 
 // RemoveChildPoliceStationFromParentPoliceStation is the resolver for the removeChildPoliceStationFromParentPoliceStation field.
 func (r *mutationResolver) RemoveChildPoliceStationFromParentPoliceStation(ctx context.Context, parentPoliceStationID uuid.UUID, childPoliceStationID uuid.UUID) (*ent.PoliceStation, error) {
-	childPS, err := r.Client.PoliceStation.Query().Where(policestation.IDEQ(childPoliceStationID)).Only(ctx)
+	parentPS, err := r.Client.PoliceStation.UpdateOneID(parentPoliceStationID).RemoveChildStationIDs(childPoliceStationID).Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("child police station not found %v", err)
-	}
-	parentPS, err := r.Client.PoliceStation.Query().Where(policestation.IDEQ(parentPoliceStationID)).Only(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("parent police station not found %v", err)
-	}
-	_, err = parentPS.Update().RemoveChildStations(childPS).Save(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to add child police station to parent police station %v", err)
+		return nil, fmt.Errorf("failed to remove child police station from parent police station %v", err)
 	}
 	return parentPS, nil
 }
 
 // RemoveParentPoliceStationFromChildPoliceStation is the resolver for the removeParentPoliceStationFromChildPoliceStation field.
 func (r *mutationResolver) RemoveParentPoliceStationFromChildPoliceStation(ctx context.Context, parentPoliceStationID uuid.UUID, childPoliceStationID uuid.UUID) (*ent.PoliceStation, error) {
-	childPS, err := r.Client.PoliceStation.Query().Where(policestation.IDEQ(childPoliceStationID)).Only(ctx)
+	childPS, err := r.Client.PoliceStation.UpdateOneID(childPoliceStationID).ClearParent().Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("child police station not found %v", err)
-	}
-	_, err = childPS.Update().ClearParent().Save(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to add parent police station to child police station %v", err)
+		return nil, fmt.Errorf("failed to remove parent police station from child police station %v", err)
 	}
 	return childPS, nil
 }
