@@ -1,6 +1,8 @@
 extend type Query {
     getCamera(id: ID!): Camera!
     getPoliceStation(id: ID!): PoliceStation!
+    getRole(id: ID!): Role!
+    getCar(id: ID!): Car!
     getEvents(after: Cursor, first: Int, before: Cursor, last: Int, orderBy: [EventOrder], where: EventWhereInput) : EventList!
 }
 

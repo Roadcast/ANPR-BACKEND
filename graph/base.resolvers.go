@@ -10,7 +10,9 @@ import (
 	"go-ent-project/graph/model"
 	"go-ent-project/internal/ent"
 	"go-ent-project/internal/ent/camera"
+	"go-ent-project/internal/ent/car"
 	"go-ent-project/internal/ent/policestation"
+	role2 "go-ent-project/internal/ent/role"
 	"go-ent-project/utils/constant"
 
 	"entgo.io/contrib/entgql"
@@ -123,6 +125,24 @@ func (r *queryResolver) GetPoliceStation(ctx context.Context, id uuid.UUID) (*en
 		return nil, fmt.Errorf("user not found %v", err)
 	}
 	return u, nil
+}
+
+// GetRole is the resolver for the getRole field.
+func (r *queryResolver) GetRole(ctx context.Context, id uuid.UUID) (*ent.Role, error) {
+	role, err := r.Client.Role.Query().Where(role2.IDEQ(id)).Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("role not found %v", err)
+	}
+	return role, nil
+}
+
+// GetCar is the resolver for the getCar field.
+func (r *queryResolver) GetCar(ctx context.Context, id uuid.UUID) (*ent.Car, error) {
+	c, err := r.Client.Car.Query().Where(car.IDEQ(id)).Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("car not found %v", err)
+	}
+	return c, nil
 }
 
 // GetEvents is the resolver for the getEvents field.

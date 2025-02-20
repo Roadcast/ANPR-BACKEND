@@ -8,7 +8,9 @@ import (
 	"context"
 	"go-ent-project/internal/ent"
 	"go-ent-project/internal/ent/camera"
+	"go-ent-project/internal/ent/car"
 	"go-ent-project/internal/ent/policestation"
+	"go-ent-project/internal/ent/role"
 	"go-ent-project/internal/ent/user"
 	"go-ent-project/utils/constant"
 )
@@ -43,6 +45,24 @@ func (r *queryResolver) GetCameraByName(ctx context.Context, name string, limit 
 	data, err := r.Client.Camera.Query().Where(camera.NameContains(name)).
 		Order(camera.ByName()).
 		Limit(limit).Offset(offset).All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+// GetRoleByName is the resolver for the getRoleByName field.
+func (r *queryResolver) GetRoleByName(ctx context.Context, name string, limit int, offset int) ([]*ent.Role, error) {
+	data, err := r.Client.Role.Query().Where(role.NameContains(name)).Order(role.ByName()).Limit(limit).Offset(offset).All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+// GetCarByName is the resolver for the getCarByName field.
+func (r *queryResolver) GetCarByName(ctx context.Context, name string, limit int, offset int) ([]*ent.Car, error) {
+	data, err := r.Client.Car.Query().Where(car.RegistrationContains(name)).Order(car.ByRegistration()).Limit(limit).Offset(offset).All(ctx)
 	if err != nil {
 		return nil, err
 	}
