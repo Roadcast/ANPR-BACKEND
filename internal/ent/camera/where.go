@@ -91,6 +91,16 @@ func Active(v bool) predicate.Camera {
 	return predicate.Camera(sql.FieldEQ(FieldActive, v))
 }
 
+// IsWorking applies equality check predicate on the "is_working" field. It's identical to IsWorkingEQ.
+func IsWorking(v bool) predicate.Camera {
+	return predicate.Camera(sql.FieldEQ(FieldIsWorking, v))
+}
+
+// District applies equality check predicate on the "district" field. It's identical to DistrictEQ.
+func District(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldEQ(FieldDistrict, v))
+}
+
 // PoliceStationID applies equality check predicate on the "police_station_id" field. It's identical to PoliceStationIDEQ.
 func PoliceStationID(v uuid.UUID) predicate.Camera {
 	return predicate.Camera(sql.FieldEQ(FieldPoliceStationID, v))
@@ -444,6 +454,81 @@ func ActiveEQ(v bool) predicate.Camera {
 // ActiveNEQ applies the NEQ predicate on the "active" field.
 func ActiveNEQ(v bool) predicate.Camera {
 	return predicate.Camera(sql.FieldNEQ(FieldActive, v))
+}
+
+// IsWorkingEQ applies the EQ predicate on the "is_working" field.
+func IsWorkingEQ(v bool) predicate.Camera {
+	return predicate.Camera(sql.FieldEQ(FieldIsWorking, v))
+}
+
+// IsWorkingNEQ applies the NEQ predicate on the "is_working" field.
+func IsWorkingNEQ(v bool) predicate.Camera {
+	return predicate.Camera(sql.FieldNEQ(FieldIsWorking, v))
+}
+
+// DistrictEQ applies the EQ predicate on the "district" field.
+func DistrictEQ(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldEQ(FieldDistrict, v))
+}
+
+// DistrictNEQ applies the NEQ predicate on the "district" field.
+func DistrictNEQ(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldNEQ(FieldDistrict, v))
+}
+
+// DistrictIn applies the In predicate on the "district" field.
+func DistrictIn(vs ...string) predicate.Camera {
+	return predicate.Camera(sql.FieldIn(FieldDistrict, vs...))
+}
+
+// DistrictNotIn applies the NotIn predicate on the "district" field.
+func DistrictNotIn(vs ...string) predicate.Camera {
+	return predicate.Camera(sql.FieldNotIn(FieldDistrict, vs...))
+}
+
+// DistrictGT applies the GT predicate on the "district" field.
+func DistrictGT(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldGT(FieldDistrict, v))
+}
+
+// DistrictGTE applies the GTE predicate on the "district" field.
+func DistrictGTE(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldGTE(FieldDistrict, v))
+}
+
+// DistrictLT applies the LT predicate on the "district" field.
+func DistrictLT(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldLT(FieldDistrict, v))
+}
+
+// DistrictLTE applies the LTE predicate on the "district" field.
+func DistrictLTE(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldLTE(FieldDistrict, v))
+}
+
+// DistrictContains applies the Contains predicate on the "district" field.
+func DistrictContains(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldContains(FieldDistrict, v))
+}
+
+// DistrictHasPrefix applies the HasPrefix predicate on the "district" field.
+func DistrictHasPrefix(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldHasPrefix(FieldDistrict, v))
+}
+
+// DistrictHasSuffix applies the HasSuffix predicate on the "district" field.
+func DistrictHasSuffix(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldHasSuffix(FieldDistrict, v))
+}
+
+// DistrictEqualFold applies the EqualFold predicate on the "district" field.
+func DistrictEqualFold(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldEqualFold(FieldDistrict, v))
+}
+
+// DistrictContainsFold applies the ContainsFold predicate on the "district" field.
+func DistrictContainsFold(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldContainsFold(FieldDistrict, v))
 }
 
 // PoliceStationIDEQ applies the EQ predicate on the "police_station_id" field.

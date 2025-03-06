@@ -29,6 +29,10 @@ const (
 	FieldLocation = "location"
 	// FieldActive holds the string denoting the active field in the database.
 	FieldActive = "active"
+	// FieldIsWorking holds the string denoting the is_working field in the database.
+	FieldIsWorking = "is_working"
+	// FieldDistrict holds the string denoting the district field in the database.
+	FieldDistrict = "district"
 	// FieldPoliceStationID holds the string denoting the police_station_id field in the database.
 	FieldPoliceStationID = "police_station_id"
 	// EdgePoliceStation holds the string denoting the police_station edge name in mutations.
@@ -54,6 +58,8 @@ var Columns = []string{
 	FieldImei,
 	FieldLocation,
 	FieldActive,
+	FieldIsWorking,
+	FieldDistrict,
 	FieldPoliceStationID,
 }
 
@@ -82,6 +88,10 @@ var (
 	ImeiValidator func(string) error
 	// DefaultActive holds the default value on creation for the "active" field.
 	DefaultActive bool
+	// DefaultIsWorking holds the default value on creation for the "is_working" field.
+	DefaultIsWorking bool
+	// DefaultDistrict holds the default value on creation for the "district" field.
+	DefaultDistrict string
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
@@ -127,6 +137,16 @@ func ByLocation(opts ...sql.OrderTermOption) OrderOption {
 // ByActive orders the results by the active field.
 func ByActive(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldActive, opts...).ToFunc()
+}
+
+// ByIsWorking orders the results by the is_working field.
+func ByIsWorking(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsWorking, opts...).ToFunc()
+}
+
+// ByDistrict orders the results by the district field.
+func ByDistrict(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDistrict, opts...).ToFunc()
 }
 
 // ByPoliceStationID orders the results by the police_station_id field.

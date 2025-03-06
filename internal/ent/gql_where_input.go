@@ -74,6 +74,25 @@ type CameraWhereInput struct {
 	Active    *bool `json:"active,omitempty"`
 	ActiveNEQ *bool `json:"activeNEQ,omitempty"`
 
+	// "is_working" field predicates.
+	IsWorking    *bool `json:"isWorking,omitempty"`
+	IsWorkingNEQ *bool `json:"isWorkingNEQ,omitempty"`
+
+	// "district" field predicates.
+	District             *string  `json:"district,omitempty"`
+	DistrictNEQ          *string  `json:"districtNEQ,omitempty"`
+	DistrictIn           []string `json:"districtIn,omitempty"`
+	DistrictNotIn        []string `json:"districtNotIn,omitempty"`
+	DistrictGT           *string  `json:"districtGT,omitempty"`
+	DistrictGTE          *string  `json:"districtGTE,omitempty"`
+	DistrictLT           *string  `json:"districtLT,omitempty"`
+	DistrictLTE          *string  `json:"districtLTE,omitempty"`
+	DistrictContains     *string  `json:"districtContains,omitempty"`
+	DistrictHasPrefix    *string  `json:"districtHasPrefix,omitempty"`
+	DistrictHasSuffix    *string  `json:"districtHasSuffix,omitempty"`
+	DistrictEqualFold    *string  `json:"districtEqualFold,omitempty"`
+	DistrictContainsFold *string  `json:"districtContainsFold,omitempty"`
+
 	// "police_station" edge predicates.
 	HasPoliceStation     *bool                      `json:"hasPoliceStation,omitempty"`
 	HasPoliceStationWith []*PoliceStationWhereInput `json:"hasPoliceStationWith,omitempty"`
@@ -272,6 +291,51 @@ func (i *CameraWhereInput) P() (predicate.Camera, error) {
 	}
 	if i.ActiveNEQ != nil {
 		predicates = append(predicates, camera.ActiveNEQ(*i.ActiveNEQ))
+	}
+	if i.IsWorking != nil {
+		predicates = append(predicates, camera.IsWorkingEQ(*i.IsWorking))
+	}
+	if i.IsWorkingNEQ != nil {
+		predicates = append(predicates, camera.IsWorkingNEQ(*i.IsWorkingNEQ))
+	}
+	if i.District != nil {
+		predicates = append(predicates, camera.DistrictEQ(*i.District))
+	}
+	if i.DistrictNEQ != nil {
+		predicates = append(predicates, camera.DistrictNEQ(*i.DistrictNEQ))
+	}
+	if len(i.DistrictIn) > 0 {
+		predicates = append(predicates, camera.DistrictIn(i.DistrictIn...))
+	}
+	if len(i.DistrictNotIn) > 0 {
+		predicates = append(predicates, camera.DistrictNotIn(i.DistrictNotIn...))
+	}
+	if i.DistrictGT != nil {
+		predicates = append(predicates, camera.DistrictGT(*i.DistrictGT))
+	}
+	if i.DistrictGTE != nil {
+		predicates = append(predicates, camera.DistrictGTE(*i.DistrictGTE))
+	}
+	if i.DistrictLT != nil {
+		predicates = append(predicates, camera.DistrictLT(*i.DistrictLT))
+	}
+	if i.DistrictLTE != nil {
+		predicates = append(predicates, camera.DistrictLTE(*i.DistrictLTE))
+	}
+	if i.DistrictContains != nil {
+		predicates = append(predicates, camera.DistrictContains(*i.DistrictContains))
+	}
+	if i.DistrictHasPrefix != nil {
+		predicates = append(predicates, camera.DistrictHasPrefix(*i.DistrictHasPrefix))
+	}
+	if i.DistrictHasSuffix != nil {
+		predicates = append(predicates, camera.DistrictHasSuffix(*i.DistrictHasSuffix))
+	}
+	if i.DistrictEqualFold != nil {
+		predicates = append(predicates, camera.DistrictEqualFold(*i.DistrictEqualFold))
+	}
+	if i.DistrictContainsFold != nil {
+		predicates = append(predicates, camera.DistrictContainsFold(*i.DistrictContainsFold))
 	}
 
 	if i.HasPoliceStation != nil {

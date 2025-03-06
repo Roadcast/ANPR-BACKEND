@@ -106,6 +106,34 @@ func (cu *CameraUpdate) SetNillableActive(b *bool) *CameraUpdate {
 	return cu
 }
 
+// SetIsWorking sets the "is_working" field.
+func (cu *CameraUpdate) SetIsWorking(b bool) *CameraUpdate {
+	cu.mutation.SetIsWorking(b)
+	return cu
+}
+
+// SetNillableIsWorking sets the "is_working" field if the given value is not nil.
+func (cu *CameraUpdate) SetNillableIsWorking(b *bool) *CameraUpdate {
+	if b != nil {
+		cu.SetIsWorking(*b)
+	}
+	return cu
+}
+
+// SetDistrict sets the "district" field.
+func (cu *CameraUpdate) SetDistrict(s string) *CameraUpdate {
+	cu.mutation.SetDistrict(s)
+	return cu
+}
+
+// SetNillableDistrict sets the "district" field if the given value is not nil.
+func (cu *CameraUpdate) SetNillableDistrict(s *string) *CameraUpdate {
+	if s != nil {
+		cu.SetDistrict(*s)
+	}
+	return cu
+}
+
 // SetPoliceStationID sets the "police_station_id" field.
 func (cu *CameraUpdate) SetPoliceStationID(u uuid.UUID) *CameraUpdate {
 	cu.mutation.SetPoliceStationID(u)
@@ -228,6 +256,12 @@ func (cu *CameraUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := cu.mutation.Active(); ok {
 		_spec.SetField(camera.FieldActive, field.TypeBool, value)
 	}
+	if value, ok := cu.mutation.IsWorking(); ok {
+		_spec.SetField(camera.FieldIsWorking, field.TypeBool, value)
+	}
+	if value, ok := cu.mutation.District(); ok {
+		_spec.SetField(camera.FieldDistrict, field.TypeString, value)
+	}
 	if cu.mutation.PoliceStationCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -349,6 +383,34 @@ func (cuo *CameraUpdateOne) SetActive(b bool) *CameraUpdateOne {
 func (cuo *CameraUpdateOne) SetNillableActive(b *bool) *CameraUpdateOne {
 	if b != nil {
 		cuo.SetActive(*b)
+	}
+	return cuo
+}
+
+// SetIsWorking sets the "is_working" field.
+func (cuo *CameraUpdateOne) SetIsWorking(b bool) *CameraUpdateOne {
+	cuo.mutation.SetIsWorking(b)
+	return cuo
+}
+
+// SetNillableIsWorking sets the "is_working" field if the given value is not nil.
+func (cuo *CameraUpdateOne) SetNillableIsWorking(b *bool) *CameraUpdateOne {
+	if b != nil {
+		cuo.SetIsWorking(*b)
+	}
+	return cuo
+}
+
+// SetDistrict sets the "district" field.
+func (cuo *CameraUpdateOne) SetDistrict(s string) *CameraUpdateOne {
+	cuo.mutation.SetDistrict(s)
+	return cuo
+}
+
+// SetNillableDistrict sets the "district" field if the given value is not nil.
+func (cuo *CameraUpdateOne) SetNillableDistrict(s *string) *CameraUpdateOne {
+	if s != nil {
+		cuo.SetDistrict(*s)
 	}
 	return cuo
 }
@@ -504,6 +566,12 @@ func (cuo *CameraUpdateOne) sqlSave(ctx context.Context) (_node *Camera, err err
 	}
 	if value, ok := cuo.mutation.Active(); ok {
 		_spec.SetField(camera.FieldActive, field.TypeBool, value)
+	}
+	if value, ok := cuo.mutation.IsWorking(); ok {
+		_spec.SetField(camera.FieldIsWorking, field.TypeBool, value)
+	}
+	if value, ok := cuo.mutation.District(); ok {
+		_spec.SetField(camera.FieldDistrict, field.TypeString, value)
 	}
 	if cuo.mutation.PoliceStationCleared() {
 		edge := &sqlgraph.EdgeSpec{

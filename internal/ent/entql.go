@@ -39,6 +39,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			camera.FieldImei:            {Type: field.TypeString, Column: camera.FieldImei},
 			camera.FieldLocation:        {Type: field.TypeString, Column: camera.FieldLocation},
 			camera.FieldActive:          {Type: field.TypeBool, Column: camera.FieldActive},
+			camera.FieldIsWorking:       {Type: field.TypeBool, Column: camera.FieldIsWorking},
+			camera.FieldDistrict:        {Type: field.TypeString, Column: camera.FieldDistrict},
 			camera.FieldPoliceStationID: {Type: field.TypeUUID, Column: camera.FieldPoliceStationID},
 		},
 	}
@@ -389,6 +391,16 @@ func (f *CameraFilter) WhereLocation(p entql.StringP) {
 // WhereActive applies the entql bool predicate on the active field.
 func (f *CameraFilter) WhereActive(p entql.BoolP) {
 	f.Where(p.Field(camera.FieldActive))
+}
+
+// WhereIsWorking applies the entql bool predicate on the is_working field.
+func (f *CameraFilter) WhereIsWorking(p entql.BoolP) {
+	f.Where(p.Field(camera.FieldIsWorking))
+}
+
+// WhereDistrict applies the entql string predicate on the district field.
+func (f *CameraFilter) WhereDistrict(p entql.StringP) {
+	f.Where(p.Field(camera.FieldDistrict))
 }
 
 // WherePoliceStationID applies the entql [16]byte predicate on the police_station_id field.

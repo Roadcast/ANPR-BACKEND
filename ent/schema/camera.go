@@ -56,6 +56,9 @@ func (Camera) Fields() []ent.Field {
 			Default(true).
 			Annotations(),
 
+		field.Bool("is_working").Default(true).Annotations(),
+		field.String("district").Default("N/A").Nillable().Annotations(),
+
 		field.UUID("police_station_id", uuid.UUID{}).Nillable().
 			Optional().Annotations(entgql.Type("ID"), entgql.Skip(entgql.SkipWhereInput)),
 	}
@@ -78,6 +81,6 @@ func (Camera) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("police_station", PoliceStation.Type).
 			Ref("camera").Field("police_station_id").Unique().
-			Annotations(),
+			Annotations(entsql.OnDelete(entsql.SetNull)),
 	}
 }

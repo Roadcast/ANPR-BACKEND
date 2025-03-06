@@ -53,6 +53,8 @@ type CameraMutation struct {
 	imei                  *string
 	location              *string
 	active                *bool
+	is_working            *bool
+	district              *string
 	clearedFields         map[string]struct{}
 	police_station        *uuid.UUID
 	clearedpolice_station bool
@@ -417,6 +419,78 @@ func (m *CameraMutation) ResetActive() {
 	m.active = nil
 }
 
+// SetIsWorking sets the "is_working" field.
+func (m *CameraMutation) SetIsWorking(b bool) {
+	m.is_working = &b
+}
+
+// IsWorking returns the value of the "is_working" field in the mutation.
+func (m *CameraMutation) IsWorking() (r bool, exists bool) {
+	v := m.is_working
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsWorking returns the old "is_working" field's value of the Camera entity.
+// If the Camera object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CameraMutation) OldIsWorking(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsWorking is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsWorking requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsWorking: %w", err)
+	}
+	return oldValue.IsWorking, nil
+}
+
+// ResetIsWorking resets all changes to the "is_working" field.
+func (m *CameraMutation) ResetIsWorking() {
+	m.is_working = nil
+}
+
+// SetDistrict sets the "district" field.
+func (m *CameraMutation) SetDistrict(s string) {
+	m.district = &s
+}
+
+// District returns the value of the "district" field in the mutation.
+func (m *CameraMutation) District() (r string, exists bool) {
+	v := m.district
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDistrict returns the old "district" field's value of the Camera entity.
+// If the Camera object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CameraMutation) OldDistrict(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDistrict is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDistrict requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDistrict: %w", err)
+	}
+	return oldValue.District, nil
+}
+
+// ResetDistrict resets all changes to the "district" field.
+func (m *CameraMutation) ResetDistrict() {
+	m.district = nil
+}
+
 // SetPoliceStationID sets the "police_station_id" field.
 func (m *CameraMutation) SetPoliceStationID(u uuid.UUID) {
 	m.police_station = &u
@@ -527,7 +601,7 @@ func (m *CameraMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CameraMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, camera.FieldCreatedAt)
 	}
@@ -548,6 +622,12 @@ func (m *CameraMutation) Fields() []string {
 	}
 	if m.active != nil {
 		fields = append(fields, camera.FieldActive)
+	}
+	if m.is_working != nil {
+		fields = append(fields, camera.FieldIsWorking)
+	}
+	if m.district != nil {
+		fields = append(fields, camera.FieldDistrict)
 	}
 	if m.police_station != nil {
 		fields = append(fields, camera.FieldPoliceStationID)
@@ -574,6 +654,10 @@ func (m *CameraMutation) Field(name string) (ent.Value, bool) {
 		return m.Location()
 	case camera.FieldActive:
 		return m.Active()
+	case camera.FieldIsWorking:
+		return m.IsWorking()
+	case camera.FieldDistrict:
+		return m.District()
 	case camera.FieldPoliceStationID:
 		return m.PoliceStationID()
 	}
@@ -599,6 +683,10 @@ func (m *CameraMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldLocation(ctx)
 	case camera.FieldActive:
 		return m.OldActive(ctx)
+	case camera.FieldIsWorking:
+		return m.OldIsWorking(ctx)
+	case camera.FieldDistrict:
+		return m.OldDistrict(ctx)
 	case camera.FieldPoliceStationID:
 		return m.OldPoliceStationID(ctx)
 	}
@@ -658,6 +746,20 @@ func (m *CameraMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetActive(v)
+		return nil
+	case camera.FieldIsWorking:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsWorking(v)
+		return nil
+	case camera.FieldDistrict:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDistrict(v)
 		return nil
 	case camera.FieldPoliceStationID:
 		v, ok := value.(uuid.UUID)
@@ -744,6 +846,12 @@ func (m *CameraMutation) ResetField(name string) error {
 		return nil
 	case camera.FieldActive:
 		m.ResetActive()
+		return nil
+	case camera.FieldIsWorking:
+		m.ResetIsWorking()
+		return nil
+	case camera.FieldDistrict:
+		m.ResetDistrict()
 		return nil
 	case camera.FieldPoliceStationID:
 		m.ResetPoliceStationID()

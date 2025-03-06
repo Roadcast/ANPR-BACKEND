@@ -91,6 +91,34 @@ func (cc *CameraCreate) SetNillableActive(b *bool) *CameraCreate {
 	return cc
 }
 
+// SetIsWorking sets the "is_working" field.
+func (cc *CameraCreate) SetIsWorking(b bool) *CameraCreate {
+	cc.mutation.SetIsWorking(b)
+	return cc
+}
+
+// SetNillableIsWorking sets the "is_working" field if the given value is not nil.
+func (cc *CameraCreate) SetNillableIsWorking(b *bool) *CameraCreate {
+	if b != nil {
+		cc.SetIsWorking(*b)
+	}
+	return cc
+}
+
+// SetDistrict sets the "district" field.
+func (cc *CameraCreate) SetDistrict(s string) *CameraCreate {
+	cc.mutation.SetDistrict(s)
+	return cc
+}
+
+// SetNillableDistrict sets the "district" field if the given value is not nil.
+func (cc *CameraCreate) SetNillableDistrict(s *string) *CameraCreate {
+	if s != nil {
+		cc.SetDistrict(*s)
+	}
+	return cc
+}
+
 // SetPoliceStationID sets the "police_station_id" field.
 func (cc *CameraCreate) SetPoliceStationID(u uuid.UUID) *CameraCreate {
 	cc.mutation.SetPoliceStationID(u)
@@ -171,6 +199,14 @@ func (cc *CameraCreate) defaults() {
 		v := camera.DefaultActive
 		cc.mutation.SetActive(v)
 	}
+	if _, ok := cc.mutation.IsWorking(); !ok {
+		v := camera.DefaultIsWorking
+		cc.mutation.SetIsWorking(v)
+	}
+	if _, ok := cc.mutation.District(); !ok {
+		v := camera.DefaultDistrict
+		cc.mutation.SetDistrict(v)
+	}
 	if _, ok := cc.mutation.ID(); !ok {
 		v := camera.DefaultID()
 		cc.mutation.SetID(v)
@@ -214,6 +250,12 @@ func (cc *CameraCreate) check() error {
 	}
 	if _, ok := cc.mutation.Active(); !ok {
 		return &ValidationError{Name: "active", err: errors.New(`ent: missing required field "Camera.active"`)}
+	}
+	if _, ok := cc.mutation.IsWorking(); !ok {
+		return &ValidationError{Name: "is_working", err: errors.New(`ent: missing required field "Camera.is_working"`)}
+	}
+	if _, ok := cc.mutation.District(); !ok {
+		return &ValidationError{Name: "district", err: errors.New(`ent: missing required field "Camera.district"`)}
 	}
 	return nil
 }
@@ -278,6 +320,14 @@ func (cc *CameraCreate) createSpec() (*Camera, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.Active(); ok {
 		_spec.SetField(camera.FieldActive, field.TypeBool, value)
 		_node.Active = value
+	}
+	if value, ok := cc.mutation.IsWorking(); ok {
+		_spec.SetField(camera.FieldIsWorking, field.TypeBool, value)
+		_node.IsWorking = value
+	}
+	if value, ok := cc.mutation.District(); ok {
+		_spec.SetField(camera.FieldDistrict, field.TypeString, value)
+		_node.District = &value
 	}
 	if nodes := cc.mutation.PoliceStationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -417,6 +467,30 @@ func (u *CameraUpsert) SetActive(v bool) *CameraUpsert {
 // UpdateActive sets the "active" field to the value that was provided on create.
 func (u *CameraUpsert) UpdateActive() *CameraUpsert {
 	u.SetExcluded(camera.FieldActive)
+	return u
+}
+
+// SetIsWorking sets the "is_working" field.
+func (u *CameraUpsert) SetIsWorking(v bool) *CameraUpsert {
+	u.Set(camera.FieldIsWorking, v)
+	return u
+}
+
+// UpdateIsWorking sets the "is_working" field to the value that was provided on create.
+func (u *CameraUpsert) UpdateIsWorking() *CameraUpsert {
+	u.SetExcluded(camera.FieldIsWorking)
+	return u
+}
+
+// SetDistrict sets the "district" field.
+func (u *CameraUpsert) SetDistrict(v string) *CameraUpsert {
+	u.Set(camera.FieldDistrict, v)
+	return u
+}
+
+// UpdateDistrict sets the "district" field to the value that was provided on create.
+func (u *CameraUpsert) UpdateDistrict() *CameraUpsert {
+	u.SetExcluded(camera.FieldDistrict)
 	return u
 }
 
@@ -570,6 +644,34 @@ func (u *CameraUpsertOne) SetActive(v bool) *CameraUpsertOne {
 func (u *CameraUpsertOne) UpdateActive() *CameraUpsertOne {
 	return u.Update(func(s *CameraUpsert) {
 		s.UpdateActive()
+	})
+}
+
+// SetIsWorking sets the "is_working" field.
+func (u *CameraUpsertOne) SetIsWorking(v bool) *CameraUpsertOne {
+	return u.Update(func(s *CameraUpsert) {
+		s.SetIsWorking(v)
+	})
+}
+
+// UpdateIsWorking sets the "is_working" field to the value that was provided on create.
+func (u *CameraUpsertOne) UpdateIsWorking() *CameraUpsertOne {
+	return u.Update(func(s *CameraUpsert) {
+		s.UpdateIsWorking()
+	})
+}
+
+// SetDistrict sets the "district" field.
+func (u *CameraUpsertOne) SetDistrict(v string) *CameraUpsertOne {
+	return u.Update(func(s *CameraUpsert) {
+		s.SetDistrict(v)
+	})
+}
+
+// UpdateDistrict sets the "district" field to the value that was provided on create.
+func (u *CameraUpsertOne) UpdateDistrict() *CameraUpsertOne {
+	return u.Update(func(s *CameraUpsert) {
+		s.UpdateDistrict()
 	})
 }
 
@@ -893,6 +995,34 @@ func (u *CameraUpsertBulk) SetActive(v bool) *CameraUpsertBulk {
 func (u *CameraUpsertBulk) UpdateActive() *CameraUpsertBulk {
 	return u.Update(func(s *CameraUpsert) {
 		s.UpdateActive()
+	})
+}
+
+// SetIsWorking sets the "is_working" field.
+func (u *CameraUpsertBulk) SetIsWorking(v bool) *CameraUpsertBulk {
+	return u.Update(func(s *CameraUpsert) {
+		s.SetIsWorking(v)
+	})
+}
+
+// UpdateIsWorking sets the "is_working" field to the value that was provided on create.
+func (u *CameraUpsertBulk) UpdateIsWorking() *CameraUpsertBulk {
+	return u.Update(func(s *CameraUpsert) {
+		s.UpdateIsWorking()
+	})
+}
+
+// SetDistrict sets the "district" field.
+func (u *CameraUpsertBulk) SetDistrict(v string) *CameraUpsertBulk {
+	return u.Update(func(s *CameraUpsert) {
+		s.SetDistrict(v)
+	})
+}
+
+// UpdateDistrict sets the "district" field to the value that was provided on create.
+func (u *CameraUpsertBulk) UpdateDistrict() *CameraUpsertBulk {
+	return u.Update(func(s *CameraUpsert) {
+		s.UpdateDistrict()
 	})
 }
 

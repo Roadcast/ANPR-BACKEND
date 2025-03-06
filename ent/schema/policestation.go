@@ -63,7 +63,7 @@ func (PoliceStation) Edges() []ent.Edge {
 	return []ent.Edge{
 		// Users assigned to this police station
 		edge.To("users", User.Type),
-		edge.To("camera", Camera.Type),
+		edge.To("camera", Camera.Type).Annotations(entsql.OnDelete(entsql.SetNull)),
 		edge.To("car", Car.Type),
 		// Parent station (one-to-many relationship)
 		edge.From("parent", PoliceStation.Type).
