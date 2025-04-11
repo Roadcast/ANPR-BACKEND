@@ -4,7 +4,7 @@ go 1.23.4
 
 require (
 	entgo.io/contrib v0.6.0
-	entgo.io/ent v0.14.3
+	entgo.io/ent v0.14.4
 	github.com/99designs/gqlgen v0.17.63
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt/v4 v4.5.1
@@ -23,7 +23,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.31.1-0.20250212144724-069be8033e83 // indirect
+	ariga.io/atlas v0.32.0 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/agnivade/levenshtein v1.2.0 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
@@ -33,7 +33,7 @@ require (
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-openapi/inflect v0.21.0 // indirect
+	github.com/go-openapi/inflect v0.21.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
@@ -51,8 +51,8 @@ require (
 	go.uber.org/atomic v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8 // indirect
 	golang.org/x/mod v0.24.0 // indirect
-	golang.org/x/sync v0.12.0 // indirect
-	golang.org/x/text v0.23.0 // indirect
-	golang.org/x/tools v0.31.0 // indirect
+	golang.org/x/sync v0.13.0 // indirect
+	golang.org/x/text v0.24.0 // indirect
+	golang.org/x/tools v0.32.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
