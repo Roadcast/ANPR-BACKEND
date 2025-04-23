@@ -14,6 +14,12 @@ type CustomEvent struct {
 	Event  *ent.Event  `json:"event,omitempty"`
 }
 
+type DashboardStats struct {
+	TotalUsers     int `json:"totalUsers"`
+	TotalCameras   int `json:"totalCameras"`
+	WorkingCameras int `json:"workingCameras"`
+}
+
 type EventList struct {
 	PageInfo *entgql.PageInfo[uuid.UUID] `json:"pageInfo"`
 	Node     []*CustomEvent              `json:"node"`
@@ -34,7 +40,23 @@ type LoginResponse struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
+type PoliceStationCameraCount struct {
+	PoliceStationName string `json:"policeStationName"`
+	CameraCount       int    `json:"cameraCount"`
+}
+
+type PoliceStationCameraStatusCount struct {
+	PoliceStationName     string `json:"policeStationName"`
+	WorkingCameraCount    int    `json:"workingCameraCount"`
+	NonWorkingCameraCount int    `json:"nonWorkingCameraCount"`
+}
+
 type RefreshTokenResponse struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
+}
+
+type VehicleTrackingStat struct {
+	Date         string `json:"date"`
+	VehicleCount int    `json:"vehicleCount"`
 }

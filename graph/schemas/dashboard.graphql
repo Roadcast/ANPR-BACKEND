@@ -1,0 +1,31 @@
+type PoliceStationCameraCount {
+    policeStationName: String!
+    cameraCount: Int!
+}
+
+type PoliceStationCameraStatusCount {
+    policeStationName: String!
+    workingCameraCount: Int!
+    nonWorkingCameraCount: Int!
+}
+
+type VehicleTrackingStat {
+    date: String!
+    vehicleCount: Int!
+}
+
+extend type Query {
+    policeStationCameraCounts: [PoliceStationCameraCount!]!
+    policeStationCameraStatusCounts: [PoliceStationCameraStatusCount!]!
+    vehicleTrackingStats: [VehicleTrackingStat!]!
+    dashboardStats: DashboardStats!
+
+}
+
+
+type DashboardStats {
+    totalUsers: Int!
+    totalCameras: Int!
+    workingCameras: Int!
+}
+
