@@ -11,6 +11,7 @@ import (
 	"go-ent-project/internal/ent"
 	"go-ent-project/internal/ent/camera"
 	"go-ent-project/internal/ent/event"
+	"sort"
 	"time"
 )
 
@@ -81,13 +82,26 @@ func (r *queryResolver) VehicleTrackingStats(ctx context.Context) ([]*model.Vehi
 		return nil, fmt.Errorf("failed to fetch vehicle stats: %w", err)
 	}
 
-	var output []*model.VehicleTrackingStat
+	dateCount := make(map[string]int)
+
 	for _, row := range rows {
+		date := row.CreatedAt.Format("2006-01-02") // Only date part
+		dateCount[date]++
+	}
+
+	// Prepare the final output
+	var output []*model.VehicleTrackingStat
+	for date, count := range dateCount {
 		output = append(output, &model.VehicleTrackingStat{
-			Date:         row.CreatedAt.Format("2006-01-02"),
-			VehicleCount: row.VehicleCount,
+			Date:         date,
+			VehicleCount: count,
 		})
 	}
+
+	// Optionally, sort by date
+	sort.Slice(output, func(i, j int) bool {
+		return output[i].Date < output[j].Date
+	})
 
 	return output, nil
 }
