@@ -65,10 +65,15 @@ func (r *queryResolver) VehicleTrackingStats(ctx context.Context) ([]*model.Vehi
 		VehicleCount int       `json:"count"`
 	}
 
+	startOfMonth := time.Date(time.Now().Year(), time.Now().Month(), 1, 0, 0, 0, 0, time.UTC)
+	startOfNextMonth := startOfMonth.AddDate(0, 1, 0)
+
 	var rows []result
 	err := r.Client.Event.
-		Query().
-		GroupBy(event.FieldCreatedAt).
+		Query().Where(
+		event.CreatedAtGTE(startOfMonth),    // created_at >= start of this month
+		event.CreatedAtLT(startOfNextMonth), // created_at < start of next month
+	).GroupBy(event.FieldCreatedAt).
 		Aggregate(ent.Count()).
 		Scan(ctx, &rows)
 
