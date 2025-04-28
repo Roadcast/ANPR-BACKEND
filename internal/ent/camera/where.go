@@ -91,6 +91,11 @@ func Active(v bool) predicate.Camera {
 	return predicate.Camera(sql.FieldEQ(FieldActive, v))
 }
 
+// Address applies equality check predicate on the "address" field. It's identical to AddressEQ.
+func Address(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldEQ(FieldAddress, v))
+}
+
 // IsWorking applies equality check predicate on the "is_working" field. It's identical to IsWorkingEQ.
 func IsWorking(v bool) predicate.Camera {
 	return predicate.Camera(sql.FieldEQ(FieldIsWorking, v))
@@ -454,6 +459,81 @@ func ActiveEQ(v bool) predicate.Camera {
 // ActiveNEQ applies the NEQ predicate on the "active" field.
 func ActiveNEQ(v bool) predicate.Camera {
 	return predicate.Camera(sql.FieldNEQ(FieldActive, v))
+}
+
+// AddressEQ applies the EQ predicate on the "address" field.
+func AddressEQ(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldEQ(FieldAddress, v))
+}
+
+// AddressNEQ applies the NEQ predicate on the "address" field.
+func AddressNEQ(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldNEQ(FieldAddress, v))
+}
+
+// AddressIn applies the In predicate on the "address" field.
+func AddressIn(vs ...string) predicate.Camera {
+	return predicate.Camera(sql.FieldIn(FieldAddress, vs...))
+}
+
+// AddressNotIn applies the NotIn predicate on the "address" field.
+func AddressNotIn(vs ...string) predicate.Camera {
+	return predicate.Camera(sql.FieldNotIn(FieldAddress, vs...))
+}
+
+// AddressGT applies the GT predicate on the "address" field.
+func AddressGT(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldGT(FieldAddress, v))
+}
+
+// AddressGTE applies the GTE predicate on the "address" field.
+func AddressGTE(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldGTE(FieldAddress, v))
+}
+
+// AddressLT applies the LT predicate on the "address" field.
+func AddressLT(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldLT(FieldAddress, v))
+}
+
+// AddressLTE applies the LTE predicate on the "address" field.
+func AddressLTE(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldLTE(FieldAddress, v))
+}
+
+// AddressContains applies the Contains predicate on the "address" field.
+func AddressContains(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldContains(FieldAddress, v))
+}
+
+// AddressHasPrefix applies the HasPrefix predicate on the "address" field.
+func AddressHasPrefix(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldHasPrefix(FieldAddress, v))
+}
+
+// AddressHasSuffix applies the HasSuffix predicate on the "address" field.
+func AddressHasSuffix(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldHasSuffix(FieldAddress, v))
+}
+
+// AddressIsNil applies the IsNil predicate on the "address" field.
+func AddressIsNil() predicate.Camera {
+	return predicate.Camera(sql.FieldIsNull(FieldAddress))
+}
+
+// AddressNotNil applies the NotNil predicate on the "address" field.
+func AddressNotNil() predicate.Camera {
+	return predicate.Camera(sql.FieldNotNull(FieldAddress))
+}
+
+// AddressEqualFold applies the EqualFold predicate on the "address" field.
+func AddressEqualFold(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldEqualFold(FieldAddress, v))
+}
+
+// AddressContainsFold applies the ContainsFold predicate on the "address" field.
+func AddressContainsFold(v string) predicate.Camera {
+	return predicate.Camera(sql.FieldContainsFold(FieldAddress, v))
 }
 
 // IsWorkingEQ applies the EQ predicate on the "is_working" field.

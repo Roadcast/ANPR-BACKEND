@@ -19,6 +19,7 @@ var (
 		{Name: "imei", Type: field.TypeString, Unique: true},
 		{Name: "location", Type: field.TypeString, SchemaType: map[string]string{"postgres": "GEOMETRY(Point, 4326)"}},
 		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "address", Type: field.TypeString, Nullable: true},
 		{Name: "is_working", Type: field.TypeBool, Default: true},
 		{Name: "district", Type: field.TypeString, Default: "N/A"},
 		{Name: "police_station_id", Type: field.TypeUUID, Nullable: true},
@@ -31,7 +32,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cameras_police_stations_camera",
-				Columns:    []*schema.Column{CamerasColumns[10]},
+				Columns:    []*schema.Column{CamerasColumns[11]},
 				RefColumns: []*schema.Column{PoliceStationsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

@@ -33,6 +33,8 @@ type Camera struct {
 	Location string `json:"location,omitempty"`
 	// Active holds the value of the "active" field.
 	Active bool `json:"active,omitempty"`
+	// Address holds the value of the "address" field.
+	Address string `json:"address,omitempty"`
 	// IsWorking holds the value of the "is_working" field.
 	IsWorking bool `json:"is_working,omitempty"`
 	// District holds the value of the "district" field.
@@ -76,7 +78,7 @@ func (*Camera) scanValues(columns []string) ([]any, error) {
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		case camera.FieldActive, camera.FieldIsWorking:
 			values[i] = new(sql.NullBool)
-		case camera.FieldName, camera.FieldModel, camera.FieldImei, camera.FieldLocation, camera.FieldDistrict:
+		case camera.FieldName, camera.FieldModel, camera.FieldImei, camera.FieldLocation, camera.FieldAddress, camera.FieldDistrict:
 			values[i] = new(sql.NullString)
 		case camera.FieldCreatedAt, camera.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -144,6 +146,12 @@ func (c *Camera) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field active", values[i])
 			} else if value.Valid {
 				c.Active = value.Bool
+			}
+		case camera.FieldAddress:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field address", values[i])
+			} else if value.Valid {
+				c.Address = value.String
 			}
 		case camera.FieldIsWorking:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -226,6 +234,9 @@ func (c *Camera) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("active=")
 	builder.WriteString(fmt.Sprintf("%v", c.Active))
+	builder.WriteString(", ")
+	builder.WriteString("address=")
+	builder.WriteString(c.Address)
 	builder.WriteString(", ")
 	builder.WriteString("is_working=")
 	builder.WriteString(fmt.Sprintf("%v", c.IsWorking))

@@ -56,11 +56,11 @@ func init() {
 	// camera.DefaultActive holds the default value on creation for the active field.
 	camera.DefaultActive = cameraDescActive.Default.(bool)
 	// cameraDescIsWorking is the schema descriptor for is_working field.
-	cameraDescIsWorking := cameraFields[5].Descriptor()
+	cameraDescIsWorking := cameraFields[6].Descriptor()
 	// camera.DefaultIsWorking holds the default value on creation for the is_working field.
 	camera.DefaultIsWorking = cameraDescIsWorking.Default.(bool)
 	// cameraDescDistrict is the schema descriptor for district field.
-	cameraDescDistrict := cameraFields[6].Descriptor()
+	cameraDescDistrict := cameraFields[7].Descriptor()
 	// camera.DefaultDistrict holds the default value on creation for the district field.
 	camera.DefaultDistrict = cameraDescDistrict.Default.(string)
 	// cameraDescID is the schema descriptor for id field.

@@ -53,6 +53,7 @@ type CameraMutation struct {
 	imei                  *string
 	location              *string
 	active                *bool
+	address               *string
 	is_working            *bool
 	district              *string
 	clearedFields         map[string]struct{}
@@ -419,6 +420,55 @@ func (m *CameraMutation) ResetActive() {
 	m.active = nil
 }
 
+// SetAddress sets the "address" field.
+func (m *CameraMutation) SetAddress(s string) {
+	m.address = &s
+}
+
+// Address returns the value of the "address" field in the mutation.
+func (m *CameraMutation) Address() (r string, exists bool) {
+	v := m.address
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddress returns the old "address" field's value of the Camera entity.
+// If the Camera object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CameraMutation) OldAddress(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAddress is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAddress requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddress: %w", err)
+	}
+	return oldValue.Address, nil
+}
+
+// ClearAddress clears the value of the "address" field.
+func (m *CameraMutation) ClearAddress() {
+	m.address = nil
+	m.clearedFields[camera.FieldAddress] = struct{}{}
+}
+
+// AddressCleared returns if the "address" field was cleared in this mutation.
+func (m *CameraMutation) AddressCleared() bool {
+	_, ok := m.clearedFields[camera.FieldAddress]
+	return ok
+}
+
+// ResetAddress resets all changes to the "address" field.
+func (m *CameraMutation) ResetAddress() {
+	m.address = nil
+	delete(m.clearedFields, camera.FieldAddress)
+}
+
 // SetIsWorking sets the "is_working" field.
 func (m *CameraMutation) SetIsWorking(b bool) {
 	m.is_working = &b
@@ -601,7 +651,7 @@ func (m *CameraMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CameraMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, camera.FieldCreatedAt)
 	}
@@ -622,6 +672,9 @@ func (m *CameraMutation) Fields() []string {
 	}
 	if m.active != nil {
 		fields = append(fields, camera.FieldActive)
+	}
+	if m.address != nil {
+		fields = append(fields, camera.FieldAddress)
 	}
 	if m.is_working != nil {
 		fields = append(fields, camera.FieldIsWorking)
@@ -654,6 +707,8 @@ func (m *CameraMutation) Field(name string) (ent.Value, bool) {
 		return m.Location()
 	case camera.FieldActive:
 		return m.Active()
+	case camera.FieldAddress:
+		return m.Address()
 	case camera.FieldIsWorking:
 		return m.IsWorking()
 	case camera.FieldDistrict:
@@ -683,6 +738,8 @@ func (m *CameraMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldLocation(ctx)
 	case camera.FieldActive:
 		return m.OldActive(ctx)
+	case camera.FieldAddress:
+		return m.OldAddress(ctx)
 	case camera.FieldIsWorking:
 		return m.OldIsWorking(ctx)
 	case camera.FieldDistrict:
@@ -747,6 +804,13 @@ func (m *CameraMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetActive(v)
 		return nil
+	case camera.FieldAddress:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddress(v)
+		return nil
 	case camera.FieldIsWorking:
 		v, ok := value.(bool)
 		if !ok {
@@ -798,6 +862,9 @@ func (m *CameraMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *CameraMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(camera.FieldAddress) {
+		fields = append(fields, camera.FieldAddress)
+	}
 	if m.FieldCleared(camera.FieldPoliceStationID) {
 		fields = append(fields, camera.FieldPoliceStationID)
 	}
@@ -815,6 +882,9 @@ func (m *CameraMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *CameraMutation) ClearField(name string) error {
 	switch name {
+	case camera.FieldAddress:
+		m.ClearAddress()
+		return nil
 	case camera.FieldPoliceStationID:
 		m.ClearPoliceStationID()
 		return nil
@@ -846,6 +916,9 @@ func (m *CameraMutation) ResetField(name string) error {
 		return nil
 	case camera.FieldActive:
 		m.ResetActive()
+		return nil
+	case camera.FieldAddress:
+		m.ResetAddress()
 		return nil
 	case camera.FieldIsWorking:
 		m.ResetIsWorking()

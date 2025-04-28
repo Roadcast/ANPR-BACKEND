@@ -106,6 +106,26 @@ func (cu *CameraUpdate) SetNillableActive(b *bool) *CameraUpdate {
 	return cu
 }
 
+// SetAddress sets the "address" field.
+func (cu *CameraUpdate) SetAddress(s string) *CameraUpdate {
+	cu.mutation.SetAddress(s)
+	return cu
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (cu *CameraUpdate) SetNillableAddress(s *string) *CameraUpdate {
+	if s != nil {
+		cu.SetAddress(*s)
+	}
+	return cu
+}
+
+// ClearAddress clears the value of the "address" field.
+func (cu *CameraUpdate) ClearAddress() *CameraUpdate {
+	cu.mutation.ClearAddress()
+	return cu
+}
+
 // SetIsWorking sets the "is_working" field.
 func (cu *CameraUpdate) SetIsWorking(b bool) *CameraUpdate {
 	cu.mutation.SetIsWorking(b)
@@ -256,6 +276,12 @@ func (cu *CameraUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := cu.mutation.Active(); ok {
 		_spec.SetField(camera.FieldActive, field.TypeBool, value)
 	}
+	if value, ok := cu.mutation.Address(); ok {
+		_spec.SetField(camera.FieldAddress, field.TypeString, value)
+	}
+	if cu.mutation.AddressCleared() {
+		_spec.ClearField(camera.FieldAddress, field.TypeString)
+	}
 	if value, ok := cu.mutation.IsWorking(); ok {
 		_spec.SetField(camera.FieldIsWorking, field.TypeBool, value)
 	}
@@ -384,6 +410,26 @@ func (cuo *CameraUpdateOne) SetNillableActive(b *bool) *CameraUpdateOne {
 	if b != nil {
 		cuo.SetActive(*b)
 	}
+	return cuo
+}
+
+// SetAddress sets the "address" field.
+func (cuo *CameraUpdateOne) SetAddress(s string) *CameraUpdateOne {
+	cuo.mutation.SetAddress(s)
+	return cuo
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (cuo *CameraUpdateOne) SetNillableAddress(s *string) *CameraUpdateOne {
+	if s != nil {
+		cuo.SetAddress(*s)
+	}
+	return cuo
+}
+
+// ClearAddress clears the value of the "address" field.
+func (cuo *CameraUpdateOne) ClearAddress() *CameraUpdateOne {
+	cuo.mutation.ClearAddress()
 	return cuo
 }
 
@@ -566,6 +612,12 @@ func (cuo *CameraUpdateOne) sqlSave(ctx context.Context) (_node *Camera, err err
 	}
 	if value, ok := cuo.mutation.Active(); ok {
 		_spec.SetField(camera.FieldActive, field.TypeBool, value)
+	}
+	if value, ok := cuo.mutation.Address(); ok {
+		_spec.SetField(camera.FieldAddress, field.TypeString, value)
+	}
+	if cuo.mutation.AddressCleared() {
+		_spec.ClearField(camera.FieldAddress, field.TypeString)
 	}
 	if value, ok := cuo.mutation.IsWorking(); ok {
 		_spec.SetField(camera.FieldIsWorking, field.TypeBool, value)

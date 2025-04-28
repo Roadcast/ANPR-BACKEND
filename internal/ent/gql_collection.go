@@ -87,6 +87,11 @@ func (c *CameraQuery) collectField(ctx context.Context, oneNode bool, opCtx *gra
 				selectedFields = append(selectedFields, camera.FieldActive)
 				fieldSeen[camera.FieldActive] = struct{}{}
 			}
+		case "address":
+			if _, ok := fieldSeen[camera.FieldAddress]; !ok {
+				selectedFields = append(selectedFields, camera.FieldAddress)
+				fieldSeen[camera.FieldAddress] = struct{}{}
+			}
 		case "isWorking":
 			if _, ok := fieldSeen[camera.FieldIsWorking]; !ok {
 				selectedFields = append(selectedFields, camera.FieldIsWorking)

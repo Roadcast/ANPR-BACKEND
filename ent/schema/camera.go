@@ -56,6 +56,8 @@ func (Camera) Fields() []ent.Field {
 			Default(true).
 			Annotations(),
 
+		field.String("address").Optional(),
+
 		field.Bool("is_working").Default(true).Annotations(),
 		field.String("district").Default("N/A").Nillable().Annotations(),
 

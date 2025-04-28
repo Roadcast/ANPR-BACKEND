@@ -9,6 +9,7 @@ type Camera implements Node {
   imei: String!
   location: String!
   active: Boolean!
+  address: String
   isWorking: Boolean!
   district: String!
   policeStationID: ID
@@ -126,6 +127,24 @@ input CameraWhereInput {
   """
   active: Boolean
   activeNEQ: Boolean
+  """
+  address field predicates
+  """
+  address: String
+  addressNEQ: String
+  addressIn: [String!]
+  addressNotIn: [String!]
+  addressGT: String
+  addressGTE: String
+  addressLT: String
+  addressLTE: String
+  addressContains: String
+  addressHasPrefix: String
+  addressHasSuffix: String
+  addressIsNil: Boolean
+  addressNotNil: Boolean
+  addressEqualFold: String
+  addressContainsFold: String
   """
   is_working field predicates
   """
@@ -357,6 +376,7 @@ input CreateCameraInput {
   imei: String!
   location: String!
   active: Boolean
+  address: String
   isWorking: Boolean
   district: String
   policeStationID: ID
@@ -1495,6 +1515,8 @@ input UpdateCameraInput {
   imei: String
   location: String
   active: Boolean
+  address: String
+  clearAddress: Boolean
   isWorking: Boolean
   district: String
   policeStationID: ID

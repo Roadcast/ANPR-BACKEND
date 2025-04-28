@@ -29,6 +29,8 @@ const (
 	FieldLocation = "location"
 	// FieldActive holds the string denoting the active field in the database.
 	FieldActive = "active"
+	// FieldAddress holds the string denoting the address field in the database.
+	FieldAddress = "address"
 	// FieldIsWorking holds the string denoting the is_working field in the database.
 	FieldIsWorking = "is_working"
 	// FieldDistrict holds the string denoting the district field in the database.
@@ -58,6 +60,7 @@ var Columns = []string{
 	FieldImei,
 	FieldLocation,
 	FieldActive,
+	FieldAddress,
 	FieldIsWorking,
 	FieldDistrict,
 	FieldPoliceStationID,
@@ -137,6 +140,11 @@ func ByLocation(opts ...sql.OrderTermOption) OrderOption {
 // ByActive orders the results by the active field.
 func ByActive(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldActive, opts...).ToFunc()
+}
+
+// ByAddress orders the results by the address field.
+func ByAddress(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAddress, opts...).ToFunc()
 }
 
 // ByIsWorking orders the results by the is_working field.

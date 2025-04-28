@@ -53,6 +53,7 @@ type DirectiveRoot struct {
 type ComplexityRoot struct {
 	Camera struct {
 		Active          func(childComplexity int) int
+		Address         func(childComplexity int) int
 		CreatedAt       func(childComplexity int) int
 		District        func(childComplexity int) int
 		ID              func(childComplexity int) int
@@ -430,6 +431,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Camera.Active(childComplexity), true
+
+	case "Camera.address":
+		if e.complexity.Camera.Address == nil {
+			break
+		}
+
+		return e.complexity.Camera.Address(childComplexity), true
 
 	case "Camera.createdAt":
 		if e.complexity.Camera.CreatedAt == nil {
@@ -2191,6 +2199,7 @@ type Camera implements Node {
   imei: String!
   location: String!
   active: Boolean!
+  address: String
   isWorking: Boolean!
   district: String!
   policeStationID: ID
@@ -2308,6 +2317,24 @@ input CameraWhereInput {
   """
   active: Boolean
   activeNEQ: Boolean
+  """
+  address field predicates
+  """
+  address: String
+  addressNEQ: String
+  addressIn: [String!]
+  addressNotIn: [String!]
+  addressGT: String
+  addressGTE: String
+  addressLT: String
+  addressLTE: String
+  addressContains: String
+  addressHasPrefix: String
+  addressHasSuffix: String
+  addressIsNil: Boolean
+  addressNotNil: Boolean
+  addressEqualFold: String
+  addressContainsFold: String
   """
   is_working field predicates
   """
@@ -2539,6 +2566,7 @@ input CreateCameraInput {
   imei: String!
   location: String!
   active: Boolean
+  address: String
   isWorking: Boolean
   district: String
   policeStationID: ID
@@ -3677,6 +3705,8 @@ input UpdateCameraInput {
   imei: String
   location: String
   active: Boolean
+  address: String
+  clearAddress: Boolean
   isWorking: Boolean
   district: String
   policeStationID: ID
@@ -6700,6 +6730,47 @@ func (ec *executionContext) fieldContext_Camera_active(_ context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Camera_address(ctx context.Context, field graphql.CollectedField, obj *ent.Camera) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Camera_address(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Address, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Camera_address(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Camera",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Camera_isWorking(ctx context.Context, field graphql.CollectedField, obj *ent.Camera) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Camera_isWorking(ctx, field)
 	if err != nil {
@@ -7095,6 +7166,8 @@ func (ec *executionContext) fieldContext_CameraEdge_node(_ context.Context, fiel
 				return ec.fieldContext_Camera_location(ctx, field)
 			case "active":
 				return ec.fieldContext_Camera_active(ctx, field)
+			case "address":
+				return ec.fieldContext_Camera_address(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -7994,6 +8067,8 @@ func (ec *executionContext) fieldContext_CustomEvent_camera(_ context.Context, f
 				return ec.fieldContext_Camera_location(ctx, field)
 			case "active":
 				return ec.fieldContext_Camera_active(ctx, field)
+			case "address":
+				return ec.fieldContext_Camera_address(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -9909,6 +9984,8 @@ func (ec *executionContext) fieldContext_Mutation_addCameraToPoliceStation(ctx c
 				return ec.fieldContext_Camera_location(ctx, field)
 			case "active":
 				return ec.fieldContext_Camera_active(ctx, field)
+			case "address":
+				return ec.fieldContext_Camera_address(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -10318,6 +10395,8 @@ func (ec *executionContext) fieldContext_Mutation_removeCameraFromPoliceStation(
 				return ec.fieldContext_Camera_location(ctx, field)
 			case "active":
 				return ec.fieldContext_Camera_active(ctx, field)
+			case "address":
+				return ec.fieldContext_Camera_address(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -10644,6 +10723,8 @@ func (ec *executionContext) fieldContext_Mutation_addCamera(ctx context.Context,
 				return ec.fieldContext_Camera_location(ctx, field)
 			case "active":
 				return ec.fieldContext_Camera_active(ctx, field)
+			case "address":
+				return ec.fieldContext_Camera_address(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -10725,6 +10806,8 @@ func (ec *executionContext) fieldContext_Mutation_updateCamera(ctx context.Conte
 				return ec.fieldContext_Camera_location(ctx, field)
 			case "active":
 				return ec.fieldContext_Camera_active(ctx, field)
+			case "address":
+				return ec.fieldContext_Camera_address(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -12959,6 +13042,8 @@ func (ec *executionContext) fieldContext_PoliceStation_camera(_ context.Context,
 				return ec.fieldContext_Camera_location(ctx, field)
 			case "active":
 				return ec.fieldContext_Camera_active(ctx, field)
+			case "address":
+				return ec.fieldContext_Camera_address(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -14260,6 +14345,8 @@ func (ec *executionContext) fieldContext_Query_getCamera(ctx context.Context, fi
 				return ec.fieldContext_Camera_location(ctx, field)
 			case "active":
 				return ec.fieldContext_Camera_active(ctx, field)
+			case "address":
+				return ec.fieldContext_Camera_address(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -15069,6 +15156,8 @@ func (ec *executionContext) fieldContext_Query_getCameraByName(ctx context.Conte
 				return ec.fieldContext_Camera_location(ctx, field)
 			case "active":
 				return ec.fieldContext_Camera_active(ctx, field)
+			case "address":
+				return ec.fieldContext_Camera_address(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -18759,7 +18848,7 @@ func (ec *executionContext) unmarshalInputCameraWhereInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "model", "modelNEQ", "modelIn", "modelNotIn", "modelGT", "modelGTE", "modelLT", "modelLTE", "modelContains", "modelHasPrefix", "modelHasSuffix", "modelEqualFold", "modelContainsFold", "imei", "imeiNEQ", "imeiIn", "imeiNotIn", "imeiGT", "imeiGTE", "imeiLT", "imeiLTE", "imeiContains", "imeiHasPrefix", "imeiHasSuffix", "imeiEqualFold", "imeiContainsFold", "active", "activeNEQ", "isWorking", "isWorkingNEQ", "district", "districtNEQ", "districtIn", "districtNotIn", "districtGT", "districtGTE", "districtLT", "districtLTE", "districtContains", "districtHasPrefix", "districtHasSuffix", "districtEqualFold", "districtContainsFold", "hasPoliceStation", "hasPoliceStationWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "model", "modelNEQ", "modelIn", "modelNotIn", "modelGT", "modelGTE", "modelLT", "modelLTE", "modelContains", "modelHasPrefix", "modelHasSuffix", "modelEqualFold", "modelContainsFold", "imei", "imeiNEQ", "imeiIn", "imeiNotIn", "imeiGT", "imeiGTE", "imeiLT", "imeiLTE", "imeiContains", "imeiHasPrefix", "imeiHasSuffix", "imeiEqualFold", "imeiContainsFold", "active", "activeNEQ", "address", "addressNEQ", "addressIn", "addressNotIn", "addressGT", "addressGTE", "addressLT", "addressLTE", "addressContains", "addressHasPrefix", "addressHasSuffix", "addressIsNil", "addressNotNil", "addressEqualFold", "addressContainsFold", "isWorking", "isWorkingNEQ", "district", "districtNEQ", "districtIn", "districtNotIn", "districtGT", "districtGTE", "districtLT", "districtLTE", "districtContains", "districtHasPrefix", "districtHasSuffix", "districtEqualFold", "districtContainsFold", "hasPoliceStation", "hasPoliceStationWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -19074,6 +19163,111 @@ func (ec *executionContext) unmarshalInputCameraWhereInput(ctx context.Context, 
 				return it, err
 			}
 			it.ActiveNEQ = data
+		case "address":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Address = data
+		case "addressNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressNEQ = data
+		case "addressIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressIn = data
+		case "addressNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressNotIn = data
+		case "addressGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressGT = data
+		case "addressGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressGTE = data
+		case "addressLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressLT = data
+		case "addressLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressLTE = data
+		case "addressContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressContains = data
+		case "addressHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressHasPrefix = data
+		case "addressHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressHasSuffix = data
+		case "addressIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressIsNil = data
+		case "addressNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressNotNil = data
+		case "addressEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressEqualFold = data
+		case "addressContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressContainsFold = data
 		case "isWorking":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isWorking"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -19950,7 +20144,7 @@ func (ec *executionContext) unmarshalInputCreateCameraInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "name", "model", "imei", "location", "active", "isWorking", "district", "policeStationID"}
+	fieldsInOrder := [...]string{"createdAt", "updatedAt", "name", "model", "imei", "location", "active", "address", "isWorking", "district", "policeStationID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -20006,6 +20200,13 @@ func (ec *executionContext) unmarshalInputCreateCameraInput(ctx context.Context,
 				return it, err
 			}
 			it.Active = data
+		case "address":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Address = data
 		case "isWorking":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isWorking"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -22736,7 +22937,7 @@ func (ec *executionContext) unmarshalInputUpdateCameraInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "name", "model", "imei", "location", "active", "isWorking", "district", "policeStationID", "clearPoliceStation"}
+	fieldsInOrder := [...]string{"updatedAt", "name", "model", "imei", "location", "active", "address", "clearAddress", "isWorking", "district", "policeStationID", "clearPoliceStation"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -22785,6 +22986,20 @@ func (ec *executionContext) unmarshalInputUpdateCameraInput(ctx context.Context,
 				return it, err
 			}
 			it.Active = data
+		case "address":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Address = data
+		case "clearAddress":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearAddress"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearAddress = data
 		case "isWorking":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isWorking"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -24038,6 +24253,8 @@ func (ec *executionContext) _Camera(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "address":
+			out.Values[i] = ec._Camera_address(ctx, field, obj)
 		case "isWorking":
 			out.Values[i] = ec._Camera_isWorking(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

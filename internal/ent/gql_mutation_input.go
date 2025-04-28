@@ -17,6 +17,7 @@ type CreateCameraInput struct {
 	Imei            string
 	Location        string
 	Active          *bool
+	Address         *string
 	IsWorking       *bool
 	District        *string
 	PoliceStationID *uuid.UUID
@@ -36,6 +37,9 @@ func (i *CreateCameraInput) Mutate(m *CameraMutation) {
 	m.SetLocation(i.Location)
 	if v := i.Active; v != nil {
 		m.SetActive(*v)
+	}
+	if v := i.Address; v != nil {
+		m.SetAddress(*v)
 	}
 	if v := i.IsWorking; v != nil {
 		m.SetIsWorking(*v)
@@ -62,6 +66,8 @@ type UpdateCameraInput struct {
 	Imei               *string
 	Location           *string
 	Active             *bool
+	ClearAddress       bool
+	Address            *string
 	IsWorking          *bool
 	District           *string
 	ClearPoliceStation bool
@@ -87,6 +93,12 @@ func (i *UpdateCameraInput) Mutate(m *CameraMutation) {
 	}
 	if v := i.Active; v != nil {
 		m.SetActive(*v)
+	}
+	if i.ClearAddress {
+		m.ClearAddress()
+	}
+	if v := i.Address; v != nil {
+		m.SetAddress(*v)
 	}
 	if v := i.IsWorking; v != nil {
 		m.SetIsWorking(*v)

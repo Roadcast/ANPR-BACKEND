@@ -91,6 +91,20 @@ func (cc *CameraCreate) SetNillableActive(b *bool) *CameraCreate {
 	return cc
 }
 
+// SetAddress sets the "address" field.
+func (cc *CameraCreate) SetAddress(s string) *CameraCreate {
+	cc.mutation.SetAddress(s)
+	return cc
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (cc *CameraCreate) SetNillableAddress(s *string) *CameraCreate {
+	if s != nil {
+		cc.SetAddress(*s)
+	}
+	return cc
+}
+
 // SetIsWorking sets the "is_working" field.
 func (cc *CameraCreate) SetIsWorking(b bool) *CameraCreate {
 	cc.mutation.SetIsWorking(b)
@@ -321,6 +335,10 @@ func (cc *CameraCreate) createSpec() (*Camera, *sqlgraph.CreateSpec) {
 		_spec.SetField(camera.FieldActive, field.TypeBool, value)
 		_node.Active = value
 	}
+	if value, ok := cc.mutation.Address(); ok {
+		_spec.SetField(camera.FieldAddress, field.TypeString, value)
+		_node.Address = value
+	}
 	if value, ok := cc.mutation.IsWorking(); ok {
 		_spec.SetField(camera.FieldIsWorking, field.TypeBool, value)
 		_node.IsWorking = value
@@ -467,6 +485,24 @@ func (u *CameraUpsert) SetActive(v bool) *CameraUpsert {
 // UpdateActive sets the "active" field to the value that was provided on create.
 func (u *CameraUpsert) UpdateActive() *CameraUpsert {
 	u.SetExcluded(camera.FieldActive)
+	return u
+}
+
+// SetAddress sets the "address" field.
+func (u *CameraUpsert) SetAddress(v string) *CameraUpsert {
+	u.Set(camera.FieldAddress, v)
+	return u
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *CameraUpsert) UpdateAddress() *CameraUpsert {
+	u.SetExcluded(camera.FieldAddress)
+	return u
+}
+
+// ClearAddress clears the value of the "address" field.
+func (u *CameraUpsert) ClearAddress() *CameraUpsert {
+	u.SetNull(camera.FieldAddress)
 	return u
 }
 
@@ -644,6 +680,27 @@ func (u *CameraUpsertOne) SetActive(v bool) *CameraUpsertOne {
 func (u *CameraUpsertOne) UpdateActive() *CameraUpsertOne {
 	return u.Update(func(s *CameraUpsert) {
 		s.UpdateActive()
+	})
+}
+
+// SetAddress sets the "address" field.
+func (u *CameraUpsertOne) SetAddress(v string) *CameraUpsertOne {
+	return u.Update(func(s *CameraUpsert) {
+		s.SetAddress(v)
+	})
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *CameraUpsertOne) UpdateAddress() *CameraUpsertOne {
+	return u.Update(func(s *CameraUpsert) {
+		s.UpdateAddress()
+	})
+}
+
+// ClearAddress clears the value of the "address" field.
+func (u *CameraUpsertOne) ClearAddress() *CameraUpsertOne {
+	return u.Update(func(s *CameraUpsert) {
+		s.ClearAddress()
 	})
 }
 
@@ -995,6 +1052,27 @@ func (u *CameraUpsertBulk) SetActive(v bool) *CameraUpsertBulk {
 func (u *CameraUpsertBulk) UpdateActive() *CameraUpsertBulk {
 	return u.Update(func(s *CameraUpsert) {
 		s.UpdateActive()
+	})
+}
+
+// SetAddress sets the "address" field.
+func (u *CameraUpsertBulk) SetAddress(v string) *CameraUpsertBulk {
+	return u.Update(func(s *CameraUpsert) {
+		s.SetAddress(v)
+	})
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *CameraUpsertBulk) UpdateAddress() *CameraUpsertBulk {
+	return u.Update(func(s *CameraUpsert) {
+		s.UpdateAddress()
+	})
+}
+
+// ClearAddress clears the value of the "address" field.
+func (u *CameraUpsertBulk) ClearAddress() *CameraUpsertBulk {
+	return u.Update(func(s *CameraUpsert) {
+		s.ClearAddress()
 	})
 }
 
