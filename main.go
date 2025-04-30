@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-	"entgo.io/ent/dialect/sql/schema"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
@@ -41,10 +39,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed opening connection to postgres: %v", err)
 	}
-	err = client.Schema.Create(context.Background(), schema.WithGlobalUniqueID(true))
-	if err != nil {
-		log.Fatalf("failed to create schema resources: %v", err)
-	}
+	//err = client.Schema.Create(context.Background(), schema.WithGlobalUniqueID(true))
+	//if err != nil {
+	//	log.Fatalf("failed to create schema resources: %v", err)
+	//}
 	//defer func(postgresDB *sql.DB) {
 	//	err := postgresDB.Close()
 	//	if err != nil {
