@@ -2265,6 +2265,17 @@ input CameraWhereInput {
   and: [CameraWhereInput!]
   or: [CameraWhereInput!]
   """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """
   name field predicates
   """
   name: String
@@ -2434,6 +2445,17 @@ input CarWhereInput {
   not: CarWhereInput
   and: [CarWhereInput!]
   or: [CarWhereInput!]
+  """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
   """
   make field predicates
   """
@@ -2856,6 +2878,17 @@ input EventWhereInput {
   and: [EventWhereInput!]
   or: [EventWhereInput!]
   """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """
   plate_channel field predicates
   """
   plateChannel: Int
@@ -3187,6 +3220,17 @@ input PermissionWhereInput {
   and: [PermissionWhereInput!]
   or: [PermissionWhereInput!]
   """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """
   name field predicates
   """
   name: String
@@ -3277,6 +3321,17 @@ input PoliceStationWhereInput {
   not: PoliceStationWhereInput
   and: [PoliceStationWhereInput!]
   or: [PoliceStationWhereInput!]
+  """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
   """
   name field predicates
   """
@@ -3664,6 +3719,17 @@ input RoleWhereInput {
   and: [RoleWhereInput!]
   or: [RoleWhereInput!]
   """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """
   name field predicates
   """
   name: String
@@ -3969,6 +4035,17 @@ input UserWhereInput {
   not: UserWhereInput
   and: [UserWhereInput!]
   or: [UserWhereInput!]
+  """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
   """
   email field predicates
   """
@@ -18848,7 +18925,7 @@ func (ec *executionContext) unmarshalInputCameraWhereInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "model", "modelNEQ", "modelIn", "modelNotIn", "modelGT", "modelGTE", "modelLT", "modelLTE", "modelContains", "modelHasPrefix", "modelHasSuffix", "modelEqualFold", "modelContainsFold", "imei", "imeiNEQ", "imeiIn", "imeiNotIn", "imeiGT", "imeiGTE", "imeiLT", "imeiLTE", "imeiContains", "imeiHasPrefix", "imeiHasSuffix", "imeiEqualFold", "imeiContainsFold", "active", "activeNEQ", "address", "addressNEQ", "addressIn", "addressNotIn", "addressGT", "addressGTE", "addressLT", "addressLTE", "addressContains", "addressHasPrefix", "addressHasSuffix", "addressIsNil", "addressNotNil", "addressEqualFold", "addressContainsFold", "isWorking", "isWorkingNEQ", "district", "districtNEQ", "districtIn", "districtNotIn", "districtGT", "districtGTE", "districtLT", "districtLTE", "districtContains", "districtHasPrefix", "districtHasSuffix", "districtEqualFold", "districtContainsFold", "hasPoliceStation", "hasPoliceStationWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "model", "modelNEQ", "modelIn", "modelNotIn", "modelGT", "modelGTE", "modelLT", "modelLTE", "modelContains", "modelHasPrefix", "modelHasSuffix", "modelEqualFold", "modelContainsFold", "imei", "imeiNEQ", "imeiIn", "imeiNotIn", "imeiGT", "imeiGTE", "imeiLT", "imeiLTE", "imeiContains", "imeiHasPrefix", "imeiHasSuffix", "imeiEqualFold", "imeiContainsFold", "active", "activeNEQ", "address", "addressNEQ", "addressIn", "addressNotIn", "addressGT", "addressGTE", "addressLT", "addressLTE", "addressContains", "addressHasPrefix", "addressHasSuffix", "addressIsNil", "addressNotNil", "addressEqualFold", "addressContainsFold", "isWorking", "isWorkingNEQ", "district", "districtNEQ", "districtIn", "districtNotIn", "districtGT", "districtGTE", "districtLT", "districtLTE", "districtContains", "districtHasPrefix", "districtHasSuffix", "districtEqualFold", "districtContainsFold", "hasPoliceStation", "hasPoliceStationWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -18876,6 +18953,62 @@ func (ec *executionContext) unmarshalInputCameraWhereInput(ctx context.Context, 
 				return it, err
 			}
 			it.Or = data
+		case "createdAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
+		case "createdAtNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNEQ = data
+		case "createdAtIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtIn = data
+		case "createdAtNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNotIn = data
+		case "createdAtGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGT = data
+		case "createdAtGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGTE = data
+		case "createdAtLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLT = data
+		case "createdAtLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLTE = data
 		case "name":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -19438,7 +19571,7 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "make", "makeNEQ", "makeIn", "makeNotIn", "makeGT", "makeGTE", "makeLT", "makeLTE", "makeContains", "makeHasPrefix", "makeHasSuffix", "makeIsNil", "makeNotNil", "makeEqualFold", "makeContainsFold", "model", "modelNEQ", "modelIn", "modelNotIn", "modelGT", "modelGTE", "modelLT", "modelLTE", "modelContains", "modelHasPrefix", "modelHasSuffix", "modelIsNil", "modelNotNil", "modelEqualFold", "modelContainsFold", "year", "yearNEQ", "yearIn", "yearNotIn", "yearGT", "yearGTE", "yearLT", "yearLTE", "yearIsNil", "yearNotNil", "registration", "registrationNEQ", "registrationIn", "registrationNotIn", "registrationGT", "registrationGTE", "registrationLT", "registrationLTE", "registrationContains", "registrationHasPrefix", "registrationHasSuffix", "registrationEqualFold", "registrationContainsFold", "color", "colorNEQ", "colorIn", "colorNotIn", "colorGT", "colorGTE", "colorLT", "colorLTE", "colorContains", "colorHasPrefix", "colorHasSuffix", "colorIsNil", "colorNotNil", "colorEqualFold", "colorContainsFold", "stolenDate", "stolenDateNEQ", "stolenDateIn", "stolenDateNotIn", "stolenDateGT", "stolenDateGTE", "stolenDateLT", "stolenDateLTE", "stolenDateIsNil", "stolenDateNotNil", "firNumber", "firNumberNEQ", "firNumberIn", "firNumberNotIn", "firNumberGT", "firNumberGTE", "firNumberLT", "firNumberLTE", "firNumberContains", "firNumberHasPrefix", "firNumberHasSuffix", "firNumberIsNil", "firNumberNotNil", "firNumberEqualFold", "firNumberContainsFold", "hasPoliceStation", "hasPoliceStationWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "make", "makeNEQ", "makeIn", "makeNotIn", "makeGT", "makeGTE", "makeLT", "makeLTE", "makeContains", "makeHasPrefix", "makeHasSuffix", "makeIsNil", "makeNotNil", "makeEqualFold", "makeContainsFold", "model", "modelNEQ", "modelIn", "modelNotIn", "modelGT", "modelGTE", "modelLT", "modelLTE", "modelContains", "modelHasPrefix", "modelHasSuffix", "modelIsNil", "modelNotNil", "modelEqualFold", "modelContainsFold", "year", "yearNEQ", "yearIn", "yearNotIn", "yearGT", "yearGTE", "yearLT", "yearLTE", "yearIsNil", "yearNotNil", "registration", "registrationNEQ", "registrationIn", "registrationNotIn", "registrationGT", "registrationGTE", "registrationLT", "registrationLTE", "registrationContains", "registrationHasPrefix", "registrationHasSuffix", "registrationEqualFold", "registrationContainsFold", "color", "colorNEQ", "colorIn", "colorNotIn", "colorGT", "colorGTE", "colorLT", "colorLTE", "colorContains", "colorHasPrefix", "colorHasSuffix", "colorIsNil", "colorNotNil", "colorEqualFold", "colorContainsFold", "stolenDate", "stolenDateNEQ", "stolenDateIn", "stolenDateNotIn", "stolenDateGT", "stolenDateGTE", "stolenDateLT", "stolenDateLTE", "stolenDateIsNil", "stolenDateNotNil", "firNumber", "firNumberNEQ", "firNumberIn", "firNumberNotIn", "firNumberGT", "firNumberGTE", "firNumberLT", "firNumberLTE", "firNumberContains", "firNumberHasPrefix", "firNumberHasSuffix", "firNumberIsNil", "firNumberNotNil", "firNumberEqualFold", "firNumberContainsFold", "hasPoliceStation", "hasPoliceStationWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -19466,6 +19599,62 @@ func (ec *executionContext) unmarshalInputCarWhereInput(ctx context.Context, obj
 				return it, err
 			}
 			it.Or = data
+		case "createdAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
+		case "createdAtNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNEQ = data
+		case "createdAtIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtIn = data
+		case "createdAtNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNotIn = data
+		case "createdAtGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGT = data
+		case "createdAtGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGTE = data
+		case "createdAtLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLT = data
+		case "createdAtLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLTE = data
 		case "make":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("make"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -20826,7 +21015,7 @@ func (ec *executionContext) unmarshalInputEventWhereInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "plateChannel", "plateChannelNEQ", "plateChannelIn", "plateChannelNotIn", "plateChannelGT", "plateChannelGTE", "plateChannelLT", "plateChannelLTE", "plateChannelIsNil", "plateChannelNotNil", "plateIsExist", "plateIsExistNEQ", "plateIsExistIsNil", "plateIsExistNotNil", "plateColor", "plateColorNEQ", "plateColorIn", "plateColorNotIn", "plateColorGT", "plateColorGTE", "plateColorLT", "plateColorLTE", "plateColorContains", "plateColorHasPrefix", "plateColorHasSuffix", "plateColorIsNil", "plateColorNotNil", "plateColorEqualFold", "plateColorContainsFold", "plateNumber", "plateNumberNEQ", "plateNumberIn", "plateNumberNotIn", "plateNumberGT", "plateNumberGTE", "plateNumberLT", "plateNumberLTE", "plateNumberContains", "plateNumberHasPrefix", "plateNumberHasSuffix", "plateNumberIsNil", "plateNumberNotNil", "plateNumberEqualFold", "plateNumberContainsFold", "plateType", "plateTypeNEQ", "plateTypeIn", "plateTypeNotIn", "plateTypeGT", "plateTypeGTE", "plateTypeLT", "plateTypeLTE", "plateTypeContains", "plateTypeHasPrefix", "plateTypeHasSuffix", "plateTypeIsNil", "plateTypeNotNil", "plateTypeEqualFold", "plateTypeContainsFold", "plateRegion", "plateRegionNEQ", "plateRegionIn", "plateRegionNotIn", "plateRegionGT", "plateRegionGTE", "plateRegionLT", "plateRegionLTE", "plateRegionContains", "plateRegionHasPrefix", "plateRegionHasSuffix", "plateRegionIsNil", "plateRegionNotNil", "plateRegionEqualFold", "plateRegionContainsFold", "plateUploadNum", "plateUploadNumNEQ", "plateUploadNumIn", "plateUploadNumNotIn", "plateUploadNumGT", "plateUploadNumGTE", "plateUploadNumLT", "plateUploadNumLTE", "plateUploadNumIsNil", "plateUploadNumNotNil", "snapAllowUser", "snapAllowUserNEQ", "snapAllowUserIsNil", "snapAllowUserNotNil", "snapAllowUserEndTime", "snapAllowUserEndTimeNEQ", "snapAllowUserEndTimeIn", "snapAllowUserEndTimeNotIn", "snapAllowUserEndTimeGT", "snapAllowUserEndTimeGTE", "snapAllowUserEndTimeLT", "snapAllowUserEndTimeLTE", "snapAllowUserEndTimeContains", "snapAllowUserEndTimeHasPrefix", "snapAllowUserEndTimeHasSuffix", "snapAllowUserEndTimeIsNil", "snapAllowUserEndTimeNotNil", "snapAllowUserEndTimeEqualFold", "snapAllowUserEndTimeContainsFold", "snapDefenceCode", "snapDefenceCodeNEQ", "snapDefenceCodeIn", "snapDefenceCodeNotIn", "snapDefenceCodeGT", "snapDefenceCodeGTE", "snapDefenceCodeLT", "snapDefenceCodeLTE", "snapDefenceCodeContains", "snapDefenceCodeHasPrefix", "snapDefenceCodeHasSuffix", "snapDefenceCodeIsNil", "snapDefenceCodeNotNil", "snapDefenceCodeEqualFold", "snapDefenceCodeContainsFold", "snapDeviceID", "snapDeviceIDNEQ", "snapDeviceIDIn", "snapDeviceIDNotIn", "snapDeviceIDGT", "snapDeviceIDGTE", "snapDeviceIDLT", "snapDeviceIDLTE", "snapDeviceIDContains", "snapDeviceIDHasPrefix", "snapDeviceIDHasSuffix", "snapDeviceIDIsNil", "snapDeviceIDNotNil", "snapDeviceIDEqualFold", "snapDeviceIDContainsFold", "snapInCarPeopleNum", "snapInCarPeopleNumNEQ", "snapInCarPeopleNumIn", "snapInCarPeopleNumNotIn", "snapInCarPeopleNumGT", "snapInCarPeopleNumGTE", "snapInCarPeopleNumLT", "snapInCarPeopleNumLTE", "snapInCarPeopleNumIsNil", "snapInCarPeopleNumNotNil", "snapLanNo", "snapLanNoNEQ", "snapLanNoIn", "snapLanNoNotIn", "snapLanNoGT", "snapLanNoGTE", "snapLanNoLT", "snapLanNoLTE", "snapLanNoIsNil", "snapLanNoNotNil", "snapOpenStrobe", "snapOpenStrobeNEQ", "snapOpenStrobeIsNil", "snapOpenStrobeNotNil", "vehicleSeries", "vehicleSeriesNEQ", "vehicleSeriesIn", "vehicleSeriesNotIn", "vehicleSeriesGT", "vehicleSeriesGTE", "vehicleSeriesLT", "vehicleSeriesLTE", "vehicleSeriesContains", "vehicleSeriesHasPrefix", "vehicleSeriesHasSuffix", "vehicleSeriesIsNil", "vehicleSeriesNotNil", "vehicleSeriesEqualFold", "vehicleSeriesContainsFold"}
+	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "plateChannel", "plateChannelNEQ", "plateChannelIn", "plateChannelNotIn", "plateChannelGT", "plateChannelGTE", "plateChannelLT", "plateChannelLTE", "plateChannelIsNil", "plateChannelNotNil", "plateIsExist", "plateIsExistNEQ", "plateIsExistIsNil", "plateIsExistNotNil", "plateColor", "plateColorNEQ", "plateColorIn", "plateColorNotIn", "plateColorGT", "plateColorGTE", "plateColorLT", "plateColorLTE", "plateColorContains", "plateColorHasPrefix", "plateColorHasSuffix", "plateColorIsNil", "plateColorNotNil", "plateColorEqualFold", "plateColorContainsFold", "plateNumber", "plateNumberNEQ", "plateNumberIn", "plateNumberNotIn", "plateNumberGT", "plateNumberGTE", "plateNumberLT", "plateNumberLTE", "plateNumberContains", "plateNumberHasPrefix", "plateNumberHasSuffix", "plateNumberIsNil", "plateNumberNotNil", "plateNumberEqualFold", "plateNumberContainsFold", "plateType", "plateTypeNEQ", "plateTypeIn", "plateTypeNotIn", "plateTypeGT", "plateTypeGTE", "plateTypeLT", "plateTypeLTE", "plateTypeContains", "plateTypeHasPrefix", "plateTypeHasSuffix", "plateTypeIsNil", "plateTypeNotNil", "plateTypeEqualFold", "plateTypeContainsFold", "plateRegion", "plateRegionNEQ", "plateRegionIn", "plateRegionNotIn", "plateRegionGT", "plateRegionGTE", "plateRegionLT", "plateRegionLTE", "plateRegionContains", "plateRegionHasPrefix", "plateRegionHasSuffix", "plateRegionIsNil", "plateRegionNotNil", "plateRegionEqualFold", "plateRegionContainsFold", "plateUploadNum", "plateUploadNumNEQ", "plateUploadNumIn", "plateUploadNumNotIn", "plateUploadNumGT", "plateUploadNumGTE", "plateUploadNumLT", "plateUploadNumLTE", "plateUploadNumIsNil", "plateUploadNumNotNil", "snapAllowUser", "snapAllowUserNEQ", "snapAllowUserIsNil", "snapAllowUserNotNil", "snapAllowUserEndTime", "snapAllowUserEndTimeNEQ", "snapAllowUserEndTimeIn", "snapAllowUserEndTimeNotIn", "snapAllowUserEndTimeGT", "snapAllowUserEndTimeGTE", "snapAllowUserEndTimeLT", "snapAllowUserEndTimeLTE", "snapAllowUserEndTimeContains", "snapAllowUserEndTimeHasPrefix", "snapAllowUserEndTimeHasSuffix", "snapAllowUserEndTimeIsNil", "snapAllowUserEndTimeNotNil", "snapAllowUserEndTimeEqualFold", "snapAllowUserEndTimeContainsFold", "snapDefenceCode", "snapDefenceCodeNEQ", "snapDefenceCodeIn", "snapDefenceCodeNotIn", "snapDefenceCodeGT", "snapDefenceCodeGTE", "snapDefenceCodeLT", "snapDefenceCodeLTE", "snapDefenceCodeContains", "snapDefenceCodeHasPrefix", "snapDefenceCodeHasSuffix", "snapDefenceCodeIsNil", "snapDefenceCodeNotNil", "snapDefenceCodeEqualFold", "snapDefenceCodeContainsFold", "snapDeviceID", "snapDeviceIDNEQ", "snapDeviceIDIn", "snapDeviceIDNotIn", "snapDeviceIDGT", "snapDeviceIDGTE", "snapDeviceIDLT", "snapDeviceIDLTE", "snapDeviceIDContains", "snapDeviceIDHasPrefix", "snapDeviceIDHasSuffix", "snapDeviceIDIsNil", "snapDeviceIDNotNil", "snapDeviceIDEqualFold", "snapDeviceIDContainsFold", "snapInCarPeopleNum", "snapInCarPeopleNumNEQ", "snapInCarPeopleNumIn", "snapInCarPeopleNumNotIn", "snapInCarPeopleNumGT", "snapInCarPeopleNumGTE", "snapInCarPeopleNumLT", "snapInCarPeopleNumLTE", "snapInCarPeopleNumIsNil", "snapInCarPeopleNumNotNil", "snapLanNo", "snapLanNoNEQ", "snapLanNoIn", "snapLanNoNotIn", "snapLanNoGT", "snapLanNoGTE", "snapLanNoLT", "snapLanNoLTE", "snapLanNoIsNil", "snapLanNoNotNil", "snapOpenStrobe", "snapOpenStrobeNEQ", "snapOpenStrobeIsNil", "snapOpenStrobeNotNil", "vehicleSeries", "vehicleSeriesNEQ", "vehicleSeriesIn", "vehicleSeriesNotIn", "vehicleSeriesGT", "vehicleSeriesGTE", "vehicleSeriesLT", "vehicleSeriesLTE", "vehicleSeriesContains", "vehicleSeriesHasPrefix", "vehicleSeriesHasSuffix", "vehicleSeriesIsNil", "vehicleSeriesNotNil", "vehicleSeriesEqualFold", "vehicleSeriesContainsFold"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -20854,6 +21043,62 @@ func (ec *executionContext) unmarshalInputEventWhereInput(ctx context.Context, o
 				return it, err
 			}
 			it.Or = data
+		case "createdAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
+		case "createdAtNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNEQ = data
+		case "createdAtIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtIn = data
+		case "createdAtNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNotIn = data
+		case "createdAtGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGT = data
+		case "createdAtGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGTE = data
+		case "createdAtLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLT = data
+		case "createdAtLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLTE = data
 		case "plateChannel":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateChannel"))
 			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
@@ -22143,7 +22388,7 @@ func (ec *executionContext) unmarshalInputPermissionWhereInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold"}
+	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -22171,6 +22416,62 @@ func (ec *executionContext) unmarshalInputPermissionWhereInput(ctx context.Conte
 				return it, err
 			}
 			it.Or = data
+		case "createdAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
+		case "createdAtNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNEQ = data
+		case "createdAtIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtIn = data
+		case "createdAtNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNotIn = data
+		case "createdAtGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGT = data
+		case "createdAtGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGTE = data
+		case "createdAtLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLT = data
+		case "createdAtLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLTE = data
 		case "name":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -22313,7 +22614,7 @@ func (ec *executionContext) unmarshalInputPoliceStationWhereInput(ctx context.Co
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "identifier", "identifierNEQ", "identifierIn", "identifierNotIn", "identifierGT", "identifierGTE", "identifierLT", "identifierLTE", "identifierContains", "identifierHasPrefix", "identifierHasSuffix", "identifierEqualFold", "identifierContainsFold", "parentStationID", "parentStationIDNEQ", "parentStationIDIn", "parentStationIDNotIn", "parentStationIDIsNil", "parentStationIDNotNil", "hasUsers", "hasUsersWith", "hasCamera", "hasCameraWith", "hasCar", "hasCarWith", "hasParent", "hasParentWith", "hasChildStations", "hasChildStationsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "identifier", "identifierNEQ", "identifierIn", "identifierNotIn", "identifierGT", "identifierGTE", "identifierLT", "identifierLTE", "identifierContains", "identifierHasPrefix", "identifierHasSuffix", "identifierEqualFold", "identifierContainsFold", "parentStationID", "parentStationIDNEQ", "parentStationIDIn", "parentStationIDNotIn", "parentStationIDIsNil", "parentStationIDNotNil", "hasUsers", "hasUsersWith", "hasCamera", "hasCameraWith", "hasCar", "hasCarWith", "hasParent", "hasParentWith", "hasChildStations", "hasChildStationsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -22341,6 +22642,62 @@ func (ec *executionContext) unmarshalInputPoliceStationWhereInput(ctx context.Co
 				return it, err
 			}
 			it.Or = data
+		case "createdAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
+		case "createdAtNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNEQ = data
+		case "createdAtIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtIn = data
+		case "createdAtNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNotIn = data
+		case "createdAtGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGT = data
+		case "createdAtGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGTE = data
+		case "createdAtLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLT = data
+		case "createdAtLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLTE = data
 		case "name":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -22777,7 +23134,7 @@ func (ec *executionContext) unmarshalInputRoleWhereInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "hasPermissions", "hasPermissionsWith", "hasUsers", "hasUsersWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "hasPermissions", "hasPermissionsWith", "hasUsers", "hasUsersWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -22805,6 +23162,62 @@ func (ec *executionContext) unmarshalInputRoleWhereInput(ctx context.Context, ob
 				return it, err
 			}
 			it.Or = data
+		case "createdAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
+		case "createdAtNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNEQ = data
+		case "createdAtIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtIn = data
+		case "createdAtNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNotIn = data
+		case "createdAtGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGT = data
+		case "createdAtGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGTE = data
+		case "createdAtLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLT = data
+		case "createdAtLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLTE = data
 		case "name":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -23878,7 +24291,7 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "phone", "phoneNEQ", "phoneIn", "phoneNotIn", "phoneGT", "phoneGTE", "phoneLT", "phoneLTE", "phoneContains", "phoneHasPrefix", "phoneHasSuffix", "phoneIsNil", "phoneNotNil", "phoneEqualFold", "phoneContainsFold", "active", "activeNEQ", "hasRole", "hasRoleWith", "hasPoliceStation", "hasPoliceStationWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "phone", "phoneNEQ", "phoneIn", "phoneNotIn", "phoneGT", "phoneGTE", "phoneLT", "phoneLTE", "phoneContains", "phoneHasPrefix", "phoneHasSuffix", "phoneIsNil", "phoneNotNil", "phoneEqualFold", "phoneContainsFold", "active", "activeNEQ", "hasRole", "hasRoleWith", "hasPoliceStation", "hasPoliceStationWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -23906,6 +24319,62 @@ func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, ob
 				return it, err
 			}
 			it.Or = data
+		case "createdAt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
+		case "createdAtNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNEQ = data
+		case "createdAtIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtIn = data
+		case "createdAtNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtNotIn = data
+		case "createdAtGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGT = data
+		case "createdAtGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtGTE = data
+		case "createdAtLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLT = data
+		case "createdAtLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAtLTE = data
 		case "email":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)

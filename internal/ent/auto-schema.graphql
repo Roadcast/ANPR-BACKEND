@@ -75,6 +75,17 @@ input CameraWhereInput {
   and: [CameraWhereInput!]
   or: [CameraWhereInput!]
   """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """
   name field predicates
   """
   name: String
@@ -244,6 +255,17 @@ input CarWhereInput {
   not: CarWhereInput
   and: [CarWhereInput!]
   or: [CarWhereInput!]
+  """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
   """
   make field predicates
   """
@@ -666,6 +688,17 @@ input EventWhereInput {
   and: [EventWhereInput!]
   or: [EventWhereInput!]
   """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """
   plate_channel field predicates
   """
   plateChannel: Int
@@ -997,6 +1030,17 @@ input PermissionWhereInput {
   and: [PermissionWhereInput!]
   or: [PermissionWhereInput!]
   """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """
   name field predicates
   """
   name: String
@@ -1087,6 +1131,17 @@ input PoliceStationWhereInput {
   not: PoliceStationWhereInput
   and: [PoliceStationWhereInput!]
   or: [PoliceStationWhereInput!]
+  """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
   """
   name field predicates
   """
@@ -1474,6 +1529,17 @@ input RoleWhereInput {
   and: [RoleWhereInput!]
   or: [RoleWhereInput!]
   """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  """
   name field predicates
   """
   name: String
@@ -1779,6 +1845,17 @@ input UserWhereInput {
   not: UserWhereInput
   and: [UserWhereInput!]
   or: [UserWhereInput!]
+  """
+  created_at field predicates
+  """
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
   """
   email field predicates
   """
