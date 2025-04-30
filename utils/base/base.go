@@ -31,8 +31,7 @@ func (BMixin) Fields() []ent.Field {
 				"postgres": "timestamp with time zone", // PostgreSQL type
 			}).
 			Immutable().
-			Annotations(entgql.OrderField("CreatedAt"),
-				entgql.Skip(entgql.SkipWhereInput)),
+			Annotations(entgql.OrderField("CreatedAt")),
 
 		// UpdatedAt timestamp
 		field.Time("updated_at").
