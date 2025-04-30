@@ -35,6 +35,8 @@ const (
 	FieldIsWorking = "is_working"
 	// FieldDistrict holds the string denoting the district field in the database.
 	FieldDistrict = "district"
+	// FieldLastPing holds the string denoting the last_ping field in the database.
+	FieldLastPing = "last_ping"
 	// FieldPoliceStationID holds the string denoting the police_station_id field in the database.
 	FieldPoliceStationID = "police_station_id"
 	// EdgePoliceStation holds the string denoting the police_station edge name in mutations.
@@ -63,6 +65,7 @@ var Columns = []string{
 	FieldAddress,
 	FieldIsWorking,
 	FieldDistrict,
+	FieldLastPing,
 	FieldPoliceStationID,
 }
 
@@ -155,6 +158,11 @@ func ByIsWorking(opts ...sql.OrderTermOption) OrderOption {
 // ByDistrict orders the results by the district field.
 func ByDistrict(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDistrict, opts...).ToFunc()
+}
+
+// ByLastPing orders the results by the last_ping field.
+func ByLastPing(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastPing, opts...).ToFunc()
 }
 
 // ByPoliceStationID orders the results by the police_station_id field.

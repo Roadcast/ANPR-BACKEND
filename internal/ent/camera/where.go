@@ -106,6 +106,11 @@ func District(v string) predicate.Camera {
 	return predicate.Camera(sql.FieldEQ(FieldDistrict, v))
 }
 
+// LastPing applies equality check predicate on the "last_ping" field. It's identical to LastPingEQ.
+func LastPing(v time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldEQ(FieldLastPing, v))
+}
+
 // PoliceStationID applies equality check predicate on the "police_station_id" field. It's identical to PoliceStationIDEQ.
 func PoliceStationID(v uuid.UUID) predicate.Camera {
 	return predicate.Camera(sql.FieldEQ(FieldPoliceStationID, v))
@@ -609,6 +614,46 @@ func DistrictEqualFold(v string) predicate.Camera {
 // DistrictContainsFold applies the ContainsFold predicate on the "district" field.
 func DistrictContainsFold(v string) predicate.Camera {
 	return predicate.Camera(sql.FieldContainsFold(FieldDistrict, v))
+}
+
+// LastPingEQ applies the EQ predicate on the "last_ping" field.
+func LastPingEQ(v time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldEQ(FieldLastPing, v))
+}
+
+// LastPingNEQ applies the NEQ predicate on the "last_ping" field.
+func LastPingNEQ(v time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldNEQ(FieldLastPing, v))
+}
+
+// LastPingIn applies the In predicate on the "last_ping" field.
+func LastPingIn(vs ...time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldIn(FieldLastPing, vs...))
+}
+
+// LastPingNotIn applies the NotIn predicate on the "last_ping" field.
+func LastPingNotIn(vs ...time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldNotIn(FieldLastPing, vs...))
+}
+
+// LastPingGT applies the GT predicate on the "last_ping" field.
+func LastPingGT(v time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldGT(FieldLastPing, v))
+}
+
+// LastPingGTE applies the GTE predicate on the "last_ping" field.
+func LastPingGTE(v time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldGTE(FieldLastPing, v))
+}
+
+// LastPingLT applies the LT predicate on the "last_ping" field.
+func LastPingLT(v time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldLT(FieldLastPing, v))
+}
+
+// LastPingLTE applies the LTE predicate on the "last_ping" field.
+func LastPingLTE(v time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldLTE(FieldLastPing, v))
 }
 
 // PoliceStationIDEQ applies the EQ predicate on the "police_station_id" field.

@@ -102,6 +102,11 @@ func (c *CameraQuery) collectField(ctx context.Context, oneNode bool, opCtx *gra
 				selectedFields = append(selectedFields, camera.FieldDistrict)
 				fieldSeen[camera.FieldDistrict] = struct{}{}
 			}
+		case "lastPing":
+			if _, ok := fieldSeen[camera.FieldLastPing]; !ok {
+				selectedFields = append(selectedFields, camera.FieldLastPing)
+				fieldSeen[camera.FieldLastPing] = struct{}{}
+			}
 		case "policeStationID":
 			if _, ok := fieldSeen[camera.FieldPoliceStationID]; !ok {
 				selectedFields = append(selectedFields, camera.FieldPoliceStationID)

@@ -154,6 +154,20 @@ func (cu *CameraUpdate) SetNillableDistrict(s *string) *CameraUpdate {
 	return cu
 }
 
+// SetLastPing sets the "last_ping" field.
+func (cu *CameraUpdate) SetLastPing(t time.Time) *CameraUpdate {
+	cu.mutation.SetLastPing(t)
+	return cu
+}
+
+// SetNillableLastPing sets the "last_ping" field if the given value is not nil.
+func (cu *CameraUpdate) SetNillableLastPing(t *time.Time) *CameraUpdate {
+	if t != nil {
+		cu.SetLastPing(*t)
+	}
+	return cu
+}
+
 // SetPoliceStationID sets the "police_station_id" field.
 func (cu *CameraUpdate) SetPoliceStationID(u uuid.UUID) *CameraUpdate {
 	cu.mutation.SetPoliceStationID(u)
@@ -287,6 +301,9 @@ func (cu *CameraUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := cu.mutation.District(); ok {
 		_spec.SetField(camera.FieldDistrict, field.TypeString, value)
+	}
+	if value, ok := cu.mutation.LastPing(); ok {
+		_spec.SetField(camera.FieldLastPing, field.TypeTime, value)
 	}
 	if cu.mutation.PoliceStationCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -461,6 +478,20 @@ func (cuo *CameraUpdateOne) SetNillableDistrict(s *string) *CameraUpdateOne {
 	return cuo
 }
 
+// SetLastPing sets the "last_ping" field.
+func (cuo *CameraUpdateOne) SetLastPing(t time.Time) *CameraUpdateOne {
+	cuo.mutation.SetLastPing(t)
+	return cuo
+}
+
+// SetNillableLastPing sets the "last_ping" field if the given value is not nil.
+func (cuo *CameraUpdateOne) SetNillableLastPing(t *time.Time) *CameraUpdateOne {
+	if t != nil {
+		cuo.SetLastPing(*t)
+	}
+	return cuo
+}
+
 // SetPoliceStationID sets the "police_station_id" field.
 func (cuo *CameraUpdateOne) SetPoliceStationID(u uuid.UUID) *CameraUpdateOne {
 	cuo.mutation.SetPoliceStationID(u)
@@ -624,6 +655,9 @@ func (cuo *CameraUpdateOne) sqlSave(ctx context.Context) (_node *Camera, err err
 	}
 	if value, ok := cuo.mutation.District(); ok {
 		_spec.SetField(camera.FieldDistrict, field.TypeString, value)
+	}
+	if value, ok := cuo.mutation.LastPing(); ok {
+		_spec.SetField(camera.FieldLastPing, field.TypeTime, value)
 	}
 	if cuo.mutation.PoliceStationCleared() {
 		edge := &sqlgraph.EdgeSpec{

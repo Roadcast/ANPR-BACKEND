@@ -133,6 +133,12 @@ func (cc *CameraCreate) SetNillableDistrict(s *string) *CameraCreate {
 	return cc
 }
 
+// SetLastPing sets the "last_ping" field.
+func (cc *CameraCreate) SetLastPing(t time.Time) *CameraCreate {
+	cc.mutation.SetLastPing(t)
+	return cc
+}
+
 // SetPoliceStationID sets the "police_station_id" field.
 func (cc *CameraCreate) SetPoliceStationID(u uuid.UUID) *CameraCreate {
 	cc.mutation.SetPoliceStationID(u)
@@ -271,6 +277,9 @@ func (cc *CameraCreate) check() error {
 	if _, ok := cc.mutation.District(); !ok {
 		return &ValidationError{Name: "district", err: errors.New(`ent: missing required field "Camera.district"`)}
 	}
+	if _, ok := cc.mutation.LastPing(); !ok {
+		return &ValidationError{Name: "last_ping", err: errors.New(`ent: missing required field "Camera.last_ping"`)}
+	}
 	return nil
 }
 
@@ -346,6 +355,10 @@ func (cc *CameraCreate) createSpec() (*Camera, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.District(); ok {
 		_spec.SetField(camera.FieldDistrict, field.TypeString, value)
 		_node.District = &value
+	}
+	if value, ok := cc.mutation.LastPing(); ok {
+		_spec.SetField(camera.FieldLastPing, field.TypeTime, value)
+		_node.LastPing = value
 	}
 	if nodes := cc.mutation.PoliceStationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -527,6 +540,18 @@ func (u *CameraUpsert) SetDistrict(v string) *CameraUpsert {
 // UpdateDistrict sets the "district" field to the value that was provided on create.
 func (u *CameraUpsert) UpdateDistrict() *CameraUpsert {
 	u.SetExcluded(camera.FieldDistrict)
+	return u
+}
+
+// SetLastPing sets the "last_ping" field.
+func (u *CameraUpsert) SetLastPing(v time.Time) *CameraUpsert {
+	u.Set(camera.FieldLastPing, v)
+	return u
+}
+
+// UpdateLastPing sets the "last_ping" field to the value that was provided on create.
+func (u *CameraUpsert) UpdateLastPing() *CameraUpsert {
+	u.SetExcluded(camera.FieldLastPing)
 	return u
 }
 
@@ -729,6 +754,20 @@ func (u *CameraUpsertOne) SetDistrict(v string) *CameraUpsertOne {
 func (u *CameraUpsertOne) UpdateDistrict() *CameraUpsertOne {
 	return u.Update(func(s *CameraUpsert) {
 		s.UpdateDistrict()
+	})
+}
+
+// SetLastPing sets the "last_ping" field.
+func (u *CameraUpsertOne) SetLastPing(v time.Time) *CameraUpsertOne {
+	return u.Update(func(s *CameraUpsert) {
+		s.SetLastPing(v)
+	})
+}
+
+// UpdateLastPing sets the "last_ping" field to the value that was provided on create.
+func (u *CameraUpsertOne) UpdateLastPing() *CameraUpsertOne {
+	return u.Update(func(s *CameraUpsert) {
+		s.UpdateLastPing()
 	})
 }
 
@@ -1101,6 +1140,20 @@ func (u *CameraUpsertBulk) SetDistrict(v string) *CameraUpsertBulk {
 func (u *CameraUpsertBulk) UpdateDistrict() *CameraUpsertBulk {
 	return u.Update(func(s *CameraUpsert) {
 		s.UpdateDistrict()
+	})
+}
+
+// SetLastPing sets the "last_ping" field.
+func (u *CameraUpsertBulk) SetLastPing(v time.Time) *CameraUpsertBulk {
+	return u.Update(func(s *CameraUpsert) {
+		s.SetLastPing(v)
+	})
+}
+
+// UpdateLastPing sets the "last_ping" field to the value that was provided on create.
+func (u *CameraUpsertBulk) UpdateLastPing() *CameraUpsertBulk {
+	return u.Update(func(s *CameraUpsert) {
+		s.UpdateLastPing()
 	})
 }
 

@@ -20,6 +20,7 @@ type CreateCameraInput struct {
 	Address         *string
 	IsWorking       *bool
 	District        *string
+	LastPing        time.Time
 	PoliceStationID *uuid.UUID
 }
 
@@ -47,6 +48,7 @@ func (i *CreateCameraInput) Mutate(m *CameraMutation) {
 	if v := i.District; v != nil {
 		m.SetDistrict(*v)
 	}
+	m.SetLastPing(i.LastPing)
 	if v := i.PoliceStationID; v != nil {
 		m.SetPoliceStationID(*v)
 	}
@@ -70,6 +72,7 @@ type UpdateCameraInput struct {
 	Address            *string
 	IsWorking          *bool
 	District           *string
+	LastPing           *time.Time
 	ClearPoliceStation bool
 	PoliceStationID    *uuid.UUID
 }
@@ -105,6 +108,9 @@ func (i *UpdateCameraInput) Mutate(m *CameraMutation) {
 	}
 	if v := i.District; v != nil {
 		m.SetDistrict(*v)
+	}
+	if v := i.LastPing; v != nil {
+		m.SetLastPing(*v)
 	}
 	if i.ClearPoliceStation {
 		m.ClearPoliceStation()

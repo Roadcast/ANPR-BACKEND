@@ -44,7 +44,7 @@ func (r *queryResolver) PoliceStationCameraStatusCounts(ctx context.Context) ([]
 		working := 0
 		nonWorking := 0
 		for _, cam := range ps.Edges.Camera {
-			if cam.IsWorking {
+			if cam.LastPing.After(time.Now().Add(-time.Hour * 1)) {
 				working++
 			} else {
 				nonWorking++
@@ -122,7 +122,7 @@ func (r *queryResolver) DashboardStats(ctx context.Context) (*model.DashboardSta
 
 	// Count working cameras
 	workingCameras, err := r.Client.Camera.Query().Where(
-		camera.IsWorking(true),
+		camera.LastPingGTE(time.Now().Add(-time.Hour * 1)), // Last ping within the last 1 day
 	).Count(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to count working cameras: %w", err)

@@ -59,6 +59,7 @@ type ComplexityRoot struct {
 		ID              func(childComplexity int) int
 		Imei            func(childComplexity int) int
 		IsWorking       func(childComplexity int) int
+		LastPing        func(childComplexity int) int
 		Location        func(childComplexity int) int
 		Model           func(childComplexity int) int
 		Name            func(childComplexity int) int
@@ -473,6 +474,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Camera.IsWorking(childComplexity), true
+
+	case "Camera.lastPing":
+		if e.complexity.Camera.LastPing == nil {
+			break
+		}
+
+		return e.complexity.Camera.LastPing(childComplexity), true
 
 	case "Camera.location":
 		if e.complexity.Camera.Location == nil {
@@ -2202,6 +2210,7 @@ type Camera implements Node {
   address: String
   isWorking: Boolean!
   district: String!
+  lastPing: Time!
   policeStationID: ID
   policeStation: PoliceStation
 }
@@ -2367,6 +2376,17 @@ input CameraWhereInput {
   districtHasSuffix: String
   districtEqualFold: String
   districtContainsFold: String
+  """
+  last_ping field predicates
+  """
+  lastPing: Time
+  lastPingNEQ: Time
+  lastPingIn: [Time!]
+  lastPingNotIn: [Time!]
+  lastPingGT: Time
+  lastPingGTE: Time
+  lastPingLT: Time
+  lastPingLTE: Time
   """
   police_station edge predicates
   """
@@ -2591,6 +2611,7 @@ input CreateCameraInput {
   address: String
   isWorking: Boolean
   district: String
+  lastPing: Time!
   policeStationID: ID
 }
 """
@@ -3775,6 +3796,7 @@ input UpdateCameraInput {
   clearAddress: Boolean
   isWorking: Boolean
   district: String
+  lastPing: Time
   policeStationID: ID
   clearPoliceStation: Boolean
 }
@@ -6936,6 +6958,50 @@ func (ec *executionContext) fieldContext_Camera_district(_ context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _Camera_lastPing(ctx context.Context, field graphql.CollectedField, obj *ent.Camera) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Camera_lastPing(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LastPing, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Camera_lastPing(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Camera",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Camera_policeStationID(ctx context.Context, field graphql.CollectedField, obj *ent.Camera) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Camera_policeStationID(ctx, field)
 	if err != nil {
@@ -7249,6 +7315,8 @@ func (ec *executionContext) fieldContext_CameraEdge_node(_ context.Context, fiel
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
 				return ec.fieldContext_Camera_district(ctx, field)
+			case "lastPing":
+				return ec.fieldContext_Camera_lastPing(ctx, field)
 			case "policeStationID":
 				return ec.fieldContext_Camera_policeStationID(ctx, field)
 			case "policeStation":
@@ -8150,6 +8218,8 @@ func (ec *executionContext) fieldContext_CustomEvent_camera(_ context.Context, f
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
 				return ec.fieldContext_Camera_district(ctx, field)
+			case "lastPing":
+				return ec.fieldContext_Camera_lastPing(ctx, field)
 			case "policeStationID":
 				return ec.fieldContext_Camera_policeStationID(ctx, field)
 			case "policeStation":
@@ -10067,6 +10137,8 @@ func (ec *executionContext) fieldContext_Mutation_addCameraToPoliceStation(ctx c
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
 				return ec.fieldContext_Camera_district(ctx, field)
+			case "lastPing":
+				return ec.fieldContext_Camera_lastPing(ctx, field)
 			case "policeStationID":
 				return ec.fieldContext_Camera_policeStationID(ctx, field)
 			case "policeStation":
@@ -10478,6 +10550,8 @@ func (ec *executionContext) fieldContext_Mutation_removeCameraFromPoliceStation(
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
 				return ec.fieldContext_Camera_district(ctx, field)
+			case "lastPing":
+				return ec.fieldContext_Camera_lastPing(ctx, field)
 			case "policeStationID":
 				return ec.fieldContext_Camera_policeStationID(ctx, field)
 			case "policeStation":
@@ -10806,6 +10880,8 @@ func (ec *executionContext) fieldContext_Mutation_addCamera(ctx context.Context,
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
 				return ec.fieldContext_Camera_district(ctx, field)
+			case "lastPing":
+				return ec.fieldContext_Camera_lastPing(ctx, field)
 			case "policeStationID":
 				return ec.fieldContext_Camera_policeStationID(ctx, field)
 			case "policeStation":
@@ -10889,6 +10965,8 @@ func (ec *executionContext) fieldContext_Mutation_updateCamera(ctx context.Conte
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
 				return ec.fieldContext_Camera_district(ctx, field)
+			case "lastPing":
+				return ec.fieldContext_Camera_lastPing(ctx, field)
 			case "policeStationID":
 				return ec.fieldContext_Camera_policeStationID(ctx, field)
 			case "policeStation":
@@ -13125,6 +13203,8 @@ func (ec *executionContext) fieldContext_PoliceStation_camera(_ context.Context,
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
 				return ec.fieldContext_Camera_district(ctx, field)
+			case "lastPing":
+				return ec.fieldContext_Camera_lastPing(ctx, field)
 			case "policeStationID":
 				return ec.fieldContext_Camera_policeStationID(ctx, field)
 			case "policeStation":
@@ -14428,6 +14508,8 @@ func (ec *executionContext) fieldContext_Query_getCamera(ctx context.Context, fi
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
 				return ec.fieldContext_Camera_district(ctx, field)
+			case "lastPing":
+				return ec.fieldContext_Camera_lastPing(ctx, field)
 			case "policeStationID":
 				return ec.fieldContext_Camera_policeStationID(ctx, field)
 			case "policeStation":
@@ -15239,6 +15321,8 @@ func (ec *executionContext) fieldContext_Query_getCameraByName(ctx context.Conte
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
 				return ec.fieldContext_Camera_district(ctx, field)
+			case "lastPing":
+				return ec.fieldContext_Camera_lastPing(ctx, field)
 			case "policeStationID":
 				return ec.fieldContext_Camera_policeStationID(ctx, field)
 			case "policeStation":
@@ -18925,7 +19009,7 @@ func (ec *executionContext) unmarshalInputCameraWhereInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "model", "modelNEQ", "modelIn", "modelNotIn", "modelGT", "modelGTE", "modelLT", "modelLTE", "modelContains", "modelHasPrefix", "modelHasSuffix", "modelEqualFold", "modelContainsFold", "imei", "imeiNEQ", "imeiIn", "imeiNotIn", "imeiGT", "imeiGTE", "imeiLT", "imeiLTE", "imeiContains", "imeiHasPrefix", "imeiHasSuffix", "imeiEqualFold", "imeiContainsFold", "active", "activeNEQ", "address", "addressNEQ", "addressIn", "addressNotIn", "addressGT", "addressGTE", "addressLT", "addressLTE", "addressContains", "addressHasPrefix", "addressHasSuffix", "addressIsNil", "addressNotNil", "addressEqualFold", "addressContainsFold", "isWorking", "isWorkingNEQ", "district", "districtNEQ", "districtIn", "districtNotIn", "districtGT", "districtGTE", "districtLT", "districtLTE", "districtContains", "districtHasPrefix", "districtHasSuffix", "districtEqualFold", "districtContainsFold", "hasPoliceStation", "hasPoliceStationWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "model", "modelNEQ", "modelIn", "modelNotIn", "modelGT", "modelGTE", "modelLT", "modelLTE", "modelContains", "modelHasPrefix", "modelHasSuffix", "modelEqualFold", "modelContainsFold", "imei", "imeiNEQ", "imeiIn", "imeiNotIn", "imeiGT", "imeiGTE", "imeiLT", "imeiLTE", "imeiContains", "imeiHasPrefix", "imeiHasSuffix", "imeiEqualFold", "imeiContainsFold", "active", "activeNEQ", "address", "addressNEQ", "addressIn", "addressNotIn", "addressGT", "addressGTE", "addressLT", "addressLTE", "addressContains", "addressHasPrefix", "addressHasSuffix", "addressIsNil", "addressNotNil", "addressEqualFold", "addressContainsFold", "isWorking", "isWorkingNEQ", "district", "districtNEQ", "districtIn", "districtNotIn", "districtGT", "districtGTE", "districtLT", "districtLTE", "districtContains", "districtHasPrefix", "districtHasSuffix", "districtEqualFold", "districtContainsFold", "lastPing", "lastPingNEQ", "lastPingIn", "lastPingNotIn", "lastPingGT", "lastPingGTE", "lastPingLT", "lastPingLTE", "hasPoliceStation", "hasPoliceStationWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -19506,6 +19590,62 @@ func (ec *executionContext) unmarshalInputCameraWhereInput(ctx context.Context, 
 				return it, err
 			}
 			it.DistrictContainsFold = data
+		case "lastPing":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPing"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.LastPing = data
+		case "lastPingNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingNEQ"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.LastPingNEQ = data
+		case "lastPingIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.LastPingIn = data
+		case "lastPingNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingNotIn"))
+			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.LastPingNotIn = data
+		case "lastPingGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingGT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.LastPingGT = data
+		case "lastPingGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingGTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.LastPingGTE = data
+		case "lastPingLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingLT"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.LastPingLT = data
+		case "lastPingLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingLTE"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.LastPingLTE = data
 		case "hasPoliceStation":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasPoliceStation"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -20333,7 +20473,7 @@ func (ec *executionContext) unmarshalInputCreateCameraInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "name", "model", "imei", "location", "active", "address", "isWorking", "district", "policeStationID"}
+	fieldsInOrder := [...]string{"createdAt", "updatedAt", "name", "model", "imei", "location", "active", "address", "isWorking", "district", "lastPing", "policeStationID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -20410,6 +20550,13 @@ func (ec *executionContext) unmarshalInputCreateCameraInput(ctx context.Context,
 				return it, err
 			}
 			it.District = data
+		case "lastPing":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPing"))
+			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.LastPing = data
 		case "policeStationID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("policeStationID"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
@@ -23350,7 +23497,7 @@ func (ec *executionContext) unmarshalInputUpdateCameraInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "name", "model", "imei", "location", "active", "address", "clearAddress", "isWorking", "district", "policeStationID", "clearPoliceStation"}
+	fieldsInOrder := [...]string{"updatedAt", "name", "model", "imei", "location", "active", "address", "clearAddress", "isWorking", "district", "lastPing", "policeStationID", "clearPoliceStation"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -23427,6 +23574,13 @@ func (ec *executionContext) unmarshalInputUpdateCameraInput(ctx context.Context,
 				return it, err
 			}
 			it.District = data
+		case "lastPing":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPing"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.LastPing = data
 		case "policeStationID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("policeStationID"))
 			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
@@ -24731,6 +24885,11 @@ func (ec *executionContext) _Camera(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "district":
 			out.Values[i] = ec._Camera_district(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "lastPing":
+			out.Values[i] = ec._Camera_lastPing(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
