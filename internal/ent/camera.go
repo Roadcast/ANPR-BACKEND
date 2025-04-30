@@ -39,8 +39,6 @@ type Camera struct {
 	IsWorking bool `json:"is_working,omitempty"`
 	// District holds the value of the "district" field.
 	District *string `json:"district,omitempty"`
-	// LastPing holds the value of the "last_ping" field.
-	LastPing time.Time `json:"last_ping,omitempty"`
 	// PoliceStationID holds the value of the "police_station_id" field.
 	PoliceStationID *uuid.UUID `json:"police_station_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -82,7 +80,7 @@ func (*Camera) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case camera.FieldName, camera.FieldModel, camera.FieldImei, camera.FieldLocation, camera.FieldAddress, camera.FieldDistrict:
 			values[i] = new(sql.NullString)
-		case camera.FieldCreatedAt, camera.FieldUpdatedAt, camera.FieldLastPing:
+		case camera.FieldCreatedAt, camera.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case camera.FieldID:
 			values[i] = new(uuid.UUID)
@@ -168,12 +166,6 @@ func (c *Camera) assignValues(columns []string, values []any) error {
 				c.District = new(string)
 				*c.District = value.String
 			}
-		case camera.FieldLastPing:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field last_ping", values[i])
-			} else if value.Valid {
-				c.LastPing = value.Time
-			}
 		case camera.FieldPoliceStationID:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field police_station_id", values[i])
@@ -253,9 +245,6 @@ func (c *Camera) String() string {
 		builder.WriteString("district=")
 		builder.WriteString(*v)
 	}
-	builder.WriteString(", ")
-	builder.WriteString("last_ping=")
-	builder.WriteString(c.LastPing.Format(time.ANSIC))
 	builder.WriteString(", ")
 	if v := c.PoliceStationID; v != nil {
 		builder.WriteString("police_station_id=")

@@ -60,7 +60,6 @@ func (Camera) Fields() []ent.Field {
 
 		field.Bool("is_working").Default(true).Annotations(),
 		field.String("district").Default("N/A").Nillable().Annotations(),
-		field.Time("last_ping"),
 		field.UUID("police_station_id", uuid.UUID{}).Nillable().
 			Optional().Annotations(entgql.Type("ID"), entgql.Skip(entgql.SkipWhereInput)),
 	}

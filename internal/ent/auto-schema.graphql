@@ -12,7 +12,6 @@ type Camera implements Node {
   address: String
   isWorking: Boolean!
   district: String!
-  lastPing: Time!
   policeStationID: ID
   policeStation: PoliceStation
 }
@@ -178,17 +177,6 @@ input CameraWhereInput {
   districtHasSuffix: String
   districtEqualFold: String
   districtContainsFold: String
-  """
-  last_ping field predicates
-  """
-  lastPing: Time
-  lastPingNEQ: Time
-  lastPingIn: [Time!]
-  lastPingNotIn: [Time!]
-  lastPingGT: Time
-  lastPingGTE: Time
-  lastPingLT: Time
-  lastPingLTE: Time
   """
   police_station edge predicates
   """
@@ -413,7 +401,6 @@ input CreateCameraInput {
   address: String
   isWorking: Boolean
   district: String
-  lastPing: Time!
   policeStationID: ID
 }
 """
@@ -1598,7 +1585,6 @@ input UpdateCameraInput {
   clearAddress: Boolean
   isWorking: Boolean
   district: String
-  lastPing: Time
   policeStationID: ID
   clearPoliceStation: Boolean
 }

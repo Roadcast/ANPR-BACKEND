@@ -22,7 +22,6 @@ var (
 		{Name: "address", Type: field.TypeString, Nullable: true},
 		{Name: "is_working", Type: field.TypeBool, Default: true},
 		{Name: "district", Type: field.TypeString, Default: "N/A"},
-		{Name: "last_ping", Type: field.TypeTime},
 		{Name: "police_station_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// CamerasTable holds the schema information for the "cameras" table.
@@ -33,7 +32,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cameras_police_stations_camera",
-				Columns:    []*schema.Column{CamerasColumns[12]},
+				Columns:    []*schema.Column{CamerasColumns[11]},
 				RefColumns: []*schema.Column{PoliceStationsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

@@ -56,7 +56,6 @@ type CameraMutation struct {
 	address               *string
 	is_working            *bool
 	district              *string
-	last_ping             *time.Time
 	clearedFields         map[string]struct{}
 	police_station        *uuid.UUID
 	clearedpolice_station bool
@@ -542,42 +541,6 @@ func (m *CameraMutation) ResetDistrict() {
 	m.district = nil
 }
 
-// SetLastPing sets the "last_ping" field.
-func (m *CameraMutation) SetLastPing(t time.Time) {
-	m.last_ping = &t
-}
-
-// LastPing returns the value of the "last_ping" field in the mutation.
-func (m *CameraMutation) LastPing() (r time.Time, exists bool) {
-	v := m.last_ping
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLastPing returns the old "last_ping" field's value of the Camera entity.
-// If the Camera object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CameraMutation) OldLastPing(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastPing is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastPing requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastPing: %w", err)
-	}
-	return oldValue.LastPing, nil
-}
-
-// ResetLastPing resets all changes to the "last_ping" field.
-func (m *CameraMutation) ResetLastPing() {
-	m.last_ping = nil
-}
-
 // SetPoliceStationID sets the "police_station_id" field.
 func (m *CameraMutation) SetPoliceStationID(u uuid.UUID) {
 	m.police_station = &u
@@ -688,7 +651,7 @@ func (m *CameraMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CameraMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, camera.FieldCreatedAt)
 	}
@@ -718,9 +681,6 @@ func (m *CameraMutation) Fields() []string {
 	}
 	if m.district != nil {
 		fields = append(fields, camera.FieldDistrict)
-	}
-	if m.last_ping != nil {
-		fields = append(fields, camera.FieldLastPing)
 	}
 	if m.police_station != nil {
 		fields = append(fields, camera.FieldPoliceStationID)
@@ -753,8 +713,6 @@ func (m *CameraMutation) Field(name string) (ent.Value, bool) {
 		return m.IsWorking()
 	case camera.FieldDistrict:
 		return m.District()
-	case camera.FieldLastPing:
-		return m.LastPing()
 	case camera.FieldPoliceStationID:
 		return m.PoliceStationID()
 	}
@@ -786,8 +744,6 @@ func (m *CameraMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldIsWorking(ctx)
 	case camera.FieldDistrict:
 		return m.OldDistrict(ctx)
-	case camera.FieldLastPing:
-		return m.OldLastPing(ctx)
 	case camera.FieldPoliceStationID:
 		return m.OldPoliceStationID(ctx)
 	}
@@ -868,13 +824,6 @@ func (m *CameraMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDistrict(v)
-		return nil
-	case camera.FieldLastPing:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLastPing(v)
 		return nil
 	case camera.FieldPoliceStationID:
 		v, ok := value.(uuid.UUID)
@@ -976,9 +925,6 @@ func (m *CameraMutation) ResetField(name string) error {
 		return nil
 	case camera.FieldDistrict:
 		m.ResetDistrict()
-		return nil
-	case camera.FieldLastPing:
-		m.ResetLastPing()
 		return nil
 	case camera.FieldPoliceStationID:
 		m.ResetPoliceStationID()
