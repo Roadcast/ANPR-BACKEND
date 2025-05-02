@@ -11,9 +11,9 @@ import (
 var (
 	// CamerasColumns holds the columns for the "cameras" table.
 	CamerasColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true, SchemaType: map[string]string{"postgres": "uuid"}},
-		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
-		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "id", Type: field.TypeUUID, Unique: true, Default: "uuid_generate_v4()", SchemaType: map[string]string{"postgres": "uuid"}},
+		{Name: "created_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP", SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "updated_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP", SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
 		{Name: "model", Type: field.TypeString},
 		{Name: "imei", Type: field.TypeString, Unique: true},
@@ -63,9 +63,9 @@ var (
 	}
 	// CarsColumns holds the columns for the "cars" table.
 	CarsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true, SchemaType: map[string]string{"postgres": "uuid"}},
-		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
-		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "id", Type: field.TypeUUID, Unique: true, Default: "uuid_generate_v4()", SchemaType: map[string]string{"postgres": "uuid"}},
+		{Name: "created_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP", SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "updated_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP", SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "make", Type: field.TypeString, Nullable: true},
 		{Name: "model", Type: field.TypeString, Nullable: true},
 		{Name: "year", Type: field.TypeInt, Nullable: true},
@@ -98,9 +98,9 @@ var (
 	}
 	// EventsColumns holds the columns for the "events" table.
 	EventsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true, SchemaType: map[string]string{"postgres": "uuid"}},
-		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
-		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "id", Type: field.TypeUUID, Unique: true, Default: "uuid_generate_v4()", SchemaType: map[string]string{"postgres": "uuid"}},
+		{Name: "created_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP", SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "updated_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP", SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "plate_bounding_box", Type: field.TypeJSON, Nullable: true},
 		{Name: "plate_channel", Type: field.TypeInt, Nullable: true},
 		{Name: "plate_confidence", Type: field.TypeInt, Nullable: true},
@@ -198,9 +198,9 @@ var (
 	}
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true, SchemaType: map[string]string{"postgres": "uuid"}},
-		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
-		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "id", Type: field.TypeUUID, Unique: true, Default: "uuid_generate_v4()", SchemaType: map[string]string{"postgres": "uuid"}},
+		{Name: "created_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP", SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "updated_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP", SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
 		{Name: "can_read", Type: field.TypeBool, Default: false},
 		{Name: "can_create", Type: field.TypeBool, Default: false},
@@ -231,9 +231,9 @@ var (
 	}
 	// PoliceStationsColumns holds the columns for the "police_stations" table.
 	PoliceStationsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true, SchemaType: map[string]string{"postgres": "uuid"}},
-		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
-		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "id", Type: field.TypeUUID, Unique: true, Default: "uuid_generate_v4()", SchemaType: map[string]string{"postgres": "uuid"}},
+		{Name: "created_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP", SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "updated_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP", SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
 		{Name: "location", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"postgres": "GEOMETRY(Point, 4326)"}},
 		{Name: "code", Type: field.TypeString, Unique: true},
@@ -274,9 +274,9 @@ var (
 	}
 	// RolesColumns holds the columns for the "roles" table.
 	RolesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true, SchemaType: map[string]string{"postgres": "uuid"}},
-		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
-		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "id", Type: field.TypeUUID, Unique: true, Default: "uuid_generate_v4()", SchemaType: map[string]string{"postgres": "uuid"}},
+		{Name: "created_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP", SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "updated_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP", SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
 	}
 	// RolesTable holds the schema information for the "roles" table.
@@ -294,9 +294,9 @@ var (
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true, SchemaType: map[string]string{"postgres": "uuid"}},
-		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
-		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "id", Type: field.TypeUUID, Unique: true, Default: "uuid_generate_v4()", SchemaType: map[string]string{"postgres": "uuid"}},
+		{Name: "created_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP", SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
+		{Name: "updated_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP", SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString},

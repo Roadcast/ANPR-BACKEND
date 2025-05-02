@@ -3,6 +3,7 @@ package base
 import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
@@ -26,7 +27,8 @@ func (BMixin) Fields() []ent.Field {
 				"postgres": "uuid",
 			}).
 			Annotations(entgql.Type("ID"),
-				entgql.Skip(entgql.SkipWhereInput)),
+				entgql.Skip(entgql.SkipWhereInput),
+				entsql.Default("uuid_generate_v4()")),
 
 		// CreatedAt timestamp
 		field.Time("created_at").
@@ -35,7 +37,10 @@ func (BMixin) Fields() []ent.Field {
 				"postgres": "timestamp with time zone", // PostgreSQL type
 			}).
 			Immutable().
-			Annotations(entgql.OrderField("CreatedAt")),
+			Annotations(entgql.OrderField("CreatedAt"),
+				entsql.Annotation{
+					Default: "CURRENT_TIMESTAMP", // this becomes DEFAULT CURRENT_TIMESTAMP
+				}),
 
 		// UpdatedAt timestamp
 		field.Time("updated_at").
@@ -45,7 +50,10 @@ func (BMixin) Fields() []ent.Field {
 				"postgres": "timestamp with time zone", // PostgreSQL type
 			}).
 			Annotations(entgql.OrderField("UpdatedAt"),
-				entgql.Skip(entgql.SkipWhereInput)),
+				entgql.Skip(entgql.SkipWhereInput),
+				entsql.Annotation{
+					Default: "CURRENT_TIMESTAMP", // this becomes DEFAULT CURRENT_TIMESTAMP
+				}),
 	}
 }
 
