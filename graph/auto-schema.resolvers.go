@@ -54,6 +54,11 @@ func (r *queryResolver) Cars(ctx context.Context, after *entgql.Cursor[uuid.UUID
 
 // Events is the resolver for the events field.
 func (r *queryResolver) Events(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.EventOrder, where *ent.EventWhereInput) (*ent.EventConnection, error) {
+	if first == nil && last == nil {
+		first = new(int)
+		*first = 100
+	}
+
 	pagination, err := r.Client.Event.Query().Paginate(ctx, after, first, before, last, ent.WithEventFilter(where.Filter), ent.WithEventOrder(orderBy))
 	if err != nil {
 		return nil, err

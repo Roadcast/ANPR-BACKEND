@@ -148,6 +148,11 @@ func (r *queryResolver) GetCar(ctx context.Context, id uuid.UUID) (*ent.Car, err
 // GetEvents is the resolver for the getEvents field.
 func (r *queryResolver) GetEvents(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.EventOrder, where *ent.EventWhereInput) (*model.EventList, error) {
 	fmt.Printf("where: %v\n", where)
+	if first == nil && last == nil {
+		first = new(int)
+		*first = 100
+	}
+
 	ctx = context.WithValue(ctx, constant.BypassPrivacyKey, true)
 	d := r.Client.Event.Query().AllX(ctx)
 	paginate, err := r.Client.Event.Query().Paginate(ctx, after, first, before, last, ent.WithEventFilter(where.Filter), ent.WithEventOrder(orderBy))
