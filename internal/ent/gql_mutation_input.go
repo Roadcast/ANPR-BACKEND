@@ -285,7 +285,7 @@ type CreateEventInput struct {
 	SnapInCarPeopleNum   *int
 	SnapLanNo            *int
 	SnapOpenStrobe       *bool
-	SnapSnapTime         *string
+	SnapTime             *string
 	SnapTimeZone         *int
 	VehicleSpeed         *int
 	VehicleBoundingBox   []int
@@ -359,8 +359,8 @@ func (i *CreateEventInput) Mutate(m *EventMutation) {
 	if v := i.SnapOpenStrobe; v != nil {
 		m.SetSnapOpenStrobe(*v)
 	}
-	if v := i.SnapSnapTime; v != nil {
-		m.SetSnapSnapTime(*v)
+	if v := i.SnapTime; v != nil {
+		m.SetSnapTime(*v)
 	}
 	if v := i.SnapTimeZone; v != nil {
 		m.SetSnapTimeZone(*v)
@@ -430,8 +430,8 @@ type UpdateEventInput struct {
 	SnapLanNo                 *int
 	ClearSnapOpenStrobe       bool
 	SnapOpenStrobe            *bool
-	ClearSnapSnapTime         bool
-	SnapSnapTime              *string
+	ClearSnapTime             bool
+	SnapTime                  *string
 	ClearSnapTimeZone         bool
 	SnapTimeZone              *int
 	ClearVehicleSpeed         bool
@@ -569,11 +569,11 @@ func (i *UpdateEventInput) Mutate(m *EventMutation) {
 	if v := i.SnapOpenStrobe; v != nil {
 		m.SetSnapOpenStrobe(*v)
 	}
-	if i.ClearSnapSnapTime {
-		m.ClearSnapSnapTime()
+	if i.ClearSnapTime {
+		m.ClearSnapTime()
 	}
-	if v := i.SnapSnapTime; v != nil {
-		m.SetSnapSnapTime(*v)
+	if v := i.SnapTime; v != nil {
+		m.SetSnapTime(*v)
 	}
 	if i.ClearSnapTimeZone {
 		m.ClearSnapTimeZone()

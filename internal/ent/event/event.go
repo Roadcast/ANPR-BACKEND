@@ -56,8 +56,8 @@ const (
 	FieldSnapLanNo = "snap_lan_no"
 	// FieldSnapOpenStrobe holds the string denoting the snap_open_strobe field in the database.
 	FieldSnapOpenStrobe = "snap_open_strobe"
-	// FieldSnapSnapTime holds the string denoting the snap_snap_time field in the database.
-	FieldSnapSnapTime = "snap_snap_time"
+	// FieldSnapTime holds the string denoting the snap_time field in the database.
+	FieldSnapTime = "snap_time"
 	// FieldSnapTimeZone holds the string denoting the snap_time_zone field in the database.
 	FieldSnapTimeZone = "snap_time_zone"
 	// FieldVehicleSpeed holds the string denoting the vehicle_speed field in the database.
@@ -98,7 +98,7 @@ var Columns = []string{
 	FieldSnapInCarPeopleNum,
 	FieldSnapLanNo,
 	FieldSnapOpenStrobe,
-	FieldSnapSnapTime,
+	FieldSnapTime,
 	FieldSnapTimeZone,
 	FieldVehicleSpeed,
 	FieldVehicleBoundingBox,
@@ -236,9 +236,9 @@ func BySnapOpenStrobe(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSnapOpenStrobe, opts...).ToFunc()
 }
 
-// BySnapSnapTime orders the results by the snap_snap_time field.
-func BySnapSnapTime(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSnapSnapTime, opts...).ToFunc()
+// BySnapTime orders the results by the snap_time field.
+func BySnapTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSnapTime, opts...).ToFunc()
 }
 
 // BySnapTimeZone orders the results by the snap_time_zone field.

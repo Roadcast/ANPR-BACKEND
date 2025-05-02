@@ -1254,22 +1254,22 @@ type EventWhereInput struct {
 	SnapOpenStrobeIsNil  bool  `json:"snapOpenStrobeIsNil,omitempty"`
 	SnapOpenStrobeNotNil bool  `json:"snapOpenStrobeNotNil,omitempty"`
 
-	// "snap_snap_time" field predicates.
-	SnapSnapTime             *string  `json:"snapSnapTime,omitempty"`
-	SnapSnapTimeNEQ          *string  `json:"snapSnapTimeNEQ,omitempty"`
-	SnapSnapTimeIn           []string `json:"snapSnapTimeIn,omitempty"`
-	SnapSnapTimeNotIn        []string `json:"snapSnapTimeNotIn,omitempty"`
-	SnapSnapTimeGT           *string  `json:"snapSnapTimeGT,omitempty"`
-	SnapSnapTimeGTE          *string  `json:"snapSnapTimeGTE,omitempty"`
-	SnapSnapTimeLT           *string  `json:"snapSnapTimeLT,omitempty"`
-	SnapSnapTimeLTE          *string  `json:"snapSnapTimeLTE,omitempty"`
-	SnapSnapTimeContains     *string  `json:"snapSnapTimeContains,omitempty"`
-	SnapSnapTimeHasPrefix    *string  `json:"snapSnapTimeHasPrefix,omitempty"`
-	SnapSnapTimeHasSuffix    *string  `json:"snapSnapTimeHasSuffix,omitempty"`
-	SnapSnapTimeIsNil        bool     `json:"snapSnapTimeIsNil,omitempty"`
-	SnapSnapTimeNotNil       bool     `json:"snapSnapTimeNotNil,omitempty"`
-	SnapSnapTimeEqualFold    *string  `json:"snapSnapTimeEqualFold,omitempty"`
-	SnapSnapTimeContainsFold *string  `json:"snapSnapTimeContainsFold,omitempty"`
+	// "snap_time" field predicates.
+	SnapTime             *string  `json:"snapTime,omitempty"`
+	SnapTimeNEQ          *string  `json:"snapTimeNEQ,omitempty"`
+	SnapTimeIn           []string `json:"snapTimeIn,omitempty"`
+	SnapTimeNotIn        []string `json:"snapTimeNotIn,omitempty"`
+	SnapTimeGT           *string  `json:"snapTimeGT,omitempty"`
+	SnapTimeGTE          *string  `json:"snapTimeGTE,omitempty"`
+	SnapTimeLT           *string  `json:"snapTimeLT,omitempty"`
+	SnapTimeLTE          *string  `json:"snapTimeLTE,omitempty"`
+	SnapTimeContains     *string  `json:"snapTimeContains,omitempty"`
+	SnapTimeHasPrefix    *string  `json:"snapTimeHasPrefix,omitempty"`
+	SnapTimeHasSuffix    *string  `json:"snapTimeHasSuffix,omitempty"`
+	SnapTimeIsNil        bool     `json:"snapTimeIsNil,omitempty"`
+	SnapTimeNotNil       bool     `json:"snapTimeNotNil,omitempty"`
+	SnapTimeEqualFold    *string  `json:"snapTimeEqualFold,omitempty"`
+	SnapTimeContainsFold *string  `json:"snapTimeContainsFold,omitempty"`
 
 	// "snap_time_zone" field predicates.
 	SnapTimeZone       *int  `json:"snapTimeZone,omitempty"`
@@ -2063,50 +2063,50 @@ func (i *EventWhereInput) P() (predicate.Event, error) {
 	if i.SnapOpenStrobeNotNil {
 		predicates = append(predicates, event.SnapOpenStrobeNotNil())
 	}
-	if i.SnapSnapTime != nil {
-		predicates = append(predicates, event.SnapSnapTimeEQ(*i.SnapSnapTime))
+	if i.SnapTime != nil {
+		predicates = append(predicates, event.SnapTimeEQ(*i.SnapTime))
 	}
-	if i.SnapSnapTimeNEQ != nil {
-		predicates = append(predicates, event.SnapSnapTimeNEQ(*i.SnapSnapTimeNEQ))
+	if i.SnapTimeNEQ != nil {
+		predicates = append(predicates, event.SnapTimeNEQ(*i.SnapTimeNEQ))
 	}
-	if len(i.SnapSnapTimeIn) > 0 {
-		predicates = append(predicates, event.SnapSnapTimeIn(i.SnapSnapTimeIn...))
+	if len(i.SnapTimeIn) > 0 {
+		predicates = append(predicates, event.SnapTimeIn(i.SnapTimeIn...))
 	}
-	if len(i.SnapSnapTimeNotIn) > 0 {
-		predicates = append(predicates, event.SnapSnapTimeNotIn(i.SnapSnapTimeNotIn...))
+	if len(i.SnapTimeNotIn) > 0 {
+		predicates = append(predicates, event.SnapTimeNotIn(i.SnapTimeNotIn...))
 	}
-	if i.SnapSnapTimeGT != nil {
-		predicates = append(predicates, event.SnapSnapTimeGT(*i.SnapSnapTimeGT))
+	if i.SnapTimeGT != nil {
+		predicates = append(predicates, event.SnapTimeGT(*i.SnapTimeGT))
 	}
-	if i.SnapSnapTimeGTE != nil {
-		predicates = append(predicates, event.SnapSnapTimeGTE(*i.SnapSnapTimeGTE))
+	if i.SnapTimeGTE != nil {
+		predicates = append(predicates, event.SnapTimeGTE(*i.SnapTimeGTE))
 	}
-	if i.SnapSnapTimeLT != nil {
-		predicates = append(predicates, event.SnapSnapTimeLT(*i.SnapSnapTimeLT))
+	if i.SnapTimeLT != nil {
+		predicates = append(predicates, event.SnapTimeLT(*i.SnapTimeLT))
 	}
-	if i.SnapSnapTimeLTE != nil {
-		predicates = append(predicates, event.SnapSnapTimeLTE(*i.SnapSnapTimeLTE))
+	if i.SnapTimeLTE != nil {
+		predicates = append(predicates, event.SnapTimeLTE(*i.SnapTimeLTE))
 	}
-	if i.SnapSnapTimeContains != nil {
-		predicates = append(predicates, event.SnapSnapTimeContains(*i.SnapSnapTimeContains))
+	if i.SnapTimeContains != nil {
+		predicates = append(predicates, event.SnapTimeContains(*i.SnapTimeContains))
 	}
-	if i.SnapSnapTimeHasPrefix != nil {
-		predicates = append(predicates, event.SnapSnapTimeHasPrefix(*i.SnapSnapTimeHasPrefix))
+	if i.SnapTimeHasPrefix != nil {
+		predicates = append(predicates, event.SnapTimeHasPrefix(*i.SnapTimeHasPrefix))
 	}
-	if i.SnapSnapTimeHasSuffix != nil {
-		predicates = append(predicates, event.SnapSnapTimeHasSuffix(*i.SnapSnapTimeHasSuffix))
+	if i.SnapTimeHasSuffix != nil {
+		predicates = append(predicates, event.SnapTimeHasSuffix(*i.SnapTimeHasSuffix))
 	}
-	if i.SnapSnapTimeIsNil {
-		predicates = append(predicates, event.SnapSnapTimeIsNil())
+	if i.SnapTimeIsNil {
+		predicates = append(predicates, event.SnapTimeIsNil())
 	}
-	if i.SnapSnapTimeNotNil {
-		predicates = append(predicates, event.SnapSnapTimeNotNil())
+	if i.SnapTimeNotNil {
+		predicates = append(predicates, event.SnapTimeNotNil())
 	}
-	if i.SnapSnapTimeEqualFold != nil {
-		predicates = append(predicates, event.SnapSnapTimeEqualFold(*i.SnapSnapTimeEqualFold))
+	if i.SnapTimeEqualFold != nil {
+		predicates = append(predicates, event.SnapTimeEqualFold(*i.SnapTimeEqualFold))
 	}
-	if i.SnapSnapTimeContainsFold != nil {
-		predicates = append(predicates, event.SnapSnapTimeContainsFold(*i.SnapSnapTimeContainsFold))
+	if i.SnapTimeContainsFold != nil {
+		predicates = append(predicates, event.SnapTimeContainsFold(*i.SnapTimeContainsFold))
 	}
 	if i.SnapTimeZone != nil {
 		predicates = append(predicates, event.SnapTimeZoneEQ(*i.SnapTimeZone))

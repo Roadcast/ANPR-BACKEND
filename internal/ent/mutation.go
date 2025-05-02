@@ -2086,7 +2086,7 @@ type EventMutation struct {
 	snap_lan_no                *int
 	addsnap_lan_no             *int
 	snap_open_strobe           *bool
-	snap_snap_time             *string
+	snap_time                  *string
 	snap_time_zone             *int
 	addsnap_time_zone          *int
 	vehicle_speed              *int
@@ -3351,53 +3351,53 @@ func (m *EventMutation) ResetSnapOpenStrobe() {
 	delete(m.clearedFields, event.FieldSnapOpenStrobe)
 }
 
-// SetSnapSnapTime sets the "snap_snap_time" field.
-func (m *EventMutation) SetSnapSnapTime(s string) {
-	m.snap_snap_time = &s
+// SetSnapTime sets the "snap_time" field.
+func (m *EventMutation) SetSnapTime(s string) {
+	m.snap_time = &s
 }
 
-// SnapSnapTime returns the value of the "snap_snap_time" field in the mutation.
-func (m *EventMutation) SnapSnapTime() (r string, exists bool) {
-	v := m.snap_snap_time
+// SnapTime returns the value of the "snap_time" field in the mutation.
+func (m *EventMutation) SnapTime() (r string, exists bool) {
+	v := m.snap_time
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldSnapSnapTime returns the old "snap_snap_time" field's value of the Event entity.
+// OldSnapTime returns the old "snap_time" field's value of the Event entity.
 // If the Event object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EventMutation) OldSnapSnapTime(ctx context.Context) (v string, err error) {
+func (m *EventMutation) OldSnapTime(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSnapSnapTime is only allowed on UpdateOne operations")
+		return v, errors.New("OldSnapTime is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSnapSnapTime requires an ID field in the mutation")
+		return v, errors.New("OldSnapTime requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSnapSnapTime: %w", err)
+		return v, fmt.Errorf("querying old value for OldSnapTime: %w", err)
 	}
-	return oldValue.SnapSnapTime, nil
+	return oldValue.SnapTime, nil
 }
 
-// ClearSnapSnapTime clears the value of the "snap_snap_time" field.
-func (m *EventMutation) ClearSnapSnapTime() {
-	m.snap_snap_time = nil
-	m.clearedFields[event.FieldSnapSnapTime] = struct{}{}
+// ClearSnapTime clears the value of the "snap_time" field.
+func (m *EventMutation) ClearSnapTime() {
+	m.snap_time = nil
+	m.clearedFields[event.FieldSnapTime] = struct{}{}
 }
 
-// SnapSnapTimeCleared returns if the "snap_snap_time" field was cleared in this mutation.
-func (m *EventMutation) SnapSnapTimeCleared() bool {
-	_, ok := m.clearedFields[event.FieldSnapSnapTime]
+// SnapTimeCleared returns if the "snap_time" field was cleared in this mutation.
+func (m *EventMutation) SnapTimeCleared() bool {
+	_, ok := m.clearedFields[event.FieldSnapTime]
 	return ok
 }
 
-// ResetSnapSnapTime resets all changes to the "snap_snap_time" field.
-func (m *EventMutation) ResetSnapSnapTime() {
-	m.snap_snap_time = nil
-	delete(m.clearedFields, event.FieldSnapSnapTime)
+// ResetSnapTime resets all changes to the "snap_time" field.
+func (m *EventMutation) ResetSnapTime() {
+	m.snap_time = nil
+	delete(m.clearedFields, event.FieldSnapTime)
 }
 
 // SetSnapTimeZone sets the "snap_time_zone" field.
@@ -3850,8 +3850,8 @@ func (m *EventMutation) Fields() []string {
 	if m.snap_open_strobe != nil {
 		fields = append(fields, event.FieldSnapOpenStrobe)
 	}
-	if m.snap_snap_time != nil {
-		fields = append(fields, event.FieldSnapSnapTime)
+	if m.snap_time != nil {
+		fields = append(fields, event.FieldSnapTime)
 	}
 	if m.snap_time_zone != nil {
 		fields = append(fields, event.FieldSnapTimeZone)
@@ -3921,8 +3921,8 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.SnapLanNo()
 	case event.FieldSnapOpenStrobe:
 		return m.SnapOpenStrobe()
-	case event.FieldSnapSnapTime:
-		return m.SnapSnapTime()
+	case event.FieldSnapTime:
+		return m.SnapTime()
 	case event.FieldSnapTimeZone:
 		return m.SnapTimeZone()
 	case event.FieldVehicleSpeed:
@@ -3986,8 +3986,8 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldSnapLanNo(ctx)
 	case event.FieldSnapOpenStrobe:
 		return m.OldSnapOpenStrobe(ctx)
-	case event.FieldSnapSnapTime:
-		return m.OldSnapSnapTime(ctx)
+	case event.FieldSnapTime:
+		return m.OldSnapTime(ctx)
 	case event.FieldSnapTimeZone:
 		return m.OldSnapTimeZone(ctx)
 	case event.FieldVehicleSpeed:
@@ -4156,12 +4156,12 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetSnapOpenStrobe(v)
 		return nil
-	case event.FieldSnapSnapTime:
+	case event.FieldSnapTime:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetSnapSnapTime(v)
+		m.SetSnapTime(v)
 		return nil
 	case event.FieldSnapTimeZone:
 		v, ok := value.(int)
@@ -4391,8 +4391,8 @@ func (m *EventMutation) ClearedFields() []string {
 	if m.FieldCleared(event.FieldSnapOpenStrobe) {
 		fields = append(fields, event.FieldSnapOpenStrobe)
 	}
-	if m.FieldCleared(event.FieldSnapSnapTime) {
-		fields = append(fields, event.FieldSnapSnapTime)
+	if m.FieldCleared(event.FieldSnapTime) {
+		fields = append(fields, event.FieldSnapTime)
 	}
 	if m.FieldCleared(event.FieldSnapTimeZone) {
 		fields = append(fields, event.FieldSnapTimeZone)
@@ -4483,8 +4483,8 @@ func (m *EventMutation) ClearField(name string) error {
 	case event.FieldSnapOpenStrobe:
 		m.ClearSnapOpenStrobe()
 		return nil
-	case event.FieldSnapSnapTime:
-		m.ClearSnapSnapTime()
+	case event.FieldSnapTime:
+		m.ClearSnapTime()
 		return nil
 	case event.FieldSnapTimeZone:
 		m.ClearSnapTimeZone()
@@ -4575,8 +4575,8 @@ func (m *EventMutation) ResetField(name string) error {
 	case event.FieldSnapOpenStrobe:
 		m.ResetSnapOpenStrobe()
 		return nil
-	case event.FieldSnapSnapTime:
-		m.ResetSnapSnapTime()
+	case event.FieldSnapTime:
+		m.ResetSnapTime()
 		return nil
 	case event.FieldSnapTimeZone:
 		m.ResetSnapTimeZone()

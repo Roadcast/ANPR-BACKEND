@@ -457,10 +457,10 @@ func (e *EventQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 				selectedFields = append(selectedFields, event.FieldSnapOpenStrobe)
 				fieldSeen[event.FieldSnapOpenStrobe] = struct{}{}
 			}
-		case "snapSnapTime":
-			if _, ok := fieldSeen[event.FieldSnapSnapTime]; !ok {
-				selectedFields = append(selectedFields, event.FieldSnapSnapTime)
-				fieldSeen[event.FieldSnapSnapTime] = struct{}{}
+		case "snapTime":
+			if _, ok := fieldSeen[event.FieldSnapTime]; !ok {
+				selectedFields = append(selectedFields, event.FieldSnapTime)
+				fieldSeen[event.FieldSnapTime] = struct{}{}
 			}
 		case "snapTimeZone":
 			if _, ok := fieldSeen[event.FieldSnapTimeZone]; !ok {

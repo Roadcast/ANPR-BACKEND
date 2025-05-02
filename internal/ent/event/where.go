@@ -155,9 +155,9 @@ func SnapOpenStrobe(v bool) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldSnapOpenStrobe, v))
 }
 
-// SnapSnapTime applies equality check predicate on the "snap_snap_time" field. It's identical to SnapSnapTimeEQ.
-func SnapSnapTime(v string) predicate.Event {
-	return predicate.Event(sql.FieldEQ(FieldSnapSnapTime, v))
+// SnapTime applies equality check predicate on the "snap_time" field. It's identical to SnapTimeEQ.
+func SnapTime(v string) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldSnapTime, v))
 }
 
 // SnapTimeZone applies equality check predicate on the "snap_time_zone" field. It's identical to SnapTimeZoneEQ.
@@ -1310,79 +1310,79 @@ func SnapOpenStrobeNotNil() predicate.Event {
 	return predicate.Event(sql.FieldNotNull(FieldSnapOpenStrobe))
 }
 
-// SnapSnapTimeEQ applies the EQ predicate on the "snap_snap_time" field.
-func SnapSnapTimeEQ(v string) predicate.Event {
-	return predicate.Event(sql.FieldEQ(FieldSnapSnapTime, v))
+// SnapTimeEQ applies the EQ predicate on the "snap_time" field.
+func SnapTimeEQ(v string) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldSnapTime, v))
 }
 
-// SnapSnapTimeNEQ applies the NEQ predicate on the "snap_snap_time" field.
-func SnapSnapTimeNEQ(v string) predicate.Event {
-	return predicate.Event(sql.FieldNEQ(FieldSnapSnapTime, v))
+// SnapTimeNEQ applies the NEQ predicate on the "snap_time" field.
+func SnapTimeNEQ(v string) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldSnapTime, v))
 }
 
-// SnapSnapTimeIn applies the In predicate on the "snap_snap_time" field.
-func SnapSnapTimeIn(vs ...string) predicate.Event {
-	return predicate.Event(sql.FieldIn(FieldSnapSnapTime, vs...))
+// SnapTimeIn applies the In predicate on the "snap_time" field.
+func SnapTimeIn(vs ...string) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldSnapTime, vs...))
 }
 
-// SnapSnapTimeNotIn applies the NotIn predicate on the "snap_snap_time" field.
-func SnapSnapTimeNotIn(vs ...string) predicate.Event {
-	return predicate.Event(sql.FieldNotIn(FieldSnapSnapTime, vs...))
+// SnapTimeNotIn applies the NotIn predicate on the "snap_time" field.
+func SnapTimeNotIn(vs ...string) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldSnapTime, vs...))
 }
 
-// SnapSnapTimeGT applies the GT predicate on the "snap_snap_time" field.
-func SnapSnapTimeGT(v string) predicate.Event {
-	return predicate.Event(sql.FieldGT(FieldSnapSnapTime, v))
+// SnapTimeGT applies the GT predicate on the "snap_time" field.
+func SnapTimeGT(v string) predicate.Event {
+	return predicate.Event(sql.FieldGT(FieldSnapTime, v))
 }
 
-// SnapSnapTimeGTE applies the GTE predicate on the "snap_snap_time" field.
-func SnapSnapTimeGTE(v string) predicate.Event {
-	return predicate.Event(sql.FieldGTE(FieldSnapSnapTime, v))
+// SnapTimeGTE applies the GTE predicate on the "snap_time" field.
+func SnapTimeGTE(v string) predicate.Event {
+	return predicate.Event(sql.FieldGTE(FieldSnapTime, v))
 }
 
-// SnapSnapTimeLT applies the LT predicate on the "snap_snap_time" field.
-func SnapSnapTimeLT(v string) predicate.Event {
-	return predicate.Event(sql.FieldLT(FieldSnapSnapTime, v))
+// SnapTimeLT applies the LT predicate on the "snap_time" field.
+func SnapTimeLT(v string) predicate.Event {
+	return predicate.Event(sql.FieldLT(FieldSnapTime, v))
 }
 
-// SnapSnapTimeLTE applies the LTE predicate on the "snap_snap_time" field.
-func SnapSnapTimeLTE(v string) predicate.Event {
-	return predicate.Event(sql.FieldLTE(FieldSnapSnapTime, v))
+// SnapTimeLTE applies the LTE predicate on the "snap_time" field.
+func SnapTimeLTE(v string) predicate.Event {
+	return predicate.Event(sql.FieldLTE(FieldSnapTime, v))
 }
 
-// SnapSnapTimeContains applies the Contains predicate on the "snap_snap_time" field.
-func SnapSnapTimeContains(v string) predicate.Event {
-	return predicate.Event(sql.FieldContains(FieldSnapSnapTime, v))
+// SnapTimeContains applies the Contains predicate on the "snap_time" field.
+func SnapTimeContains(v string) predicate.Event {
+	return predicate.Event(sql.FieldContains(FieldSnapTime, v))
 }
 
-// SnapSnapTimeHasPrefix applies the HasPrefix predicate on the "snap_snap_time" field.
-func SnapSnapTimeHasPrefix(v string) predicate.Event {
-	return predicate.Event(sql.FieldHasPrefix(FieldSnapSnapTime, v))
+// SnapTimeHasPrefix applies the HasPrefix predicate on the "snap_time" field.
+func SnapTimeHasPrefix(v string) predicate.Event {
+	return predicate.Event(sql.FieldHasPrefix(FieldSnapTime, v))
 }
 
-// SnapSnapTimeHasSuffix applies the HasSuffix predicate on the "snap_snap_time" field.
-func SnapSnapTimeHasSuffix(v string) predicate.Event {
-	return predicate.Event(sql.FieldHasSuffix(FieldSnapSnapTime, v))
+// SnapTimeHasSuffix applies the HasSuffix predicate on the "snap_time" field.
+func SnapTimeHasSuffix(v string) predicate.Event {
+	return predicate.Event(sql.FieldHasSuffix(FieldSnapTime, v))
 }
 
-// SnapSnapTimeIsNil applies the IsNil predicate on the "snap_snap_time" field.
-func SnapSnapTimeIsNil() predicate.Event {
-	return predicate.Event(sql.FieldIsNull(FieldSnapSnapTime))
+// SnapTimeIsNil applies the IsNil predicate on the "snap_time" field.
+func SnapTimeIsNil() predicate.Event {
+	return predicate.Event(sql.FieldIsNull(FieldSnapTime))
 }
 
-// SnapSnapTimeNotNil applies the NotNil predicate on the "snap_snap_time" field.
-func SnapSnapTimeNotNil() predicate.Event {
-	return predicate.Event(sql.FieldNotNull(FieldSnapSnapTime))
+// SnapTimeNotNil applies the NotNil predicate on the "snap_time" field.
+func SnapTimeNotNil() predicate.Event {
+	return predicate.Event(sql.FieldNotNull(FieldSnapTime))
 }
 
-// SnapSnapTimeEqualFold applies the EqualFold predicate on the "snap_snap_time" field.
-func SnapSnapTimeEqualFold(v string) predicate.Event {
-	return predicate.Event(sql.FieldEqualFold(FieldSnapSnapTime, v))
+// SnapTimeEqualFold applies the EqualFold predicate on the "snap_time" field.
+func SnapTimeEqualFold(v string) predicate.Event {
+	return predicate.Event(sql.FieldEqualFold(FieldSnapTime, v))
 }
 
-// SnapSnapTimeContainsFold applies the ContainsFold predicate on the "snap_snap_time" field.
-func SnapSnapTimeContainsFold(v string) predicate.Event {
-	return predicate.Event(sql.FieldContainsFold(FieldSnapSnapTime, v))
+// SnapTimeContainsFold applies the ContainsFold predicate on the "snap_time" field.
+func SnapTimeContainsFold(v string) predicate.Event {
+	return predicate.Event(sql.FieldContainsFold(FieldSnapTime, v))
 }
 
 // SnapTimeZoneEQ applies the EQ predicate on the "snap_time_zone" field.

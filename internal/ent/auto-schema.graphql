@@ -505,7 +505,7 @@ input CreateEventInput {
   """
   Snap timestamp
   """
-  snapSnapTime: String
+  snapTime: String
   """
   Time zone of the snap
   """
@@ -675,7 +675,7 @@ type Event implements Node {
   """
   Snap timestamp
   """
-  snapSnapTime: String
+  snapTime: String
   """
   Time zone of the snap
   """
@@ -1032,23 +1032,23 @@ input EventWhereInput {
   snapOpenStrobeIsNil: Boolean
   snapOpenStrobeNotNil: Boolean
   """
-  snap_snap_time field predicates
+  snap_time field predicates
   """
-  snapSnapTime: String
-  snapSnapTimeNEQ: String
-  snapSnapTimeIn: [String!]
-  snapSnapTimeNotIn: [String!]
-  snapSnapTimeGT: String
-  snapSnapTimeGTE: String
-  snapSnapTimeLT: String
-  snapSnapTimeLTE: String
-  snapSnapTimeContains: String
-  snapSnapTimeHasPrefix: String
-  snapSnapTimeHasSuffix: String
-  snapSnapTimeIsNil: Boolean
-  snapSnapTimeNotNil: Boolean
-  snapSnapTimeEqualFold: String
-  snapSnapTimeContainsFold: String
+  snapTime: String
+  snapTimeNEQ: String
+  snapTimeIn: [String!]
+  snapTimeNotIn: [String!]
+  snapTimeGT: String
+  snapTimeGTE: String
+  snapTimeLT: String
+  snapTimeLTE: String
+  snapTimeContains: String
+  snapTimeHasPrefix: String
+  snapTimeHasSuffix: String
+  snapTimeIsNil: Boolean
+  snapTimeNotNil: Boolean
+  snapTimeEqualFold: String
+  snapTimeContainsFold: String
   """
   snap_time_zone field predicates
   """
@@ -1929,8 +1929,8 @@ input UpdateEventInput {
   """
   Snap timestamp
   """
-  snapSnapTime: String
-  clearSnapSnapTime: Boolean
+  snapTime: String
+  clearSnapTime: Boolean
   """
   Time zone of the snap
   """

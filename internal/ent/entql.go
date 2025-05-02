@@ -100,7 +100,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			event.FieldSnapInCarPeopleNum:   {Type: field.TypeInt, Column: event.FieldSnapInCarPeopleNum},
 			event.FieldSnapLanNo:            {Type: field.TypeInt, Column: event.FieldSnapLanNo},
 			event.FieldSnapOpenStrobe:       {Type: field.TypeBool, Column: event.FieldSnapOpenStrobe},
-			event.FieldSnapSnapTime:         {Type: field.TypeString, Column: event.FieldSnapSnapTime},
+			event.FieldSnapTime:             {Type: field.TypeString, Column: event.FieldSnapTime},
 			event.FieldSnapTimeZone:         {Type: field.TypeInt, Column: event.FieldSnapTimeZone},
 			event.FieldVehicleSpeed:         {Type: field.TypeInt, Column: event.FieldVehicleSpeed},
 			event.FieldVehicleBoundingBox:   {Type: field.TypeJSON, Column: event.FieldVehicleBoundingBox},
@@ -686,9 +686,9 @@ func (f *EventFilter) WhereSnapOpenStrobe(p entql.BoolP) {
 	f.Where(p.Field(event.FieldSnapOpenStrobe))
 }
 
-// WhereSnapSnapTime applies the entql string predicate on the snap_snap_time field.
-func (f *EventFilter) WhereSnapSnapTime(p entql.StringP) {
-	f.Where(p.Field(event.FieldSnapSnapTime))
+// WhereSnapTime applies the entql string predicate on the snap_time field.
+func (f *EventFilter) WhereSnapTime(p entql.StringP) {
+	f.Where(p.Field(event.FieldSnapTime))
 }
 
 // WhereSnapTimeZone applies the entql int predicate on the snap_time_zone field.

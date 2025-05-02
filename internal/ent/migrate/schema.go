@@ -120,7 +120,7 @@ var (
 		{Name: "snap_in_car_people_num", Type: field.TypeInt, Nullable: true},
 		{Name: "snap_lan_no", Type: field.TypeInt, Nullable: true},
 		{Name: "snap_open_strobe", Type: field.TypeBool, Nullable: true},
-		{Name: "snap_snap_time", Type: field.TypeString, Nullable: true},
+		{Name: "snap_time", Type: field.TypeString, Nullable: true},
 		{Name: "snap_time_zone", Type: field.TypeInt, Nullable: true},
 		{Name: "vehicle_speed", Type: field.TypeInt, Nullable: true},
 		{Name: "vehicle_bounding_box", Type: field.TypeJSON, Nullable: true},

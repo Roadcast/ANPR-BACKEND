@@ -62,7 +62,7 @@ type Event struct {
 	// Indicates if strobe is open
 	SnapOpenStrobe bool `json:"snap_open_strobe,omitempty"`
 	// Snap timestamp
-	SnapSnapTime string `json:"snap_snap_time,omitempty"`
+	SnapTime string `json:"snap_time,omitempty"`
 	// Time zone of the snap
 	SnapTimeZone int `json:"snap_time_zone,omitempty"`
 	// Speed of the vehicle
@@ -89,7 +89,7 @@ func (*Event) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case event.FieldPlateChannel, event.FieldPlateConfidence, event.FieldPlateUploadNum, event.FieldSnapDstTune, event.FieldSnapInCarPeopleNum, event.FieldSnapLanNo, event.FieldSnapTimeZone, event.FieldVehicleSpeed:
 			values[i] = new(sql.NullInt64)
-		case event.FieldPlateColor, event.FieldPlateNumber, event.FieldPlateType, event.FieldPlateRegion, event.FieldSnapAccurateTime, event.FieldSnapAllowUserEndTime, event.FieldSnapDefenceCode, event.FieldSnapDeviceID, event.FieldSnapDirection, event.FieldSnapSnapTime, event.FieldVehicleColor, event.FieldVehicleSeries, event.FieldVehicleType:
+		case event.FieldPlateColor, event.FieldPlateNumber, event.FieldPlateType, event.FieldPlateRegion, event.FieldSnapAccurateTime, event.FieldSnapAllowUserEndTime, event.FieldSnapDefenceCode, event.FieldSnapDeviceID, event.FieldSnapDirection, event.FieldSnapTime, event.FieldVehicleColor, event.FieldVehicleSeries, event.FieldVehicleType:
 			values[i] = new(sql.NullString)
 		case event.FieldCreatedAt, event.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -244,11 +244,11 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.SnapOpenStrobe = value.Bool
 			}
-		case event.FieldSnapSnapTime:
+		case event.FieldSnapTime:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field snap_snap_time", values[i])
+				return fmt.Errorf("unexpected type %T for field snap_time", values[i])
 			} else if value.Valid {
-				e.SnapSnapTime = value.String
+				e.SnapTime = value.String
 			}
 		case event.FieldSnapTimeZone:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -387,8 +387,8 @@ func (e *Event) String() string {
 	builder.WriteString("snap_open_strobe=")
 	builder.WriteString(fmt.Sprintf("%v", e.SnapOpenStrobe))
 	builder.WriteString(", ")
-	builder.WriteString("snap_snap_time=")
-	builder.WriteString(e.SnapSnapTime)
+	builder.WriteString("snap_time=")
+	builder.WriteString(e.SnapTime)
 	builder.WriteString(", ")
 	builder.WriteString("snap_time_zone=")
 	builder.WriteString(fmt.Sprintf("%v", e.SnapTimeZone))

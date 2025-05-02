@@ -455,23 +455,23 @@ func (eu *EventUpdate) ClearSnapOpenStrobe() *EventUpdate {
 	return eu
 }
 
-// SetSnapSnapTime sets the "snap_snap_time" field.
-func (eu *EventUpdate) SetSnapSnapTime(s string) *EventUpdate {
-	eu.mutation.SetSnapSnapTime(s)
+// SetSnapTime sets the "snap_time" field.
+func (eu *EventUpdate) SetSnapTime(s string) *EventUpdate {
+	eu.mutation.SetSnapTime(s)
 	return eu
 }
 
-// SetNillableSnapSnapTime sets the "snap_snap_time" field if the given value is not nil.
-func (eu *EventUpdate) SetNillableSnapSnapTime(s *string) *EventUpdate {
+// SetNillableSnapTime sets the "snap_time" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableSnapTime(s *string) *EventUpdate {
 	if s != nil {
-		eu.SetSnapSnapTime(*s)
+		eu.SetSnapTime(*s)
 	}
 	return eu
 }
 
-// ClearSnapSnapTime clears the value of the "snap_snap_time" field.
-func (eu *EventUpdate) ClearSnapSnapTime() *EventUpdate {
-	eu.mutation.ClearSnapSnapTime()
+// ClearSnapTime clears the value of the "snap_time" field.
+func (eu *EventUpdate) ClearSnapTime() *EventUpdate {
+	eu.mutation.ClearSnapTime()
 	return eu
 }
 
@@ -797,11 +797,11 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if eu.mutation.SnapOpenStrobeCleared() {
 		_spec.ClearField(event.FieldSnapOpenStrobe, field.TypeBool)
 	}
-	if value, ok := eu.mutation.SnapSnapTime(); ok {
-		_spec.SetField(event.FieldSnapSnapTime, field.TypeString, value)
+	if value, ok := eu.mutation.SnapTime(); ok {
+		_spec.SetField(event.FieldSnapTime, field.TypeString, value)
 	}
-	if eu.mutation.SnapSnapTimeCleared() {
-		_spec.ClearField(event.FieldSnapSnapTime, field.TypeString)
+	if eu.mutation.SnapTimeCleared() {
+		_spec.ClearField(event.FieldSnapTime, field.TypeString)
 	}
 	if value, ok := eu.mutation.SnapTimeZone(); ok {
 		_spec.SetField(event.FieldSnapTimeZone, field.TypeInt, value)
@@ -1296,23 +1296,23 @@ func (euo *EventUpdateOne) ClearSnapOpenStrobe() *EventUpdateOne {
 	return euo
 }
 
-// SetSnapSnapTime sets the "snap_snap_time" field.
-func (euo *EventUpdateOne) SetSnapSnapTime(s string) *EventUpdateOne {
-	euo.mutation.SetSnapSnapTime(s)
+// SetSnapTime sets the "snap_time" field.
+func (euo *EventUpdateOne) SetSnapTime(s string) *EventUpdateOne {
+	euo.mutation.SetSnapTime(s)
 	return euo
 }
 
-// SetNillableSnapSnapTime sets the "snap_snap_time" field if the given value is not nil.
-func (euo *EventUpdateOne) SetNillableSnapSnapTime(s *string) *EventUpdateOne {
+// SetNillableSnapTime sets the "snap_time" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableSnapTime(s *string) *EventUpdateOne {
 	if s != nil {
-		euo.SetSnapSnapTime(*s)
+		euo.SetSnapTime(*s)
 	}
 	return euo
 }
 
-// ClearSnapSnapTime clears the value of the "snap_snap_time" field.
-func (euo *EventUpdateOne) ClearSnapSnapTime() *EventUpdateOne {
-	euo.mutation.ClearSnapSnapTime()
+// ClearSnapTime clears the value of the "snap_time" field.
+func (euo *EventUpdateOne) ClearSnapTime() *EventUpdateOne {
+	euo.mutation.ClearSnapTime()
 	return euo
 }
 
@@ -1668,11 +1668,11 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	if euo.mutation.SnapOpenStrobeCleared() {
 		_spec.ClearField(event.FieldSnapOpenStrobe, field.TypeBool)
 	}
-	if value, ok := euo.mutation.SnapSnapTime(); ok {
-		_spec.SetField(event.FieldSnapSnapTime, field.TypeString, value)
+	if value, ok := euo.mutation.SnapTime(); ok {
+		_spec.SetField(event.FieldSnapTime, field.TypeString, value)
 	}
-	if euo.mutation.SnapSnapTimeCleared() {
-		_spec.ClearField(event.FieldSnapSnapTime, field.TypeString)
+	if euo.mutation.SnapTimeCleared() {
+		_spec.ClearField(event.FieldSnapTime, field.TypeString)
 	}
 	if value, ok := euo.mutation.SnapTimeZone(); ok {
 		_spec.SetField(event.FieldSnapTimeZone, field.TypeInt, value)

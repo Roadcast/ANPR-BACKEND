@@ -310,16 +310,16 @@ func (ec *EventCreate) SetNillableSnapOpenStrobe(b *bool) *EventCreate {
 	return ec
 }
 
-// SetSnapSnapTime sets the "snap_snap_time" field.
-func (ec *EventCreate) SetSnapSnapTime(s string) *EventCreate {
-	ec.mutation.SetSnapSnapTime(s)
+// SetSnapTime sets the "snap_time" field.
+func (ec *EventCreate) SetSnapTime(s string) *EventCreate {
+	ec.mutation.SetSnapTime(s)
 	return ec
 }
 
-// SetNillableSnapSnapTime sets the "snap_snap_time" field if the given value is not nil.
-func (ec *EventCreate) SetNillableSnapSnapTime(s *string) *EventCreate {
+// SetNillableSnapTime sets the "snap_time" field if the given value is not nil.
+func (ec *EventCreate) SetNillableSnapTime(s *string) *EventCreate {
 	if s != nil {
-		ec.SetSnapSnapTime(*s)
+		ec.SetSnapTime(*s)
 	}
 	return ec
 }
@@ -591,9 +591,9 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		_spec.SetField(event.FieldSnapOpenStrobe, field.TypeBool, value)
 		_node.SnapOpenStrobe = value
 	}
-	if value, ok := ec.mutation.SnapSnapTime(); ok {
-		_spec.SetField(event.FieldSnapSnapTime, field.TypeString, value)
-		_node.SnapSnapTime = value
+	if value, ok := ec.mutation.SnapTime(); ok {
+		_spec.SetField(event.FieldSnapTime, field.TypeString, value)
+		_node.SnapTime = value
 	}
 	if value, ok := ec.mutation.SnapTimeZone(); ok {
 		_spec.SetField(event.FieldSnapTimeZone, field.TypeInt, value)
@@ -1061,21 +1061,21 @@ func (u *EventUpsert) ClearSnapOpenStrobe() *EventUpsert {
 	return u
 }
 
-// SetSnapSnapTime sets the "snap_snap_time" field.
-func (u *EventUpsert) SetSnapSnapTime(v string) *EventUpsert {
-	u.Set(event.FieldSnapSnapTime, v)
+// SetSnapTime sets the "snap_time" field.
+func (u *EventUpsert) SetSnapTime(v string) *EventUpsert {
+	u.Set(event.FieldSnapTime, v)
 	return u
 }
 
-// UpdateSnapSnapTime sets the "snap_snap_time" field to the value that was provided on create.
-func (u *EventUpsert) UpdateSnapSnapTime() *EventUpsert {
-	u.SetExcluded(event.FieldSnapSnapTime)
+// UpdateSnapTime sets the "snap_time" field to the value that was provided on create.
+func (u *EventUpsert) UpdateSnapTime() *EventUpsert {
+	u.SetExcluded(event.FieldSnapTime)
 	return u
 }
 
-// ClearSnapSnapTime clears the value of the "snap_snap_time" field.
-func (u *EventUpsert) ClearSnapSnapTime() *EventUpsert {
-	u.SetNull(event.FieldSnapSnapTime)
+// ClearSnapTime clears the value of the "snap_time" field.
+func (u *EventUpsert) ClearSnapTime() *EventUpsert {
+	u.SetNull(event.FieldSnapTime)
 	return u
 }
 
@@ -1705,24 +1705,24 @@ func (u *EventUpsertOne) ClearSnapOpenStrobe() *EventUpsertOne {
 	})
 }
 
-// SetSnapSnapTime sets the "snap_snap_time" field.
-func (u *EventUpsertOne) SetSnapSnapTime(v string) *EventUpsertOne {
+// SetSnapTime sets the "snap_time" field.
+func (u *EventUpsertOne) SetSnapTime(v string) *EventUpsertOne {
 	return u.Update(func(s *EventUpsert) {
-		s.SetSnapSnapTime(v)
+		s.SetSnapTime(v)
 	})
 }
 
-// UpdateSnapSnapTime sets the "snap_snap_time" field to the value that was provided on create.
-func (u *EventUpsertOne) UpdateSnapSnapTime() *EventUpsertOne {
+// UpdateSnapTime sets the "snap_time" field to the value that was provided on create.
+func (u *EventUpsertOne) UpdateSnapTime() *EventUpsertOne {
 	return u.Update(func(s *EventUpsert) {
-		s.UpdateSnapSnapTime()
+		s.UpdateSnapTime()
 	})
 }
 
-// ClearSnapSnapTime clears the value of the "snap_snap_time" field.
-func (u *EventUpsertOne) ClearSnapSnapTime() *EventUpsertOne {
+// ClearSnapTime clears the value of the "snap_time" field.
+func (u *EventUpsertOne) ClearSnapTime() *EventUpsertOne {
 	return u.Update(func(s *EventUpsert) {
-		s.ClearSnapSnapTime()
+		s.ClearSnapTime()
 	})
 }
 
@@ -2539,24 +2539,24 @@ func (u *EventUpsertBulk) ClearSnapOpenStrobe() *EventUpsertBulk {
 	})
 }
 
-// SetSnapSnapTime sets the "snap_snap_time" field.
-func (u *EventUpsertBulk) SetSnapSnapTime(v string) *EventUpsertBulk {
+// SetSnapTime sets the "snap_time" field.
+func (u *EventUpsertBulk) SetSnapTime(v string) *EventUpsertBulk {
 	return u.Update(func(s *EventUpsert) {
-		s.SetSnapSnapTime(v)
+		s.SetSnapTime(v)
 	})
 }
 
-// UpdateSnapSnapTime sets the "snap_snap_time" field to the value that was provided on create.
-func (u *EventUpsertBulk) UpdateSnapSnapTime() *EventUpsertBulk {
+// UpdateSnapTime sets the "snap_time" field to the value that was provided on create.
+func (u *EventUpsertBulk) UpdateSnapTime() *EventUpsertBulk {
 	return u.Update(func(s *EventUpsert) {
-		s.UpdateSnapSnapTime()
+		s.UpdateSnapTime()
 	})
 }
 
-// ClearSnapSnapTime clears the value of the "snap_snap_time" field.
-func (u *EventUpsertBulk) ClearSnapSnapTime() *EventUpsertBulk {
+// ClearSnapTime clears the value of the "snap_time" field.
+func (u *EventUpsertBulk) ClearSnapTime() *EventUpsertBulk {
 	return u.Update(func(s *EventUpsert) {
-		s.ClearSnapSnapTime()
+		s.ClearSnapTime()
 	})
 }
 
