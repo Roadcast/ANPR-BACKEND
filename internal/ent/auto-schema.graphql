@@ -435,6 +435,10 @@ input CreateEventInput {
   """
   plateChannel: Int
   """
+  Confidence score of the plate detection
+  """
+  plateConfidence: Int
+  """
   Indicates whether the plate exists
   """
   plateIsExist: Boolean
@@ -459,6 +463,10 @@ input CreateEventInput {
   """
   plateUploadNum: Int
   """
+  Accurate timestamp of the snap
+  """
+  snapAccurateTime: String
+  """
   Indicates if user interaction is allowed
   """
   snapAllowUser: Boolean
@@ -467,6 +475,10 @@ input CreateEventInput {
   """
   snapAllowUserEndTime: String
   """
+  DST adjustment
+  """
+  snapDstTune: Int
+  """
   Defence code
   """
   snapDefenceCode: String
@@ -474,6 +486,10 @@ input CreateEventInput {
   Device ID
   """
   snapDeviceID: String
+  """
+  Direction of the vehicle
+  """
+  snapDirection: String
   """
   Number of people in the car
   """
@@ -487,13 +503,33 @@ input CreateEventInput {
   """
   snapOpenStrobe: Boolean
   """
+  Snap timestamp
+  """
+  snapSnapTime: String
+  """
+  Time zone of the snap
+  """
+  snapTimeZone: Int
+  """
+  Speed of the vehicle
+  """
+  vehicleSpeed: Int
+  """
   Bounding box coordinates of the vehicle
   """
   vehicleBoundingBox: [Int!]
   """
+  Color of the vehicle
+  """
+  vehicleColor: String
+  """
   Vehicle series
   """
   vehicleSeries: String
+  """
+  Type of the vehicle
+  """
+  vehicleType: String
 }
 """
 CreatePermissionInput is used for create Permission object.
@@ -569,6 +605,10 @@ type Event implements Node {
   """
   plateChannel: Int
   """
+  Confidence score of the plate detection
+  """
+  plateConfidence: Int
+  """
   Indicates whether the plate exists
   """
   plateIsExist: Boolean
@@ -593,6 +633,10 @@ type Event implements Node {
   """
   plateUploadNum: Int
   """
+  Accurate timestamp of the snap
+  """
+  snapAccurateTime: String
+  """
   Indicates if user interaction is allowed
   """
   snapAllowUser: Boolean
@@ -601,6 +645,10 @@ type Event implements Node {
   """
   snapAllowUserEndTime: String
   """
+  DST adjustment
+  """
+  snapDstTune: Int
+  """
   Defence code
   """
   snapDefenceCode: String
@@ -608,6 +656,10 @@ type Event implements Node {
   Device ID
   """
   snapDeviceID: String
+  """
+  Direction of the vehicle
+  """
+  snapDirection: String
   """
   Number of people in the car
   """
@@ -621,13 +673,33 @@ type Event implements Node {
   """
   snapOpenStrobe: Boolean
   """
+  Snap timestamp
+  """
+  snapSnapTime: String
+  """
+  Time zone of the snap
+  """
+  snapTimeZone: Int
+  """
+  Speed of the vehicle
+  """
+  vehicleSpeed: Int
+  """
   Bounding box coordinates of the vehicle
   """
   vehicleBoundingBox: [Int!]
   """
+  Color of the vehicle
+  """
+  vehicleColor: String
+  """
   Vehicle series
   """
   vehicleSeries: String
+  """
+  Type of the vehicle
+  """
+  vehicleType: String
 }
 """
 A connection to a list of items.
@@ -711,6 +783,19 @@ input EventWhereInput {
   plateChannelLTE: Int
   plateChannelIsNil: Boolean
   plateChannelNotNil: Boolean
+  """
+  plate_confidence field predicates
+  """
+  plateConfidence: Int
+  plateConfidenceNEQ: Int
+  plateConfidenceIn: [Int!]
+  plateConfidenceNotIn: [Int!]
+  plateConfidenceGT: Int
+  plateConfidenceGTE: Int
+  plateConfidenceLT: Int
+  plateConfidenceLTE: Int
+  plateConfidenceIsNil: Boolean
+  plateConfidenceNotNil: Boolean
   """
   plate_is_exist field predicates
   """
@@ -804,6 +889,24 @@ input EventWhereInput {
   plateUploadNumIsNil: Boolean
   plateUploadNumNotNil: Boolean
   """
+  snap_accurate_time field predicates
+  """
+  snapAccurateTime: String
+  snapAccurateTimeNEQ: String
+  snapAccurateTimeIn: [String!]
+  snapAccurateTimeNotIn: [String!]
+  snapAccurateTimeGT: String
+  snapAccurateTimeGTE: String
+  snapAccurateTimeLT: String
+  snapAccurateTimeLTE: String
+  snapAccurateTimeContains: String
+  snapAccurateTimeHasPrefix: String
+  snapAccurateTimeHasSuffix: String
+  snapAccurateTimeIsNil: Boolean
+  snapAccurateTimeNotNil: Boolean
+  snapAccurateTimeEqualFold: String
+  snapAccurateTimeContainsFold: String
+  """
   snap_allow_user field predicates
   """
   snapAllowUser: Boolean
@@ -828,6 +931,19 @@ input EventWhereInput {
   snapAllowUserEndTimeNotNil: Boolean
   snapAllowUserEndTimeEqualFold: String
   snapAllowUserEndTimeContainsFold: String
+  """
+  snap_dst_tune field predicates
+  """
+  snapDstTune: Int
+  snapDstTuneNEQ: Int
+  snapDstTuneIn: [Int!]
+  snapDstTuneNotIn: [Int!]
+  snapDstTuneGT: Int
+  snapDstTuneGTE: Int
+  snapDstTuneLT: Int
+  snapDstTuneLTE: Int
+  snapDstTuneIsNil: Boolean
+  snapDstTuneNotNil: Boolean
   """
   snap_defence_code field predicates
   """
@@ -865,6 +981,24 @@ input EventWhereInput {
   snapDeviceIDEqualFold: String
   snapDeviceIDContainsFold: String
   """
+  snap_direction field predicates
+  """
+  snapDirection: String
+  snapDirectionNEQ: String
+  snapDirectionIn: [String!]
+  snapDirectionNotIn: [String!]
+  snapDirectionGT: String
+  snapDirectionGTE: String
+  snapDirectionLT: String
+  snapDirectionLTE: String
+  snapDirectionContains: String
+  snapDirectionHasPrefix: String
+  snapDirectionHasSuffix: String
+  snapDirectionIsNil: Boolean
+  snapDirectionNotNil: Boolean
+  snapDirectionEqualFold: String
+  snapDirectionContainsFold: String
+  """
   snap_in_car_people_num field predicates
   """
   snapInCarPeopleNum: Int
@@ -898,6 +1032,68 @@ input EventWhereInput {
   snapOpenStrobeIsNil: Boolean
   snapOpenStrobeNotNil: Boolean
   """
+  snap_snap_time field predicates
+  """
+  snapSnapTime: String
+  snapSnapTimeNEQ: String
+  snapSnapTimeIn: [String!]
+  snapSnapTimeNotIn: [String!]
+  snapSnapTimeGT: String
+  snapSnapTimeGTE: String
+  snapSnapTimeLT: String
+  snapSnapTimeLTE: String
+  snapSnapTimeContains: String
+  snapSnapTimeHasPrefix: String
+  snapSnapTimeHasSuffix: String
+  snapSnapTimeIsNil: Boolean
+  snapSnapTimeNotNil: Boolean
+  snapSnapTimeEqualFold: String
+  snapSnapTimeContainsFold: String
+  """
+  snap_time_zone field predicates
+  """
+  snapTimeZone: Int
+  snapTimeZoneNEQ: Int
+  snapTimeZoneIn: [Int!]
+  snapTimeZoneNotIn: [Int!]
+  snapTimeZoneGT: Int
+  snapTimeZoneGTE: Int
+  snapTimeZoneLT: Int
+  snapTimeZoneLTE: Int
+  snapTimeZoneIsNil: Boolean
+  snapTimeZoneNotNil: Boolean
+  """
+  vehicle_speed field predicates
+  """
+  vehicleSpeed: Int
+  vehicleSpeedNEQ: Int
+  vehicleSpeedIn: [Int!]
+  vehicleSpeedNotIn: [Int!]
+  vehicleSpeedGT: Int
+  vehicleSpeedGTE: Int
+  vehicleSpeedLT: Int
+  vehicleSpeedLTE: Int
+  vehicleSpeedIsNil: Boolean
+  vehicleSpeedNotNil: Boolean
+  """
+  vehicle_color field predicates
+  """
+  vehicleColor: String
+  vehicleColorNEQ: String
+  vehicleColorIn: [String!]
+  vehicleColorNotIn: [String!]
+  vehicleColorGT: String
+  vehicleColorGTE: String
+  vehicleColorLT: String
+  vehicleColorLTE: String
+  vehicleColorContains: String
+  vehicleColorHasPrefix: String
+  vehicleColorHasSuffix: String
+  vehicleColorIsNil: Boolean
+  vehicleColorNotNil: Boolean
+  vehicleColorEqualFold: String
+  vehicleColorContainsFold: String
+  """
   vehicle_series field predicates
   """
   vehicleSeries: String
@@ -915,6 +1111,24 @@ input EventWhereInput {
   vehicleSeriesNotNil: Boolean
   vehicleSeriesEqualFold: String
   vehicleSeriesContainsFold: String
+  """
+  vehicle_type field predicates
+  """
+  vehicleType: String
+  vehicleTypeNEQ: String
+  vehicleTypeIn: [String!]
+  vehicleTypeNotIn: [String!]
+  vehicleTypeGT: String
+  vehicleTypeGTE: String
+  vehicleTypeLT: String
+  vehicleTypeLTE: String
+  vehicleTypeContains: String
+  vehicleTypeHasPrefix: String
+  vehicleTypeHasSuffix: String
+  vehicleTypeIsNil: Boolean
+  vehicleTypeNotNil: Boolean
+  vehicleTypeEqualFold: String
+  vehicleTypeContainsFold: String
 }
 """
 An object with an ID.
@@ -1628,6 +1842,11 @@ input UpdateEventInput {
   plateChannel: Int
   clearPlateChannel: Boolean
   """
+  Confidence score of the plate detection
+  """
+  plateConfidence: Int
+  clearPlateConfidence: Boolean
+  """
   Indicates whether the plate exists
   """
   plateIsExist: Boolean
@@ -1658,6 +1877,11 @@ input UpdateEventInput {
   plateUploadNum: Int
   clearPlateUploadNum: Boolean
   """
+  Accurate timestamp of the snap
+  """
+  snapAccurateTime: String
+  clearSnapAccurateTime: Boolean
+  """
   Indicates if user interaction is allowed
   """
   snapAllowUser: Boolean
@@ -1668,6 +1892,11 @@ input UpdateEventInput {
   snapAllowUserEndTime: String
   clearSnapAllowUserEndTime: Boolean
   """
+  DST adjustment
+  """
+  snapDstTune: Int
+  clearSnapDstTune: Boolean
+  """
   Defence code
   """
   snapDefenceCode: String
@@ -1677,6 +1906,11 @@ input UpdateEventInput {
   """
   snapDeviceID: String
   clearSnapDeviceID: Boolean
+  """
+  Direction of the vehicle
+  """
+  snapDirection: String
+  clearSnapDirection: Boolean
   """
   Number of people in the car
   """
@@ -1693,16 +1927,41 @@ input UpdateEventInput {
   snapOpenStrobe: Boolean
   clearSnapOpenStrobe: Boolean
   """
+  Snap timestamp
+  """
+  snapSnapTime: String
+  clearSnapSnapTime: Boolean
+  """
+  Time zone of the snap
+  """
+  snapTimeZone: Int
+  clearSnapTimeZone: Boolean
+  """
+  Speed of the vehicle
+  """
+  vehicleSpeed: Int
+  clearVehicleSpeed: Boolean
+  """
   Bounding box coordinates of the vehicle
   """
   vehicleBoundingBox: [Int!]
   appendVehicleBoundingBox: [Int!]
   clearVehicleBoundingBox: Boolean
   """
+  Color of the vehicle
+  """
+  vehicleColor: String
+  clearVehicleColor: Boolean
+  """
   Vehicle series
   """
   vehicleSeries: String
   clearVehicleSeries: Boolean
+  """
+  Type of the vehicle
+  """
+  vehicleType: String
+  clearVehicleType: Boolean
 }
 """
 UpdatePermissionInput is used for update Permission object.

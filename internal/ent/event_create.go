@@ -72,6 +72,20 @@ func (ec *EventCreate) SetNillablePlateChannel(i *int) *EventCreate {
 	return ec
 }
 
+// SetPlateConfidence sets the "plate_confidence" field.
+func (ec *EventCreate) SetPlateConfidence(i int) *EventCreate {
+	ec.mutation.SetPlateConfidence(i)
+	return ec
+}
+
+// SetNillablePlateConfidence sets the "plate_confidence" field if the given value is not nil.
+func (ec *EventCreate) SetNillablePlateConfidence(i *int) *EventCreate {
+	if i != nil {
+		ec.SetPlateConfidence(*i)
+	}
+	return ec
+}
+
 // SetPlateIsExist sets the "plate_is_exist" field.
 func (ec *EventCreate) SetPlateIsExist(b bool) *EventCreate {
 	ec.mutation.SetPlateIsExist(b)
@@ -156,6 +170,20 @@ func (ec *EventCreate) SetNillablePlateUploadNum(i *int) *EventCreate {
 	return ec
 }
 
+// SetSnapAccurateTime sets the "snap_accurate_time" field.
+func (ec *EventCreate) SetSnapAccurateTime(s string) *EventCreate {
+	ec.mutation.SetSnapAccurateTime(s)
+	return ec
+}
+
+// SetNillableSnapAccurateTime sets the "snap_accurate_time" field if the given value is not nil.
+func (ec *EventCreate) SetNillableSnapAccurateTime(s *string) *EventCreate {
+	if s != nil {
+		ec.SetSnapAccurateTime(*s)
+	}
+	return ec
+}
+
 // SetSnapAllowUser sets the "snap_allow_user" field.
 func (ec *EventCreate) SetSnapAllowUser(b bool) *EventCreate {
 	ec.mutation.SetSnapAllowUser(b)
@@ -184,6 +212,20 @@ func (ec *EventCreate) SetNillableSnapAllowUserEndTime(s *string) *EventCreate {
 	return ec
 }
 
+// SetSnapDstTune sets the "snap_dst_tune" field.
+func (ec *EventCreate) SetSnapDstTune(i int) *EventCreate {
+	ec.mutation.SetSnapDstTune(i)
+	return ec
+}
+
+// SetNillableSnapDstTune sets the "snap_dst_tune" field if the given value is not nil.
+func (ec *EventCreate) SetNillableSnapDstTune(i *int) *EventCreate {
+	if i != nil {
+		ec.SetSnapDstTune(*i)
+	}
+	return ec
+}
+
 // SetSnapDefenceCode sets the "snap_defence_code" field.
 func (ec *EventCreate) SetSnapDefenceCode(s string) *EventCreate {
 	ec.mutation.SetSnapDefenceCode(s)
@@ -208,6 +250,20 @@ func (ec *EventCreate) SetSnapDeviceID(s string) *EventCreate {
 func (ec *EventCreate) SetNillableSnapDeviceID(s *string) *EventCreate {
 	if s != nil {
 		ec.SetSnapDeviceID(*s)
+	}
+	return ec
+}
+
+// SetSnapDirection sets the "snap_direction" field.
+func (ec *EventCreate) SetSnapDirection(s string) *EventCreate {
+	ec.mutation.SetSnapDirection(s)
+	return ec
+}
+
+// SetNillableSnapDirection sets the "snap_direction" field if the given value is not nil.
+func (ec *EventCreate) SetNillableSnapDirection(s *string) *EventCreate {
+	if s != nil {
+		ec.SetSnapDirection(*s)
 	}
 	return ec
 }
@@ -254,9 +310,65 @@ func (ec *EventCreate) SetNillableSnapOpenStrobe(b *bool) *EventCreate {
 	return ec
 }
 
+// SetSnapSnapTime sets the "snap_snap_time" field.
+func (ec *EventCreate) SetSnapSnapTime(s string) *EventCreate {
+	ec.mutation.SetSnapSnapTime(s)
+	return ec
+}
+
+// SetNillableSnapSnapTime sets the "snap_snap_time" field if the given value is not nil.
+func (ec *EventCreate) SetNillableSnapSnapTime(s *string) *EventCreate {
+	if s != nil {
+		ec.SetSnapSnapTime(*s)
+	}
+	return ec
+}
+
+// SetSnapTimeZone sets the "snap_time_zone" field.
+func (ec *EventCreate) SetSnapTimeZone(i int) *EventCreate {
+	ec.mutation.SetSnapTimeZone(i)
+	return ec
+}
+
+// SetNillableSnapTimeZone sets the "snap_time_zone" field if the given value is not nil.
+func (ec *EventCreate) SetNillableSnapTimeZone(i *int) *EventCreate {
+	if i != nil {
+		ec.SetSnapTimeZone(*i)
+	}
+	return ec
+}
+
+// SetVehicleSpeed sets the "vehicle_speed" field.
+func (ec *EventCreate) SetVehicleSpeed(i int) *EventCreate {
+	ec.mutation.SetVehicleSpeed(i)
+	return ec
+}
+
+// SetNillableVehicleSpeed sets the "vehicle_speed" field if the given value is not nil.
+func (ec *EventCreate) SetNillableVehicleSpeed(i *int) *EventCreate {
+	if i != nil {
+		ec.SetVehicleSpeed(*i)
+	}
+	return ec
+}
+
 // SetVehicleBoundingBox sets the "vehicle_bounding_box" field.
 func (ec *EventCreate) SetVehicleBoundingBox(i []int) *EventCreate {
 	ec.mutation.SetVehicleBoundingBox(i)
+	return ec
+}
+
+// SetVehicleColor sets the "vehicle_color" field.
+func (ec *EventCreate) SetVehicleColor(s string) *EventCreate {
+	ec.mutation.SetVehicleColor(s)
+	return ec
+}
+
+// SetNillableVehicleColor sets the "vehicle_color" field if the given value is not nil.
+func (ec *EventCreate) SetNillableVehicleColor(s *string) *EventCreate {
+	if s != nil {
+		ec.SetVehicleColor(*s)
+	}
 	return ec
 }
 
@@ -270,6 +382,20 @@ func (ec *EventCreate) SetVehicleSeries(s string) *EventCreate {
 func (ec *EventCreate) SetNillableVehicleSeries(s *string) *EventCreate {
 	if s != nil {
 		ec.SetVehicleSeries(*s)
+	}
+	return ec
+}
+
+// SetVehicleType sets the "vehicle_type" field.
+func (ec *EventCreate) SetVehicleType(s string) *EventCreate {
+	ec.mutation.SetVehicleType(s)
+	return ec
+}
+
+// SetNillableVehicleType sets the "vehicle_type" field if the given value is not nil.
+func (ec *EventCreate) SetNillableVehicleType(s *string) *EventCreate {
+	if s != nil {
+		ec.SetVehicleType(*s)
 	}
 	return ec
 }
@@ -397,6 +523,10 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		_spec.SetField(event.FieldPlateChannel, field.TypeInt, value)
 		_node.PlateChannel = value
 	}
+	if value, ok := ec.mutation.PlateConfidence(); ok {
+		_spec.SetField(event.FieldPlateConfidence, field.TypeInt, value)
+		_node.PlateConfidence = value
+	}
 	if value, ok := ec.mutation.PlateIsExist(); ok {
 		_spec.SetField(event.FieldPlateIsExist, field.TypeBool, value)
 		_node.PlateIsExist = value
@@ -421,6 +551,10 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		_spec.SetField(event.FieldPlateUploadNum, field.TypeInt, value)
 		_node.PlateUploadNum = value
 	}
+	if value, ok := ec.mutation.SnapAccurateTime(); ok {
+		_spec.SetField(event.FieldSnapAccurateTime, field.TypeString, value)
+		_node.SnapAccurateTime = value
+	}
 	if value, ok := ec.mutation.SnapAllowUser(); ok {
 		_spec.SetField(event.FieldSnapAllowUser, field.TypeBool, value)
 		_node.SnapAllowUser = value
@@ -429,6 +563,10 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		_spec.SetField(event.FieldSnapAllowUserEndTime, field.TypeString, value)
 		_node.SnapAllowUserEndTime = value
 	}
+	if value, ok := ec.mutation.SnapDstTune(); ok {
+		_spec.SetField(event.FieldSnapDstTune, field.TypeInt, value)
+		_node.SnapDstTune = value
+	}
 	if value, ok := ec.mutation.SnapDefenceCode(); ok {
 		_spec.SetField(event.FieldSnapDefenceCode, field.TypeString, value)
 		_node.SnapDefenceCode = value
@@ -436,6 +574,10 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.SnapDeviceID(); ok {
 		_spec.SetField(event.FieldSnapDeviceID, field.TypeString, value)
 		_node.SnapDeviceID = value
+	}
+	if value, ok := ec.mutation.SnapDirection(); ok {
+		_spec.SetField(event.FieldSnapDirection, field.TypeString, value)
+		_node.SnapDirection = value
 	}
 	if value, ok := ec.mutation.SnapInCarPeopleNum(); ok {
 		_spec.SetField(event.FieldSnapInCarPeopleNum, field.TypeInt, value)
@@ -449,13 +591,33 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		_spec.SetField(event.FieldSnapOpenStrobe, field.TypeBool, value)
 		_node.SnapOpenStrobe = value
 	}
+	if value, ok := ec.mutation.SnapSnapTime(); ok {
+		_spec.SetField(event.FieldSnapSnapTime, field.TypeString, value)
+		_node.SnapSnapTime = value
+	}
+	if value, ok := ec.mutation.SnapTimeZone(); ok {
+		_spec.SetField(event.FieldSnapTimeZone, field.TypeInt, value)
+		_node.SnapTimeZone = value
+	}
+	if value, ok := ec.mutation.VehicleSpeed(); ok {
+		_spec.SetField(event.FieldVehicleSpeed, field.TypeInt, value)
+		_node.VehicleSpeed = value
+	}
 	if value, ok := ec.mutation.VehicleBoundingBox(); ok {
 		_spec.SetField(event.FieldVehicleBoundingBox, field.TypeJSON, value)
 		_node.VehicleBoundingBox = value
 	}
+	if value, ok := ec.mutation.VehicleColor(); ok {
+		_spec.SetField(event.FieldVehicleColor, field.TypeString, value)
+		_node.VehicleColor = value
+	}
 	if value, ok := ec.mutation.VehicleSeries(); ok {
 		_spec.SetField(event.FieldVehicleSeries, field.TypeString, value)
 		_node.VehicleSeries = value
+	}
+	if value, ok := ec.mutation.VehicleType(); ok {
+		_spec.SetField(event.FieldVehicleType, field.TypeString, value)
+		_node.VehicleType = value
 	}
 	return _node, _spec
 }
@@ -560,6 +722,30 @@ func (u *EventUpsert) AddPlateChannel(v int) *EventUpsert {
 // ClearPlateChannel clears the value of the "plate_channel" field.
 func (u *EventUpsert) ClearPlateChannel() *EventUpsert {
 	u.SetNull(event.FieldPlateChannel)
+	return u
+}
+
+// SetPlateConfidence sets the "plate_confidence" field.
+func (u *EventUpsert) SetPlateConfidence(v int) *EventUpsert {
+	u.Set(event.FieldPlateConfidence, v)
+	return u
+}
+
+// UpdatePlateConfidence sets the "plate_confidence" field to the value that was provided on create.
+func (u *EventUpsert) UpdatePlateConfidence() *EventUpsert {
+	u.SetExcluded(event.FieldPlateConfidence)
+	return u
+}
+
+// AddPlateConfidence adds v to the "plate_confidence" field.
+func (u *EventUpsert) AddPlateConfidence(v int) *EventUpsert {
+	u.Add(event.FieldPlateConfidence, v)
+	return u
+}
+
+// ClearPlateConfidence clears the value of the "plate_confidence" field.
+func (u *EventUpsert) ClearPlateConfidence() *EventUpsert {
+	u.SetNull(event.FieldPlateConfidence)
 	return u
 }
 
@@ -677,6 +863,24 @@ func (u *EventUpsert) ClearPlateUploadNum() *EventUpsert {
 	return u
 }
 
+// SetSnapAccurateTime sets the "snap_accurate_time" field.
+func (u *EventUpsert) SetSnapAccurateTime(v string) *EventUpsert {
+	u.Set(event.FieldSnapAccurateTime, v)
+	return u
+}
+
+// UpdateSnapAccurateTime sets the "snap_accurate_time" field to the value that was provided on create.
+func (u *EventUpsert) UpdateSnapAccurateTime() *EventUpsert {
+	u.SetExcluded(event.FieldSnapAccurateTime)
+	return u
+}
+
+// ClearSnapAccurateTime clears the value of the "snap_accurate_time" field.
+func (u *EventUpsert) ClearSnapAccurateTime() *EventUpsert {
+	u.SetNull(event.FieldSnapAccurateTime)
+	return u
+}
+
 // SetSnapAllowUser sets the "snap_allow_user" field.
 func (u *EventUpsert) SetSnapAllowUser(v bool) *EventUpsert {
 	u.Set(event.FieldSnapAllowUser, v)
@@ -713,6 +917,30 @@ func (u *EventUpsert) ClearSnapAllowUserEndTime() *EventUpsert {
 	return u
 }
 
+// SetSnapDstTune sets the "snap_dst_tune" field.
+func (u *EventUpsert) SetSnapDstTune(v int) *EventUpsert {
+	u.Set(event.FieldSnapDstTune, v)
+	return u
+}
+
+// UpdateSnapDstTune sets the "snap_dst_tune" field to the value that was provided on create.
+func (u *EventUpsert) UpdateSnapDstTune() *EventUpsert {
+	u.SetExcluded(event.FieldSnapDstTune)
+	return u
+}
+
+// AddSnapDstTune adds v to the "snap_dst_tune" field.
+func (u *EventUpsert) AddSnapDstTune(v int) *EventUpsert {
+	u.Add(event.FieldSnapDstTune, v)
+	return u
+}
+
+// ClearSnapDstTune clears the value of the "snap_dst_tune" field.
+func (u *EventUpsert) ClearSnapDstTune() *EventUpsert {
+	u.SetNull(event.FieldSnapDstTune)
+	return u
+}
+
 // SetSnapDefenceCode sets the "snap_defence_code" field.
 func (u *EventUpsert) SetSnapDefenceCode(v string) *EventUpsert {
 	u.Set(event.FieldSnapDefenceCode, v)
@@ -746,6 +974,24 @@ func (u *EventUpsert) UpdateSnapDeviceID() *EventUpsert {
 // ClearSnapDeviceID clears the value of the "snap_device_id" field.
 func (u *EventUpsert) ClearSnapDeviceID() *EventUpsert {
 	u.SetNull(event.FieldSnapDeviceID)
+	return u
+}
+
+// SetSnapDirection sets the "snap_direction" field.
+func (u *EventUpsert) SetSnapDirection(v string) *EventUpsert {
+	u.Set(event.FieldSnapDirection, v)
+	return u
+}
+
+// UpdateSnapDirection sets the "snap_direction" field to the value that was provided on create.
+func (u *EventUpsert) UpdateSnapDirection() *EventUpsert {
+	u.SetExcluded(event.FieldSnapDirection)
+	return u
+}
+
+// ClearSnapDirection clears the value of the "snap_direction" field.
+func (u *EventUpsert) ClearSnapDirection() *EventUpsert {
+	u.SetNull(event.FieldSnapDirection)
 	return u
 }
 
@@ -815,6 +1061,72 @@ func (u *EventUpsert) ClearSnapOpenStrobe() *EventUpsert {
 	return u
 }
 
+// SetSnapSnapTime sets the "snap_snap_time" field.
+func (u *EventUpsert) SetSnapSnapTime(v string) *EventUpsert {
+	u.Set(event.FieldSnapSnapTime, v)
+	return u
+}
+
+// UpdateSnapSnapTime sets the "snap_snap_time" field to the value that was provided on create.
+func (u *EventUpsert) UpdateSnapSnapTime() *EventUpsert {
+	u.SetExcluded(event.FieldSnapSnapTime)
+	return u
+}
+
+// ClearSnapSnapTime clears the value of the "snap_snap_time" field.
+func (u *EventUpsert) ClearSnapSnapTime() *EventUpsert {
+	u.SetNull(event.FieldSnapSnapTime)
+	return u
+}
+
+// SetSnapTimeZone sets the "snap_time_zone" field.
+func (u *EventUpsert) SetSnapTimeZone(v int) *EventUpsert {
+	u.Set(event.FieldSnapTimeZone, v)
+	return u
+}
+
+// UpdateSnapTimeZone sets the "snap_time_zone" field to the value that was provided on create.
+func (u *EventUpsert) UpdateSnapTimeZone() *EventUpsert {
+	u.SetExcluded(event.FieldSnapTimeZone)
+	return u
+}
+
+// AddSnapTimeZone adds v to the "snap_time_zone" field.
+func (u *EventUpsert) AddSnapTimeZone(v int) *EventUpsert {
+	u.Add(event.FieldSnapTimeZone, v)
+	return u
+}
+
+// ClearSnapTimeZone clears the value of the "snap_time_zone" field.
+func (u *EventUpsert) ClearSnapTimeZone() *EventUpsert {
+	u.SetNull(event.FieldSnapTimeZone)
+	return u
+}
+
+// SetVehicleSpeed sets the "vehicle_speed" field.
+func (u *EventUpsert) SetVehicleSpeed(v int) *EventUpsert {
+	u.Set(event.FieldVehicleSpeed, v)
+	return u
+}
+
+// UpdateVehicleSpeed sets the "vehicle_speed" field to the value that was provided on create.
+func (u *EventUpsert) UpdateVehicleSpeed() *EventUpsert {
+	u.SetExcluded(event.FieldVehicleSpeed)
+	return u
+}
+
+// AddVehicleSpeed adds v to the "vehicle_speed" field.
+func (u *EventUpsert) AddVehicleSpeed(v int) *EventUpsert {
+	u.Add(event.FieldVehicleSpeed, v)
+	return u
+}
+
+// ClearVehicleSpeed clears the value of the "vehicle_speed" field.
+func (u *EventUpsert) ClearVehicleSpeed() *EventUpsert {
+	u.SetNull(event.FieldVehicleSpeed)
+	return u
+}
+
 // SetVehicleBoundingBox sets the "vehicle_bounding_box" field.
 func (u *EventUpsert) SetVehicleBoundingBox(v []int) *EventUpsert {
 	u.Set(event.FieldVehicleBoundingBox, v)
@@ -833,6 +1145,24 @@ func (u *EventUpsert) ClearVehicleBoundingBox() *EventUpsert {
 	return u
 }
 
+// SetVehicleColor sets the "vehicle_color" field.
+func (u *EventUpsert) SetVehicleColor(v string) *EventUpsert {
+	u.Set(event.FieldVehicleColor, v)
+	return u
+}
+
+// UpdateVehicleColor sets the "vehicle_color" field to the value that was provided on create.
+func (u *EventUpsert) UpdateVehicleColor() *EventUpsert {
+	u.SetExcluded(event.FieldVehicleColor)
+	return u
+}
+
+// ClearVehicleColor clears the value of the "vehicle_color" field.
+func (u *EventUpsert) ClearVehicleColor() *EventUpsert {
+	u.SetNull(event.FieldVehicleColor)
+	return u
+}
+
 // SetVehicleSeries sets the "vehicle_series" field.
 func (u *EventUpsert) SetVehicleSeries(v string) *EventUpsert {
 	u.Set(event.FieldVehicleSeries, v)
@@ -848,6 +1178,24 @@ func (u *EventUpsert) UpdateVehicleSeries() *EventUpsert {
 // ClearVehicleSeries clears the value of the "vehicle_series" field.
 func (u *EventUpsert) ClearVehicleSeries() *EventUpsert {
 	u.SetNull(event.FieldVehicleSeries)
+	return u
+}
+
+// SetVehicleType sets the "vehicle_type" field.
+func (u *EventUpsert) SetVehicleType(v string) *EventUpsert {
+	u.Set(event.FieldVehicleType, v)
+	return u
+}
+
+// UpdateVehicleType sets the "vehicle_type" field to the value that was provided on create.
+func (u *EventUpsert) UpdateVehicleType() *EventUpsert {
+	u.SetExcluded(event.FieldVehicleType)
+	return u
+}
+
+// ClearVehicleType clears the value of the "vehicle_type" field.
+func (u *EventUpsert) ClearVehicleType() *EventUpsert {
+	u.SetNull(event.FieldVehicleType)
 	return u
 }
 
@@ -962,6 +1310,34 @@ func (u *EventUpsertOne) UpdatePlateChannel() *EventUpsertOne {
 func (u *EventUpsertOne) ClearPlateChannel() *EventUpsertOne {
 	return u.Update(func(s *EventUpsert) {
 		s.ClearPlateChannel()
+	})
+}
+
+// SetPlateConfidence sets the "plate_confidence" field.
+func (u *EventUpsertOne) SetPlateConfidence(v int) *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.SetPlateConfidence(v)
+	})
+}
+
+// AddPlateConfidence adds v to the "plate_confidence" field.
+func (u *EventUpsertOne) AddPlateConfidence(v int) *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.AddPlateConfidence(v)
+	})
+}
+
+// UpdatePlateConfidence sets the "plate_confidence" field to the value that was provided on create.
+func (u *EventUpsertOne) UpdatePlateConfidence() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdatePlateConfidence()
+	})
+}
+
+// ClearPlateConfidence clears the value of the "plate_confidence" field.
+func (u *EventUpsertOne) ClearPlateConfidence() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearPlateConfidence()
 	})
 }
 
@@ -1098,6 +1474,27 @@ func (u *EventUpsertOne) ClearPlateUploadNum() *EventUpsertOne {
 	})
 }
 
+// SetSnapAccurateTime sets the "snap_accurate_time" field.
+func (u *EventUpsertOne) SetSnapAccurateTime(v string) *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.SetSnapAccurateTime(v)
+	})
+}
+
+// UpdateSnapAccurateTime sets the "snap_accurate_time" field to the value that was provided on create.
+func (u *EventUpsertOne) UpdateSnapAccurateTime() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateSnapAccurateTime()
+	})
+}
+
+// ClearSnapAccurateTime clears the value of the "snap_accurate_time" field.
+func (u *EventUpsertOne) ClearSnapAccurateTime() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearSnapAccurateTime()
+	})
+}
+
 // SetSnapAllowUser sets the "snap_allow_user" field.
 func (u *EventUpsertOne) SetSnapAllowUser(v bool) *EventUpsertOne {
 	return u.Update(func(s *EventUpsert) {
@@ -1140,6 +1537,34 @@ func (u *EventUpsertOne) ClearSnapAllowUserEndTime() *EventUpsertOne {
 	})
 }
 
+// SetSnapDstTune sets the "snap_dst_tune" field.
+func (u *EventUpsertOne) SetSnapDstTune(v int) *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.SetSnapDstTune(v)
+	})
+}
+
+// AddSnapDstTune adds v to the "snap_dst_tune" field.
+func (u *EventUpsertOne) AddSnapDstTune(v int) *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.AddSnapDstTune(v)
+	})
+}
+
+// UpdateSnapDstTune sets the "snap_dst_tune" field to the value that was provided on create.
+func (u *EventUpsertOne) UpdateSnapDstTune() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateSnapDstTune()
+	})
+}
+
+// ClearSnapDstTune clears the value of the "snap_dst_tune" field.
+func (u *EventUpsertOne) ClearSnapDstTune() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearSnapDstTune()
+	})
+}
+
 // SetSnapDefenceCode sets the "snap_defence_code" field.
 func (u *EventUpsertOne) SetSnapDefenceCode(v string) *EventUpsertOne {
 	return u.Update(func(s *EventUpsert) {
@@ -1179,6 +1604,27 @@ func (u *EventUpsertOne) UpdateSnapDeviceID() *EventUpsertOne {
 func (u *EventUpsertOne) ClearSnapDeviceID() *EventUpsertOne {
 	return u.Update(func(s *EventUpsert) {
 		s.ClearSnapDeviceID()
+	})
+}
+
+// SetSnapDirection sets the "snap_direction" field.
+func (u *EventUpsertOne) SetSnapDirection(v string) *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.SetSnapDirection(v)
+	})
+}
+
+// UpdateSnapDirection sets the "snap_direction" field to the value that was provided on create.
+func (u *EventUpsertOne) UpdateSnapDirection() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateSnapDirection()
+	})
+}
+
+// ClearSnapDirection clears the value of the "snap_direction" field.
+func (u *EventUpsertOne) ClearSnapDirection() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearSnapDirection()
 	})
 }
 
@@ -1259,6 +1705,83 @@ func (u *EventUpsertOne) ClearSnapOpenStrobe() *EventUpsertOne {
 	})
 }
 
+// SetSnapSnapTime sets the "snap_snap_time" field.
+func (u *EventUpsertOne) SetSnapSnapTime(v string) *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.SetSnapSnapTime(v)
+	})
+}
+
+// UpdateSnapSnapTime sets the "snap_snap_time" field to the value that was provided on create.
+func (u *EventUpsertOne) UpdateSnapSnapTime() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateSnapSnapTime()
+	})
+}
+
+// ClearSnapSnapTime clears the value of the "snap_snap_time" field.
+func (u *EventUpsertOne) ClearSnapSnapTime() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearSnapSnapTime()
+	})
+}
+
+// SetSnapTimeZone sets the "snap_time_zone" field.
+func (u *EventUpsertOne) SetSnapTimeZone(v int) *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.SetSnapTimeZone(v)
+	})
+}
+
+// AddSnapTimeZone adds v to the "snap_time_zone" field.
+func (u *EventUpsertOne) AddSnapTimeZone(v int) *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.AddSnapTimeZone(v)
+	})
+}
+
+// UpdateSnapTimeZone sets the "snap_time_zone" field to the value that was provided on create.
+func (u *EventUpsertOne) UpdateSnapTimeZone() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateSnapTimeZone()
+	})
+}
+
+// ClearSnapTimeZone clears the value of the "snap_time_zone" field.
+func (u *EventUpsertOne) ClearSnapTimeZone() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearSnapTimeZone()
+	})
+}
+
+// SetVehicleSpeed sets the "vehicle_speed" field.
+func (u *EventUpsertOne) SetVehicleSpeed(v int) *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.SetVehicleSpeed(v)
+	})
+}
+
+// AddVehicleSpeed adds v to the "vehicle_speed" field.
+func (u *EventUpsertOne) AddVehicleSpeed(v int) *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.AddVehicleSpeed(v)
+	})
+}
+
+// UpdateVehicleSpeed sets the "vehicle_speed" field to the value that was provided on create.
+func (u *EventUpsertOne) UpdateVehicleSpeed() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateVehicleSpeed()
+	})
+}
+
+// ClearVehicleSpeed clears the value of the "vehicle_speed" field.
+func (u *EventUpsertOne) ClearVehicleSpeed() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearVehicleSpeed()
+	})
+}
+
 // SetVehicleBoundingBox sets the "vehicle_bounding_box" field.
 func (u *EventUpsertOne) SetVehicleBoundingBox(v []int) *EventUpsertOne {
 	return u.Update(func(s *EventUpsert) {
@@ -1280,6 +1803,27 @@ func (u *EventUpsertOne) ClearVehicleBoundingBox() *EventUpsertOne {
 	})
 }
 
+// SetVehicleColor sets the "vehicle_color" field.
+func (u *EventUpsertOne) SetVehicleColor(v string) *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.SetVehicleColor(v)
+	})
+}
+
+// UpdateVehicleColor sets the "vehicle_color" field to the value that was provided on create.
+func (u *EventUpsertOne) UpdateVehicleColor() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateVehicleColor()
+	})
+}
+
+// ClearVehicleColor clears the value of the "vehicle_color" field.
+func (u *EventUpsertOne) ClearVehicleColor() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearVehicleColor()
+	})
+}
+
 // SetVehicleSeries sets the "vehicle_series" field.
 func (u *EventUpsertOne) SetVehicleSeries(v string) *EventUpsertOne {
 	return u.Update(func(s *EventUpsert) {
@@ -1298,6 +1842,27 @@ func (u *EventUpsertOne) UpdateVehicleSeries() *EventUpsertOne {
 func (u *EventUpsertOne) ClearVehicleSeries() *EventUpsertOne {
 	return u.Update(func(s *EventUpsert) {
 		s.ClearVehicleSeries()
+	})
+}
+
+// SetVehicleType sets the "vehicle_type" field.
+func (u *EventUpsertOne) SetVehicleType(v string) *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.SetVehicleType(v)
+	})
+}
+
+// UpdateVehicleType sets the "vehicle_type" field to the value that was provided on create.
+func (u *EventUpsertOne) UpdateVehicleType() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateVehicleType()
+	})
+}
+
+// ClearVehicleType clears the value of the "vehicle_type" field.
+func (u *EventUpsertOne) ClearVehicleType() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearVehicleType()
 	})
 }
 
@@ -1582,6 +2147,34 @@ func (u *EventUpsertBulk) ClearPlateChannel() *EventUpsertBulk {
 	})
 }
 
+// SetPlateConfidence sets the "plate_confidence" field.
+func (u *EventUpsertBulk) SetPlateConfidence(v int) *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.SetPlateConfidence(v)
+	})
+}
+
+// AddPlateConfidence adds v to the "plate_confidence" field.
+func (u *EventUpsertBulk) AddPlateConfidence(v int) *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.AddPlateConfidence(v)
+	})
+}
+
+// UpdatePlateConfidence sets the "plate_confidence" field to the value that was provided on create.
+func (u *EventUpsertBulk) UpdatePlateConfidence() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdatePlateConfidence()
+	})
+}
+
+// ClearPlateConfidence clears the value of the "plate_confidence" field.
+func (u *EventUpsertBulk) ClearPlateConfidence() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearPlateConfidence()
+	})
+}
+
 // SetPlateIsExist sets the "plate_is_exist" field.
 func (u *EventUpsertBulk) SetPlateIsExist(v bool) *EventUpsertBulk {
 	return u.Update(func(s *EventUpsert) {
@@ -1715,6 +2308,27 @@ func (u *EventUpsertBulk) ClearPlateUploadNum() *EventUpsertBulk {
 	})
 }
 
+// SetSnapAccurateTime sets the "snap_accurate_time" field.
+func (u *EventUpsertBulk) SetSnapAccurateTime(v string) *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.SetSnapAccurateTime(v)
+	})
+}
+
+// UpdateSnapAccurateTime sets the "snap_accurate_time" field to the value that was provided on create.
+func (u *EventUpsertBulk) UpdateSnapAccurateTime() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateSnapAccurateTime()
+	})
+}
+
+// ClearSnapAccurateTime clears the value of the "snap_accurate_time" field.
+func (u *EventUpsertBulk) ClearSnapAccurateTime() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearSnapAccurateTime()
+	})
+}
+
 // SetSnapAllowUser sets the "snap_allow_user" field.
 func (u *EventUpsertBulk) SetSnapAllowUser(v bool) *EventUpsertBulk {
 	return u.Update(func(s *EventUpsert) {
@@ -1757,6 +2371,34 @@ func (u *EventUpsertBulk) ClearSnapAllowUserEndTime() *EventUpsertBulk {
 	})
 }
 
+// SetSnapDstTune sets the "snap_dst_tune" field.
+func (u *EventUpsertBulk) SetSnapDstTune(v int) *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.SetSnapDstTune(v)
+	})
+}
+
+// AddSnapDstTune adds v to the "snap_dst_tune" field.
+func (u *EventUpsertBulk) AddSnapDstTune(v int) *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.AddSnapDstTune(v)
+	})
+}
+
+// UpdateSnapDstTune sets the "snap_dst_tune" field to the value that was provided on create.
+func (u *EventUpsertBulk) UpdateSnapDstTune() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateSnapDstTune()
+	})
+}
+
+// ClearSnapDstTune clears the value of the "snap_dst_tune" field.
+func (u *EventUpsertBulk) ClearSnapDstTune() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearSnapDstTune()
+	})
+}
+
 // SetSnapDefenceCode sets the "snap_defence_code" field.
 func (u *EventUpsertBulk) SetSnapDefenceCode(v string) *EventUpsertBulk {
 	return u.Update(func(s *EventUpsert) {
@@ -1796,6 +2438,27 @@ func (u *EventUpsertBulk) UpdateSnapDeviceID() *EventUpsertBulk {
 func (u *EventUpsertBulk) ClearSnapDeviceID() *EventUpsertBulk {
 	return u.Update(func(s *EventUpsert) {
 		s.ClearSnapDeviceID()
+	})
+}
+
+// SetSnapDirection sets the "snap_direction" field.
+func (u *EventUpsertBulk) SetSnapDirection(v string) *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.SetSnapDirection(v)
+	})
+}
+
+// UpdateSnapDirection sets the "snap_direction" field to the value that was provided on create.
+func (u *EventUpsertBulk) UpdateSnapDirection() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateSnapDirection()
+	})
+}
+
+// ClearSnapDirection clears the value of the "snap_direction" field.
+func (u *EventUpsertBulk) ClearSnapDirection() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearSnapDirection()
 	})
 }
 
@@ -1876,6 +2539,83 @@ func (u *EventUpsertBulk) ClearSnapOpenStrobe() *EventUpsertBulk {
 	})
 }
 
+// SetSnapSnapTime sets the "snap_snap_time" field.
+func (u *EventUpsertBulk) SetSnapSnapTime(v string) *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.SetSnapSnapTime(v)
+	})
+}
+
+// UpdateSnapSnapTime sets the "snap_snap_time" field to the value that was provided on create.
+func (u *EventUpsertBulk) UpdateSnapSnapTime() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateSnapSnapTime()
+	})
+}
+
+// ClearSnapSnapTime clears the value of the "snap_snap_time" field.
+func (u *EventUpsertBulk) ClearSnapSnapTime() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearSnapSnapTime()
+	})
+}
+
+// SetSnapTimeZone sets the "snap_time_zone" field.
+func (u *EventUpsertBulk) SetSnapTimeZone(v int) *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.SetSnapTimeZone(v)
+	})
+}
+
+// AddSnapTimeZone adds v to the "snap_time_zone" field.
+func (u *EventUpsertBulk) AddSnapTimeZone(v int) *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.AddSnapTimeZone(v)
+	})
+}
+
+// UpdateSnapTimeZone sets the "snap_time_zone" field to the value that was provided on create.
+func (u *EventUpsertBulk) UpdateSnapTimeZone() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateSnapTimeZone()
+	})
+}
+
+// ClearSnapTimeZone clears the value of the "snap_time_zone" field.
+func (u *EventUpsertBulk) ClearSnapTimeZone() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearSnapTimeZone()
+	})
+}
+
+// SetVehicleSpeed sets the "vehicle_speed" field.
+func (u *EventUpsertBulk) SetVehicleSpeed(v int) *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.SetVehicleSpeed(v)
+	})
+}
+
+// AddVehicleSpeed adds v to the "vehicle_speed" field.
+func (u *EventUpsertBulk) AddVehicleSpeed(v int) *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.AddVehicleSpeed(v)
+	})
+}
+
+// UpdateVehicleSpeed sets the "vehicle_speed" field to the value that was provided on create.
+func (u *EventUpsertBulk) UpdateVehicleSpeed() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateVehicleSpeed()
+	})
+}
+
+// ClearVehicleSpeed clears the value of the "vehicle_speed" field.
+func (u *EventUpsertBulk) ClearVehicleSpeed() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearVehicleSpeed()
+	})
+}
+
 // SetVehicleBoundingBox sets the "vehicle_bounding_box" field.
 func (u *EventUpsertBulk) SetVehicleBoundingBox(v []int) *EventUpsertBulk {
 	return u.Update(func(s *EventUpsert) {
@@ -1897,6 +2637,27 @@ func (u *EventUpsertBulk) ClearVehicleBoundingBox() *EventUpsertBulk {
 	})
 }
 
+// SetVehicleColor sets the "vehicle_color" field.
+func (u *EventUpsertBulk) SetVehicleColor(v string) *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.SetVehicleColor(v)
+	})
+}
+
+// UpdateVehicleColor sets the "vehicle_color" field to the value that was provided on create.
+func (u *EventUpsertBulk) UpdateVehicleColor() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateVehicleColor()
+	})
+}
+
+// ClearVehicleColor clears the value of the "vehicle_color" field.
+func (u *EventUpsertBulk) ClearVehicleColor() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearVehicleColor()
+	})
+}
+
 // SetVehicleSeries sets the "vehicle_series" field.
 func (u *EventUpsertBulk) SetVehicleSeries(v string) *EventUpsertBulk {
 	return u.Update(func(s *EventUpsert) {
@@ -1915,6 +2676,27 @@ func (u *EventUpsertBulk) UpdateVehicleSeries() *EventUpsertBulk {
 func (u *EventUpsertBulk) ClearVehicleSeries() *EventUpsertBulk {
 	return u.Update(func(s *EventUpsert) {
 		s.ClearVehicleSeries()
+	})
+}
+
+// SetVehicleType sets the "vehicle_type" field.
+func (u *EventUpsertBulk) SetVehicleType(v string) *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.SetVehicleType(v)
+	})
+}
+
+// UpdateVehicleType sets the "vehicle_type" field to the value that was provided on create.
+func (u *EventUpsertBulk) UpdateVehicleType() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateVehicleType()
+	})
+}
+
+// ClearVehicleType clears the value of the "vehicle_type" field.
+func (u *EventUpsertBulk) ClearVehicleType() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearVehicleType()
 	})
 }
 

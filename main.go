@@ -1,6 +1,10 @@
 package main
 
 import (
+	"context"
+	"database/sql"
+	"entgo.io/ent/dialect/sql/schema"
+	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
@@ -34,21 +38,27 @@ func main() {
 
 	cfg := config.LoadDBConfig()
 	dbURL := config.GetPostgresDSN(cfg)
-	//postgresDB := db.NewPostgresConnection(cfg)
+
+	sqlDB, err := sql.Open("postgres", dbURL)
+	if err != nil {
+		log.Fatalf("Failed to open sql.DB: %v", err)
+	}
+	defer sqlDB.Close()
+
 	client, err := ent.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatalf("failed opening connection to postgres: %v", err)
 	}
-	//err = client.Schema.Create(context.Background(), schema.WithGlobalUniqueID(true))
-	//if err != nil {
-	//	log.Fatalf("failed to create schema resources: %v", err)
-	//}
-	//defer func(postgresDB *sql.DB) {
-	//	err := postgresDB.Close()
-	//	if err != nil {
-	//		log.Fatalf("failed to close database: %v", err)
-	//	}
-	//}(postgresDB)
+	err = client.Schema.Create(context.Background(), schema.WithGlobalUniqueID(true))
+	if err != nil {
+		log.Fatalf("failed to create schema resources: %v", err)
+	}
+	// Apply UUID default at DB level
+	err = applyUUIDDefaults(sqlDB, "cameras", "events", "users", "cars", "police_stations", "roles")
+	if err != nil {
+		log.Fatalf("Failed to apply UUID defaults: %v", err)
+	}
+
 	redisDB.Initialize()
 	println("dbURL: ", dbURL)
 	// Run migrations
@@ -89,4 +99,19 @@ func main() {
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, corsHandler(http.DefaultServeMux)))
 
+}
+
+func applyUUIDDefaults(db *sql.DB, tables ...string) error {
+	_, err := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`)
+	if err != nil {
+		return fmt.Errorf("failed to enable uuid-ossp extension: %w", err)
+	}
+
+	for _, table := range tables {
+		query := fmt.Sprintf(`ALTER TABLE %s ALTER COLUMN id SET DEFAULT uuid_generate_v4()`, table)
+		if _, err := db.Exec(query); err != nil {
+			return fmt.Errorf("failed to set default on table %s: %w", table, err)
+		}
+	}
+	return nil
 }

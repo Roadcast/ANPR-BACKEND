@@ -11,7 +11,7 @@ import (
 var (
 	// CamerasColumns holds the columns for the "cameras" table.
 	CamerasColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID, Unique: true, SchemaType: map[string]string{"postgres": "uuid"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
@@ -22,7 +22,7 @@ var (
 		{Name: "address", Type: field.TypeString, Nullable: true},
 		{Name: "is_working", Type: field.TypeBool, Default: true},
 		{Name: "district", Type: field.TypeString, Default: "N/A"},
-		{Name: "police_station_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "police_station_id", Type: field.TypeUUID, Nullable: true, SchemaType: map[string]string{"postgres": "uuid"}},
 	}
 	// CamerasTable holds the schema information for the "cameras" table.
 	CamerasTable = &schema.Table{
@@ -39,6 +39,11 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
+				Name:    "camera_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CamerasColumns[1]},
+			},
+			{
 				Name:    "camera_name",
 				Unique:  false,
 				Columns: []*schema.Column{CamerasColumns[3]},
@@ -49,11 +54,16 @@ var (
 					},
 				},
 			},
+			{
+				Name:    "camera_imei",
+				Unique:  false,
+				Columns: []*schema.Column{CamerasColumns[5]},
+			},
 		},
 	}
 	// CarsColumns holds the columns for the "cars" table.
 	CarsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID, Unique: true, SchemaType: map[string]string{"postgres": "uuid"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "make", Type: field.TypeString, Nullable: true},
@@ -63,7 +73,7 @@ var (
 		{Name: "color", Type: field.TypeString, Nullable: true},
 		{Name: "stolen_date", Type: field.TypeTime, Nullable: true},
 		{Name: "fir_number", Type: field.TypeString, Nullable: true},
-		{Name: "police_station_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "police_station_id", Type: field.TypeUUID, Nullable: true, SchemaType: map[string]string{"postgres": "uuid"}},
 	}
 	// CarsTable holds the schema information for the "cars" table.
 	CarsTable = &schema.Table{
@@ -78,39 +88,117 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "car_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CarsColumns[1]},
+			},
+		},
 	}
 	// EventsColumns holds the columns for the "events" table.
 	EventsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID, Unique: true, SchemaType: map[string]string{"postgres": "uuid"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "plate_bounding_box", Type: field.TypeJSON, Nullable: true},
 		{Name: "plate_channel", Type: field.TypeInt, Nullable: true},
+		{Name: "plate_confidence", Type: field.TypeInt, Nullable: true},
 		{Name: "plate_is_exist", Type: field.TypeBool, Nullable: true},
 		{Name: "plate_color", Type: field.TypeString, Nullable: true},
 		{Name: "plate_number", Type: field.TypeString, Nullable: true},
 		{Name: "plate_type", Type: field.TypeString, Nullable: true},
 		{Name: "plate_region", Type: field.TypeString, Nullable: true},
 		{Name: "plate_upload_num", Type: field.TypeInt, Nullable: true},
+		{Name: "snap_accurate_time", Type: field.TypeString, Nullable: true},
 		{Name: "snap_allow_user", Type: field.TypeBool, Nullable: true},
 		{Name: "snap_allow_user_end_time", Type: field.TypeString, Nullable: true},
+		{Name: "snap_dst_tune", Type: field.TypeInt, Nullable: true},
 		{Name: "snap_defence_code", Type: field.TypeString, Nullable: true},
 		{Name: "snap_device_id", Type: field.TypeString, Nullable: true},
+		{Name: "snap_direction", Type: field.TypeString, Nullable: true},
 		{Name: "snap_in_car_people_num", Type: field.TypeInt, Nullable: true},
 		{Name: "snap_lan_no", Type: field.TypeInt, Nullable: true},
 		{Name: "snap_open_strobe", Type: field.TypeBool, Nullable: true},
+		{Name: "snap_snap_time", Type: field.TypeString, Nullable: true},
+		{Name: "snap_time_zone", Type: field.TypeInt, Nullable: true},
+		{Name: "vehicle_speed", Type: field.TypeInt, Nullable: true},
 		{Name: "vehicle_bounding_box", Type: field.TypeJSON, Nullable: true},
+		{Name: "vehicle_color", Type: field.TypeString, Nullable: true},
 		{Name: "vehicle_series", Type: field.TypeString, Nullable: true},
+		{Name: "vehicle_type", Type: field.TypeString, Nullable: true},
 	}
 	// EventsTable holds the schema information for the "events" table.
 	EventsTable = &schema.Table{
 		Name:       "events",
 		Columns:    EventsColumns,
 		PrimaryKey: []*schema.Column{EventsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "event_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EventsColumns[1]},
+			},
+			{
+				Name:    "event_plate_number",
+				Unique:  false,
+				Columns: []*schema.Column{EventsColumns[8]},
+			},
+			{
+				Name:    "event_plate_color",
+				Unique:  false,
+				Columns: []*schema.Column{EventsColumns[7]},
+			},
+			{
+				Name:    "event_plate_type",
+				Unique:  false,
+				Columns: []*schema.Column{EventsColumns[9]},
+			},
+			{
+				Name:    "event_plate_region",
+				Unique:  false,
+				Columns: []*schema.Column{EventsColumns[10]},
+			},
+			{
+				Name:    "event_plate_confidence",
+				Unique:  false,
+				Columns: []*schema.Column{EventsColumns[5]},
+			},
+			{
+				Name:    "event_snap_accurate_time",
+				Unique:  false,
+				Columns: []*schema.Column{EventsColumns[12]},
+			},
+			{
+				Name:    "event_snap_device_id",
+				Unique:  false,
+				Columns: []*schema.Column{EventsColumns[17]},
+			},
+			{
+				Name:    "event_snap_direction",
+				Unique:  false,
+				Columns: []*schema.Column{EventsColumns[18]},
+			},
+			{
+				Name:    "event_snap_time_zone",
+				Unique:  false,
+				Columns: []*schema.Column{EventsColumns[23]},
+			},
+			{
+				Name:    "event_vehicle_type",
+				Unique:  false,
+				Columns: []*schema.Column{EventsColumns[28]},
+			},
+			{
+				Name:    "event_vehicle_color",
+				Unique:  false,
+				Columns: []*schema.Column{EventsColumns[26]},
+			},
+		},
 	}
 	// PermissionsColumns holds the columns for the "permissions" table.
 	PermissionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID, Unique: true, SchemaType: map[string]string{"postgres": "uuid"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
@@ -118,7 +206,7 @@ var (
 		{Name: "can_create", Type: field.TypeBool, Default: false},
 		{Name: "can_update", Type: field.TypeBool, Default: false},
 		{Name: "can_delete", Type: field.TypeBool, Default: false},
-		{Name: "role_permissions", Type: field.TypeUUID, Nullable: true},
+		{Name: "role_permissions", Type: field.TypeUUID, Nullable: true, SchemaType: map[string]string{"postgres": "uuid"}},
 	}
 	// PermissionsTable holds the schema information for the "permissions" table.
 	PermissionsTable = &schema.Table{
@@ -133,17 +221,24 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "permission_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PermissionsColumns[1]},
+			},
+		},
 	}
 	// PoliceStationsColumns holds the columns for the "police_stations" table.
 	PoliceStationsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID, Unique: true, SchemaType: map[string]string{"postgres": "uuid"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
 		{Name: "location", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"postgres": "GEOMETRY(Point, 4326)"}},
 		{Name: "code", Type: field.TypeString, Unique: true},
 		{Name: "identifier", Type: field.TypeString, Unique: true},
-		{Name: "parent_station_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "parent_station_id", Type: field.TypeUUID, Nullable: true, SchemaType: map[string]string{"postgres": "uuid"}},
 	}
 	// PoliceStationsTable holds the schema information for the "police_stations" table.
 	PoliceStationsTable = &schema.Table{
@@ -160,6 +255,11 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
+				Name:    "policestation_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PoliceStationsColumns[1]},
+			},
+			{
 				Name:    "policestation_name",
 				Unique:  false,
 				Columns: []*schema.Column{PoliceStationsColumns[3]},
@@ -174,7 +274,7 @@ var (
 	}
 	// RolesColumns holds the columns for the "roles" table.
 	RolesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID, Unique: true, SchemaType: map[string]string{"postgres": "uuid"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
@@ -184,10 +284,17 @@ var (
 		Name:       "roles",
 		Columns:    RolesColumns,
 		PrimaryKey: []*schema.Column{RolesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "role_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{RolesColumns[1]},
+			},
+		},
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUUID, Unique: true, SchemaType: map[string]string{"postgres": "uuid"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamp with time zone"}},
 		{Name: "name", Type: field.TypeString},
@@ -195,8 +302,8 @@ var (
 		{Name: "password", Type: field.TypeString},
 		{Name: "phone", Type: field.TypeString, Nullable: true},
 		{Name: "active", Type: field.TypeBool, Default: true},
-		{Name: "police_station_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "role_id", Type: field.TypeUUID},
+		{Name: "police_station_id", Type: field.TypeUUID, Nullable: true, SchemaType: map[string]string{"postgres": "uuid"}},
+		{Name: "role_id", Type: field.TypeUUID, SchemaType: map[string]string{"postgres": "uuid"}},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -218,6 +325,11 @@ var (
 			},
 		},
 		Indexes: []*schema.Index{
+			{
+				Name:    "user_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{UsersColumns[1]},
+			},
 			{
 				Name:    "user_name",
 				Unique:  false,

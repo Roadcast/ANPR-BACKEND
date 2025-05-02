@@ -5,6 +5,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 	"github.com/google/uuid"
 	"time"
@@ -21,6 +22,9 @@ func (BMixin) Fields() []ent.Field {
 			Default(uuid.New).
 			Unique().
 			Immutable().
+			SchemaType(map[string]string{
+				"postgres": "uuid",
+			}).
 			Annotations(entgql.Type("ID"),
 				entgql.Skip(entgql.SkipWhereInput)),
 
@@ -51,5 +55,11 @@ func (BMixin) Annotations() []schema.Annotation {
 		entgql.RelayConnection(),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 		entgql.MultiOrder(),
+	}
+}
+
+func (BMixin) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("created_at"),
 	}
 }

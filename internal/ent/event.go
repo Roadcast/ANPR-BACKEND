@@ -27,6 +27,8 @@ type Event struct {
 	PlateBoundingBox []int `json:"plate_bounding_box,omitempty"`
 	// Channel of the plate
 	PlateChannel int `json:"plate_channel,omitempty"`
+	// Confidence score of the plate detection
+	PlateConfidence int `json:"plate_confidence,omitempty"`
 	// Indicates whether the plate exists
 	PlateIsExist bool `json:"plate_is_exist,omitempty"`
 	// Color of the plate
@@ -39,25 +41,41 @@ type Event struct {
 	PlateRegion string `json:"plate_region,omitempty"`
 	// Upload number of the plate
 	PlateUploadNum int `json:"plate_upload_num,omitempty"`
+	// Accurate timestamp of the snap
+	SnapAccurateTime string `json:"snap_accurate_time,omitempty"`
 	// Indicates if user interaction is allowed
 	SnapAllowUser bool `json:"snap_allow_user,omitempty"`
 	// End time for user interaction allowance
 	SnapAllowUserEndTime string `json:"snap_allow_user_end_time,omitempty"`
+	// DST adjustment
+	SnapDstTune int `json:"snap_dst_tune,omitempty"`
 	// Defence code
 	SnapDefenceCode string `json:"snap_defence_code,omitempty"`
 	// Device ID
 	SnapDeviceID string `json:"snap_device_id,omitempty"`
+	// Direction of the vehicle
+	SnapDirection string `json:"snap_direction,omitempty"`
 	// Number of people in the car
 	SnapInCarPeopleNum int `json:"snap_in_car_people_num,omitempty"`
 	// LAN number
 	SnapLanNo int `json:"snap_lan_no,omitempty"`
 	// Indicates if strobe is open
 	SnapOpenStrobe bool `json:"snap_open_strobe,omitempty"`
+	// Snap timestamp
+	SnapSnapTime string `json:"snap_snap_time,omitempty"`
+	// Time zone of the snap
+	SnapTimeZone int `json:"snap_time_zone,omitempty"`
+	// Speed of the vehicle
+	VehicleSpeed int `json:"vehicle_speed,omitempty"`
 	// Bounding box coordinates of the vehicle
 	VehicleBoundingBox []int `json:"vehicle_bounding_box,omitempty"`
+	// Color of the vehicle
+	VehicleColor string `json:"vehicle_color,omitempty"`
 	// Vehicle series
 	VehicleSeries string `json:"vehicle_series,omitempty"`
-	selectValues  sql.SelectValues
+	// Type of the vehicle
+	VehicleType  string `json:"vehicle_type,omitempty"`
+	selectValues sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -69,9 +87,9 @@ func (*Event) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case event.FieldPlateIsExist, event.FieldSnapAllowUser, event.FieldSnapOpenStrobe:
 			values[i] = new(sql.NullBool)
-		case event.FieldPlateChannel, event.FieldPlateUploadNum, event.FieldSnapInCarPeopleNum, event.FieldSnapLanNo:
+		case event.FieldPlateChannel, event.FieldPlateConfidence, event.FieldPlateUploadNum, event.FieldSnapDstTune, event.FieldSnapInCarPeopleNum, event.FieldSnapLanNo, event.FieldSnapTimeZone, event.FieldVehicleSpeed:
 			values[i] = new(sql.NullInt64)
-		case event.FieldPlateColor, event.FieldPlateNumber, event.FieldPlateType, event.FieldPlateRegion, event.FieldSnapAllowUserEndTime, event.FieldSnapDefenceCode, event.FieldSnapDeviceID, event.FieldVehicleSeries:
+		case event.FieldPlateColor, event.FieldPlateNumber, event.FieldPlateType, event.FieldPlateRegion, event.FieldSnapAccurateTime, event.FieldSnapAllowUserEndTime, event.FieldSnapDefenceCode, event.FieldSnapDeviceID, event.FieldSnapDirection, event.FieldSnapSnapTime, event.FieldVehicleColor, event.FieldVehicleSeries, event.FieldVehicleType:
 			values[i] = new(sql.NullString)
 		case event.FieldCreatedAt, event.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -124,6 +142,12 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.PlateChannel = int(value.Int64)
 			}
+		case event.FieldPlateConfidence:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field plate_confidence", values[i])
+			} else if value.Valid {
+				e.PlateConfidence = int(value.Int64)
+			}
 		case event.FieldPlateIsExist:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field plate_is_exist", values[i])
@@ -160,6 +184,12 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.PlateUploadNum = int(value.Int64)
 			}
+		case event.FieldSnapAccurateTime:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field snap_accurate_time", values[i])
+			} else if value.Valid {
+				e.SnapAccurateTime = value.String
+			}
 		case event.FieldSnapAllowUser:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field snap_allow_user", values[i])
@@ -172,6 +202,12 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.SnapAllowUserEndTime = value.String
 			}
+		case event.FieldSnapDstTune:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field snap_dst_tune", values[i])
+			} else if value.Valid {
+				e.SnapDstTune = int(value.Int64)
+			}
 		case event.FieldSnapDefenceCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field snap_defence_code", values[i])
@@ -183,6 +219,12 @@ func (e *Event) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field snap_device_id", values[i])
 			} else if value.Valid {
 				e.SnapDeviceID = value.String
+			}
+		case event.FieldSnapDirection:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field snap_direction", values[i])
+			} else if value.Valid {
+				e.SnapDirection = value.String
 			}
 		case event.FieldSnapInCarPeopleNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -202,6 +244,24 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.SnapOpenStrobe = value.Bool
 			}
+		case event.FieldSnapSnapTime:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field snap_snap_time", values[i])
+			} else if value.Valid {
+				e.SnapSnapTime = value.String
+			}
+		case event.FieldSnapTimeZone:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field snap_time_zone", values[i])
+			} else if value.Valid {
+				e.SnapTimeZone = int(value.Int64)
+			}
+		case event.FieldVehicleSpeed:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field vehicle_speed", values[i])
+			} else if value.Valid {
+				e.VehicleSpeed = int(value.Int64)
+			}
 		case event.FieldVehicleBoundingBox:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field vehicle_bounding_box", values[i])
@@ -210,11 +270,23 @@ func (e *Event) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field vehicle_bounding_box: %w", err)
 				}
 			}
+		case event.FieldVehicleColor:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field vehicle_color", values[i])
+			} else if value.Valid {
+				e.VehicleColor = value.String
+			}
 		case event.FieldVehicleSeries:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field vehicle_series", values[i])
 			} else if value.Valid {
 				e.VehicleSeries = value.String
+			}
+		case event.FieldVehicleType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field vehicle_type", values[i])
+			} else if value.Valid {
+				e.VehicleType = value.String
 			}
 		default:
 			e.selectValues.Set(columns[i], values[i])
@@ -264,6 +336,9 @@ func (e *Event) String() string {
 	builder.WriteString("plate_channel=")
 	builder.WriteString(fmt.Sprintf("%v", e.PlateChannel))
 	builder.WriteString(", ")
+	builder.WriteString("plate_confidence=")
+	builder.WriteString(fmt.Sprintf("%v", e.PlateConfidence))
+	builder.WriteString(", ")
 	builder.WriteString("plate_is_exist=")
 	builder.WriteString(fmt.Sprintf("%v", e.PlateIsExist))
 	builder.WriteString(", ")
@@ -282,17 +357,26 @@ func (e *Event) String() string {
 	builder.WriteString("plate_upload_num=")
 	builder.WriteString(fmt.Sprintf("%v", e.PlateUploadNum))
 	builder.WriteString(", ")
+	builder.WriteString("snap_accurate_time=")
+	builder.WriteString(e.SnapAccurateTime)
+	builder.WriteString(", ")
 	builder.WriteString("snap_allow_user=")
 	builder.WriteString(fmt.Sprintf("%v", e.SnapAllowUser))
 	builder.WriteString(", ")
 	builder.WriteString("snap_allow_user_end_time=")
 	builder.WriteString(e.SnapAllowUserEndTime)
 	builder.WriteString(", ")
+	builder.WriteString("snap_dst_tune=")
+	builder.WriteString(fmt.Sprintf("%v", e.SnapDstTune))
+	builder.WriteString(", ")
 	builder.WriteString("snap_defence_code=")
 	builder.WriteString(e.SnapDefenceCode)
 	builder.WriteString(", ")
 	builder.WriteString("snap_device_id=")
 	builder.WriteString(e.SnapDeviceID)
+	builder.WriteString(", ")
+	builder.WriteString("snap_direction=")
+	builder.WriteString(e.SnapDirection)
 	builder.WriteString(", ")
 	builder.WriteString("snap_in_car_people_num=")
 	builder.WriteString(fmt.Sprintf("%v", e.SnapInCarPeopleNum))
@@ -303,11 +387,26 @@ func (e *Event) String() string {
 	builder.WriteString("snap_open_strobe=")
 	builder.WriteString(fmt.Sprintf("%v", e.SnapOpenStrobe))
 	builder.WriteString(", ")
+	builder.WriteString("snap_snap_time=")
+	builder.WriteString(e.SnapSnapTime)
+	builder.WriteString(", ")
+	builder.WriteString("snap_time_zone=")
+	builder.WriteString(fmt.Sprintf("%v", e.SnapTimeZone))
+	builder.WriteString(", ")
+	builder.WriteString("vehicle_speed=")
+	builder.WriteString(fmt.Sprintf("%v", e.VehicleSpeed))
+	builder.WriteString(", ")
 	builder.WriteString("vehicle_bounding_box=")
 	builder.WriteString(fmt.Sprintf("%v", e.VehicleBoundingBox))
 	builder.WriteString(", ")
+	builder.WriteString("vehicle_color=")
+	builder.WriteString(e.VehicleColor)
+	builder.WriteString(", ")
 	builder.WriteString("vehicle_series=")
 	builder.WriteString(e.VehicleSeries)
+	builder.WriteString(", ")
+	builder.WriteString("vehicle_type=")
+	builder.WriteString(e.VehicleType)
 	builder.WriteByte(')')
 	return builder.String()
 }

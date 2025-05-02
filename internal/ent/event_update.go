@@ -80,6 +80,33 @@ func (eu *EventUpdate) ClearPlateChannel() *EventUpdate {
 	return eu
 }
 
+// SetPlateConfidence sets the "plate_confidence" field.
+func (eu *EventUpdate) SetPlateConfidence(i int) *EventUpdate {
+	eu.mutation.ResetPlateConfidence()
+	eu.mutation.SetPlateConfidence(i)
+	return eu
+}
+
+// SetNillablePlateConfidence sets the "plate_confidence" field if the given value is not nil.
+func (eu *EventUpdate) SetNillablePlateConfidence(i *int) *EventUpdate {
+	if i != nil {
+		eu.SetPlateConfidence(*i)
+	}
+	return eu
+}
+
+// AddPlateConfidence adds i to the "plate_confidence" field.
+func (eu *EventUpdate) AddPlateConfidence(i int) *EventUpdate {
+	eu.mutation.AddPlateConfidence(i)
+	return eu
+}
+
+// ClearPlateConfidence clears the value of the "plate_confidence" field.
+func (eu *EventUpdate) ClearPlateConfidence() *EventUpdate {
+	eu.mutation.ClearPlateConfidence()
+	return eu
+}
+
 // SetPlateIsExist sets the "plate_is_exist" field.
 func (eu *EventUpdate) SetPlateIsExist(b bool) *EventUpdate {
 	eu.mutation.SetPlateIsExist(b)
@@ -207,6 +234,26 @@ func (eu *EventUpdate) ClearPlateUploadNum() *EventUpdate {
 	return eu
 }
 
+// SetSnapAccurateTime sets the "snap_accurate_time" field.
+func (eu *EventUpdate) SetSnapAccurateTime(s string) *EventUpdate {
+	eu.mutation.SetSnapAccurateTime(s)
+	return eu
+}
+
+// SetNillableSnapAccurateTime sets the "snap_accurate_time" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableSnapAccurateTime(s *string) *EventUpdate {
+	if s != nil {
+		eu.SetSnapAccurateTime(*s)
+	}
+	return eu
+}
+
+// ClearSnapAccurateTime clears the value of the "snap_accurate_time" field.
+func (eu *EventUpdate) ClearSnapAccurateTime() *EventUpdate {
+	eu.mutation.ClearSnapAccurateTime()
+	return eu
+}
+
 // SetSnapAllowUser sets the "snap_allow_user" field.
 func (eu *EventUpdate) SetSnapAllowUser(b bool) *EventUpdate {
 	eu.mutation.SetSnapAllowUser(b)
@@ -247,6 +294,33 @@ func (eu *EventUpdate) ClearSnapAllowUserEndTime() *EventUpdate {
 	return eu
 }
 
+// SetSnapDstTune sets the "snap_dst_tune" field.
+func (eu *EventUpdate) SetSnapDstTune(i int) *EventUpdate {
+	eu.mutation.ResetSnapDstTune()
+	eu.mutation.SetSnapDstTune(i)
+	return eu
+}
+
+// SetNillableSnapDstTune sets the "snap_dst_tune" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableSnapDstTune(i *int) *EventUpdate {
+	if i != nil {
+		eu.SetSnapDstTune(*i)
+	}
+	return eu
+}
+
+// AddSnapDstTune adds i to the "snap_dst_tune" field.
+func (eu *EventUpdate) AddSnapDstTune(i int) *EventUpdate {
+	eu.mutation.AddSnapDstTune(i)
+	return eu
+}
+
+// ClearSnapDstTune clears the value of the "snap_dst_tune" field.
+func (eu *EventUpdate) ClearSnapDstTune() *EventUpdate {
+	eu.mutation.ClearSnapDstTune()
+	return eu
+}
+
 // SetSnapDefenceCode sets the "snap_defence_code" field.
 func (eu *EventUpdate) SetSnapDefenceCode(s string) *EventUpdate {
 	eu.mutation.SetSnapDefenceCode(s)
@@ -284,6 +358,26 @@ func (eu *EventUpdate) SetNillableSnapDeviceID(s *string) *EventUpdate {
 // ClearSnapDeviceID clears the value of the "snap_device_id" field.
 func (eu *EventUpdate) ClearSnapDeviceID() *EventUpdate {
 	eu.mutation.ClearSnapDeviceID()
+	return eu
+}
+
+// SetSnapDirection sets the "snap_direction" field.
+func (eu *EventUpdate) SetSnapDirection(s string) *EventUpdate {
+	eu.mutation.SetSnapDirection(s)
+	return eu
+}
+
+// SetNillableSnapDirection sets the "snap_direction" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableSnapDirection(s *string) *EventUpdate {
+	if s != nil {
+		eu.SetSnapDirection(*s)
+	}
+	return eu
+}
+
+// ClearSnapDirection clears the value of the "snap_direction" field.
+func (eu *EventUpdate) ClearSnapDirection() *EventUpdate {
+	eu.mutation.ClearSnapDirection()
 	return eu
 }
 
@@ -361,6 +455,80 @@ func (eu *EventUpdate) ClearSnapOpenStrobe() *EventUpdate {
 	return eu
 }
 
+// SetSnapSnapTime sets the "snap_snap_time" field.
+func (eu *EventUpdate) SetSnapSnapTime(s string) *EventUpdate {
+	eu.mutation.SetSnapSnapTime(s)
+	return eu
+}
+
+// SetNillableSnapSnapTime sets the "snap_snap_time" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableSnapSnapTime(s *string) *EventUpdate {
+	if s != nil {
+		eu.SetSnapSnapTime(*s)
+	}
+	return eu
+}
+
+// ClearSnapSnapTime clears the value of the "snap_snap_time" field.
+func (eu *EventUpdate) ClearSnapSnapTime() *EventUpdate {
+	eu.mutation.ClearSnapSnapTime()
+	return eu
+}
+
+// SetSnapTimeZone sets the "snap_time_zone" field.
+func (eu *EventUpdate) SetSnapTimeZone(i int) *EventUpdate {
+	eu.mutation.ResetSnapTimeZone()
+	eu.mutation.SetSnapTimeZone(i)
+	return eu
+}
+
+// SetNillableSnapTimeZone sets the "snap_time_zone" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableSnapTimeZone(i *int) *EventUpdate {
+	if i != nil {
+		eu.SetSnapTimeZone(*i)
+	}
+	return eu
+}
+
+// AddSnapTimeZone adds i to the "snap_time_zone" field.
+func (eu *EventUpdate) AddSnapTimeZone(i int) *EventUpdate {
+	eu.mutation.AddSnapTimeZone(i)
+	return eu
+}
+
+// ClearSnapTimeZone clears the value of the "snap_time_zone" field.
+func (eu *EventUpdate) ClearSnapTimeZone() *EventUpdate {
+	eu.mutation.ClearSnapTimeZone()
+	return eu
+}
+
+// SetVehicleSpeed sets the "vehicle_speed" field.
+func (eu *EventUpdate) SetVehicleSpeed(i int) *EventUpdate {
+	eu.mutation.ResetVehicleSpeed()
+	eu.mutation.SetVehicleSpeed(i)
+	return eu
+}
+
+// SetNillableVehicleSpeed sets the "vehicle_speed" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableVehicleSpeed(i *int) *EventUpdate {
+	if i != nil {
+		eu.SetVehicleSpeed(*i)
+	}
+	return eu
+}
+
+// AddVehicleSpeed adds i to the "vehicle_speed" field.
+func (eu *EventUpdate) AddVehicleSpeed(i int) *EventUpdate {
+	eu.mutation.AddVehicleSpeed(i)
+	return eu
+}
+
+// ClearVehicleSpeed clears the value of the "vehicle_speed" field.
+func (eu *EventUpdate) ClearVehicleSpeed() *EventUpdate {
+	eu.mutation.ClearVehicleSpeed()
+	return eu
+}
+
 // SetVehicleBoundingBox sets the "vehicle_bounding_box" field.
 func (eu *EventUpdate) SetVehicleBoundingBox(i []int) *EventUpdate {
 	eu.mutation.SetVehicleBoundingBox(i)
@@ -376,6 +544,26 @@ func (eu *EventUpdate) AppendVehicleBoundingBox(i []int) *EventUpdate {
 // ClearVehicleBoundingBox clears the value of the "vehicle_bounding_box" field.
 func (eu *EventUpdate) ClearVehicleBoundingBox() *EventUpdate {
 	eu.mutation.ClearVehicleBoundingBox()
+	return eu
+}
+
+// SetVehicleColor sets the "vehicle_color" field.
+func (eu *EventUpdate) SetVehicleColor(s string) *EventUpdate {
+	eu.mutation.SetVehicleColor(s)
+	return eu
+}
+
+// SetNillableVehicleColor sets the "vehicle_color" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableVehicleColor(s *string) *EventUpdate {
+	if s != nil {
+		eu.SetVehicleColor(*s)
+	}
+	return eu
+}
+
+// ClearVehicleColor clears the value of the "vehicle_color" field.
+func (eu *EventUpdate) ClearVehicleColor() *EventUpdate {
+	eu.mutation.ClearVehicleColor()
 	return eu
 }
 
@@ -396,6 +584,26 @@ func (eu *EventUpdate) SetNillableVehicleSeries(s *string) *EventUpdate {
 // ClearVehicleSeries clears the value of the "vehicle_series" field.
 func (eu *EventUpdate) ClearVehicleSeries() *EventUpdate {
 	eu.mutation.ClearVehicleSeries()
+	return eu
+}
+
+// SetVehicleType sets the "vehicle_type" field.
+func (eu *EventUpdate) SetVehicleType(s string) *EventUpdate {
+	eu.mutation.SetVehicleType(s)
+	return eu
+}
+
+// SetNillableVehicleType sets the "vehicle_type" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableVehicleType(s *string) *EventUpdate {
+	if s != nil {
+		eu.SetVehicleType(*s)
+	}
+	return eu
+}
+
+// ClearVehicleType clears the value of the "vehicle_type" field.
+func (eu *EventUpdate) ClearVehicleType() *EventUpdate {
+	eu.mutation.ClearVehicleType()
 	return eu
 }
 
@@ -472,6 +680,15 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if eu.mutation.PlateChannelCleared() {
 		_spec.ClearField(event.FieldPlateChannel, field.TypeInt)
 	}
+	if value, ok := eu.mutation.PlateConfidence(); ok {
+		_spec.SetField(event.FieldPlateConfidence, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AddedPlateConfidence(); ok {
+		_spec.AddField(event.FieldPlateConfidence, field.TypeInt, value)
+	}
+	if eu.mutation.PlateConfidenceCleared() {
+		_spec.ClearField(event.FieldPlateConfidence, field.TypeInt)
+	}
 	if value, ok := eu.mutation.PlateIsExist(); ok {
 		_spec.SetField(event.FieldPlateIsExist, field.TypeBool, value)
 	}
@@ -511,6 +728,12 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if eu.mutation.PlateUploadNumCleared() {
 		_spec.ClearField(event.FieldPlateUploadNum, field.TypeInt)
 	}
+	if value, ok := eu.mutation.SnapAccurateTime(); ok {
+		_spec.SetField(event.FieldSnapAccurateTime, field.TypeString, value)
+	}
+	if eu.mutation.SnapAccurateTimeCleared() {
+		_spec.ClearField(event.FieldSnapAccurateTime, field.TypeString)
+	}
 	if value, ok := eu.mutation.SnapAllowUser(); ok {
 		_spec.SetField(event.FieldSnapAllowUser, field.TypeBool, value)
 	}
@@ -523,6 +746,15 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if eu.mutation.SnapAllowUserEndTimeCleared() {
 		_spec.ClearField(event.FieldSnapAllowUserEndTime, field.TypeString)
 	}
+	if value, ok := eu.mutation.SnapDstTune(); ok {
+		_spec.SetField(event.FieldSnapDstTune, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AddedSnapDstTune(); ok {
+		_spec.AddField(event.FieldSnapDstTune, field.TypeInt, value)
+	}
+	if eu.mutation.SnapDstTuneCleared() {
+		_spec.ClearField(event.FieldSnapDstTune, field.TypeInt)
+	}
 	if value, ok := eu.mutation.SnapDefenceCode(); ok {
 		_spec.SetField(event.FieldSnapDefenceCode, field.TypeString, value)
 	}
@@ -534,6 +766,12 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if eu.mutation.SnapDeviceIDCleared() {
 		_spec.ClearField(event.FieldSnapDeviceID, field.TypeString)
+	}
+	if value, ok := eu.mutation.SnapDirection(); ok {
+		_spec.SetField(event.FieldSnapDirection, field.TypeString, value)
+	}
+	if eu.mutation.SnapDirectionCleared() {
+		_spec.ClearField(event.FieldSnapDirection, field.TypeString)
 	}
 	if value, ok := eu.mutation.SnapInCarPeopleNum(); ok {
 		_spec.SetField(event.FieldSnapInCarPeopleNum, field.TypeInt, value)
@@ -559,6 +797,30 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if eu.mutation.SnapOpenStrobeCleared() {
 		_spec.ClearField(event.FieldSnapOpenStrobe, field.TypeBool)
 	}
+	if value, ok := eu.mutation.SnapSnapTime(); ok {
+		_spec.SetField(event.FieldSnapSnapTime, field.TypeString, value)
+	}
+	if eu.mutation.SnapSnapTimeCleared() {
+		_spec.ClearField(event.FieldSnapSnapTime, field.TypeString)
+	}
+	if value, ok := eu.mutation.SnapTimeZone(); ok {
+		_spec.SetField(event.FieldSnapTimeZone, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AddedSnapTimeZone(); ok {
+		_spec.AddField(event.FieldSnapTimeZone, field.TypeInt, value)
+	}
+	if eu.mutation.SnapTimeZoneCleared() {
+		_spec.ClearField(event.FieldSnapTimeZone, field.TypeInt)
+	}
+	if value, ok := eu.mutation.VehicleSpeed(); ok {
+		_spec.SetField(event.FieldVehicleSpeed, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AddedVehicleSpeed(); ok {
+		_spec.AddField(event.FieldVehicleSpeed, field.TypeInt, value)
+	}
+	if eu.mutation.VehicleSpeedCleared() {
+		_spec.ClearField(event.FieldVehicleSpeed, field.TypeInt)
+	}
 	if value, ok := eu.mutation.VehicleBoundingBox(); ok {
 		_spec.SetField(event.FieldVehicleBoundingBox, field.TypeJSON, value)
 	}
@@ -570,11 +832,23 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if eu.mutation.VehicleBoundingBoxCleared() {
 		_spec.ClearField(event.FieldVehicleBoundingBox, field.TypeJSON)
 	}
+	if value, ok := eu.mutation.VehicleColor(); ok {
+		_spec.SetField(event.FieldVehicleColor, field.TypeString, value)
+	}
+	if eu.mutation.VehicleColorCleared() {
+		_spec.ClearField(event.FieldVehicleColor, field.TypeString)
+	}
 	if value, ok := eu.mutation.VehicleSeries(); ok {
 		_spec.SetField(event.FieldVehicleSeries, field.TypeString, value)
 	}
 	if eu.mutation.VehicleSeriesCleared() {
 		_spec.ClearField(event.FieldVehicleSeries, field.TypeString)
+	}
+	if value, ok := eu.mutation.VehicleType(); ok {
+		_spec.SetField(event.FieldVehicleType, field.TypeString, value)
+	}
+	if eu.mutation.VehicleTypeCleared() {
+		_spec.ClearField(event.FieldVehicleType, field.TypeString)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -644,6 +918,33 @@ func (euo *EventUpdateOne) AddPlateChannel(i int) *EventUpdateOne {
 // ClearPlateChannel clears the value of the "plate_channel" field.
 func (euo *EventUpdateOne) ClearPlateChannel() *EventUpdateOne {
 	euo.mutation.ClearPlateChannel()
+	return euo
+}
+
+// SetPlateConfidence sets the "plate_confidence" field.
+func (euo *EventUpdateOne) SetPlateConfidence(i int) *EventUpdateOne {
+	euo.mutation.ResetPlateConfidence()
+	euo.mutation.SetPlateConfidence(i)
+	return euo
+}
+
+// SetNillablePlateConfidence sets the "plate_confidence" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillablePlateConfidence(i *int) *EventUpdateOne {
+	if i != nil {
+		euo.SetPlateConfidence(*i)
+	}
+	return euo
+}
+
+// AddPlateConfidence adds i to the "plate_confidence" field.
+func (euo *EventUpdateOne) AddPlateConfidence(i int) *EventUpdateOne {
+	euo.mutation.AddPlateConfidence(i)
+	return euo
+}
+
+// ClearPlateConfidence clears the value of the "plate_confidence" field.
+func (euo *EventUpdateOne) ClearPlateConfidence() *EventUpdateOne {
+	euo.mutation.ClearPlateConfidence()
 	return euo
 }
 
@@ -774,6 +1075,26 @@ func (euo *EventUpdateOne) ClearPlateUploadNum() *EventUpdateOne {
 	return euo
 }
 
+// SetSnapAccurateTime sets the "snap_accurate_time" field.
+func (euo *EventUpdateOne) SetSnapAccurateTime(s string) *EventUpdateOne {
+	euo.mutation.SetSnapAccurateTime(s)
+	return euo
+}
+
+// SetNillableSnapAccurateTime sets the "snap_accurate_time" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableSnapAccurateTime(s *string) *EventUpdateOne {
+	if s != nil {
+		euo.SetSnapAccurateTime(*s)
+	}
+	return euo
+}
+
+// ClearSnapAccurateTime clears the value of the "snap_accurate_time" field.
+func (euo *EventUpdateOne) ClearSnapAccurateTime() *EventUpdateOne {
+	euo.mutation.ClearSnapAccurateTime()
+	return euo
+}
+
 // SetSnapAllowUser sets the "snap_allow_user" field.
 func (euo *EventUpdateOne) SetSnapAllowUser(b bool) *EventUpdateOne {
 	euo.mutation.SetSnapAllowUser(b)
@@ -814,6 +1135,33 @@ func (euo *EventUpdateOne) ClearSnapAllowUserEndTime() *EventUpdateOne {
 	return euo
 }
 
+// SetSnapDstTune sets the "snap_dst_tune" field.
+func (euo *EventUpdateOne) SetSnapDstTune(i int) *EventUpdateOne {
+	euo.mutation.ResetSnapDstTune()
+	euo.mutation.SetSnapDstTune(i)
+	return euo
+}
+
+// SetNillableSnapDstTune sets the "snap_dst_tune" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableSnapDstTune(i *int) *EventUpdateOne {
+	if i != nil {
+		euo.SetSnapDstTune(*i)
+	}
+	return euo
+}
+
+// AddSnapDstTune adds i to the "snap_dst_tune" field.
+func (euo *EventUpdateOne) AddSnapDstTune(i int) *EventUpdateOne {
+	euo.mutation.AddSnapDstTune(i)
+	return euo
+}
+
+// ClearSnapDstTune clears the value of the "snap_dst_tune" field.
+func (euo *EventUpdateOne) ClearSnapDstTune() *EventUpdateOne {
+	euo.mutation.ClearSnapDstTune()
+	return euo
+}
+
 // SetSnapDefenceCode sets the "snap_defence_code" field.
 func (euo *EventUpdateOne) SetSnapDefenceCode(s string) *EventUpdateOne {
 	euo.mutation.SetSnapDefenceCode(s)
@@ -851,6 +1199,26 @@ func (euo *EventUpdateOne) SetNillableSnapDeviceID(s *string) *EventUpdateOne {
 // ClearSnapDeviceID clears the value of the "snap_device_id" field.
 func (euo *EventUpdateOne) ClearSnapDeviceID() *EventUpdateOne {
 	euo.mutation.ClearSnapDeviceID()
+	return euo
+}
+
+// SetSnapDirection sets the "snap_direction" field.
+func (euo *EventUpdateOne) SetSnapDirection(s string) *EventUpdateOne {
+	euo.mutation.SetSnapDirection(s)
+	return euo
+}
+
+// SetNillableSnapDirection sets the "snap_direction" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableSnapDirection(s *string) *EventUpdateOne {
+	if s != nil {
+		euo.SetSnapDirection(*s)
+	}
+	return euo
+}
+
+// ClearSnapDirection clears the value of the "snap_direction" field.
+func (euo *EventUpdateOne) ClearSnapDirection() *EventUpdateOne {
+	euo.mutation.ClearSnapDirection()
 	return euo
 }
 
@@ -928,6 +1296,80 @@ func (euo *EventUpdateOne) ClearSnapOpenStrobe() *EventUpdateOne {
 	return euo
 }
 
+// SetSnapSnapTime sets the "snap_snap_time" field.
+func (euo *EventUpdateOne) SetSnapSnapTime(s string) *EventUpdateOne {
+	euo.mutation.SetSnapSnapTime(s)
+	return euo
+}
+
+// SetNillableSnapSnapTime sets the "snap_snap_time" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableSnapSnapTime(s *string) *EventUpdateOne {
+	if s != nil {
+		euo.SetSnapSnapTime(*s)
+	}
+	return euo
+}
+
+// ClearSnapSnapTime clears the value of the "snap_snap_time" field.
+func (euo *EventUpdateOne) ClearSnapSnapTime() *EventUpdateOne {
+	euo.mutation.ClearSnapSnapTime()
+	return euo
+}
+
+// SetSnapTimeZone sets the "snap_time_zone" field.
+func (euo *EventUpdateOne) SetSnapTimeZone(i int) *EventUpdateOne {
+	euo.mutation.ResetSnapTimeZone()
+	euo.mutation.SetSnapTimeZone(i)
+	return euo
+}
+
+// SetNillableSnapTimeZone sets the "snap_time_zone" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableSnapTimeZone(i *int) *EventUpdateOne {
+	if i != nil {
+		euo.SetSnapTimeZone(*i)
+	}
+	return euo
+}
+
+// AddSnapTimeZone adds i to the "snap_time_zone" field.
+func (euo *EventUpdateOne) AddSnapTimeZone(i int) *EventUpdateOne {
+	euo.mutation.AddSnapTimeZone(i)
+	return euo
+}
+
+// ClearSnapTimeZone clears the value of the "snap_time_zone" field.
+func (euo *EventUpdateOne) ClearSnapTimeZone() *EventUpdateOne {
+	euo.mutation.ClearSnapTimeZone()
+	return euo
+}
+
+// SetVehicleSpeed sets the "vehicle_speed" field.
+func (euo *EventUpdateOne) SetVehicleSpeed(i int) *EventUpdateOne {
+	euo.mutation.ResetVehicleSpeed()
+	euo.mutation.SetVehicleSpeed(i)
+	return euo
+}
+
+// SetNillableVehicleSpeed sets the "vehicle_speed" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableVehicleSpeed(i *int) *EventUpdateOne {
+	if i != nil {
+		euo.SetVehicleSpeed(*i)
+	}
+	return euo
+}
+
+// AddVehicleSpeed adds i to the "vehicle_speed" field.
+func (euo *EventUpdateOne) AddVehicleSpeed(i int) *EventUpdateOne {
+	euo.mutation.AddVehicleSpeed(i)
+	return euo
+}
+
+// ClearVehicleSpeed clears the value of the "vehicle_speed" field.
+func (euo *EventUpdateOne) ClearVehicleSpeed() *EventUpdateOne {
+	euo.mutation.ClearVehicleSpeed()
+	return euo
+}
+
 // SetVehicleBoundingBox sets the "vehicle_bounding_box" field.
 func (euo *EventUpdateOne) SetVehicleBoundingBox(i []int) *EventUpdateOne {
 	euo.mutation.SetVehicleBoundingBox(i)
@@ -943,6 +1385,26 @@ func (euo *EventUpdateOne) AppendVehicleBoundingBox(i []int) *EventUpdateOne {
 // ClearVehicleBoundingBox clears the value of the "vehicle_bounding_box" field.
 func (euo *EventUpdateOne) ClearVehicleBoundingBox() *EventUpdateOne {
 	euo.mutation.ClearVehicleBoundingBox()
+	return euo
+}
+
+// SetVehicleColor sets the "vehicle_color" field.
+func (euo *EventUpdateOne) SetVehicleColor(s string) *EventUpdateOne {
+	euo.mutation.SetVehicleColor(s)
+	return euo
+}
+
+// SetNillableVehicleColor sets the "vehicle_color" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableVehicleColor(s *string) *EventUpdateOne {
+	if s != nil {
+		euo.SetVehicleColor(*s)
+	}
+	return euo
+}
+
+// ClearVehicleColor clears the value of the "vehicle_color" field.
+func (euo *EventUpdateOne) ClearVehicleColor() *EventUpdateOne {
+	euo.mutation.ClearVehicleColor()
 	return euo
 }
 
@@ -963,6 +1425,26 @@ func (euo *EventUpdateOne) SetNillableVehicleSeries(s *string) *EventUpdateOne {
 // ClearVehicleSeries clears the value of the "vehicle_series" field.
 func (euo *EventUpdateOne) ClearVehicleSeries() *EventUpdateOne {
 	euo.mutation.ClearVehicleSeries()
+	return euo
+}
+
+// SetVehicleType sets the "vehicle_type" field.
+func (euo *EventUpdateOne) SetVehicleType(s string) *EventUpdateOne {
+	euo.mutation.SetVehicleType(s)
+	return euo
+}
+
+// SetNillableVehicleType sets the "vehicle_type" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableVehicleType(s *string) *EventUpdateOne {
+	if s != nil {
+		euo.SetVehicleType(*s)
+	}
+	return euo
+}
+
+// ClearVehicleType clears the value of the "vehicle_type" field.
+func (euo *EventUpdateOne) ClearVehicleType() *EventUpdateOne {
+	euo.mutation.ClearVehicleType()
 	return euo
 }
 
@@ -1069,6 +1551,15 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	if euo.mutation.PlateChannelCleared() {
 		_spec.ClearField(event.FieldPlateChannel, field.TypeInt)
 	}
+	if value, ok := euo.mutation.PlateConfidence(); ok {
+		_spec.SetField(event.FieldPlateConfidence, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AddedPlateConfidence(); ok {
+		_spec.AddField(event.FieldPlateConfidence, field.TypeInt, value)
+	}
+	if euo.mutation.PlateConfidenceCleared() {
+		_spec.ClearField(event.FieldPlateConfidence, field.TypeInt)
+	}
 	if value, ok := euo.mutation.PlateIsExist(); ok {
 		_spec.SetField(event.FieldPlateIsExist, field.TypeBool, value)
 	}
@@ -1108,6 +1599,12 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	if euo.mutation.PlateUploadNumCleared() {
 		_spec.ClearField(event.FieldPlateUploadNum, field.TypeInt)
 	}
+	if value, ok := euo.mutation.SnapAccurateTime(); ok {
+		_spec.SetField(event.FieldSnapAccurateTime, field.TypeString, value)
+	}
+	if euo.mutation.SnapAccurateTimeCleared() {
+		_spec.ClearField(event.FieldSnapAccurateTime, field.TypeString)
+	}
 	if value, ok := euo.mutation.SnapAllowUser(); ok {
 		_spec.SetField(event.FieldSnapAllowUser, field.TypeBool, value)
 	}
@@ -1120,6 +1617,15 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	if euo.mutation.SnapAllowUserEndTimeCleared() {
 		_spec.ClearField(event.FieldSnapAllowUserEndTime, field.TypeString)
 	}
+	if value, ok := euo.mutation.SnapDstTune(); ok {
+		_spec.SetField(event.FieldSnapDstTune, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AddedSnapDstTune(); ok {
+		_spec.AddField(event.FieldSnapDstTune, field.TypeInt, value)
+	}
+	if euo.mutation.SnapDstTuneCleared() {
+		_spec.ClearField(event.FieldSnapDstTune, field.TypeInt)
+	}
 	if value, ok := euo.mutation.SnapDefenceCode(); ok {
 		_spec.SetField(event.FieldSnapDefenceCode, field.TypeString, value)
 	}
@@ -1131,6 +1637,12 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	}
 	if euo.mutation.SnapDeviceIDCleared() {
 		_spec.ClearField(event.FieldSnapDeviceID, field.TypeString)
+	}
+	if value, ok := euo.mutation.SnapDirection(); ok {
+		_spec.SetField(event.FieldSnapDirection, field.TypeString, value)
+	}
+	if euo.mutation.SnapDirectionCleared() {
+		_spec.ClearField(event.FieldSnapDirection, field.TypeString)
 	}
 	if value, ok := euo.mutation.SnapInCarPeopleNum(); ok {
 		_spec.SetField(event.FieldSnapInCarPeopleNum, field.TypeInt, value)
@@ -1156,6 +1668,30 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	if euo.mutation.SnapOpenStrobeCleared() {
 		_spec.ClearField(event.FieldSnapOpenStrobe, field.TypeBool)
 	}
+	if value, ok := euo.mutation.SnapSnapTime(); ok {
+		_spec.SetField(event.FieldSnapSnapTime, field.TypeString, value)
+	}
+	if euo.mutation.SnapSnapTimeCleared() {
+		_spec.ClearField(event.FieldSnapSnapTime, field.TypeString)
+	}
+	if value, ok := euo.mutation.SnapTimeZone(); ok {
+		_spec.SetField(event.FieldSnapTimeZone, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AddedSnapTimeZone(); ok {
+		_spec.AddField(event.FieldSnapTimeZone, field.TypeInt, value)
+	}
+	if euo.mutation.SnapTimeZoneCleared() {
+		_spec.ClearField(event.FieldSnapTimeZone, field.TypeInt)
+	}
+	if value, ok := euo.mutation.VehicleSpeed(); ok {
+		_spec.SetField(event.FieldVehicleSpeed, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AddedVehicleSpeed(); ok {
+		_spec.AddField(event.FieldVehicleSpeed, field.TypeInt, value)
+	}
+	if euo.mutation.VehicleSpeedCleared() {
+		_spec.ClearField(event.FieldVehicleSpeed, field.TypeInt)
+	}
 	if value, ok := euo.mutation.VehicleBoundingBox(); ok {
 		_spec.SetField(event.FieldVehicleBoundingBox, field.TypeJSON, value)
 	}
@@ -1167,11 +1703,23 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	if euo.mutation.VehicleBoundingBoxCleared() {
 		_spec.ClearField(event.FieldVehicleBoundingBox, field.TypeJSON)
 	}
+	if value, ok := euo.mutation.VehicleColor(); ok {
+		_spec.SetField(event.FieldVehicleColor, field.TypeString, value)
+	}
+	if euo.mutation.VehicleColorCleared() {
+		_spec.ClearField(event.FieldVehicleColor, field.TypeString)
+	}
 	if value, ok := euo.mutation.VehicleSeries(); ok {
 		_spec.SetField(event.FieldVehicleSeries, field.TypeString, value)
 	}
 	if euo.mutation.VehicleSeriesCleared() {
 		_spec.ClearField(event.FieldVehicleSeries, field.TypeString)
+	}
+	if value, ok := euo.mutation.VehicleType(); ok {
+		_spec.SetField(event.FieldVehicleType, field.TypeString, value)
+	}
+	if euo.mutation.VehicleTypeCleared() {
+		_spec.ClearField(event.FieldVehicleType, field.TypeString)
 	}
 	_node = &Event{config: euo.config}
 	_spec.Assign = _node.assignValues

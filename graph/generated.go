@@ -121,21 +121,30 @@ type ComplexityRoot struct {
 		PlateBoundingBox     func(childComplexity int) int
 		PlateChannel         func(childComplexity int) int
 		PlateColor           func(childComplexity int) int
+		PlateConfidence      func(childComplexity int) int
 		PlateIsExist         func(childComplexity int) int
 		PlateNumber          func(childComplexity int) int
 		PlateRegion          func(childComplexity int) int
 		PlateType            func(childComplexity int) int
 		PlateUploadNum       func(childComplexity int) int
+		SnapAccurateTime     func(childComplexity int) int
 		SnapAllowUser        func(childComplexity int) int
 		SnapAllowUserEndTime func(childComplexity int) int
 		SnapDefenceCode      func(childComplexity int) int
 		SnapDeviceID         func(childComplexity int) int
+		SnapDirection        func(childComplexity int) int
+		SnapDstTune          func(childComplexity int) int
 		SnapInCarPeopleNum   func(childComplexity int) int
 		SnapLanNo            func(childComplexity int) int
 		SnapOpenStrobe       func(childComplexity int) int
+		SnapSnapTime         func(childComplexity int) int
+		SnapTimeZone         func(childComplexity int) int
 		UpdatedAt            func(childComplexity int) int
 		VehicleBoundingBox   func(childComplexity int) int
+		VehicleColor         func(childComplexity int) int
 		VehicleSeries        func(childComplexity int) int
+		VehicleSpeed         func(childComplexity int) int
+		VehicleType          func(childComplexity int) int
 	}
 
 	EventConnection struct {
@@ -740,6 +749,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Event.PlateColor(childComplexity), true
 
+	case "Event.plateConfidence":
+		if e.complexity.Event.PlateConfidence == nil {
+			break
+		}
+
+		return e.complexity.Event.PlateConfidence(childComplexity), true
+
 	case "Event.plateIsExist":
 		if e.complexity.Event.PlateIsExist == nil {
 			break
@@ -775,6 +791,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Event.PlateUploadNum(childComplexity), true
 
+	case "Event.snapAccurateTime":
+		if e.complexity.Event.SnapAccurateTime == nil {
+			break
+		}
+
+		return e.complexity.Event.SnapAccurateTime(childComplexity), true
+
 	case "Event.snapAllowUser":
 		if e.complexity.Event.SnapAllowUser == nil {
 			break
@@ -803,6 +826,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Event.SnapDeviceID(childComplexity), true
 
+	case "Event.snapDirection":
+		if e.complexity.Event.SnapDirection == nil {
+			break
+		}
+
+		return e.complexity.Event.SnapDirection(childComplexity), true
+
+	case "Event.snapDstTune":
+		if e.complexity.Event.SnapDstTune == nil {
+			break
+		}
+
+		return e.complexity.Event.SnapDstTune(childComplexity), true
+
 	case "Event.snapInCarPeopleNum":
 		if e.complexity.Event.SnapInCarPeopleNum == nil {
 			break
@@ -824,6 +861,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Event.SnapOpenStrobe(childComplexity), true
 
+	case "Event.snapSnapTime":
+		if e.complexity.Event.SnapSnapTime == nil {
+			break
+		}
+
+		return e.complexity.Event.SnapSnapTime(childComplexity), true
+
+	case "Event.snapTimeZone":
+		if e.complexity.Event.SnapTimeZone == nil {
+			break
+		}
+
+		return e.complexity.Event.SnapTimeZone(childComplexity), true
+
 	case "Event.updatedAt":
 		if e.complexity.Event.UpdatedAt == nil {
 			break
@@ -838,12 +889,33 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Event.VehicleBoundingBox(childComplexity), true
 
+	case "Event.vehicleColor":
+		if e.complexity.Event.VehicleColor == nil {
+			break
+		}
+
+		return e.complexity.Event.VehicleColor(childComplexity), true
+
 	case "Event.vehicleSeries":
 		if e.complexity.Event.VehicleSeries == nil {
 			break
 		}
 
 		return e.complexity.Event.VehicleSeries(childComplexity), true
+
+	case "Event.vehicleSpeed":
+		if e.complexity.Event.VehicleSpeed == nil {
+			break
+		}
+
+		return e.complexity.Event.VehicleSpeed(childComplexity), true
+
+	case "Event.vehicleType":
+		if e.complexity.Event.VehicleType == nil {
+			break
+		}
+
+		return e.complexity.Event.VehicleType(childComplexity), true
 
 	case "EventConnection.edges":
 		if e.complexity.EventConnection.Edges == nil {
@@ -2625,6 +2697,10 @@ input CreateEventInput {
   """
   plateChannel: Int
   """
+  Confidence score of the plate detection
+  """
+  plateConfidence: Int
+  """
   Indicates whether the plate exists
   """
   plateIsExist: Boolean
@@ -2649,6 +2725,10 @@ input CreateEventInput {
   """
   plateUploadNum: Int
   """
+  Accurate timestamp of the snap
+  """
+  snapAccurateTime: String
+  """
   Indicates if user interaction is allowed
   """
   snapAllowUser: Boolean
@@ -2657,6 +2737,10 @@ input CreateEventInput {
   """
   snapAllowUserEndTime: String
   """
+  DST adjustment
+  """
+  snapDstTune: Int
+  """
   Defence code
   """
   snapDefenceCode: String
@@ -2664,6 +2748,10 @@ input CreateEventInput {
   Device ID
   """
   snapDeviceID: String
+  """
+  Direction of the vehicle
+  """
+  snapDirection: String
   """
   Number of people in the car
   """
@@ -2677,13 +2765,33 @@ input CreateEventInput {
   """
   snapOpenStrobe: Boolean
   """
+  Snap timestamp
+  """
+  snapSnapTime: String
+  """
+  Time zone of the snap
+  """
+  snapTimeZone: Int
+  """
+  Speed of the vehicle
+  """
+  vehicleSpeed: Int
+  """
   Bounding box coordinates of the vehicle
   """
   vehicleBoundingBox: [Int!]
   """
+  Color of the vehicle
+  """
+  vehicleColor: String
+  """
   Vehicle series
   """
   vehicleSeries: String
+  """
+  Type of the vehicle
+  """
+  vehicleType: String
 }
 """
 CreatePermissionInput is used for create Permission object.
@@ -2759,6 +2867,10 @@ type Event implements Node {
   """
   plateChannel: Int
   """
+  Confidence score of the plate detection
+  """
+  plateConfidence: Int
+  """
   Indicates whether the plate exists
   """
   plateIsExist: Boolean
@@ -2783,6 +2895,10 @@ type Event implements Node {
   """
   plateUploadNum: Int
   """
+  Accurate timestamp of the snap
+  """
+  snapAccurateTime: String
+  """
   Indicates if user interaction is allowed
   """
   snapAllowUser: Boolean
@@ -2791,6 +2907,10 @@ type Event implements Node {
   """
   snapAllowUserEndTime: String
   """
+  DST adjustment
+  """
+  snapDstTune: Int
+  """
   Defence code
   """
   snapDefenceCode: String
@@ -2798,6 +2918,10 @@ type Event implements Node {
   Device ID
   """
   snapDeviceID: String
+  """
+  Direction of the vehicle
+  """
+  snapDirection: String
   """
   Number of people in the car
   """
@@ -2811,13 +2935,33 @@ type Event implements Node {
   """
   snapOpenStrobe: Boolean
   """
+  Snap timestamp
+  """
+  snapSnapTime: String
+  """
+  Time zone of the snap
+  """
+  snapTimeZone: Int
+  """
+  Speed of the vehicle
+  """
+  vehicleSpeed: Int
+  """
   Bounding box coordinates of the vehicle
   """
   vehicleBoundingBox: [Int!]
   """
+  Color of the vehicle
+  """
+  vehicleColor: String
+  """
   Vehicle series
   """
   vehicleSeries: String
+  """
+  Type of the vehicle
+  """
+  vehicleType: String
 }
 """
 A connection to a list of items.
@@ -2901,6 +3045,19 @@ input EventWhereInput {
   plateChannelLTE: Int
   plateChannelIsNil: Boolean
   plateChannelNotNil: Boolean
+  """
+  plate_confidence field predicates
+  """
+  plateConfidence: Int
+  plateConfidenceNEQ: Int
+  plateConfidenceIn: [Int!]
+  plateConfidenceNotIn: [Int!]
+  plateConfidenceGT: Int
+  plateConfidenceGTE: Int
+  plateConfidenceLT: Int
+  plateConfidenceLTE: Int
+  plateConfidenceIsNil: Boolean
+  plateConfidenceNotNil: Boolean
   """
   plate_is_exist field predicates
   """
@@ -2994,6 +3151,24 @@ input EventWhereInput {
   plateUploadNumIsNil: Boolean
   plateUploadNumNotNil: Boolean
   """
+  snap_accurate_time field predicates
+  """
+  snapAccurateTime: String
+  snapAccurateTimeNEQ: String
+  snapAccurateTimeIn: [String!]
+  snapAccurateTimeNotIn: [String!]
+  snapAccurateTimeGT: String
+  snapAccurateTimeGTE: String
+  snapAccurateTimeLT: String
+  snapAccurateTimeLTE: String
+  snapAccurateTimeContains: String
+  snapAccurateTimeHasPrefix: String
+  snapAccurateTimeHasSuffix: String
+  snapAccurateTimeIsNil: Boolean
+  snapAccurateTimeNotNil: Boolean
+  snapAccurateTimeEqualFold: String
+  snapAccurateTimeContainsFold: String
+  """
   snap_allow_user field predicates
   """
   snapAllowUser: Boolean
@@ -3018,6 +3193,19 @@ input EventWhereInput {
   snapAllowUserEndTimeNotNil: Boolean
   snapAllowUserEndTimeEqualFold: String
   snapAllowUserEndTimeContainsFold: String
+  """
+  snap_dst_tune field predicates
+  """
+  snapDstTune: Int
+  snapDstTuneNEQ: Int
+  snapDstTuneIn: [Int!]
+  snapDstTuneNotIn: [Int!]
+  snapDstTuneGT: Int
+  snapDstTuneGTE: Int
+  snapDstTuneLT: Int
+  snapDstTuneLTE: Int
+  snapDstTuneIsNil: Boolean
+  snapDstTuneNotNil: Boolean
   """
   snap_defence_code field predicates
   """
@@ -3055,6 +3243,24 @@ input EventWhereInput {
   snapDeviceIDEqualFold: String
   snapDeviceIDContainsFold: String
   """
+  snap_direction field predicates
+  """
+  snapDirection: String
+  snapDirectionNEQ: String
+  snapDirectionIn: [String!]
+  snapDirectionNotIn: [String!]
+  snapDirectionGT: String
+  snapDirectionGTE: String
+  snapDirectionLT: String
+  snapDirectionLTE: String
+  snapDirectionContains: String
+  snapDirectionHasPrefix: String
+  snapDirectionHasSuffix: String
+  snapDirectionIsNil: Boolean
+  snapDirectionNotNil: Boolean
+  snapDirectionEqualFold: String
+  snapDirectionContainsFold: String
+  """
   snap_in_car_people_num field predicates
   """
   snapInCarPeopleNum: Int
@@ -3088,6 +3294,68 @@ input EventWhereInput {
   snapOpenStrobeIsNil: Boolean
   snapOpenStrobeNotNil: Boolean
   """
+  snap_snap_time field predicates
+  """
+  snapSnapTime: String
+  snapSnapTimeNEQ: String
+  snapSnapTimeIn: [String!]
+  snapSnapTimeNotIn: [String!]
+  snapSnapTimeGT: String
+  snapSnapTimeGTE: String
+  snapSnapTimeLT: String
+  snapSnapTimeLTE: String
+  snapSnapTimeContains: String
+  snapSnapTimeHasPrefix: String
+  snapSnapTimeHasSuffix: String
+  snapSnapTimeIsNil: Boolean
+  snapSnapTimeNotNil: Boolean
+  snapSnapTimeEqualFold: String
+  snapSnapTimeContainsFold: String
+  """
+  snap_time_zone field predicates
+  """
+  snapTimeZone: Int
+  snapTimeZoneNEQ: Int
+  snapTimeZoneIn: [Int!]
+  snapTimeZoneNotIn: [Int!]
+  snapTimeZoneGT: Int
+  snapTimeZoneGTE: Int
+  snapTimeZoneLT: Int
+  snapTimeZoneLTE: Int
+  snapTimeZoneIsNil: Boolean
+  snapTimeZoneNotNil: Boolean
+  """
+  vehicle_speed field predicates
+  """
+  vehicleSpeed: Int
+  vehicleSpeedNEQ: Int
+  vehicleSpeedIn: [Int!]
+  vehicleSpeedNotIn: [Int!]
+  vehicleSpeedGT: Int
+  vehicleSpeedGTE: Int
+  vehicleSpeedLT: Int
+  vehicleSpeedLTE: Int
+  vehicleSpeedIsNil: Boolean
+  vehicleSpeedNotNil: Boolean
+  """
+  vehicle_color field predicates
+  """
+  vehicleColor: String
+  vehicleColorNEQ: String
+  vehicleColorIn: [String!]
+  vehicleColorNotIn: [String!]
+  vehicleColorGT: String
+  vehicleColorGTE: String
+  vehicleColorLT: String
+  vehicleColorLTE: String
+  vehicleColorContains: String
+  vehicleColorHasPrefix: String
+  vehicleColorHasSuffix: String
+  vehicleColorIsNil: Boolean
+  vehicleColorNotNil: Boolean
+  vehicleColorEqualFold: String
+  vehicleColorContainsFold: String
+  """
   vehicle_series field predicates
   """
   vehicleSeries: String
@@ -3105,6 +3373,24 @@ input EventWhereInput {
   vehicleSeriesNotNil: Boolean
   vehicleSeriesEqualFold: String
   vehicleSeriesContainsFold: String
+  """
+  vehicle_type field predicates
+  """
+  vehicleType: String
+  vehicleTypeNEQ: String
+  vehicleTypeIn: [String!]
+  vehicleTypeNotIn: [String!]
+  vehicleTypeGT: String
+  vehicleTypeGTE: String
+  vehicleTypeLT: String
+  vehicleTypeLTE: String
+  vehicleTypeContains: String
+  vehicleTypeHasPrefix: String
+  vehicleTypeHasSuffix: String
+  vehicleTypeIsNil: Boolean
+  vehicleTypeNotNil: Boolean
+  vehicleTypeEqualFold: String
+  vehicleTypeContainsFold: String
 }
 """
 An object with an ID.
@@ -3818,6 +4104,11 @@ input UpdateEventInput {
   plateChannel: Int
   clearPlateChannel: Boolean
   """
+  Confidence score of the plate detection
+  """
+  plateConfidence: Int
+  clearPlateConfidence: Boolean
+  """
   Indicates whether the plate exists
   """
   plateIsExist: Boolean
@@ -3848,6 +4139,11 @@ input UpdateEventInput {
   plateUploadNum: Int
   clearPlateUploadNum: Boolean
   """
+  Accurate timestamp of the snap
+  """
+  snapAccurateTime: String
+  clearSnapAccurateTime: Boolean
+  """
   Indicates if user interaction is allowed
   """
   snapAllowUser: Boolean
@@ -3858,6 +4154,11 @@ input UpdateEventInput {
   snapAllowUserEndTime: String
   clearSnapAllowUserEndTime: Boolean
   """
+  DST adjustment
+  """
+  snapDstTune: Int
+  clearSnapDstTune: Boolean
+  """
   Defence code
   """
   snapDefenceCode: String
@@ -3867,6 +4168,11 @@ input UpdateEventInput {
   """
   snapDeviceID: String
   clearSnapDeviceID: Boolean
+  """
+  Direction of the vehicle
+  """
+  snapDirection: String
+  clearSnapDirection: Boolean
   """
   Number of people in the car
   """
@@ -3883,16 +4189,41 @@ input UpdateEventInput {
   snapOpenStrobe: Boolean
   clearSnapOpenStrobe: Boolean
   """
+  Snap timestamp
+  """
+  snapSnapTime: String
+  clearSnapSnapTime: Boolean
+  """
+  Time zone of the snap
+  """
+  snapTimeZone: Int
+  clearSnapTimeZone: Boolean
+  """
+  Speed of the vehicle
+  """
+  vehicleSpeed: Int
+  clearVehicleSpeed: Boolean
+  """
   Bounding box coordinates of the vehicle
   """
   vehicleBoundingBox: [Int!]
   appendVehicleBoundingBox: [Int!]
   clearVehicleBoundingBox: Boolean
   """
+  Color of the vehicle
+  """
+  vehicleColor: String
+  clearVehicleColor: Boolean
+  """
   Vehicle series
   """
   vehicleSeries: String
   clearVehicleSeries: Boolean
+  """
+  Type of the vehicle
+  """
+  vehicleType: String
+  clearVehicleType: Boolean
 }
 """
 UpdatePermissionInput is used for update Permission object.
@@ -8207,6 +8538,8 @@ func (ec *executionContext) fieldContext_CustomEvent_event(_ context.Context, fi
 				return ec.fieldContext_Event_plateBoundingBox(ctx, field)
 			case "plateChannel":
 				return ec.fieldContext_Event_plateChannel(ctx, field)
+			case "plateConfidence":
+				return ec.fieldContext_Event_plateConfidence(ctx, field)
 			case "plateIsExist":
 				return ec.fieldContext_Event_plateIsExist(ctx, field)
 			case "plateColor":
@@ -8219,24 +8552,40 @@ func (ec *executionContext) fieldContext_CustomEvent_event(_ context.Context, fi
 				return ec.fieldContext_Event_plateRegion(ctx, field)
 			case "plateUploadNum":
 				return ec.fieldContext_Event_plateUploadNum(ctx, field)
+			case "snapAccurateTime":
+				return ec.fieldContext_Event_snapAccurateTime(ctx, field)
 			case "snapAllowUser":
 				return ec.fieldContext_Event_snapAllowUser(ctx, field)
 			case "snapAllowUserEndTime":
 				return ec.fieldContext_Event_snapAllowUserEndTime(ctx, field)
+			case "snapDstTune":
+				return ec.fieldContext_Event_snapDstTune(ctx, field)
 			case "snapDefenceCode":
 				return ec.fieldContext_Event_snapDefenceCode(ctx, field)
 			case "snapDeviceID":
 				return ec.fieldContext_Event_snapDeviceID(ctx, field)
+			case "snapDirection":
+				return ec.fieldContext_Event_snapDirection(ctx, field)
 			case "snapInCarPeopleNum":
 				return ec.fieldContext_Event_snapInCarPeopleNum(ctx, field)
 			case "snapLanNo":
 				return ec.fieldContext_Event_snapLanNo(ctx, field)
 			case "snapOpenStrobe":
 				return ec.fieldContext_Event_snapOpenStrobe(ctx, field)
+			case "snapSnapTime":
+				return ec.fieldContext_Event_snapSnapTime(ctx, field)
+			case "snapTimeZone":
+				return ec.fieldContext_Event_snapTimeZone(ctx, field)
+			case "vehicleSpeed":
+				return ec.fieldContext_Event_vehicleSpeed(ctx, field)
 			case "vehicleBoundingBox":
 				return ec.fieldContext_Event_vehicleBoundingBox(ctx, field)
+			case "vehicleColor":
+				return ec.fieldContext_Event_vehicleColor(ctx, field)
 			case "vehicleSeries":
 				return ec.fieldContext_Event_vehicleSeries(ctx, field)
+			case "vehicleType":
+				return ec.fieldContext_Event_vehicleType(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Event", field.Name)
 		},
@@ -8590,6 +8939,47 @@ func (ec *executionContext) fieldContext_Event_plateChannel(_ context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _Event_plateConfidence(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_plateConfidence(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PlateConfidence, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalOInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_plateConfidence(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Event_plateIsExist(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Event_plateIsExist(ctx, field)
 	if err != nil {
@@ -8836,6 +9226,47 @@ func (ec *executionContext) fieldContext_Event_plateUploadNum(_ context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _Event_snapAccurateTime(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_snapAccurateTime(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SnapAccurateTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_snapAccurateTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Event_snapAllowUser(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Event_snapAllowUser(ctx, field)
 	if err != nil {
@@ -8918,6 +9349,47 @@ func (ec *executionContext) fieldContext_Event_snapAllowUserEndTime(_ context.Co
 	return fc, nil
 }
 
+func (ec *executionContext) _Event_snapDstTune(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_snapDstTune(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SnapDstTune, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalOInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_snapDstTune(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Event_snapDefenceCode(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Event_snapDefenceCode(ctx, field)
 	if err != nil {
@@ -8988,6 +9460,47 @@ func (ec *executionContext) _Event_snapDeviceID(ctx context.Context, field graph
 }
 
 func (ec *executionContext) fieldContext_Event_snapDeviceID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Event_snapDirection(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_snapDirection(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SnapDirection, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_snapDirection(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Event",
 		Field:      field,
@@ -9123,6 +9636,129 @@ func (ec *executionContext) fieldContext_Event_snapOpenStrobe(_ context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _Event_snapSnapTime(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_snapSnapTime(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SnapSnapTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_snapSnapTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Event_snapTimeZone(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_snapTimeZone(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SnapTimeZone, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalOInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_snapTimeZone(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Event_vehicleSpeed(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_vehicleSpeed(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VehicleSpeed, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalOInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_vehicleSpeed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Event_vehicleBoundingBox(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Event_vehicleBoundingBox(ctx, field)
 	if err != nil {
@@ -9164,6 +9800,47 @@ func (ec *executionContext) fieldContext_Event_vehicleBoundingBox(_ context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _Event_vehicleColor(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_vehicleColor(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VehicleColor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_vehicleColor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Event_vehicleSeries(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Event_vehicleSeries(ctx, field)
 	if err != nil {
@@ -9193,6 +9870,47 @@ func (ec *executionContext) _Event_vehicleSeries(ctx context.Context, field grap
 }
 
 func (ec *executionContext) fieldContext_Event_vehicleSeries(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Event_vehicleType(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_vehicleType(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VehicleType, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_vehicleType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Event",
 		Field:      field,
@@ -9396,6 +10114,8 @@ func (ec *executionContext) fieldContext_EventEdge_node(_ context.Context, field
 				return ec.fieldContext_Event_plateBoundingBox(ctx, field)
 			case "plateChannel":
 				return ec.fieldContext_Event_plateChannel(ctx, field)
+			case "plateConfidence":
+				return ec.fieldContext_Event_plateConfidence(ctx, field)
 			case "plateIsExist":
 				return ec.fieldContext_Event_plateIsExist(ctx, field)
 			case "plateColor":
@@ -9408,24 +10128,40 @@ func (ec *executionContext) fieldContext_EventEdge_node(_ context.Context, field
 				return ec.fieldContext_Event_plateRegion(ctx, field)
 			case "plateUploadNum":
 				return ec.fieldContext_Event_plateUploadNum(ctx, field)
+			case "snapAccurateTime":
+				return ec.fieldContext_Event_snapAccurateTime(ctx, field)
 			case "snapAllowUser":
 				return ec.fieldContext_Event_snapAllowUser(ctx, field)
 			case "snapAllowUserEndTime":
 				return ec.fieldContext_Event_snapAllowUserEndTime(ctx, field)
+			case "snapDstTune":
+				return ec.fieldContext_Event_snapDstTune(ctx, field)
 			case "snapDefenceCode":
 				return ec.fieldContext_Event_snapDefenceCode(ctx, field)
 			case "snapDeviceID":
 				return ec.fieldContext_Event_snapDeviceID(ctx, field)
+			case "snapDirection":
+				return ec.fieldContext_Event_snapDirection(ctx, field)
 			case "snapInCarPeopleNum":
 				return ec.fieldContext_Event_snapInCarPeopleNum(ctx, field)
 			case "snapLanNo":
 				return ec.fieldContext_Event_snapLanNo(ctx, field)
 			case "snapOpenStrobe":
 				return ec.fieldContext_Event_snapOpenStrobe(ctx, field)
+			case "snapSnapTime":
+				return ec.fieldContext_Event_snapSnapTime(ctx, field)
+			case "snapTimeZone":
+				return ec.fieldContext_Event_snapTimeZone(ctx, field)
+			case "vehicleSpeed":
+				return ec.fieldContext_Event_vehicleSpeed(ctx, field)
 			case "vehicleBoundingBox":
 				return ec.fieldContext_Event_vehicleBoundingBox(ctx, field)
+			case "vehicleColor":
+				return ec.fieldContext_Event_vehicleColor(ctx, field)
 			case "vehicleSeries":
 				return ec.fieldContext_Event_vehicleSeries(ctx, field)
+			case "vehicleType":
+				return ec.fieldContext_Event_vehicleType(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Event", field.Name)
 		},
@@ -20520,7 +21256,7 @@ func (ec *executionContext) unmarshalInputCreateEventInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "plateBoundingBox", "plateChannel", "plateIsExist", "plateColor", "plateNumber", "plateType", "plateRegion", "plateUploadNum", "snapAllowUser", "snapAllowUserEndTime", "snapDefenceCode", "snapDeviceID", "snapInCarPeopleNum", "snapLanNo", "snapOpenStrobe", "vehicleBoundingBox", "vehicleSeries"}
+	fieldsInOrder := [...]string{"createdAt", "updatedAt", "plateBoundingBox", "plateChannel", "plateConfidence", "plateIsExist", "plateColor", "plateNumber", "plateType", "plateRegion", "plateUploadNum", "snapAccurateTime", "snapAllowUser", "snapAllowUserEndTime", "snapDstTune", "snapDefenceCode", "snapDeviceID", "snapDirection", "snapInCarPeopleNum", "snapLanNo", "snapOpenStrobe", "snapSnapTime", "snapTimeZone", "vehicleSpeed", "vehicleBoundingBox", "vehicleColor", "vehicleSeries", "vehicleType"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -20555,6 +21291,13 @@ func (ec *executionContext) unmarshalInputCreateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.PlateChannel = data
+		case "plateConfidence":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateConfidence"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateConfidence = data
 		case "plateIsExist":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateIsExist"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -20597,6 +21340,13 @@ func (ec *executionContext) unmarshalInputCreateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.PlateUploadNum = data
+		case "snapAccurateTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTime"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTime = data
 		case "snapAllowUser":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUser"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -20611,6 +21361,13 @@ func (ec *executionContext) unmarshalInputCreateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.SnapAllowUserEndTime = data
+		case "snapDstTune":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDstTune"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDstTune = data
 		case "snapDefenceCode":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCode"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -20625,6 +21382,13 @@ func (ec *executionContext) unmarshalInputCreateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.SnapDeviceID = data
+		case "snapDirection":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirection"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirection = data
 		case "snapInCarPeopleNum":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNum"))
 			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
@@ -20646,6 +21410,27 @@ func (ec *executionContext) unmarshalInputCreateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.SnapOpenStrobe = data
+		case "snapSnapTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTime"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTime = data
+		case "snapTimeZone":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapTimeZone"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapTimeZone = data
+		case "vehicleSpeed":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSpeed"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSpeed = data
 		case "vehicleBoundingBox":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleBoundingBox"))
 			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
@@ -20653,6 +21438,13 @@ func (ec *executionContext) unmarshalInputCreateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.VehicleBoundingBox = data
+		case "vehicleColor":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColor"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColor = data
 		case "vehicleSeries":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeries"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -20660,6 +21452,13 @@ func (ec *executionContext) unmarshalInputCreateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.VehicleSeries = data
+		case "vehicleType":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleType"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleType = data
 		}
 	}
 
@@ -21015,7 +21814,7 @@ func (ec *executionContext) unmarshalInputEventWhereInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "plateChannel", "plateChannelNEQ", "plateChannelIn", "plateChannelNotIn", "plateChannelGT", "plateChannelGTE", "plateChannelLT", "plateChannelLTE", "plateChannelIsNil", "plateChannelNotNil", "plateIsExist", "plateIsExistNEQ", "plateIsExistIsNil", "plateIsExistNotNil", "plateColor", "plateColorNEQ", "plateColorIn", "plateColorNotIn", "plateColorGT", "plateColorGTE", "plateColorLT", "plateColorLTE", "plateColorContains", "plateColorHasPrefix", "plateColorHasSuffix", "plateColorIsNil", "plateColorNotNil", "plateColorEqualFold", "plateColorContainsFold", "plateNumber", "plateNumberNEQ", "plateNumberIn", "plateNumberNotIn", "plateNumberGT", "plateNumberGTE", "plateNumberLT", "plateNumberLTE", "plateNumberContains", "plateNumberHasPrefix", "plateNumberHasSuffix", "plateNumberIsNil", "plateNumberNotNil", "plateNumberEqualFold", "plateNumberContainsFold", "plateType", "plateTypeNEQ", "plateTypeIn", "plateTypeNotIn", "plateTypeGT", "plateTypeGTE", "plateTypeLT", "plateTypeLTE", "plateTypeContains", "plateTypeHasPrefix", "plateTypeHasSuffix", "plateTypeIsNil", "plateTypeNotNil", "plateTypeEqualFold", "plateTypeContainsFold", "plateRegion", "plateRegionNEQ", "plateRegionIn", "plateRegionNotIn", "plateRegionGT", "plateRegionGTE", "plateRegionLT", "plateRegionLTE", "plateRegionContains", "plateRegionHasPrefix", "plateRegionHasSuffix", "plateRegionIsNil", "plateRegionNotNil", "plateRegionEqualFold", "plateRegionContainsFold", "plateUploadNum", "plateUploadNumNEQ", "plateUploadNumIn", "plateUploadNumNotIn", "plateUploadNumGT", "plateUploadNumGTE", "plateUploadNumLT", "plateUploadNumLTE", "plateUploadNumIsNil", "plateUploadNumNotNil", "snapAllowUser", "snapAllowUserNEQ", "snapAllowUserIsNil", "snapAllowUserNotNil", "snapAllowUserEndTime", "snapAllowUserEndTimeNEQ", "snapAllowUserEndTimeIn", "snapAllowUserEndTimeNotIn", "snapAllowUserEndTimeGT", "snapAllowUserEndTimeGTE", "snapAllowUserEndTimeLT", "snapAllowUserEndTimeLTE", "snapAllowUserEndTimeContains", "snapAllowUserEndTimeHasPrefix", "snapAllowUserEndTimeHasSuffix", "snapAllowUserEndTimeIsNil", "snapAllowUserEndTimeNotNil", "snapAllowUserEndTimeEqualFold", "snapAllowUserEndTimeContainsFold", "snapDefenceCode", "snapDefenceCodeNEQ", "snapDefenceCodeIn", "snapDefenceCodeNotIn", "snapDefenceCodeGT", "snapDefenceCodeGTE", "snapDefenceCodeLT", "snapDefenceCodeLTE", "snapDefenceCodeContains", "snapDefenceCodeHasPrefix", "snapDefenceCodeHasSuffix", "snapDefenceCodeIsNil", "snapDefenceCodeNotNil", "snapDefenceCodeEqualFold", "snapDefenceCodeContainsFold", "snapDeviceID", "snapDeviceIDNEQ", "snapDeviceIDIn", "snapDeviceIDNotIn", "snapDeviceIDGT", "snapDeviceIDGTE", "snapDeviceIDLT", "snapDeviceIDLTE", "snapDeviceIDContains", "snapDeviceIDHasPrefix", "snapDeviceIDHasSuffix", "snapDeviceIDIsNil", "snapDeviceIDNotNil", "snapDeviceIDEqualFold", "snapDeviceIDContainsFold", "snapInCarPeopleNum", "snapInCarPeopleNumNEQ", "snapInCarPeopleNumIn", "snapInCarPeopleNumNotIn", "snapInCarPeopleNumGT", "snapInCarPeopleNumGTE", "snapInCarPeopleNumLT", "snapInCarPeopleNumLTE", "snapInCarPeopleNumIsNil", "snapInCarPeopleNumNotNil", "snapLanNo", "snapLanNoNEQ", "snapLanNoIn", "snapLanNoNotIn", "snapLanNoGT", "snapLanNoGTE", "snapLanNoLT", "snapLanNoLTE", "snapLanNoIsNil", "snapLanNoNotNil", "snapOpenStrobe", "snapOpenStrobeNEQ", "snapOpenStrobeIsNil", "snapOpenStrobeNotNil", "vehicleSeries", "vehicleSeriesNEQ", "vehicleSeriesIn", "vehicleSeriesNotIn", "vehicleSeriesGT", "vehicleSeriesGTE", "vehicleSeriesLT", "vehicleSeriesLTE", "vehicleSeriesContains", "vehicleSeriesHasPrefix", "vehicleSeriesHasSuffix", "vehicleSeriesIsNil", "vehicleSeriesNotNil", "vehicleSeriesEqualFold", "vehicleSeriesContainsFold"}
+	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "plateChannel", "plateChannelNEQ", "plateChannelIn", "plateChannelNotIn", "plateChannelGT", "plateChannelGTE", "plateChannelLT", "plateChannelLTE", "plateChannelIsNil", "plateChannelNotNil", "plateConfidence", "plateConfidenceNEQ", "plateConfidenceIn", "plateConfidenceNotIn", "plateConfidenceGT", "plateConfidenceGTE", "plateConfidenceLT", "plateConfidenceLTE", "plateConfidenceIsNil", "plateConfidenceNotNil", "plateIsExist", "plateIsExistNEQ", "plateIsExistIsNil", "plateIsExistNotNil", "plateColor", "plateColorNEQ", "plateColorIn", "plateColorNotIn", "plateColorGT", "plateColorGTE", "plateColorLT", "plateColorLTE", "plateColorContains", "plateColorHasPrefix", "plateColorHasSuffix", "plateColorIsNil", "plateColorNotNil", "plateColorEqualFold", "plateColorContainsFold", "plateNumber", "plateNumberNEQ", "plateNumberIn", "plateNumberNotIn", "plateNumberGT", "plateNumberGTE", "plateNumberLT", "plateNumberLTE", "plateNumberContains", "plateNumberHasPrefix", "plateNumberHasSuffix", "plateNumberIsNil", "plateNumberNotNil", "plateNumberEqualFold", "plateNumberContainsFold", "plateType", "plateTypeNEQ", "plateTypeIn", "plateTypeNotIn", "plateTypeGT", "plateTypeGTE", "plateTypeLT", "plateTypeLTE", "plateTypeContains", "plateTypeHasPrefix", "plateTypeHasSuffix", "plateTypeIsNil", "plateTypeNotNil", "plateTypeEqualFold", "plateTypeContainsFold", "plateRegion", "plateRegionNEQ", "plateRegionIn", "plateRegionNotIn", "plateRegionGT", "plateRegionGTE", "plateRegionLT", "plateRegionLTE", "plateRegionContains", "plateRegionHasPrefix", "plateRegionHasSuffix", "plateRegionIsNil", "plateRegionNotNil", "plateRegionEqualFold", "plateRegionContainsFold", "plateUploadNum", "plateUploadNumNEQ", "plateUploadNumIn", "plateUploadNumNotIn", "plateUploadNumGT", "plateUploadNumGTE", "plateUploadNumLT", "plateUploadNumLTE", "plateUploadNumIsNil", "plateUploadNumNotNil", "snapAccurateTime", "snapAccurateTimeNEQ", "snapAccurateTimeIn", "snapAccurateTimeNotIn", "snapAccurateTimeGT", "snapAccurateTimeGTE", "snapAccurateTimeLT", "snapAccurateTimeLTE", "snapAccurateTimeContains", "snapAccurateTimeHasPrefix", "snapAccurateTimeHasSuffix", "snapAccurateTimeIsNil", "snapAccurateTimeNotNil", "snapAccurateTimeEqualFold", "snapAccurateTimeContainsFold", "snapAllowUser", "snapAllowUserNEQ", "snapAllowUserIsNil", "snapAllowUserNotNil", "snapAllowUserEndTime", "snapAllowUserEndTimeNEQ", "snapAllowUserEndTimeIn", "snapAllowUserEndTimeNotIn", "snapAllowUserEndTimeGT", "snapAllowUserEndTimeGTE", "snapAllowUserEndTimeLT", "snapAllowUserEndTimeLTE", "snapAllowUserEndTimeContains", "snapAllowUserEndTimeHasPrefix", "snapAllowUserEndTimeHasSuffix", "snapAllowUserEndTimeIsNil", "snapAllowUserEndTimeNotNil", "snapAllowUserEndTimeEqualFold", "snapAllowUserEndTimeContainsFold", "snapDstTune", "snapDstTuneNEQ", "snapDstTuneIn", "snapDstTuneNotIn", "snapDstTuneGT", "snapDstTuneGTE", "snapDstTuneLT", "snapDstTuneLTE", "snapDstTuneIsNil", "snapDstTuneNotNil", "snapDefenceCode", "snapDefenceCodeNEQ", "snapDefenceCodeIn", "snapDefenceCodeNotIn", "snapDefenceCodeGT", "snapDefenceCodeGTE", "snapDefenceCodeLT", "snapDefenceCodeLTE", "snapDefenceCodeContains", "snapDefenceCodeHasPrefix", "snapDefenceCodeHasSuffix", "snapDefenceCodeIsNil", "snapDefenceCodeNotNil", "snapDefenceCodeEqualFold", "snapDefenceCodeContainsFold", "snapDeviceID", "snapDeviceIDNEQ", "snapDeviceIDIn", "snapDeviceIDNotIn", "snapDeviceIDGT", "snapDeviceIDGTE", "snapDeviceIDLT", "snapDeviceIDLTE", "snapDeviceIDContains", "snapDeviceIDHasPrefix", "snapDeviceIDHasSuffix", "snapDeviceIDIsNil", "snapDeviceIDNotNil", "snapDeviceIDEqualFold", "snapDeviceIDContainsFold", "snapDirection", "snapDirectionNEQ", "snapDirectionIn", "snapDirectionNotIn", "snapDirectionGT", "snapDirectionGTE", "snapDirectionLT", "snapDirectionLTE", "snapDirectionContains", "snapDirectionHasPrefix", "snapDirectionHasSuffix", "snapDirectionIsNil", "snapDirectionNotNil", "snapDirectionEqualFold", "snapDirectionContainsFold", "snapInCarPeopleNum", "snapInCarPeopleNumNEQ", "snapInCarPeopleNumIn", "snapInCarPeopleNumNotIn", "snapInCarPeopleNumGT", "snapInCarPeopleNumGTE", "snapInCarPeopleNumLT", "snapInCarPeopleNumLTE", "snapInCarPeopleNumIsNil", "snapInCarPeopleNumNotNil", "snapLanNo", "snapLanNoNEQ", "snapLanNoIn", "snapLanNoNotIn", "snapLanNoGT", "snapLanNoGTE", "snapLanNoLT", "snapLanNoLTE", "snapLanNoIsNil", "snapLanNoNotNil", "snapOpenStrobe", "snapOpenStrobeNEQ", "snapOpenStrobeIsNil", "snapOpenStrobeNotNil", "snapSnapTime", "snapSnapTimeNEQ", "snapSnapTimeIn", "snapSnapTimeNotIn", "snapSnapTimeGT", "snapSnapTimeGTE", "snapSnapTimeLT", "snapSnapTimeLTE", "snapSnapTimeContains", "snapSnapTimeHasPrefix", "snapSnapTimeHasSuffix", "snapSnapTimeIsNil", "snapSnapTimeNotNil", "snapSnapTimeEqualFold", "snapSnapTimeContainsFold", "snapTimeZone", "snapTimeZoneNEQ", "snapTimeZoneIn", "snapTimeZoneNotIn", "snapTimeZoneGT", "snapTimeZoneGTE", "snapTimeZoneLT", "snapTimeZoneLTE", "snapTimeZoneIsNil", "snapTimeZoneNotNil", "vehicleSpeed", "vehicleSpeedNEQ", "vehicleSpeedIn", "vehicleSpeedNotIn", "vehicleSpeedGT", "vehicleSpeedGTE", "vehicleSpeedLT", "vehicleSpeedLTE", "vehicleSpeedIsNil", "vehicleSpeedNotNil", "vehicleColor", "vehicleColorNEQ", "vehicleColorIn", "vehicleColorNotIn", "vehicleColorGT", "vehicleColorGTE", "vehicleColorLT", "vehicleColorLTE", "vehicleColorContains", "vehicleColorHasPrefix", "vehicleColorHasSuffix", "vehicleColorIsNil", "vehicleColorNotNil", "vehicleColorEqualFold", "vehicleColorContainsFold", "vehicleSeries", "vehicleSeriesNEQ", "vehicleSeriesIn", "vehicleSeriesNotIn", "vehicleSeriesGT", "vehicleSeriesGTE", "vehicleSeriesLT", "vehicleSeriesLTE", "vehicleSeriesContains", "vehicleSeriesHasPrefix", "vehicleSeriesHasSuffix", "vehicleSeriesIsNil", "vehicleSeriesNotNil", "vehicleSeriesEqualFold", "vehicleSeriesContainsFold", "vehicleType", "vehicleTypeNEQ", "vehicleTypeIn", "vehicleTypeNotIn", "vehicleTypeGT", "vehicleTypeGTE", "vehicleTypeLT", "vehicleTypeLTE", "vehicleTypeContains", "vehicleTypeHasPrefix", "vehicleTypeHasSuffix", "vehicleTypeIsNil", "vehicleTypeNotNil", "vehicleTypeEqualFold", "vehicleTypeContainsFold"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -21169,6 +21968,76 @@ func (ec *executionContext) unmarshalInputEventWhereInput(ctx context.Context, o
 				return it, err
 			}
 			it.PlateChannelNotNil = data
+		case "plateConfidence":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateConfidence"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateConfidence = data
+		case "plateConfidenceNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateConfidenceNEQ"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateConfidenceNEQ = data
+		case "plateConfidenceIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateConfidenceIn"))
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateConfidenceIn = data
+		case "plateConfidenceNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateConfidenceNotIn"))
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateConfidenceNotIn = data
+		case "plateConfidenceGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateConfidenceGT"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateConfidenceGT = data
+		case "plateConfidenceGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateConfidenceGTE"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateConfidenceGTE = data
+		case "plateConfidenceLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateConfidenceLT"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateConfidenceLT = data
+		case "plateConfidenceLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateConfidenceLTE"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateConfidenceLTE = data
+		case "plateConfidenceIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateConfidenceIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateConfidenceIsNil = data
+		case "plateConfidenceNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateConfidenceNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateConfidenceNotNil = data
 		case "plateIsExist":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateIsExist"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -21687,6 +22556,111 @@ func (ec *executionContext) unmarshalInputEventWhereInput(ctx context.Context, o
 				return it, err
 			}
 			it.PlateUploadNumNotNil = data
+		case "snapAccurateTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTime"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTime = data
+		case "snapAccurateTimeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTimeNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTimeNEQ = data
+		case "snapAccurateTimeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTimeIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTimeIn = data
+		case "snapAccurateTimeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTimeNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTimeNotIn = data
+		case "snapAccurateTimeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTimeGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTimeGT = data
+		case "snapAccurateTimeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTimeGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTimeGTE = data
+		case "snapAccurateTimeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTimeLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTimeLT = data
+		case "snapAccurateTimeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTimeLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTimeLTE = data
+		case "snapAccurateTimeContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTimeContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTimeContains = data
+		case "snapAccurateTimeHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTimeHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTimeHasPrefix = data
+		case "snapAccurateTimeHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTimeHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTimeHasSuffix = data
+		case "snapAccurateTimeIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTimeIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTimeIsNil = data
+		case "snapAccurateTimeNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTimeNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTimeNotNil = data
+		case "snapAccurateTimeEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTimeEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTimeEqualFold = data
+		case "snapAccurateTimeContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTimeContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTimeContainsFold = data
 		case "snapAllowUser":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUser"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -21820,6 +22794,76 @@ func (ec *executionContext) unmarshalInputEventWhereInput(ctx context.Context, o
 				return it, err
 			}
 			it.SnapAllowUserEndTimeContainsFold = data
+		case "snapDstTune":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDstTune"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDstTune = data
+		case "snapDstTuneNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDstTuneNEQ"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDstTuneNEQ = data
+		case "snapDstTuneIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDstTuneIn"))
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDstTuneIn = data
+		case "snapDstTuneNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDstTuneNotIn"))
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDstTuneNotIn = data
+		case "snapDstTuneGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDstTuneGT"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDstTuneGT = data
+		case "snapDstTuneGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDstTuneGTE"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDstTuneGTE = data
+		case "snapDstTuneLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDstTuneLT"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDstTuneLT = data
+		case "snapDstTuneLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDstTuneLTE"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDstTuneLTE = data
+		case "snapDstTuneIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDstTuneIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDstTuneIsNil = data
+		case "snapDstTuneNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDstTuneNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDstTuneNotNil = data
 		case "snapDefenceCode":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCode"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -22030,6 +23074,111 @@ func (ec *executionContext) unmarshalInputEventWhereInput(ctx context.Context, o
 				return it, err
 			}
 			it.SnapDeviceIDContainsFold = data
+		case "snapDirection":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirection"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirection = data
+		case "snapDirectionNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirectionNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirectionNEQ = data
+		case "snapDirectionIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirectionIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirectionIn = data
+		case "snapDirectionNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirectionNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirectionNotIn = data
+		case "snapDirectionGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirectionGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirectionGT = data
+		case "snapDirectionGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirectionGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirectionGTE = data
+		case "snapDirectionLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirectionLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirectionLT = data
+		case "snapDirectionLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirectionLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirectionLTE = data
+		case "snapDirectionContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirectionContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirectionContains = data
+		case "snapDirectionHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirectionHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirectionHasPrefix = data
+		case "snapDirectionHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirectionHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirectionHasSuffix = data
+		case "snapDirectionIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirectionIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirectionIsNil = data
+		case "snapDirectionNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirectionNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirectionNotNil = data
+		case "snapDirectionEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirectionEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirectionEqualFold = data
+		case "snapDirectionContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirectionContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirectionContainsFold = data
 		case "snapInCarPeopleNum":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNum"))
 			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
@@ -22198,6 +23347,356 @@ func (ec *executionContext) unmarshalInputEventWhereInput(ctx context.Context, o
 				return it, err
 			}
 			it.SnapOpenStrobeNotNil = data
+		case "snapSnapTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTime"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTime = data
+		case "snapSnapTimeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTimeNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTimeNEQ = data
+		case "snapSnapTimeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTimeIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTimeIn = data
+		case "snapSnapTimeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTimeNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTimeNotIn = data
+		case "snapSnapTimeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTimeGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTimeGT = data
+		case "snapSnapTimeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTimeGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTimeGTE = data
+		case "snapSnapTimeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTimeLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTimeLT = data
+		case "snapSnapTimeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTimeLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTimeLTE = data
+		case "snapSnapTimeContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTimeContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTimeContains = data
+		case "snapSnapTimeHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTimeHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTimeHasPrefix = data
+		case "snapSnapTimeHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTimeHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTimeHasSuffix = data
+		case "snapSnapTimeIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTimeIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTimeIsNil = data
+		case "snapSnapTimeNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTimeNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTimeNotNil = data
+		case "snapSnapTimeEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTimeEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTimeEqualFold = data
+		case "snapSnapTimeContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTimeContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTimeContainsFold = data
+		case "snapTimeZone":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapTimeZone"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapTimeZone = data
+		case "snapTimeZoneNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapTimeZoneNEQ"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapTimeZoneNEQ = data
+		case "snapTimeZoneIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapTimeZoneIn"))
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapTimeZoneIn = data
+		case "snapTimeZoneNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapTimeZoneNotIn"))
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapTimeZoneNotIn = data
+		case "snapTimeZoneGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapTimeZoneGT"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapTimeZoneGT = data
+		case "snapTimeZoneGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapTimeZoneGTE"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapTimeZoneGTE = data
+		case "snapTimeZoneLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapTimeZoneLT"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapTimeZoneLT = data
+		case "snapTimeZoneLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapTimeZoneLTE"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapTimeZoneLTE = data
+		case "snapTimeZoneIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapTimeZoneIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapTimeZoneIsNil = data
+		case "snapTimeZoneNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapTimeZoneNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapTimeZoneNotNil = data
+		case "vehicleSpeed":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSpeed"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSpeed = data
+		case "vehicleSpeedNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSpeedNEQ"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSpeedNEQ = data
+		case "vehicleSpeedIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSpeedIn"))
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSpeedIn = data
+		case "vehicleSpeedNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSpeedNotIn"))
+			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSpeedNotIn = data
+		case "vehicleSpeedGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSpeedGT"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSpeedGT = data
+		case "vehicleSpeedGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSpeedGTE"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSpeedGTE = data
+		case "vehicleSpeedLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSpeedLT"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSpeedLT = data
+		case "vehicleSpeedLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSpeedLTE"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSpeedLTE = data
+		case "vehicleSpeedIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSpeedIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSpeedIsNil = data
+		case "vehicleSpeedNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSpeedNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSpeedNotNil = data
+		case "vehicleColor":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColor"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColor = data
+		case "vehicleColorNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColorNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColorNEQ = data
+		case "vehicleColorIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColorIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColorIn = data
+		case "vehicleColorNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColorNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColorNotIn = data
+		case "vehicleColorGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColorGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColorGT = data
+		case "vehicleColorGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColorGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColorGTE = data
+		case "vehicleColorLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColorLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColorLT = data
+		case "vehicleColorLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColorLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColorLTE = data
+		case "vehicleColorContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColorContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColorContains = data
+		case "vehicleColorHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColorHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColorHasPrefix = data
+		case "vehicleColorHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColorHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColorHasSuffix = data
+		case "vehicleColorIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColorIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColorIsNil = data
+		case "vehicleColorNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColorNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColorNotNil = data
+		case "vehicleColorEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColorEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColorEqualFold = data
+		case "vehicleColorContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColorContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColorContainsFold = data
 		case "vehicleSeries":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeries"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -22303,6 +23802,111 @@ func (ec *executionContext) unmarshalInputEventWhereInput(ctx context.Context, o
 				return it, err
 			}
 			it.VehicleSeriesContainsFold = data
+		case "vehicleType":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleType"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleType = data
+		case "vehicleTypeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleTypeNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleTypeNEQ = data
+		case "vehicleTypeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleTypeIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleTypeIn = data
+		case "vehicleTypeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleTypeNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleTypeNotIn = data
+		case "vehicleTypeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleTypeGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleTypeGT = data
+		case "vehicleTypeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleTypeGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleTypeGTE = data
+		case "vehicleTypeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleTypeLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleTypeLT = data
+		case "vehicleTypeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleTypeLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleTypeLTE = data
+		case "vehicleTypeContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleTypeContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleTypeContains = data
+		case "vehicleTypeHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleTypeHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleTypeHasPrefix = data
+		case "vehicleTypeHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleTypeHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleTypeHasSuffix = data
+		case "vehicleTypeIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleTypeIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleTypeIsNil = data
+		case "vehicleTypeNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleTypeNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleTypeNotNil = data
+		case "vehicleTypeEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleTypeEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleTypeEqualFold = data
+		case "vehicleTypeContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleTypeContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleTypeContainsFold = data
 		}
 	}
 
@@ -23586,7 +25190,7 @@ func (ec *executionContext) unmarshalInputUpdateEventInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "plateBoundingBox", "appendPlateBoundingBox", "clearPlateBoundingBox", "plateChannel", "clearPlateChannel", "plateIsExist", "clearPlateIsExist", "plateColor", "clearPlateColor", "plateNumber", "clearPlateNumber", "plateType", "clearPlateType", "plateRegion", "clearPlateRegion", "plateUploadNum", "clearPlateUploadNum", "snapAllowUser", "clearSnapAllowUser", "snapAllowUserEndTime", "clearSnapAllowUserEndTime", "snapDefenceCode", "clearSnapDefenceCode", "snapDeviceID", "clearSnapDeviceID", "snapInCarPeopleNum", "clearSnapInCarPeopleNum", "snapLanNo", "clearSnapLanNo", "snapOpenStrobe", "clearSnapOpenStrobe", "vehicleBoundingBox", "appendVehicleBoundingBox", "clearVehicleBoundingBox", "vehicleSeries", "clearVehicleSeries"}
+	fieldsInOrder := [...]string{"updatedAt", "plateBoundingBox", "appendPlateBoundingBox", "clearPlateBoundingBox", "plateChannel", "clearPlateChannel", "plateConfidence", "clearPlateConfidence", "plateIsExist", "clearPlateIsExist", "plateColor", "clearPlateColor", "plateNumber", "clearPlateNumber", "plateType", "clearPlateType", "plateRegion", "clearPlateRegion", "plateUploadNum", "clearPlateUploadNum", "snapAccurateTime", "clearSnapAccurateTime", "snapAllowUser", "clearSnapAllowUser", "snapAllowUserEndTime", "clearSnapAllowUserEndTime", "snapDstTune", "clearSnapDstTune", "snapDefenceCode", "clearSnapDefenceCode", "snapDeviceID", "clearSnapDeviceID", "snapDirection", "clearSnapDirection", "snapInCarPeopleNum", "clearSnapInCarPeopleNum", "snapLanNo", "clearSnapLanNo", "snapOpenStrobe", "clearSnapOpenStrobe", "snapSnapTime", "clearSnapSnapTime", "snapTimeZone", "clearSnapTimeZone", "vehicleSpeed", "clearVehicleSpeed", "vehicleBoundingBox", "appendVehicleBoundingBox", "clearVehicleBoundingBox", "vehicleColor", "clearVehicleColor", "vehicleSeries", "clearVehicleSeries", "vehicleType", "clearVehicleType"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -23635,6 +25239,20 @@ func (ec *executionContext) unmarshalInputUpdateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.ClearPlateChannel = data
+		case "plateConfidence":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateConfidence"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlateConfidence = data
+		case "clearPlateConfidence":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearPlateConfidence"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearPlateConfidence = data
 		case "plateIsExist":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plateIsExist"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -23719,6 +25337,20 @@ func (ec *executionContext) unmarshalInputUpdateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.ClearPlateUploadNum = data
+		case "snapAccurateTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAccurateTime"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapAccurateTime = data
+		case "clearSnapAccurateTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearSnapAccurateTime"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearSnapAccurateTime = data
 		case "snapAllowUser":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapAllowUser"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -23747,6 +25379,20 @@ func (ec *executionContext) unmarshalInputUpdateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.ClearSnapAllowUserEndTime = data
+		case "snapDstTune":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDstTune"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDstTune = data
+		case "clearSnapDstTune":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearSnapDstTune"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearSnapDstTune = data
 		case "snapDefenceCode":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDefenceCode"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -23775,6 +25421,20 @@ func (ec *executionContext) unmarshalInputUpdateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.ClearSnapDeviceID = data
+		case "snapDirection":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapDirection"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapDirection = data
+		case "clearSnapDirection":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearSnapDirection"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearSnapDirection = data
 		case "snapInCarPeopleNum":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapInCarPeopleNum"))
 			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
@@ -23817,6 +25477,48 @@ func (ec *executionContext) unmarshalInputUpdateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.ClearSnapOpenStrobe = data
+		case "snapSnapTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapSnapTime"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapSnapTime = data
+		case "clearSnapSnapTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearSnapSnapTime"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearSnapSnapTime = data
+		case "snapTimeZone":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("snapTimeZone"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SnapTimeZone = data
+		case "clearSnapTimeZone":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearSnapTimeZone"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearSnapTimeZone = data
+		case "vehicleSpeed":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSpeed"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleSpeed = data
+		case "clearVehicleSpeed":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearVehicleSpeed"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearVehicleSpeed = data
 		case "vehicleBoundingBox":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleBoundingBox"))
 			data, err := ec.unmarshalOInt2ᚕintᚄ(ctx, v)
@@ -23838,6 +25540,20 @@ func (ec *executionContext) unmarshalInputUpdateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.ClearVehicleBoundingBox = data
+		case "vehicleColor":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleColor"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleColor = data
+		case "clearVehicleColor":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearVehicleColor"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearVehicleColor = data
 		case "vehicleSeries":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleSeries"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -23852,6 +25568,20 @@ func (ec *executionContext) unmarshalInputUpdateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.ClearVehicleSeries = data
+		case "vehicleType":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vehicleType"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VehicleType = data
+		case "clearVehicleType":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearVehicleType"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearVehicleType = data
 		}
 	}
 
@@ -25184,6 +26914,8 @@ func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = ec._Event_plateBoundingBox(ctx, field, obj)
 		case "plateChannel":
 			out.Values[i] = ec._Event_plateChannel(ctx, field, obj)
+		case "plateConfidence":
+			out.Values[i] = ec._Event_plateConfidence(ctx, field, obj)
 		case "plateIsExist":
 			out.Values[i] = ec._Event_plateIsExist(ctx, field, obj)
 		case "plateColor":
@@ -25196,24 +26928,40 @@ func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = ec._Event_plateRegion(ctx, field, obj)
 		case "plateUploadNum":
 			out.Values[i] = ec._Event_plateUploadNum(ctx, field, obj)
+		case "snapAccurateTime":
+			out.Values[i] = ec._Event_snapAccurateTime(ctx, field, obj)
 		case "snapAllowUser":
 			out.Values[i] = ec._Event_snapAllowUser(ctx, field, obj)
 		case "snapAllowUserEndTime":
 			out.Values[i] = ec._Event_snapAllowUserEndTime(ctx, field, obj)
+		case "snapDstTune":
+			out.Values[i] = ec._Event_snapDstTune(ctx, field, obj)
 		case "snapDefenceCode":
 			out.Values[i] = ec._Event_snapDefenceCode(ctx, field, obj)
 		case "snapDeviceID":
 			out.Values[i] = ec._Event_snapDeviceID(ctx, field, obj)
+		case "snapDirection":
+			out.Values[i] = ec._Event_snapDirection(ctx, field, obj)
 		case "snapInCarPeopleNum":
 			out.Values[i] = ec._Event_snapInCarPeopleNum(ctx, field, obj)
 		case "snapLanNo":
 			out.Values[i] = ec._Event_snapLanNo(ctx, field, obj)
 		case "snapOpenStrobe":
 			out.Values[i] = ec._Event_snapOpenStrobe(ctx, field, obj)
+		case "snapSnapTime":
+			out.Values[i] = ec._Event_snapSnapTime(ctx, field, obj)
+		case "snapTimeZone":
+			out.Values[i] = ec._Event_snapTimeZone(ctx, field, obj)
+		case "vehicleSpeed":
+			out.Values[i] = ec._Event_vehicleSpeed(ctx, field, obj)
 		case "vehicleBoundingBox":
 			out.Values[i] = ec._Event_vehicleBoundingBox(ctx, field, obj)
+		case "vehicleColor":
+			out.Values[i] = ec._Event_vehicleColor(ctx, field, obj)
 		case "vehicleSeries":
 			out.Values[i] = ec._Event_vehicleSeries(ctx, field, obj)
+		case "vehicleType":
+			out.Values[i] = ec._Event_vehicleType(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

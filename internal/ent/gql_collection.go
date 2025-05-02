@@ -372,6 +372,11 @@ func (e *EventQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 				selectedFields = append(selectedFields, event.FieldPlateChannel)
 				fieldSeen[event.FieldPlateChannel] = struct{}{}
 			}
+		case "plateConfidence":
+			if _, ok := fieldSeen[event.FieldPlateConfidence]; !ok {
+				selectedFields = append(selectedFields, event.FieldPlateConfidence)
+				fieldSeen[event.FieldPlateConfidence] = struct{}{}
+			}
 		case "plateIsExist":
 			if _, ok := fieldSeen[event.FieldPlateIsExist]; !ok {
 				selectedFields = append(selectedFields, event.FieldPlateIsExist)
@@ -402,6 +407,11 @@ func (e *EventQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 				selectedFields = append(selectedFields, event.FieldPlateUploadNum)
 				fieldSeen[event.FieldPlateUploadNum] = struct{}{}
 			}
+		case "snapAccurateTime":
+			if _, ok := fieldSeen[event.FieldSnapAccurateTime]; !ok {
+				selectedFields = append(selectedFields, event.FieldSnapAccurateTime)
+				fieldSeen[event.FieldSnapAccurateTime] = struct{}{}
+			}
 		case "snapAllowUser":
 			if _, ok := fieldSeen[event.FieldSnapAllowUser]; !ok {
 				selectedFields = append(selectedFields, event.FieldSnapAllowUser)
@@ -412,6 +422,11 @@ func (e *EventQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 				selectedFields = append(selectedFields, event.FieldSnapAllowUserEndTime)
 				fieldSeen[event.FieldSnapAllowUserEndTime] = struct{}{}
 			}
+		case "snapDstTune":
+			if _, ok := fieldSeen[event.FieldSnapDstTune]; !ok {
+				selectedFields = append(selectedFields, event.FieldSnapDstTune)
+				fieldSeen[event.FieldSnapDstTune] = struct{}{}
+			}
 		case "snapDefenceCode":
 			if _, ok := fieldSeen[event.FieldSnapDefenceCode]; !ok {
 				selectedFields = append(selectedFields, event.FieldSnapDefenceCode)
@@ -421,6 +436,11 @@ func (e *EventQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 			if _, ok := fieldSeen[event.FieldSnapDeviceID]; !ok {
 				selectedFields = append(selectedFields, event.FieldSnapDeviceID)
 				fieldSeen[event.FieldSnapDeviceID] = struct{}{}
+			}
+		case "snapDirection":
+			if _, ok := fieldSeen[event.FieldSnapDirection]; !ok {
+				selectedFields = append(selectedFields, event.FieldSnapDirection)
+				fieldSeen[event.FieldSnapDirection] = struct{}{}
 			}
 		case "snapInCarPeopleNum":
 			if _, ok := fieldSeen[event.FieldSnapInCarPeopleNum]; !ok {
@@ -437,15 +457,40 @@ func (e *EventQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 				selectedFields = append(selectedFields, event.FieldSnapOpenStrobe)
 				fieldSeen[event.FieldSnapOpenStrobe] = struct{}{}
 			}
+		case "snapSnapTime":
+			if _, ok := fieldSeen[event.FieldSnapSnapTime]; !ok {
+				selectedFields = append(selectedFields, event.FieldSnapSnapTime)
+				fieldSeen[event.FieldSnapSnapTime] = struct{}{}
+			}
+		case "snapTimeZone":
+			if _, ok := fieldSeen[event.FieldSnapTimeZone]; !ok {
+				selectedFields = append(selectedFields, event.FieldSnapTimeZone)
+				fieldSeen[event.FieldSnapTimeZone] = struct{}{}
+			}
+		case "vehicleSpeed":
+			if _, ok := fieldSeen[event.FieldVehicleSpeed]; !ok {
+				selectedFields = append(selectedFields, event.FieldVehicleSpeed)
+				fieldSeen[event.FieldVehicleSpeed] = struct{}{}
+			}
 		case "vehicleBoundingBox":
 			if _, ok := fieldSeen[event.FieldVehicleBoundingBox]; !ok {
 				selectedFields = append(selectedFields, event.FieldVehicleBoundingBox)
 				fieldSeen[event.FieldVehicleBoundingBox] = struct{}{}
 			}
+		case "vehicleColor":
+			if _, ok := fieldSeen[event.FieldVehicleColor]; !ok {
+				selectedFields = append(selectedFields, event.FieldVehicleColor)
+				fieldSeen[event.FieldVehicleColor] = struct{}{}
+			}
 		case "vehicleSeries":
 			if _, ok := fieldSeen[event.FieldVehicleSeries]; !ok {
 				selectedFields = append(selectedFields, event.FieldVehicleSeries)
 				fieldSeen[event.FieldVehicleSeries] = struct{}{}
+			}
+		case "vehicleType":
+			if _, ok := fieldSeen[event.FieldVehicleType]; !ok {
+				selectedFields = append(selectedFields, event.FieldVehicleType)
+				fieldSeen[event.FieldVehicleType] = struct{}{}
 			}
 		case "id":
 		case "__typename":

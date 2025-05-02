@@ -2064,6 +2064,8 @@ type EventMutation struct {
 	appendplate_bounding_box   []int
 	plate_channel              *int
 	addplate_channel           *int
+	plate_confidence           *int
+	addplate_confidence        *int
 	plate_is_exist             *bool
 	plate_color                *string
 	plate_number               *string
@@ -2071,18 +2073,29 @@ type EventMutation struct {
 	plate_region               *string
 	plate_upload_num           *int
 	addplate_upload_num        *int
+	snap_accurate_time         *string
 	snap_allow_user            *bool
 	snap_allow_user_end_time   *string
+	snap_dst_tune              *int
+	addsnap_dst_tune           *int
 	snap_defence_code          *string
 	snap_device_id             *string
+	snap_direction             *string
 	snap_in_car_people_num     *int
 	addsnap_in_car_people_num  *int
 	snap_lan_no                *int
 	addsnap_lan_no             *int
 	snap_open_strobe           *bool
+	snap_snap_time             *string
+	snap_time_zone             *int
+	addsnap_time_zone          *int
+	vehicle_speed              *int
+	addvehicle_speed           *int
 	vehicle_bounding_box       *[]int
 	appendvehicle_bounding_box []int
+	vehicle_color              *string
 	vehicle_series             *string
+	vehicle_type               *string
 	clearedFields              map[string]struct{}
 	done                       bool
 	oldValue                   func(context.Context) (*Event, error)
@@ -2400,6 +2413,76 @@ func (m *EventMutation) ResetPlateChannel() {
 	delete(m.clearedFields, event.FieldPlateChannel)
 }
 
+// SetPlateConfidence sets the "plate_confidence" field.
+func (m *EventMutation) SetPlateConfidence(i int) {
+	m.plate_confidence = &i
+	m.addplate_confidence = nil
+}
+
+// PlateConfidence returns the value of the "plate_confidence" field in the mutation.
+func (m *EventMutation) PlateConfidence() (r int, exists bool) {
+	v := m.plate_confidence
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlateConfidence returns the old "plate_confidence" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldPlateConfidence(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlateConfidence is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlateConfidence requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlateConfidence: %w", err)
+	}
+	return oldValue.PlateConfidence, nil
+}
+
+// AddPlateConfidence adds i to the "plate_confidence" field.
+func (m *EventMutation) AddPlateConfidence(i int) {
+	if m.addplate_confidence != nil {
+		*m.addplate_confidence += i
+	} else {
+		m.addplate_confidence = &i
+	}
+}
+
+// AddedPlateConfidence returns the value that was added to the "plate_confidence" field in this mutation.
+func (m *EventMutation) AddedPlateConfidence() (r int, exists bool) {
+	v := m.addplate_confidence
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearPlateConfidence clears the value of the "plate_confidence" field.
+func (m *EventMutation) ClearPlateConfidence() {
+	m.plate_confidence = nil
+	m.addplate_confidence = nil
+	m.clearedFields[event.FieldPlateConfidence] = struct{}{}
+}
+
+// PlateConfidenceCleared returns if the "plate_confidence" field was cleared in this mutation.
+func (m *EventMutation) PlateConfidenceCleared() bool {
+	_, ok := m.clearedFields[event.FieldPlateConfidence]
+	return ok
+}
+
+// ResetPlateConfidence resets all changes to the "plate_confidence" field.
+func (m *EventMutation) ResetPlateConfidence() {
+	m.plate_confidence = nil
+	m.addplate_confidence = nil
+	delete(m.clearedFields, event.FieldPlateConfidence)
+}
+
 // SetPlateIsExist sets the "plate_is_exist" field.
 func (m *EventMutation) SetPlateIsExist(b bool) {
 	m.plate_is_exist = &b
@@ -2715,6 +2798,55 @@ func (m *EventMutation) ResetPlateUploadNum() {
 	delete(m.clearedFields, event.FieldPlateUploadNum)
 }
 
+// SetSnapAccurateTime sets the "snap_accurate_time" field.
+func (m *EventMutation) SetSnapAccurateTime(s string) {
+	m.snap_accurate_time = &s
+}
+
+// SnapAccurateTime returns the value of the "snap_accurate_time" field in the mutation.
+func (m *EventMutation) SnapAccurateTime() (r string, exists bool) {
+	v := m.snap_accurate_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapAccurateTime returns the old "snap_accurate_time" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldSnapAccurateTime(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapAccurateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapAccurateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapAccurateTime: %w", err)
+	}
+	return oldValue.SnapAccurateTime, nil
+}
+
+// ClearSnapAccurateTime clears the value of the "snap_accurate_time" field.
+func (m *EventMutation) ClearSnapAccurateTime() {
+	m.snap_accurate_time = nil
+	m.clearedFields[event.FieldSnapAccurateTime] = struct{}{}
+}
+
+// SnapAccurateTimeCleared returns if the "snap_accurate_time" field was cleared in this mutation.
+func (m *EventMutation) SnapAccurateTimeCleared() bool {
+	_, ok := m.clearedFields[event.FieldSnapAccurateTime]
+	return ok
+}
+
+// ResetSnapAccurateTime resets all changes to the "snap_accurate_time" field.
+func (m *EventMutation) ResetSnapAccurateTime() {
+	m.snap_accurate_time = nil
+	delete(m.clearedFields, event.FieldSnapAccurateTime)
+}
+
 // SetSnapAllowUser sets the "snap_allow_user" field.
 func (m *EventMutation) SetSnapAllowUser(b bool) {
 	m.snap_allow_user = &b
@@ -2813,6 +2945,76 @@ func (m *EventMutation) ResetSnapAllowUserEndTime() {
 	delete(m.clearedFields, event.FieldSnapAllowUserEndTime)
 }
 
+// SetSnapDstTune sets the "snap_dst_tune" field.
+func (m *EventMutation) SetSnapDstTune(i int) {
+	m.snap_dst_tune = &i
+	m.addsnap_dst_tune = nil
+}
+
+// SnapDstTune returns the value of the "snap_dst_tune" field in the mutation.
+func (m *EventMutation) SnapDstTune() (r int, exists bool) {
+	v := m.snap_dst_tune
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapDstTune returns the old "snap_dst_tune" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldSnapDstTune(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapDstTune is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapDstTune requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapDstTune: %w", err)
+	}
+	return oldValue.SnapDstTune, nil
+}
+
+// AddSnapDstTune adds i to the "snap_dst_tune" field.
+func (m *EventMutation) AddSnapDstTune(i int) {
+	if m.addsnap_dst_tune != nil {
+		*m.addsnap_dst_tune += i
+	} else {
+		m.addsnap_dst_tune = &i
+	}
+}
+
+// AddedSnapDstTune returns the value that was added to the "snap_dst_tune" field in this mutation.
+func (m *EventMutation) AddedSnapDstTune() (r int, exists bool) {
+	v := m.addsnap_dst_tune
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearSnapDstTune clears the value of the "snap_dst_tune" field.
+func (m *EventMutation) ClearSnapDstTune() {
+	m.snap_dst_tune = nil
+	m.addsnap_dst_tune = nil
+	m.clearedFields[event.FieldSnapDstTune] = struct{}{}
+}
+
+// SnapDstTuneCleared returns if the "snap_dst_tune" field was cleared in this mutation.
+func (m *EventMutation) SnapDstTuneCleared() bool {
+	_, ok := m.clearedFields[event.FieldSnapDstTune]
+	return ok
+}
+
+// ResetSnapDstTune resets all changes to the "snap_dst_tune" field.
+func (m *EventMutation) ResetSnapDstTune() {
+	m.snap_dst_tune = nil
+	m.addsnap_dst_tune = nil
+	delete(m.clearedFields, event.FieldSnapDstTune)
+}
+
 // SetSnapDefenceCode sets the "snap_defence_code" field.
 func (m *EventMutation) SetSnapDefenceCode(s string) {
 	m.snap_defence_code = &s
@@ -2909,6 +3111,55 @@ func (m *EventMutation) SnapDeviceIDCleared() bool {
 func (m *EventMutation) ResetSnapDeviceID() {
 	m.snap_device_id = nil
 	delete(m.clearedFields, event.FieldSnapDeviceID)
+}
+
+// SetSnapDirection sets the "snap_direction" field.
+func (m *EventMutation) SetSnapDirection(s string) {
+	m.snap_direction = &s
+}
+
+// SnapDirection returns the value of the "snap_direction" field in the mutation.
+func (m *EventMutation) SnapDirection() (r string, exists bool) {
+	v := m.snap_direction
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapDirection returns the old "snap_direction" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldSnapDirection(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapDirection is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapDirection requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapDirection: %w", err)
+	}
+	return oldValue.SnapDirection, nil
+}
+
+// ClearSnapDirection clears the value of the "snap_direction" field.
+func (m *EventMutation) ClearSnapDirection() {
+	m.snap_direction = nil
+	m.clearedFields[event.FieldSnapDirection] = struct{}{}
+}
+
+// SnapDirectionCleared returns if the "snap_direction" field was cleared in this mutation.
+func (m *EventMutation) SnapDirectionCleared() bool {
+	_, ok := m.clearedFields[event.FieldSnapDirection]
+	return ok
+}
+
+// ResetSnapDirection resets all changes to the "snap_direction" field.
+func (m *EventMutation) ResetSnapDirection() {
+	m.snap_direction = nil
+	delete(m.clearedFields, event.FieldSnapDirection)
 }
 
 // SetSnapInCarPeopleNum sets the "snap_in_car_people_num" field.
@@ -3100,6 +3351,195 @@ func (m *EventMutation) ResetSnapOpenStrobe() {
 	delete(m.clearedFields, event.FieldSnapOpenStrobe)
 }
 
+// SetSnapSnapTime sets the "snap_snap_time" field.
+func (m *EventMutation) SetSnapSnapTime(s string) {
+	m.snap_snap_time = &s
+}
+
+// SnapSnapTime returns the value of the "snap_snap_time" field in the mutation.
+func (m *EventMutation) SnapSnapTime() (r string, exists bool) {
+	v := m.snap_snap_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapSnapTime returns the old "snap_snap_time" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldSnapSnapTime(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapSnapTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapSnapTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapSnapTime: %w", err)
+	}
+	return oldValue.SnapSnapTime, nil
+}
+
+// ClearSnapSnapTime clears the value of the "snap_snap_time" field.
+func (m *EventMutation) ClearSnapSnapTime() {
+	m.snap_snap_time = nil
+	m.clearedFields[event.FieldSnapSnapTime] = struct{}{}
+}
+
+// SnapSnapTimeCleared returns if the "snap_snap_time" field was cleared in this mutation.
+func (m *EventMutation) SnapSnapTimeCleared() bool {
+	_, ok := m.clearedFields[event.FieldSnapSnapTime]
+	return ok
+}
+
+// ResetSnapSnapTime resets all changes to the "snap_snap_time" field.
+func (m *EventMutation) ResetSnapSnapTime() {
+	m.snap_snap_time = nil
+	delete(m.clearedFields, event.FieldSnapSnapTime)
+}
+
+// SetSnapTimeZone sets the "snap_time_zone" field.
+func (m *EventMutation) SetSnapTimeZone(i int) {
+	m.snap_time_zone = &i
+	m.addsnap_time_zone = nil
+}
+
+// SnapTimeZone returns the value of the "snap_time_zone" field in the mutation.
+func (m *EventMutation) SnapTimeZone() (r int, exists bool) {
+	v := m.snap_time_zone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSnapTimeZone returns the old "snap_time_zone" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldSnapTimeZone(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSnapTimeZone is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSnapTimeZone requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSnapTimeZone: %w", err)
+	}
+	return oldValue.SnapTimeZone, nil
+}
+
+// AddSnapTimeZone adds i to the "snap_time_zone" field.
+func (m *EventMutation) AddSnapTimeZone(i int) {
+	if m.addsnap_time_zone != nil {
+		*m.addsnap_time_zone += i
+	} else {
+		m.addsnap_time_zone = &i
+	}
+}
+
+// AddedSnapTimeZone returns the value that was added to the "snap_time_zone" field in this mutation.
+func (m *EventMutation) AddedSnapTimeZone() (r int, exists bool) {
+	v := m.addsnap_time_zone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearSnapTimeZone clears the value of the "snap_time_zone" field.
+func (m *EventMutation) ClearSnapTimeZone() {
+	m.snap_time_zone = nil
+	m.addsnap_time_zone = nil
+	m.clearedFields[event.FieldSnapTimeZone] = struct{}{}
+}
+
+// SnapTimeZoneCleared returns if the "snap_time_zone" field was cleared in this mutation.
+func (m *EventMutation) SnapTimeZoneCleared() bool {
+	_, ok := m.clearedFields[event.FieldSnapTimeZone]
+	return ok
+}
+
+// ResetSnapTimeZone resets all changes to the "snap_time_zone" field.
+func (m *EventMutation) ResetSnapTimeZone() {
+	m.snap_time_zone = nil
+	m.addsnap_time_zone = nil
+	delete(m.clearedFields, event.FieldSnapTimeZone)
+}
+
+// SetVehicleSpeed sets the "vehicle_speed" field.
+func (m *EventMutation) SetVehicleSpeed(i int) {
+	m.vehicle_speed = &i
+	m.addvehicle_speed = nil
+}
+
+// VehicleSpeed returns the value of the "vehicle_speed" field in the mutation.
+func (m *EventMutation) VehicleSpeed() (r int, exists bool) {
+	v := m.vehicle_speed
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVehicleSpeed returns the old "vehicle_speed" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldVehicleSpeed(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVehicleSpeed is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVehicleSpeed requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVehicleSpeed: %w", err)
+	}
+	return oldValue.VehicleSpeed, nil
+}
+
+// AddVehicleSpeed adds i to the "vehicle_speed" field.
+func (m *EventMutation) AddVehicleSpeed(i int) {
+	if m.addvehicle_speed != nil {
+		*m.addvehicle_speed += i
+	} else {
+		m.addvehicle_speed = &i
+	}
+}
+
+// AddedVehicleSpeed returns the value that was added to the "vehicle_speed" field in this mutation.
+func (m *EventMutation) AddedVehicleSpeed() (r int, exists bool) {
+	v := m.addvehicle_speed
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearVehicleSpeed clears the value of the "vehicle_speed" field.
+func (m *EventMutation) ClearVehicleSpeed() {
+	m.vehicle_speed = nil
+	m.addvehicle_speed = nil
+	m.clearedFields[event.FieldVehicleSpeed] = struct{}{}
+}
+
+// VehicleSpeedCleared returns if the "vehicle_speed" field was cleared in this mutation.
+func (m *EventMutation) VehicleSpeedCleared() bool {
+	_, ok := m.clearedFields[event.FieldVehicleSpeed]
+	return ok
+}
+
+// ResetVehicleSpeed resets all changes to the "vehicle_speed" field.
+func (m *EventMutation) ResetVehicleSpeed() {
+	m.vehicle_speed = nil
+	m.addvehicle_speed = nil
+	delete(m.clearedFields, event.FieldVehicleSpeed)
+}
+
 // SetVehicleBoundingBox sets the "vehicle_bounding_box" field.
 func (m *EventMutation) SetVehicleBoundingBox(i []int) {
 	m.vehicle_bounding_box = &i
@@ -3165,6 +3605,55 @@ func (m *EventMutation) ResetVehicleBoundingBox() {
 	delete(m.clearedFields, event.FieldVehicleBoundingBox)
 }
 
+// SetVehicleColor sets the "vehicle_color" field.
+func (m *EventMutation) SetVehicleColor(s string) {
+	m.vehicle_color = &s
+}
+
+// VehicleColor returns the value of the "vehicle_color" field in the mutation.
+func (m *EventMutation) VehicleColor() (r string, exists bool) {
+	v := m.vehicle_color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVehicleColor returns the old "vehicle_color" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldVehicleColor(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVehicleColor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVehicleColor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVehicleColor: %w", err)
+	}
+	return oldValue.VehicleColor, nil
+}
+
+// ClearVehicleColor clears the value of the "vehicle_color" field.
+func (m *EventMutation) ClearVehicleColor() {
+	m.vehicle_color = nil
+	m.clearedFields[event.FieldVehicleColor] = struct{}{}
+}
+
+// VehicleColorCleared returns if the "vehicle_color" field was cleared in this mutation.
+func (m *EventMutation) VehicleColorCleared() bool {
+	_, ok := m.clearedFields[event.FieldVehicleColor]
+	return ok
+}
+
+// ResetVehicleColor resets all changes to the "vehicle_color" field.
+func (m *EventMutation) ResetVehicleColor() {
+	m.vehicle_color = nil
+	delete(m.clearedFields, event.FieldVehicleColor)
+}
+
 // SetVehicleSeries sets the "vehicle_series" field.
 func (m *EventMutation) SetVehicleSeries(s string) {
 	m.vehicle_series = &s
@@ -3214,6 +3703,55 @@ func (m *EventMutation) ResetVehicleSeries() {
 	delete(m.clearedFields, event.FieldVehicleSeries)
 }
 
+// SetVehicleType sets the "vehicle_type" field.
+func (m *EventMutation) SetVehicleType(s string) {
+	m.vehicle_type = &s
+}
+
+// VehicleType returns the value of the "vehicle_type" field in the mutation.
+func (m *EventMutation) VehicleType() (r string, exists bool) {
+	v := m.vehicle_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVehicleType returns the old "vehicle_type" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldVehicleType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVehicleType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVehicleType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVehicleType: %w", err)
+	}
+	return oldValue.VehicleType, nil
+}
+
+// ClearVehicleType clears the value of the "vehicle_type" field.
+func (m *EventMutation) ClearVehicleType() {
+	m.vehicle_type = nil
+	m.clearedFields[event.FieldVehicleType] = struct{}{}
+}
+
+// VehicleTypeCleared returns if the "vehicle_type" field was cleared in this mutation.
+func (m *EventMutation) VehicleTypeCleared() bool {
+	_, ok := m.clearedFields[event.FieldVehicleType]
+	return ok
+}
+
+// ResetVehicleType resets all changes to the "vehicle_type" field.
+func (m *EventMutation) ResetVehicleType() {
+	m.vehicle_type = nil
+	delete(m.clearedFields, event.FieldVehicleType)
+}
+
 // Where appends a list predicates to the EventMutation builder.
 func (m *EventMutation) Where(ps ...predicate.Event) {
 	m.predicates = append(m.predicates, ps...)
@@ -3248,7 +3786,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 28)
 	if m.created_at != nil {
 		fields = append(fields, event.FieldCreatedAt)
 	}
@@ -3260,6 +3798,9 @@ func (m *EventMutation) Fields() []string {
 	}
 	if m.plate_channel != nil {
 		fields = append(fields, event.FieldPlateChannel)
+	}
+	if m.plate_confidence != nil {
+		fields = append(fields, event.FieldPlateConfidence)
 	}
 	if m.plate_is_exist != nil {
 		fields = append(fields, event.FieldPlateIsExist)
@@ -3279,17 +3820,26 @@ func (m *EventMutation) Fields() []string {
 	if m.plate_upload_num != nil {
 		fields = append(fields, event.FieldPlateUploadNum)
 	}
+	if m.snap_accurate_time != nil {
+		fields = append(fields, event.FieldSnapAccurateTime)
+	}
 	if m.snap_allow_user != nil {
 		fields = append(fields, event.FieldSnapAllowUser)
 	}
 	if m.snap_allow_user_end_time != nil {
 		fields = append(fields, event.FieldSnapAllowUserEndTime)
 	}
+	if m.snap_dst_tune != nil {
+		fields = append(fields, event.FieldSnapDstTune)
+	}
 	if m.snap_defence_code != nil {
 		fields = append(fields, event.FieldSnapDefenceCode)
 	}
 	if m.snap_device_id != nil {
 		fields = append(fields, event.FieldSnapDeviceID)
+	}
+	if m.snap_direction != nil {
+		fields = append(fields, event.FieldSnapDirection)
 	}
 	if m.snap_in_car_people_num != nil {
 		fields = append(fields, event.FieldSnapInCarPeopleNum)
@@ -3300,11 +3850,26 @@ func (m *EventMutation) Fields() []string {
 	if m.snap_open_strobe != nil {
 		fields = append(fields, event.FieldSnapOpenStrobe)
 	}
+	if m.snap_snap_time != nil {
+		fields = append(fields, event.FieldSnapSnapTime)
+	}
+	if m.snap_time_zone != nil {
+		fields = append(fields, event.FieldSnapTimeZone)
+	}
+	if m.vehicle_speed != nil {
+		fields = append(fields, event.FieldVehicleSpeed)
+	}
 	if m.vehicle_bounding_box != nil {
 		fields = append(fields, event.FieldVehicleBoundingBox)
 	}
+	if m.vehicle_color != nil {
+		fields = append(fields, event.FieldVehicleColor)
+	}
 	if m.vehicle_series != nil {
 		fields = append(fields, event.FieldVehicleSeries)
+	}
+	if m.vehicle_type != nil {
+		fields = append(fields, event.FieldVehicleType)
 	}
 	return fields
 }
@@ -3322,6 +3887,8 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.PlateBoundingBox()
 	case event.FieldPlateChannel:
 		return m.PlateChannel()
+	case event.FieldPlateConfidence:
+		return m.PlateConfidence()
 	case event.FieldPlateIsExist:
 		return m.PlateIsExist()
 	case event.FieldPlateColor:
@@ -3334,24 +3901,40 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.PlateRegion()
 	case event.FieldPlateUploadNum:
 		return m.PlateUploadNum()
+	case event.FieldSnapAccurateTime:
+		return m.SnapAccurateTime()
 	case event.FieldSnapAllowUser:
 		return m.SnapAllowUser()
 	case event.FieldSnapAllowUserEndTime:
 		return m.SnapAllowUserEndTime()
+	case event.FieldSnapDstTune:
+		return m.SnapDstTune()
 	case event.FieldSnapDefenceCode:
 		return m.SnapDefenceCode()
 	case event.FieldSnapDeviceID:
 		return m.SnapDeviceID()
+	case event.FieldSnapDirection:
+		return m.SnapDirection()
 	case event.FieldSnapInCarPeopleNum:
 		return m.SnapInCarPeopleNum()
 	case event.FieldSnapLanNo:
 		return m.SnapLanNo()
 	case event.FieldSnapOpenStrobe:
 		return m.SnapOpenStrobe()
+	case event.FieldSnapSnapTime:
+		return m.SnapSnapTime()
+	case event.FieldSnapTimeZone:
+		return m.SnapTimeZone()
+	case event.FieldVehicleSpeed:
+		return m.VehicleSpeed()
 	case event.FieldVehicleBoundingBox:
 		return m.VehicleBoundingBox()
+	case event.FieldVehicleColor:
+		return m.VehicleColor()
 	case event.FieldVehicleSeries:
 		return m.VehicleSeries()
+	case event.FieldVehicleType:
+		return m.VehicleType()
 	}
 	return nil, false
 }
@@ -3369,6 +3952,8 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPlateBoundingBox(ctx)
 	case event.FieldPlateChannel:
 		return m.OldPlateChannel(ctx)
+	case event.FieldPlateConfidence:
+		return m.OldPlateConfidence(ctx)
 	case event.FieldPlateIsExist:
 		return m.OldPlateIsExist(ctx)
 	case event.FieldPlateColor:
@@ -3381,24 +3966,40 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPlateRegion(ctx)
 	case event.FieldPlateUploadNum:
 		return m.OldPlateUploadNum(ctx)
+	case event.FieldSnapAccurateTime:
+		return m.OldSnapAccurateTime(ctx)
 	case event.FieldSnapAllowUser:
 		return m.OldSnapAllowUser(ctx)
 	case event.FieldSnapAllowUserEndTime:
 		return m.OldSnapAllowUserEndTime(ctx)
+	case event.FieldSnapDstTune:
+		return m.OldSnapDstTune(ctx)
 	case event.FieldSnapDefenceCode:
 		return m.OldSnapDefenceCode(ctx)
 	case event.FieldSnapDeviceID:
 		return m.OldSnapDeviceID(ctx)
+	case event.FieldSnapDirection:
+		return m.OldSnapDirection(ctx)
 	case event.FieldSnapInCarPeopleNum:
 		return m.OldSnapInCarPeopleNum(ctx)
 	case event.FieldSnapLanNo:
 		return m.OldSnapLanNo(ctx)
 	case event.FieldSnapOpenStrobe:
 		return m.OldSnapOpenStrobe(ctx)
+	case event.FieldSnapSnapTime:
+		return m.OldSnapSnapTime(ctx)
+	case event.FieldSnapTimeZone:
+		return m.OldSnapTimeZone(ctx)
+	case event.FieldVehicleSpeed:
+		return m.OldVehicleSpeed(ctx)
 	case event.FieldVehicleBoundingBox:
 		return m.OldVehicleBoundingBox(ctx)
+	case event.FieldVehicleColor:
+		return m.OldVehicleColor(ctx)
 	case event.FieldVehicleSeries:
 		return m.OldVehicleSeries(ctx)
+	case event.FieldVehicleType:
+		return m.OldVehicleType(ctx)
 	}
 	return nil, fmt.Errorf("unknown Event field %s", name)
 }
@@ -3435,6 +4036,13 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPlateChannel(v)
+		return nil
+	case event.FieldPlateConfidence:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlateConfidence(v)
 		return nil
 	case event.FieldPlateIsExist:
 		v, ok := value.(bool)
@@ -3478,6 +4086,13 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPlateUploadNum(v)
 		return nil
+	case event.FieldSnapAccurateTime:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapAccurateTime(v)
+		return nil
 	case event.FieldSnapAllowUser:
 		v, ok := value.(bool)
 		if !ok {
@@ -3492,6 +4107,13 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetSnapAllowUserEndTime(v)
 		return nil
+	case event.FieldSnapDstTune:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapDstTune(v)
+		return nil
 	case event.FieldSnapDefenceCode:
 		v, ok := value.(string)
 		if !ok {
@@ -3505,6 +4127,13 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSnapDeviceID(v)
+		return nil
+	case event.FieldSnapDirection:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapDirection(v)
 		return nil
 	case event.FieldSnapInCarPeopleNum:
 		v, ok := value.(int)
@@ -3527,6 +4156,27 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetSnapOpenStrobe(v)
 		return nil
+	case event.FieldSnapSnapTime:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapSnapTime(v)
+		return nil
+	case event.FieldSnapTimeZone:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSnapTimeZone(v)
+		return nil
+	case event.FieldVehicleSpeed:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVehicleSpeed(v)
+		return nil
 	case event.FieldVehicleBoundingBox:
 		v, ok := value.([]int)
 		if !ok {
@@ -3534,12 +4184,26 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetVehicleBoundingBox(v)
 		return nil
+	case event.FieldVehicleColor:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVehicleColor(v)
+		return nil
 	case event.FieldVehicleSeries:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetVehicleSeries(v)
+		return nil
+	case event.FieldVehicleType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVehicleType(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)
@@ -3552,14 +4216,26 @@ func (m *EventMutation) AddedFields() []string {
 	if m.addplate_channel != nil {
 		fields = append(fields, event.FieldPlateChannel)
 	}
+	if m.addplate_confidence != nil {
+		fields = append(fields, event.FieldPlateConfidence)
+	}
 	if m.addplate_upload_num != nil {
 		fields = append(fields, event.FieldPlateUploadNum)
+	}
+	if m.addsnap_dst_tune != nil {
+		fields = append(fields, event.FieldSnapDstTune)
 	}
 	if m.addsnap_in_car_people_num != nil {
 		fields = append(fields, event.FieldSnapInCarPeopleNum)
 	}
 	if m.addsnap_lan_no != nil {
 		fields = append(fields, event.FieldSnapLanNo)
+	}
+	if m.addsnap_time_zone != nil {
+		fields = append(fields, event.FieldSnapTimeZone)
+	}
+	if m.addvehicle_speed != nil {
+		fields = append(fields, event.FieldVehicleSpeed)
 	}
 	return fields
 }
@@ -3571,12 +4247,20 @@ func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case event.FieldPlateChannel:
 		return m.AddedPlateChannel()
+	case event.FieldPlateConfidence:
+		return m.AddedPlateConfidence()
 	case event.FieldPlateUploadNum:
 		return m.AddedPlateUploadNum()
+	case event.FieldSnapDstTune:
+		return m.AddedSnapDstTune()
 	case event.FieldSnapInCarPeopleNum:
 		return m.AddedSnapInCarPeopleNum()
 	case event.FieldSnapLanNo:
 		return m.AddedSnapLanNo()
+	case event.FieldSnapTimeZone:
+		return m.AddedSnapTimeZone()
+	case event.FieldVehicleSpeed:
+		return m.AddedVehicleSpeed()
 	}
 	return nil, false
 }
@@ -3593,12 +4277,26 @@ func (m *EventMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddPlateChannel(v)
 		return nil
+	case event.FieldPlateConfidence:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPlateConfidence(v)
+		return nil
 	case event.FieldPlateUploadNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddPlateUploadNum(v)
+		return nil
+	case event.FieldSnapDstTune:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSnapDstTune(v)
 		return nil
 	case event.FieldSnapInCarPeopleNum:
 		v, ok := value.(int)
@@ -3614,6 +4312,20 @@ func (m *EventMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddSnapLanNo(v)
 		return nil
+	case event.FieldSnapTimeZone:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSnapTimeZone(v)
+		return nil
+	case event.FieldVehicleSpeed:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVehicleSpeed(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Event numeric field %s", name)
 }
@@ -3627,6 +4339,9 @@ func (m *EventMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(event.FieldPlateChannel) {
 		fields = append(fields, event.FieldPlateChannel)
+	}
+	if m.FieldCleared(event.FieldPlateConfidence) {
+		fields = append(fields, event.FieldPlateConfidence)
 	}
 	if m.FieldCleared(event.FieldPlateIsExist) {
 		fields = append(fields, event.FieldPlateIsExist)
@@ -3646,17 +4361,26 @@ func (m *EventMutation) ClearedFields() []string {
 	if m.FieldCleared(event.FieldPlateUploadNum) {
 		fields = append(fields, event.FieldPlateUploadNum)
 	}
+	if m.FieldCleared(event.FieldSnapAccurateTime) {
+		fields = append(fields, event.FieldSnapAccurateTime)
+	}
 	if m.FieldCleared(event.FieldSnapAllowUser) {
 		fields = append(fields, event.FieldSnapAllowUser)
 	}
 	if m.FieldCleared(event.FieldSnapAllowUserEndTime) {
 		fields = append(fields, event.FieldSnapAllowUserEndTime)
 	}
+	if m.FieldCleared(event.FieldSnapDstTune) {
+		fields = append(fields, event.FieldSnapDstTune)
+	}
 	if m.FieldCleared(event.FieldSnapDefenceCode) {
 		fields = append(fields, event.FieldSnapDefenceCode)
 	}
 	if m.FieldCleared(event.FieldSnapDeviceID) {
 		fields = append(fields, event.FieldSnapDeviceID)
+	}
+	if m.FieldCleared(event.FieldSnapDirection) {
+		fields = append(fields, event.FieldSnapDirection)
 	}
 	if m.FieldCleared(event.FieldSnapInCarPeopleNum) {
 		fields = append(fields, event.FieldSnapInCarPeopleNum)
@@ -3667,11 +4391,26 @@ func (m *EventMutation) ClearedFields() []string {
 	if m.FieldCleared(event.FieldSnapOpenStrobe) {
 		fields = append(fields, event.FieldSnapOpenStrobe)
 	}
+	if m.FieldCleared(event.FieldSnapSnapTime) {
+		fields = append(fields, event.FieldSnapSnapTime)
+	}
+	if m.FieldCleared(event.FieldSnapTimeZone) {
+		fields = append(fields, event.FieldSnapTimeZone)
+	}
+	if m.FieldCleared(event.FieldVehicleSpeed) {
+		fields = append(fields, event.FieldVehicleSpeed)
+	}
 	if m.FieldCleared(event.FieldVehicleBoundingBox) {
 		fields = append(fields, event.FieldVehicleBoundingBox)
 	}
+	if m.FieldCleared(event.FieldVehicleColor) {
+		fields = append(fields, event.FieldVehicleColor)
+	}
 	if m.FieldCleared(event.FieldVehicleSeries) {
 		fields = append(fields, event.FieldVehicleSeries)
+	}
+	if m.FieldCleared(event.FieldVehicleType) {
+		fields = append(fields, event.FieldVehicleType)
 	}
 	return fields
 }
@@ -3693,6 +4432,9 @@ func (m *EventMutation) ClearField(name string) error {
 	case event.FieldPlateChannel:
 		m.ClearPlateChannel()
 		return nil
+	case event.FieldPlateConfidence:
+		m.ClearPlateConfidence()
+		return nil
 	case event.FieldPlateIsExist:
 		m.ClearPlateIsExist()
 		return nil
@@ -3711,17 +4453,26 @@ func (m *EventMutation) ClearField(name string) error {
 	case event.FieldPlateUploadNum:
 		m.ClearPlateUploadNum()
 		return nil
+	case event.FieldSnapAccurateTime:
+		m.ClearSnapAccurateTime()
+		return nil
 	case event.FieldSnapAllowUser:
 		m.ClearSnapAllowUser()
 		return nil
 	case event.FieldSnapAllowUserEndTime:
 		m.ClearSnapAllowUserEndTime()
 		return nil
+	case event.FieldSnapDstTune:
+		m.ClearSnapDstTune()
+		return nil
 	case event.FieldSnapDefenceCode:
 		m.ClearSnapDefenceCode()
 		return nil
 	case event.FieldSnapDeviceID:
 		m.ClearSnapDeviceID()
+		return nil
+	case event.FieldSnapDirection:
+		m.ClearSnapDirection()
 		return nil
 	case event.FieldSnapInCarPeopleNum:
 		m.ClearSnapInCarPeopleNum()
@@ -3732,11 +4483,26 @@ func (m *EventMutation) ClearField(name string) error {
 	case event.FieldSnapOpenStrobe:
 		m.ClearSnapOpenStrobe()
 		return nil
+	case event.FieldSnapSnapTime:
+		m.ClearSnapSnapTime()
+		return nil
+	case event.FieldSnapTimeZone:
+		m.ClearSnapTimeZone()
+		return nil
+	case event.FieldVehicleSpeed:
+		m.ClearVehicleSpeed()
+		return nil
 	case event.FieldVehicleBoundingBox:
 		m.ClearVehicleBoundingBox()
 		return nil
+	case event.FieldVehicleColor:
+		m.ClearVehicleColor()
+		return nil
 	case event.FieldVehicleSeries:
 		m.ClearVehicleSeries()
+		return nil
+	case event.FieldVehicleType:
+		m.ClearVehicleType()
 		return nil
 	}
 	return fmt.Errorf("unknown Event nullable field %s", name)
@@ -3758,6 +4524,9 @@ func (m *EventMutation) ResetField(name string) error {
 	case event.FieldPlateChannel:
 		m.ResetPlateChannel()
 		return nil
+	case event.FieldPlateConfidence:
+		m.ResetPlateConfidence()
+		return nil
 	case event.FieldPlateIsExist:
 		m.ResetPlateIsExist()
 		return nil
@@ -3776,17 +4545,26 @@ func (m *EventMutation) ResetField(name string) error {
 	case event.FieldPlateUploadNum:
 		m.ResetPlateUploadNum()
 		return nil
+	case event.FieldSnapAccurateTime:
+		m.ResetSnapAccurateTime()
+		return nil
 	case event.FieldSnapAllowUser:
 		m.ResetSnapAllowUser()
 		return nil
 	case event.FieldSnapAllowUserEndTime:
 		m.ResetSnapAllowUserEndTime()
 		return nil
+	case event.FieldSnapDstTune:
+		m.ResetSnapDstTune()
+		return nil
 	case event.FieldSnapDefenceCode:
 		m.ResetSnapDefenceCode()
 		return nil
 	case event.FieldSnapDeviceID:
 		m.ResetSnapDeviceID()
+		return nil
+	case event.FieldSnapDirection:
+		m.ResetSnapDirection()
 		return nil
 	case event.FieldSnapInCarPeopleNum:
 		m.ResetSnapInCarPeopleNum()
@@ -3797,11 +4575,26 @@ func (m *EventMutation) ResetField(name string) error {
 	case event.FieldSnapOpenStrobe:
 		m.ResetSnapOpenStrobe()
 		return nil
+	case event.FieldSnapSnapTime:
+		m.ResetSnapSnapTime()
+		return nil
+	case event.FieldSnapTimeZone:
+		m.ResetSnapTimeZone()
+		return nil
+	case event.FieldVehicleSpeed:
+		m.ResetVehicleSpeed()
+		return nil
 	case event.FieldVehicleBoundingBox:
 		m.ResetVehicleBoundingBox()
 		return nil
+	case event.FieldVehicleColor:
+		m.ResetVehicleColor()
+		return nil
 	case event.FieldVehicleSeries:
 		m.ResetVehicleSeries()
+		return nil
+	case event.FieldVehicleType:
+		m.ResetVehicleType()
 		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)

@@ -75,6 +75,7 @@ func (Camera) Indexes() []ent.Index {
 					dialect.MySQL:    "FULLTEXT",
 					dialect.Postgres: "GIN",
 				})),
+		index.Fields("imei"),
 	}
 }
 

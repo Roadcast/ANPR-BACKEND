@@ -22,6 +22,8 @@ const (
 	FieldPlateBoundingBox = "plate_bounding_box"
 	// FieldPlateChannel holds the string denoting the plate_channel field in the database.
 	FieldPlateChannel = "plate_channel"
+	// FieldPlateConfidence holds the string denoting the plate_confidence field in the database.
+	FieldPlateConfidence = "plate_confidence"
 	// FieldPlateIsExist holds the string denoting the plate_is_exist field in the database.
 	FieldPlateIsExist = "plate_is_exist"
 	// FieldPlateColor holds the string denoting the plate_color field in the database.
@@ -34,24 +36,40 @@ const (
 	FieldPlateRegion = "plate_region"
 	// FieldPlateUploadNum holds the string denoting the plate_upload_num field in the database.
 	FieldPlateUploadNum = "plate_upload_num"
+	// FieldSnapAccurateTime holds the string denoting the snap_accurate_time field in the database.
+	FieldSnapAccurateTime = "snap_accurate_time"
 	// FieldSnapAllowUser holds the string denoting the snap_allow_user field in the database.
 	FieldSnapAllowUser = "snap_allow_user"
 	// FieldSnapAllowUserEndTime holds the string denoting the snap_allow_user_end_time field in the database.
 	FieldSnapAllowUserEndTime = "snap_allow_user_end_time"
+	// FieldSnapDstTune holds the string denoting the snap_dst_tune field in the database.
+	FieldSnapDstTune = "snap_dst_tune"
 	// FieldSnapDefenceCode holds the string denoting the snap_defence_code field in the database.
 	FieldSnapDefenceCode = "snap_defence_code"
 	// FieldSnapDeviceID holds the string denoting the snap_device_id field in the database.
 	FieldSnapDeviceID = "snap_device_id"
+	// FieldSnapDirection holds the string denoting the snap_direction field in the database.
+	FieldSnapDirection = "snap_direction"
 	// FieldSnapInCarPeopleNum holds the string denoting the snap_in_car_people_num field in the database.
 	FieldSnapInCarPeopleNum = "snap_in_car_people_num"
 	// FieldSnapLanNo holds the string denoting the snap_lan_no field in the database.
 	FieldSnapLanNo = "snap_lan_no"
 	// FieldSnapOpenStrobe holds the string denoting the snap_open_strobe field in the database.
 	FieldSnapOpenStrobe = "snap_open_strobe"
+	// FieldSnapSnapTime holds the string denoting the snap_snap_time field in the database.
+	FieldSnapSnapTime = "snap_snap_time"
+	// FieldSnapTimeZone holds the string denoting the snap_time_zone field in the database.
+	FieldSnapTimeZone = "snap_time_zone"
+	// FieldVehicleSpeed holds the string denoting the vehicle_speed field in the database.
+	FieldVehicleSpeed = "vehicle_speed"
 	// FieldVehicleBoundingBox holds the string denoting the vehicle_bounding_box field in the database.
 	FieldVehicleBoundingBox = "vehicle_bounding_box"
+	// FieldVehicleColor holds the string denoting the vehicle_color field in the database.
+	FieldVehicleColor = "vehicle_color"
 	// FieldVehicleSeries holds the string denoting the vehicle_series field in the database.
 	FieldVehicleSeries = "vehicle_series"
+	// FieldVehicleType holds the string denoting the vehicle_type field in the database.
+	FieldVehicleType = "vehicle_type"
 	// Table holds the table name of the event in the database.
 	Table = "events"
 )
@@ -63,21 +81,30 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldPlateBoundingBox,
 	FieldPlateChannel,
+	FieldPlateConfidence,
 	FieldPlateIsExist,
 	FieldPlateColor,
 	FieldPlateNumber,
 	FieldPlateType,
 	FieldPlateRegion,
 	FieldPlateUploadNum,
+	FieldSnapAccurateTime,
 	FieldSnapAllowUser,
 	FieldSnapAllowUserEndTime,
+	FieldSnapDstTune,
 	FieldSnapDefenceCode,
 	FieldSnapDeviceID,
+	FieldSnapDirection,
 	FieldSnapInCarPeopleNum,
 	FieldSnapLanNo,
 	FieldSnapOpenStrobe,
+	FieldSnapSnapTime,
+	FieldSnapTimeZone,
+	FieldVehicleSpeed,
 	FieldVehicleBoundingBox,
+	FieldVehicleColor,
 	FieldVehicleSeries,
+	FieldVehicleType,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -124,6 +151,11 @@ func ByPlateChannel(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPlateChannel, opts...).ToFunc()
 }
 
+// ByPlateConfidence orders the results by the plate_confidence field.
+func ByPlateConfidence(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPlateConfidence, opts...).ToFunc()
+}
+
 // ByPlateIsExist orders the results by the plate_is_exist field.
 func ByPlateIsExist(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPlateIsExist, opts...).ToFunc()
@@ -154,6 +186,11 @@ func ByPlateUploadNum(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPlateUploadNum, opts...).ToFunc()
 }
 
+// BySnapAccurateTime orders the results by the snap_accurate_time field.
+func BySnapAccurateTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSnapAccurateTime, opts...).ToFunc()
+}
+
 // BySnapAllowUser orders the results by the snap_allow_user field.
 func BySnapAllowUser(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSnapAllowUser, opts...).ToFunc()
@@ -164,6 +201,11 @@ func BySnapAllowUserEndTime(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSnapAllowUserEndTime, opts...).ToFunc()
 }
 
+// BySnapDstTune orders the results by the snap_dst_tune field.
+func BySnapDstTune(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSnapDstTune, opts...).ToFunc()
+}
+
 // BySnapDefenceCode orders the results by the snap_defence_code field.
 func BySnapDefenceCode(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSnapDefenceCode, opts...).ToFunc()
@@ -172,6 +214,11 @@ func BySnapDefenceCode(opts ...sql.OrderTermOption) OrderOption {
 // BySnapDeviceID orders the results by the snap_device_id field.
 func BySnapDeviceID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSnapDeviceID, opts...).ToFunc()
+}
+
+// BySnapDirection orders the results by the snap_direction field.
+func BySnapDirection(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSnapDirection, opts...).ToFunc()
 }
 
 // BySnapInCarPeopleNum orders the results by the snap_in_car_people_num field.
@@ -189,7 +236,32 @@ func BySnapOpenStrobe(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSnapOpenStrobe, opts...).ToFunc()
 }
 
+// BySnapSnapTime orders the results by the snap_snap_time field.
+func BySnapSnapTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSnapSnapTime, opts...).ToFunc()
+}
+
+// BySnapTimeZone orders the results by the snap_time_zone field.
+func BySnapTimeZone(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSnapTimeZone, opts...).ToFunc()
+}
+
+// ByVehicleSpeed orders the results by the vehicle_speed field.
+func ByVehicleSpeed(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldVehicleSpeed, opts...).ToFunc()
+}
+
+// ByVehicleColor orders the results by the vehicle_color field.
+func ByVehicleColor(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldVehicleColor, opts...).ToFunc()
+}
+
 // ByVehicleSeries orders the results by the vehicle_series field.
 func ByVehicleSeries(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldVehicleSeries, opts...).ToFunc()
+}
+
+// ByVehicleType orders the results by the vehicle_type field.
+func ByVehicleType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldVehicleType, opts...).ToFunc()
 }

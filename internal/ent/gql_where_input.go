@@ -1023,6 +1023,18 @@ type EventWhereInput struct {
 	PlateChannelIsNil  bool  `json:"plateChannelIsNil,omitempty"`
 	PlateChannelNotNil bool  `json:"plateChannelNotNil,omitempty"`
 
+	// "plate_confidence" field predicates.
+	PlateConfidence       *int  `json:"plateConfidence,omitempty"`
+	PlateConfidenceNEQ    *int  `json:"plateConfidenceNEQ,omitempty"`
+	PlateConfidenceIn     []int `json:"plateConfidenceIn,omitempty"`
+	PlateConfidenceNotIn  []int `json:"plateConfidenceNotIn,omitempty"`
+	PlateConfidenceGT     *int  `json:"plateConfidenceGT,omitempty"`
+	PlateConfidenceGTE    *int  `json:"plateConfidenceGTE,omitempty"`
+	PlateConfidenceLT     *int  `json:"plateConfidenceLT,omitempty"`
+	PlateConfidenceLTE    *int  `json:"plateConfidenceLTE,omitempty"`
+	PlateConfidenceIsNil  bool  `json:"plateConfidenceIsNil,omitempty"`
+	PlateConfidenceNotNil bool  `json:"plateConfidenceNotNil,omitempty"`
+
 	// "plate_is_exist" field predicates.
 	PlateIsExist       *bool `json:"plateIsExist,omitempty"`
 	PlateIsExistNEQ    *bool `json:"plateIsExistNEQ,omitempty"`
@@ -1109,6 +1121,23 @@ type EventWhereInput struct {
 	PlateUploadNumIsNil  bool  `json:"plateUploadNumIsNil,omitempty"`
 	PlateUploadNumNotNil bool  `json:"plateUploadNumNotNil,omitempty"`
 
+	// "snap_accurate_time" field predicates.
+	SnapAccurateTime             *string  `json:"snapAccurateTime,omitempty"`
+	SnapAccurateTimeNEQ          *string  `json:"snapAccurateTimeNEQ,omitempty"`
+	SnapAccurateTimeIn           []string `json:"snapAccurateTimeIn,omitempty"`
+	SnapAccurateTimeNotIn        []string `json:"snapAccurateTimeNotIn,omitempty"`
+	SnapAccurateTimeGT           *string  `json:"snapAccurateTimeGT,omitempty"`
+	SnapAccurateTimeGTE          *string  `json:"snapAccurateTimeGTE,omitempty"`
+	SnapAccurateTimeLT           *string  `json:"snapAccurateTimeLT,omitempty"`
+	SnapAccurateTimeLTE          *string  `json:"snapAccurateTimeLTE,omitempty"`
+	SnapAccurateTimeContains     *string  `json:"snapAccurateTimeContains,omitempty"`
+	SnapAccurateTimeHasPrefix    *string  `json:"snapAccurateTimeHasPrefix,omitempty"`
+	SnapAccurateTimeHasSuffix    *string  `json:"snapAccurateTimeHasSuffix,omitempty"`
+	SnapAccurateTimeIsNil        bool     `json:"snapAccurateTimeIsNil,omitempty"`
+	SnapAccurateTimeNotNil       bool     `json:"snapAccurateTimeNotNil,omitempty"`
+	SnapAccurateTimeEqualFold    *string  `json:"snapAccurateTimeEqualFold,omitempty"`
+	SnapAccurateTimeContainsFold *string  `json:"snapAccurateTimeContainsFold,omitempty"`
+
 	// "snap_allow_user" field predicates.
 	SnapAllowUser       *bool `json:"snapAllowUser,omitempty"`
 	SnapAllowUserNEQ    *bool `json:"snapAllowUserNEQ,omitempty"`
@@ -1131,6 +1160,18 @@ type EventWhereInput struct {
 	SnapAllowUserEndTimeNotNil       bool     `json:"snapAllowUserEndTimeNotNil,omitempty"`
 	SnapAllowUserEndTimeEqualFold    *string  `json:"snapAllowUserEndTimeEqualFold,omitempty"`
 	SnapAllowUserEndTimeContainsFold *string  `json:"snapAllowUserEndTimeContainsFold,omitempty"`
+
+	// "snap_dst_tune" field predicates.
+	SnapDstTune       *int  `json:"snapDstTune,omitempty"`
+	SnapDstTuneNEQ    *int  `json:"snapDstTuneNEQ,omitempty"`
+	SnapDstTuneIn     []int `json:"snapDstTuneIn,omitempty"`
+	SnapDstTuneNotIn  []int `json:"snapDstTuneNotIn,omitempty"`
+	SnapDstTuneGT     *int  `json:"snapDstTuneGT,omitempty"`
+	SnapDstTuneGTE    *int  `json:"snapDstTuneGTE,omitempty"`
+	SnapDstTuneLT     *int  `json:"snapDstTuneLT,omitempty"`
+	SnapDstTuneLTE    *int  `json:"snapDstTuneLTE,omitempty"`
+	SnapDstTuneIsNil  bool  `json:"snapDstTuneIsNil,omitempty"`
+	SnapDstTuneNotNil bool  `json:"snapDstTuneNotNil,omitempty"`
 
 	// "snap_defence_code" field predicates.
 	SnapDefenceCode             *string  `json:"snapDefenceCode,omitempty"`
@@ -1166,6 +1207,23 @@ type EventWhereInput struct {
 	SnapDeviceIDEqualFold    *string  `json:"snapDeviceIDEqualFold,omitempty"`
 	SnapDeviceIDContainsFold *string  `json:"snapDeviceIDContainsFold,omitempty"`
 
+	// "snap_direction" field predicates.
+	SnapDirection             *string  `json:"snapDirection,omitempty"`
+	SnapDirectionNEQ          *string  `json:"snapDirectionNEQ,omitempty"`
+	SnapDirectionIn           []string `json:"snapDirectionIn,omitempty"`
+	SnapDirectionNotIn        []string `json:"snapDirectionNotIn,omitempty"`
+	SnapDirectionGT           *string  `json:"snapDirectionGT,omitempty"`
+	SnapDirectionGTE          *string  `json:"snapDirectionGTE,omitempty"`
+	SnapDirectionLT           *string  `json:"snapDirectionLT,omitempty"`
+	SnapDirectionLTE          *string  `json:"snapDirectionLTE,omitempty"`
+	SnapDirectionContains     *string  `json:"snapDirectionContains,omitempty"`
+	SnapDirectionHasPrefix    *string  `json:"snapDirectionHasPrefix,omitempty"`
+	SnapDirectionHasSuffix    *string  `json:"snapDirectionHasSuffix,omitempty"`
+	SnapDirectionIsNil        bool     `json:"snapDirectionIsNil,omitempty"`
+	SnapDirectionNotNil       bool     `json:"snapDirectionNotNil,omitempty"`
+	SnapDirectionEqualFold    *string  `json:"snapDirectionEqualFold,omitempty"`
+	SnapDirectionContainsFold *string  `json:"snapDirectionContainsFold,omitempty"`
+
 	// "snap_in_car_people_num" field predicates.
 	SnapInCarPeopleNum       *int  `json:"snapInCarPeopleNum,omitempty"`
 	SnapInCarPeopleNumNEQ    *int  `json:"snapInCarPeopleNumNEQ,omitempty"`
@@ -1196,6 +1254,64 @@ type EventWhereInput struct {
 	SnapOpenStrobeIsNil  bool  `json:"snapOpenStrobeIsNil,omitempty"`
 	SnapOpenStrobeNotNil bool  `json:"snapOpenStrobeNotNil,omitempty"`
 
+	// "snap_snap_time" field predicates.
+	SnapSnapTime             *string  `json:"snapSnapTime,omitempty"`
+	SnapSnapTimeNEQ          *string  `json:"snapSnapTimeNEQ,omitempty"`
+	SnapSnapTimeIn           []string `json:"snapSnapTimeIn,omitempty"`
+	SnapSnapTimeNotIn        []string `json:"snapSnapTimeNotIn,omitempty"`
+	SnapSnapTimeGT           *string  `json:"snapSnapTimeGT,omitempty"`
+	SnapSnapTimeGTE          *string  `json:"snapSnapTimeGTE,omitempty"`
+	SnapSnapTimeLT           *string  `json:"snapSnapTimeLT,omitempty"`
+	SnapSnapTimeLTE          *string  `json:"snapSnapTimeLTE,omitempty"`
+	SnapSnapTimeContains     *string  `json:"snapSnapTimeContains,omitempty"`
+	SnapSnapTimeHasPrefix    *string  `json:"snapSnapTimeHasPrefix,omitempty"`
+	SnapSnapTimeHasSuffix    *string  `json:"snapSnapTimeHasSuffix,omitempty"`
+	SnapSnapTimeIsNil        bool     `json:"snapSnapTimeIsNil,omitempty"`
+	SnapSnapTimeNotNil       bool     `json:"snapSnapTimeNotNil,omitempty"`
+	SnapSnapTimeEqualFold    *string  `json:"snapSnapTimeEqualFold,omitempty"`
+	SnapSnapTimeContainsFold *string  `json:"snapSnapTimeContainsFold,omitempty"`
+
+	// "snap_time_zone" field predicates.
+	SnapTimeZone       *int  `json:"snapTimeZone,omitempty"`
+	SnapTimeZoneNEQ    *int  `json:"snapTimeZoneNEQ,omitempty"`
+	SnapTimeZoneIn     []int `json:"snapTimeZoneIn,omitempty"`
+	SnapTimeZoneNotIn  []int `json:"snapTimeZoneNotIn,omitempty"`
+	SnapTimeZoneGT     *int  `json:"snapTimeZoneGT,omitempty"`
+	SnapTimeZoneGTE    *int  `json:"snapTimeZoneGTE,omitempty"`
+	SnapTimeZoneLT     *int  `json:"snapTimeZoneLT,omitempty"`
+	SnapTimeZoneLTE    *int  `json:"snapTimeZoneLTE,omitempty"`
+	SnapTimeZoneIsNil  bool  `json:"snapTimeZoneIsNil,omitempty"`
+	SnapTimeZoneNotNil bool  `json:"snapTimeZoneNotNil,omitempty"`
+
+	// "vehicle_speed" field predicates.
+	VehicleSpeed       *int  `json:"vehicleSpeed,omitempty"`
+	VehicleSpeedNEQ    *int  `json:"vehicleSpeedNEQ,omitempty"`
+	VehicleSpeedIn     []int `json:"vehicleSpeedIn,omitempty"`
+	VehicleSpeedNotIn  []int `json:"vehicleSpeedNotIn,omitempty"`
+	VehicleSpeedGT     *int  `json:"vehicleSpeedGT,omitempty"`
+	VehicleSpeedGTE    *int  `json:"vehicleSpeedGTE,omitempty"`
+	VehicleSpeedLT     *int  `json:"vehicleSpeedLT,omitempty"`
+	VehicleSpeedLTE    *int  `json:"vehicleSpeedLTE,omitempty"`
+	VehicleSpeedIsNil  bool  `json:"vehicleSpeedIsNil,omitempty"`
+	VehicleSpeedNotNil bool  `json:"vehicleSpeedNotNil,omitempty"`
+
+	// "vehicle_color" field predicates.
+	VehicleColor             *string  `json:"vehicleColor,omitempty"`
+	VehicleColorNEQ          *string  `json:"vehicleColorNEQ,omitempty"`
+	VehicleColorIn           []string `json:"vehicleColorIn,omitempty"`
+	VehicleColorNotIn        []string `json:"vehicleColorNotIn,omitempty"`
+	VehicleColorGT           *string  `json:"vehicleColorGT,omitempty"`
+	VehicleColorGTE          *string  `json:"vehicleColorGTE,omitempty"`
+	VehicleColorLT           *string  `json:"vehicleColorLT,omitempty"`
+	VehicleColorLTE          *string  `json:"vehicleColorLTE,omitempty"`
+	VehicleColorContains     *string  `json:"vehicleColorContains,omitempty"`
+	VehicleColorHasPrefix    *string  `json:"vehicleColorHasPrefix,omitempty"`
+	VehicleColorHasSuffix    *string  `json:"vehicleColorHasSuffix,omitempty"`
+	VehicleColorIsNil        bool     `json:"vehicleColorIsNil,omitempty"`
+	VehicleColorNotNil       bool     `json:"vehicleColorNotNil,omitempty"`
+	VehicleColorEqualFold    *string  `json:"vehicleColorEqualFold,omitempty"`
+	VehicleColorContainsFold *string  `json:"vehicleColorContainsFold,omitempty"`
+
 	// "vehicle_series" field predicates.
 	VehicleSeries             *string  `json:"vehicleSeries,omitempty"`
 	VehicleSeriesNEQ          *string  `json:"vehicleSeriesNEQ,omitempty"`
@@ -1212,6 +1328,23 @@ type EventWhereInput struct {
 	VehicleSeriesNotNil       bool     `json:"vehicleSeriesNotNil,omitempty"`
 	VehicleSeriesEqualFold    *string  `json:"vehicleSeriesEqualFold,omitempty"`
 	VehicleSeriesContainsFold *string  `json:"vehicleSeriesContainsFold,omitempty"`
+
+	// "vehicle_type" field predicates.
+	VehicleType             *string  `json:"vehicleType,omitempty"`
+	VehicleTypeNEQ          *string  `json:"vehicleTypeNEQ,omitempty"`
+	VehicleTypeIn           []string `json:"vehicleTypeIn,omitempty"`
+	VehicleTypeNotIn        []string `json:"vehicleTypeNotIn,omitempty"`
+	VehicleTypeGT           *string  `json:"vehicleTypeGT,omitempty"`
+	VehicleTypeGTE          *string  `json:"vehicleTypeGTE,omitempty"`
+	VehicleTypeLT           *string  `json:"vehicleTypeLT,omitempty"`
+	VehicleTypeLTE          *string  `json:"vehicleTypeLTE,omitempty"`
+	VehicleTypeContains     *string  `json:"vehicleTypeContains,omitempty"`
+	VehicleTypeHasPrefix    *string  `json:"vehicleTypeHasPrefix,omitempty"`
+	VehicleTypeHasSuffix    *string  `json:"vehicleTypeHasSuffix,omitempty"`
+	VehicleTypeIsNil        bool     `json:"vehicleTypeIsNil,omitempty"`
+	VehicleTypeNotNil       bool     `json:"vehicleTypeNotNil,omitempty"`
+	VehicleTypeEqualFold    *string  `json:"vehicleTypeEqualFold,omitempty"`
+	VehicleTypeContainsFold *string  `json:"vehicleTypeContainsFold,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -1338,6 +1471,36 @@ func (i *EventWhereInput) P() (predicate.Event, error) {
 	}
 	if i.PlateChannelNotNil {
 		predicates = append(predicates, event.PlateChannelNotNil())
+	}
+	if i.PlateConfidence != nil {
+		predicates = append(predicates, event.PlateConfidenceEQ(*i.PlateConfidence))
+	}
+	if i.PlateConfidenceNEQ != nil {
+		predicates = append(predicates, event.PlateConfidenceNEQ(*i.PlateConfidenceNEQ))
+	}
+	if len(i.PlateConfidenceIn) > 0 {
+		predicates = append(predicates, event.PlateConfidenceIn(i.PlateConfidenceIn...))
+	}
+	if len(i.PlateConfidenceNotIn) > 0 {
+		predicates = append(predicates, event.PlateConfidenceNotIn(i.PlateConfidenceNotIn...))
+	}
+	if i.PlateConfidenceGT != nil {
+		predicates = append(predicates, event.PlateConfidenceGT(*i.PlateConfidenceGT))
+	}
+	if i.PlateConfidenceGTE != nil {
+		predicates = append(predicates, event.PlateConfidenceGTE(*i.PlateConfidenceGTE))
+	}
+	if i.PlateConfidenceLT != nil {
+		predicates = append(predicates, event.PlateConfidenceLT(*i.PlateConfidenceLT))
+	}
+	if i.PlateConfidenceLTE != nil {
+		predicates = append(predicates, event.PlateConfidenceLTE(*i.PlateConfidenceLTE))
+	}
+	if i.PlateConfidenceIsNil {
+		predicates = append(predicates, event.PlateConfidenceIsNil())
+	}
+	if i.PlateConfidenceNotNil {
+		predicates = append(predicates, event.PlateConfidenceNotNil())
 	}
 	if i.PlateIsExist != nil {
 		predicates = append(predicates, event.PlateIsExistEQ(*i.PlateIsExist))
@@ -1561,6 +1724,51 @@ func (i *EventWhereInput) P() (predicate.Event, error) {
 	if i.PlateUploadNumNotNil {
 		predicates = append(predicates, event.PlateUploadNumNotNil())
 	}
+	if i.SnapAccurateTime != nil {
+		predicates = append(predicates, event.SnapAccurateTimeEQ(*i.SnapAccurateTime))
+	}
+	if i.SnapAccurateTimeNEQ != nil {
+		predicates = append(predicates, event.SnapAccurateTimeNEQ(*i.SnapAccurateTimeNEQ))
+	}
+	if len(i.SnapAccurateTimeIn) > 0 {
+		predicates = append(predicates, event.SnapAccurateTimeIn(i.SnapAccurateTimeIn...))
+	}
+	if len(i.SnapAccurateTimeNotIn) > 0 {
+		predicates = append(predicates, event.SnapAccurateTimeNotIn(i.SnapAccurateTimeNotIn...))
+	}
+	if i.SnapAccurateTimeGT != nil {
+		predicates = append(predicates, event.SnapAccurateTimeGT(*i.SnapAccurateTimeGT))
+	}
+	if i.SnapAccurateTimeGTE != nil {
+		predicates = append(predicates, event.SnapAccurateTimeGTE(*i.SnapAccurateTimeGTE))
+	}
+	if i.SnapAccurateTimeLT != nil {
+		predicates = append(predicates, event.SnapAccurateTimeLT(*i.SnapAccurateTimeLT))
+	}
+	if i.SnapAccurateTimeLTE != nil {
+		predicates = append(predicates, event.SnapAccurateTimeLTE(*i.SnapAccurateTimeLTE))
+	}
+	if i.SnapAccurateTimeContains != nil {
+		predicates = append(predicates, event.SnapAccurateTimeContains(*i.SnapAccurateTimeContains))
+	}
+	if i.SnapAccurateTimeHasPrefix != nil {
+		predicates = append(predicates, event.SnapAccurateTimeHasPrefix(*i.SnapAccurateTimeHasPrefix))
+	}
+	if i.SnapAccurateTimeHasSuffix != nil {
+		predicates = append(predicates, event.SnapAccurateTimeHasSuffix(*i.SnapAccurateTimeHasSuffix))
+	}
+	if i.SnapAccurateTimeIsNil {
+		predicates = append(predicates, event.SnapAccurateTimeIsNil())
+	}
+	if i.SnapAccurateTimeNotNil {
+		predicates = append(predicates, event.SnapAccurateTimeNotNil())
+	}
+	if i.SnapAccurateTimeEqualFold != nil {
+		predicates = append(predicates, event.SnapAccurateTimeEqualFold(*i.SnapAccurateTimeEqualFold))
+	}
+	if i.SnapAccurateTimeContainsFold != nil {
+		predicates = append(predicates, event.SnapAccurateTimeContainsFold(*i.SnapAccurateTimeContainsFold))
+	}
 	if i.SnapAllowUser != nil {
 		predicates = append(predicates, event.SnapAllowUserEQ(*i.SnapAllowUser))
 	}
@@ -1617,6 +1825,36 @@ func (i *EventWhereInput) P() (predicate.Event, error) {
 	}
 	if i.SnapAllowUserEndTimeContainsFold != nil {
 		predicates = append(predicates, event.SnapAllowUserEndTimeContainsFold(*i.SnapAllowUserEndTimeContainsFold))
+	}
+	if i.SnapDstTune != nil {
+		predicates = append(predicates, event.SnapDstTuneEQ(*i.SnapDstTune))
+	}
+	if i.SnapDstTuneNEQ != nil {
+		predicates = append(predicates, event.SnapDstTuneNEQ(*i.SnapDstTuneNEQ))
+	}
+	if len(i.SnapDstTuneIn) > 0 {
+		predicates = append(predicates, event.SnapDstTuneIn(i.SnapDstTuneIn...))
+	}
+	if len(i.SnapDstTuneNotIn) > 0 {
+		predicates = append(predicates, event.SnapDstTuneNotIn(i.SnapDstTuneNotIn...))
+	}
+	if i.SnapDstTuneGT != nil {
+		predicates = append(predicates, event.SnapDstTuneGT(*i.SnapDstTuneGT))
+	}
+	if i.SnapDstTuneGTE != nil {
+		predicates = append(predicates, event.SnapDstTuneGTE(*i.SnapDstTuneGTE))
+	}
+	if i.SnapDstTuneLT != nil {
+		predicates = append(predicates, event.SnapDstTuneLT(*i.SnapDstTuneLT))
+	}
+	if i.SnapDstTuneLTE != nil {
+		predicates = append(predicates, event.SnapDstTuneLTE(*i.SnapDstTuneLTE))
+	}
+	if i.SnapDstTuneIsNil {
+		predicates = append(predicates, event.SnapDstTuneIsNil())
+	}
+	if i.SnapDstTuneNotNil {
+		predicates = append(predicates, event.SnapDstTuneNotNil())
 	}
 	if i.SnapDefenceCode != nil {
 		predicates = append(predicates, event.SnapDefenceCodeEQ(*i.SnapDefenceCode))
@@ -1708,6 +1946,51 @@ func (i *EventWhereInput) P() (predicate.Event, error) {
 	if i.SnapDeviceIDContainsFold != nil {
 		predicates = append(predicates, event.SnapDeviceIDContainsFold(*i.SnapDeviceIDContainsFold))
 	}
+	if i.SnapDirection != nil {
+		predicates = append(predicates, event.SnapDirectionEQ(*i.SnapDirection))
+	}
+	if i.SnapDirectionNEQ != nil {
+		predicates = append(predicates, event.SnapDirectionNEQ(*i.SnapDirectionNEQ))
+	}
+	if len(i.SnapDirectionIn) > 0 {
+		predicates = append(predicates, event.SnapDirectionIn(i.SnapDirectionIn...))
+	}
+	if len(i.SnapDirectionNotIn) > 0 {
+		predicates = append(predicates, event.SnapDirectionNotIn(i.SnapDirectionNotIn...))
+	}
+	if i.SnapDirectionGT != nil {
+		predicates = append(predicates, event.SnapDirectionGT(*i.SnapDirectionGT))
+	}
+	if i.SnapDirectionGTE != nil {
+		predicates = append(predicates, event.SnapDirectionGTE(*i.SnapDirectionGTE))
+	}
+	if i.SnapDirectionLT != nil {
+		predicates = append(predicates, event.SnapDirectionLT(*i.SnapDirectionLT))
+	}
+	if i.SnapDirectionLTE != nil {
+		predicates = append(predicates, event.SnapDirectionLTE(*i.SnapDirectionLTE))
+	}
+	if i.SnapDirectionContains != nil {
+		predicates = append(predicates, event.SnapDirectionContains(*i.SnapDirectionContains))
+	}
+	if i.SnapDirectionHasPrefix != nil {
+		predicates = append(predicates, event.SnapDirectionHasPrefix(*i.SnapDirectionHasPrefix))
+	}
+	if i.SnapDirectionHasSuffix != nil {
+		predicates = append(predicates, event.SnapDirectionHasSuffix(*i.SnapDirectionHasSuffix))
+	}
+	if i.SnapDirectionIsNil {
+		predicates = append(predicates, event.SnapDirectionIsNil())
+	}
+	if i.SnapDirectionNotNil {
+		predicates = append(predicates, event.SnapDirectionNotNil())
+	}
+	if i.SnapDirectionEqualFold != nil {
+		predicates = append(predicates, event.SnapDirectionEqualFold(*i.SnapDirectionEqualFold))
+	}
+	if i.SnapDirectionContainsFold != nil {
+		predicates = append(predicates, event.SnapDirectionContainsFold(*i.SnapDirectionContainsFold))
+	}
 	if i.SnapInCarPeopleNum != nil {
 		predicates = append(predicates, event.SnapInCarPeopleNumEQ(*i.SnapInCarPeopleNum))
 	}
@@ -1780,6 +2063,156 @@ func (i *EventWhereInput) P() (predicate.Event, error) {
 	if i.SnapOpenStrobeNotNil {
 		predicates = append(predicates, event.SnapOpenStrobeNotNil())
 	}
+	if i.SnapSnapTime != nil {
+		predicates = append(predicates, event.SnapSnapTimeEQ(*i.SnapSnapTime))
+	}
+	if i.SnapSnapTimeNEQ != nil {
+		predicates = append(predicates, event.SnapSnapTimeNEQ(*i.SnapSnapTimeNEQ))
+	}
+	if len(i.SnapSnapTimeIn) > 0 {
+		predicates = append(predicates, event.SnapSnapTimeIn(i.SnapSnapTimeIn...))
+	}
+	if len(i.SnapSnapTimeNotIn) > 0 {
+		predicates = append(predicates, event.SnapSnapTimeNotIn(i.SnapSnapTimeNotIn...))
+	}
+	if i.SnapSnapTimeGT != nil {
+		predicates = append(predicates, event.SnapSnapTimeGT(*i.SnapSnapTimeGT))
+	}
+	if i.SnapSnapTimeGTE != nil {
+		predicates = append(predicates, event.SnapSnapTimeGTE(*i.SnapSnapTimeGTE))
+	}
+	if i.SnapSnapTimeLT != nil {
+		predicates = append(predicates, event.SnapSnapTimeLT(*i.SnapSnapTimeLT))
+	}
+	if i.SnapSnapTimeLTE != nil {
+		predicates = append(predicates, event.SnapSnapTimeLTE(*i.SnapSnapTimeLTE))
+	}
+	if i.SnapSnapTimeContains != nil {
+		predicates = append(predicates, event.SnapSnapTimeContains(*i.SnapSnapTimeContains))
+	}
+	if i.SnapSnapTimeHasPrefix != nil {
+		predicates = append(predicates, event.SnapSnapTimeHasPrefix(*i.SnapSnapTimeHasPrefix))
+	}
+	if i.SnapSnapTimeHasSuffix != nil {
+		predicates = append(predicates, event.SnapSnapTimeHasSuffix(*i.SnapSnapTimeHasSuffix))
+	}
+	if i.SnapSnapTimeIsNil {
+		predicates = append(predicates, event.SnapSnapTimeIsNil())
+	}
+	if i.SnapSnapTimeNotNil {
+		predicates = append(predicates, event.SnapSnapTimeNotNil())
+	}
+	if i.SnapSnapTimeEqualFold != nil {
+		predicates = append(predicates, event.SnapSnapTimeEqualFold(*i.SnapSnapTimeEqualFold))
+	}
+	if i.SnapSnapTimeContainsFold != nil {
+		predicates = append(predicates, event.SnapSnapTimeContainsFold(*i.SnapSnapTimeContainsFold))
+	}
+	if i.SnapTimeZone != nil {
+		predicates = append(predicates, event.SnapTimeZoneEQ(*i.SnapTimeZone))
+	}
+	if i.SnapTimeZoneNEQ != nil {
+		predicates = append(predicates, event.SnapTimeZoneNEQ(*i.SnapTimeZoneNEQ))
+	}
+	if len(i.SnapTimeZoneIn) > 0 {
+		predicates = append(predicates, event.SnapTimeZoneIn(i.SnapTimeZoneIn...))
+	}
+	if len(i.SnapTimeZoneNotIn) > 0 {
+		predicates = append(predicates, event.SnapTimeZoneNotIn(i.SnapTimeZoneNotIn...))
+	}
+	if i.SnapTimeZoneGT != nil {
+		predicates = append(predicates, event.SnapTimeZoneGT(*i.SnapTimeZoneGT))
+	}
+	if i.SnapTimeZoneGTE != nil {
+		predicates = append(predicates, event.SnapTimeZoneGTE(*i.SnapTimeZoneGTE))
+	}
+	if i.SnapTimeZoneLT != nil {
+		predicates = append(predicates, event.SnapTimeZoneLT(*i.SnapTimeZoneLT))
+	}
+	if i.SnapTimeZoneLTE != nil {
+		predicates = append(predicates, event.SnapTimeZoneLTE(*i.SnapTimeZoneLTE))
+	}
+	if i.SnapTimeZoneIsNil {
+		predicates = append(predicates, event.SnapTimeZoneIsNil())
+	}
+	if i.SnapTimeZoneNotNil {
+		predicates = append(predicates, event.SnapTimeZoneNotNil())
+	}
+	if i.VehicleSpeed != nil {
+		predicates = append(predicates, event.VehicleSpeedEQ(*i.VehicleSpeed))
+	}
+	if i.VehicleSpeedNEQ != nil {
+		predicates = append(predicates, event.VehicleSpeedNEQ(*i.VehicleSpeedNEQ))
+	}
+	if len(i.VehicleSpeedIn) > 0 {
+		predicates = append(predicates, event.VehicleSpeedIn(i.VehicleSpeedIn...))
+	}
+	if len(i.VehicleSpeedNotIn) > 0 {
+		predicates = append(predicates, event.VehicleSpeedNotIn(i.VehicleSpeedNotIn...))
+	}
+	if i.VehicleSpeedGT != nil {
+		predicates = append(predicates, event.VehicleSpeedGT(*i.VehicleSpeedGT))
+	}
+	if i.VehicleSpeedGTE != nil {
+		predicates = append(predicates, event.VehicleSpeedGTE(*i.VehicleSpeedGTE))
+	}
+	if i.VehicleSpeedLT != nil {
+		predicates = append(predicates, event.VehicleSpeedLT(*i.VehicleSpeedLT))
+	}
+	if i.VehicleSpeedLTE != nil {
+		predicates = append(predicates, event.VehicleSpeedLTE(*i.VehicleSpeedLTE))
+	}
+	if i.VehicleSpeedIsNil {
+		predicates = append(predicates, event.VehicleSpeedIsNil())
+	}
+	if i.VehicleSpeedNotNil {
+		predicates = append(predicates, event.VehicleSpeedNotNil())
+	}
+	if i.VehicleColor != nil {
+		predicates = append(predicates, event.VehicleColorEQ(*i.VehicleColor))
+	}
+	if i.VehicleColorNEQ != nil {
+		predicates = append(predicates, event.VehicleColorNEQ(*i.VehicleColorNEQ))
+	}
+	if len(i.VehicleColorIn) > 0 {
+		predicates = append(predicates, event.VehicleColorIn(i.VehicleColorIn...))
+	}
+	if len(i.VehicleColorNotIn) > 0 {
+		predicates = append(predicates, event.VehicleColorNotIn(i.VehicleColorNotIn...))
+	}
+	if i.VehicleColorGT != nil {
+		predicates = append(predicates, event.VehicleColorGT(*i.VehicleColorGT))
+	}
+	if i.VehicleColorGTE != nil {
+		predicates = append(predicates, event.VehicleColorGTE(*i.VehicleColorGTE))
+	}
+	if i.VehicleColorLT != nil {
+		predicates = append(predicates, event.VehicleColorLT(*i.VehicleColorLT))
+	}
+	if i.VehicleColorLTE != nil {
+		predicates = append(predicates, event.VehicleColorLTE(*i.VehicleColorLTE))
+	}
+	if i.VehicleColorContains != nil {
+		predicates = append(predicates, event.VehicleColorContains(*i.VehicleColorContains))
+	}
+	if i.VehicleColorHasPrefix != nil {
+		predicates = append(predicates, event.VehicleColorHasPrefix(*i.VehicleColorHasPrefix))
+	}
+	if i.VehicleColorHasSuffix != nil {
+		predicates = append(predicates, event.VehicleColorHasSuffix(*i.VehicleColorHasSuffix))
+	}
+	if i.VehicleColorIsNil {
+		predicates = append(predicates, event.VehicleColorIsNil())
+	}
+	if i.VehicleColorNotNil {
+		predicates = append(predicates, event.VehicleColorNotNil())
+	}
+	if i.VehicleColorEqualFold != nil {
+		predicates = append(predicates, event.VehicleColorEqualFold(*i.VehicleColorEqualFold))
+	}
+	if i.VehicleColorContainsFold != nil {
+		predicates = append(predicates, event.VehicleColorContainsFold(*i.VehicleColorContainsFold))
+	}
 	if i.VehicleSeries != nil {
 		predicates = append(predicates, event.VehicleSeriesEQ(*i.VehicleSeries))
 	}
@@ -1824,6 +2257,51 @@ func (i *EventWhereInput) P() (predicate.Event, error) {
 	}
 	if i.VehicleSeriesContainsFold != nil {
 		predicates = append(predicates, event.VehicleSeriesContainsFold(*i.VehicleSeriesContainsFold))
+	}
+	if i.VehicleType != nil {
+		predicates = append(predicates, event.VehicleTypeEQ(*i.VehicleType))
+	}
+	if i.VehicleTypeNEQ != nil {
+		predicates = append(predicates, event.VehicleTypeNEQ(*i.VehicleTypeNEQ))
+	}
+	if len(i.VehicleTypeIn) > 0 {
+		predicates = append(predicates, event.VehicleTypeIn(i.VehicleTypeIn...))
+	}
+	if len(i.VehicleTypeNotIn) > 0 {
+		predicates = append(predicates, event.VehicleTypeNotIn(i.VehicleTypeNotIn...))
+	}
+	if i.VehicleTypeGT != nil {
+		predicates = append(predicates, event.VehicleTypeGT(*i.VehicleTypeGT))
+	}
+	if i.VehicleTypeGTE != nil {
+		predicates = append(predicates, event.VehicleTypeGTE(*i.VehicleTypeGTE))
+	}
+	if i.VehicleTypeLT != nil {
+		predicates = append(predicates, event.VehicleTypeLT(*i.VehicleTypeLT))
+	}
+	if i.VehicleTypeLTE != nil {
+		predicates = append(predicates, event.VehicleTypeLTE(*i.VehicleTypeLTE))
+	}
+	if i.VehicleTypeContains != nil {
+		predicates = append(predicates, event.VehicleTypeContains(*i.VehicleTypeContains))
+	}
+	if i.VehicleTypeHasPrefix != nil {
+		predicates = append(predicates, event.VehicleTypeHasPrefix(*i.VehicleTypeHasPrefix))
+	}
+	if i.VehicleTypeHasSuffix != nil {
+		predicates = append(predicates, event.VehicleTypeHasSuffix(*i.VehicleTypeHasSuffix))
+	}
+	if i.VehicleTypeIsNil {
+		predicates = append(predicates, event.VehicleTypeIsNil())
+	}
+	if i.VehicleTypeNotNil {
+		predicates = append(predicates, event.VehicleTypeNotNil())
+	}
+	if i.VehicleTypeEqualFold != nil {
+		predicates = append(predicates, event.VehicleTypeEqualFold(*i.VehicleTypeEqualFold))
+	}
+	if i.VehicleTypeContainsFold != nil {
+		predicates = append(predicates, event.VehicleTypeContainsFold(*i.VehicleTypeContainsFold))
 	}
 
 	switch len(predicates) {

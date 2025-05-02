@@ -268,21 +268,30 @@ type CreateEventInput struct {
 	UpdatedAt            *time.Time
 	PlateBoundingBox     []int
 	PlateChannel         *int
+	PlateConfidence      *int
 	PlateIsExist         *bool
 	PlateColor           *string
 	PlateNumber          *string
 	PlateType            *string
 	PlateRegion          *string
 	PlateUploadNum       *int
+	SnapAccurateTime     *string
 	SnapAllowUser        *bool
 	SnapAllowUserEndTime *string
+	SnapDstTune          *int
 	SnapDefenceCode      *string
 	SnapDeviceID         *string
+	SnapDirection        *string
 	SnapInCarPeopleNum   *int
 	SnapLanNo            *int
 	SnapOpenStrobe       *bool
+	SnapSnapTime         *string
+	SnapTimeZone         *int
+	VehicleSpeed         *int
 	VehicleBoundingBox   []int
+	VehicleColor         *string
 	VehicleSeries        *string
+	VehicleType          *string
 }
 
 // Mutate applies the CreateEventInput on the EventMutation builder.
@@ -298,6 +307,9 @@ func (i *CreateEventInput) Mutate(m *EventMutation) {
 	}
 	if v := i.PlateChannel; v != nil {
 		m.SetPlateChannel(*v)
+	}
+	if v := i.PlateConfidence; v != nil {
+		m.SetPlateConfidence(*v)
 	}
 	if v := i.PlateIsExist; v != nil {
 		m.SetPlateIsExist(*v)
@@ -317,17 +329,26 @@ func (i *CreateEventInput) Mutate(m *EventMutation) {
 	if v := i.PlateUploadNum; v != nil {
 		m.SetPlateUploadNum(*v)
 	}
+	if v := i.SnapAccurateTime; v != nil {
+		m.SetSnapAccurateTime(*v)
+	}
 	if v := i.SnapAllowUser; v != nil {
 		m.SetSnapAllowUser(*v)
 	}
 	if v := i.SnapAllowUserEndTime; v != nil {
 		m.SetSnapAllowUserEndTime(*v)
 	}
+	if v := i.SnapDstTune; v != nil {
+		m.SetSnapDstTune(*v)
+	}
 	if v := i.SnapDefenceCode; v != nil {
 		m.SetSnapDefenceCode(*v)
 	}
 	if v := i.SnapDeviceID; v != nil {
 		m.SetSnapDeviceID(*v)
+	}
+	if v := i.SnapDirection; v != nil {
+		m.SetSnapDirection(*v)
 	}
 	if v := i.SnapInCarPeopleNum; v != nil {
 		m.SetSnapInCarPeopleNum(*v)
@@ -338,11 +359,26 @@ func (i *CreateEventInput) Mutate(m *EventMutation) {
 	if v := i.SnapOpenStrobe; v != nil {
 		m.SetSnapOpenStrobe(*v)
 	}
+	if v := i.SnapSnapTime; v != nil {
+		m.SetSnapSnapTime(*v)
+	}
+	if v := i.SnapTimeZone; v != nil {
+		m.SetSnapTimeZone(*v)
+	}
+	if v := i.VehicleSpeed; v != nil {
+		m.SetVehicleSpeed(*v)
+	}
 	if v := i.VehicleBoundingBox; v != nil {
 		m.SetVehicleBoundingBox(v)
 	}
+	if v := i.VehicleColor; v != nil {
+		m.SetVehicleColor(*v)
+	}
 	if v := i.VehicleSeries; v != nil {
 		m.SetVehicleSeries(*v)
+	}
+	if v := i.VehicleType; v != nil {
+		m.SetVehicleType(*v)
 	}
 }
 
@@ -360,6 +396,8 @@ type UpdateEventInput struct {
 	AppendPlateBoundingBox    []int
 	ClearPlateChannel         bool
 	PlateChannel              *int
+	ClearPlateConfidence      bool
+	PlateConfidence           *int
 	ClearPlateIsExist         bool
 	PlateIsExist              *bool
 	ClearPlateColor           bool
@@ -372,25 +410,41 @@ type UpdateEventInput struct {
 	PlateRegion               *string
 	ClearPlateUploadNum       bool
 	PlateUploadNum            *int
+	ClearSnapAccurateTime     bool
+	SnapAccurateTime          *string
 	ClearSnapAllowUser        bool
 	SnapAllowUser             *bool
 	ClearSnapAllowUserEndTime bool
 	SnapAllowUserEndTime      *string
+	ClearSnapDstTune          bool
+	SnapDstTune               *int
 	ClearSnapDefenceCode      bool
 	SnapDefenceCode           *string
 	ClearSnapDeviceID         bool
 	SnapDeviceID              *string
+	ClearSnapDirection        bool
+	SnapDirection             *string
 	ClearSnapInCarPeopleNum   bool
 	SnapInCarPeopleNum        *int
 	ClearSnapLanNo            bool
 	SnapLanNo                 *int
 	ClearSnapOpenStrobe       bool
 	SnapOpenStrobe            *bool
+	ClearSnapSnapTime         bool
+	SnapSnapTime              *string
+	ClearSnapTimeZone         bool
+	SnapTimeZone              *int
+	ClearVehicleSpeed         bool
+	VehicleSpeed              *int
 	ClearVehicleBoundingBox   bool
 	VehicleBoundingBox        []int
 	AppendVehicleBoundingBox  []int
+	ClearVehicleColor         bool
+	VehicleColor              *string
 	ClearVehicleSeries        bool
 	VehicleSeries             *string
+	ClearVehicleType          bool
+	VehicleType               *string
 }
 
 // Mutate applies the UpdateEventInput on the EventMutation builder.
@@ -412,6 +466,12 @@ func (i *UpdateEventInput) Mutate(m *EventMutation) {
 	}
 	if v := i.PlateChannel; v != nil {
 		m.SetPlateChannel(*v)
+	}
+	if i.ClearPlateConfidence {
+		m.ClearPlateConfidence()
+	}
+	if v := i.PlateConfidence; v != nil {
+		m.SetPlateConfidence(*v)
 	}
 	if i.ClearPlateIsExist {
 		m.ClearPlateIsExist()
@@ -449,6 +509,12 @@ func (i *UpdateEventInput) Mutate(m *EventMutation) {
 	if v := i.PlateUploadNum; v != nil {
 		m.SetPlateUploadNum(*v)
 	}
+	if i.ClearSnapAccurateTime {
+		m.ClearSnapAccurateTime()
+	}
+	if v := i.SnapAccurateTime; v != nil {
+		m.SetSnapAccurateTime(*v)
+	}
 	if i.ClearSnapAllowUser {
 		m.ClearSnapAllowUser()
 	}
@@ -461,6 +527,12 @@ func (i *UpdateEventInput) Mutate(m *EventMutation) {
 	if v := i.SnapAllowUserEndTime; v != nil {
 		m.SetSnapAllowUserEndTime(*v)
 	}
+	if i.ClearSnapDstTune {
+		m.ClearSnapDstTune()
+	}
+	if v := i.SnapDstTune; v != nil {
+		m.SetSnapDstTune(*v)
+	}
 	if i.ClearSnapDefenceCode {
 		m.ClearSnapDefenceCode()
 	}
@@ -472,6 +544,12 @@ func (i *UpdateEventInput) Mutate(m *EventMutation) {
 	}
 	if v := i.SnapDeviceID; v != nil {
 		m.SetSnapDeviceID(*v)
+	}
+	if i.ClearSnapDirection {
+		m.ClearSnapDirection()
+	}
+	if v := i.SnapDirection; v != nil {
+		m.SetSnapDirection(*v)
 	}
 	if i.ClearSnapInCarPeopleNum {
 		m.ClearSnapInCarPeopleNum()
@@ -491,6 +569,24 @@ func (i *UpdateEventInput) Mutate(m *EventMutation) {
 	if v := i.SnapOpenStrobe; v != nil {
 		m.SetSnapOpenStrobe(*v)
 	}
+	if i.ClearSnapSnapTime {
+		m.ClearSnapSnapTime()
+	}
+	if v := i.SnapSnapTime; v != nil {
+		m.SetSnapSnapTime(*v)
+	}
+	if i.ClearSnapTimeZone {
+		m.ClearSnapTimeZone()
+	}
+	if v := i.SnapTimeZone; v != nil {
+		m.SetSnapTimeZone(*v)
+	}
+	if i.ClearVehicleSpeed {
+		m.ClearVehicleSpeed()
+	}
+	if v := i.VehicleSpeed; v != nil {
+		m.SetVehicleSpeed(*v)
+	}
 	if i.ClearVehicleBoundingBox {
 		m.ClearVehicleBoundingBox()
 	}
@@ -500,11 +596,23 @@ func (i *UpdateEventInput) Mutate(m *EventMutation) {
 	if i.AppendVehicleBoundingBox != nil {
 		m.AppendVehicleBoundingBox(i.VehicleBoundingBox)
 	}
+	if i.ClearVehicleColor {
+		m.ClearVehicleColor()
+	}
+	if v := i.VehicleColor; v != nil {
+		m.SetVehicleColor(*v)
+	}
 	if i.ClearVehicleSeries {
 		m.ClearVehicleSeries()
 	}
 	if v := i.VehicleSeries; v != nil {
 		m.SetVehicleSeries(*v)
+	}
+	if i.ClearVehicleType {
+		m.ClearVehicleType()
+	}
+	if v := i.VehicleType; v != nil {
+		m.SetVehicleType(*v)
 	}
 }
 
