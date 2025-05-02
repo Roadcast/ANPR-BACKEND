@@ -81,7 +81,7 @@ func (Event) Fields() []ent.Field {
 		field.Bool("snap_open_strobe").
 			Optional().
 			Comment("Indicates if strobe is open"),
-		field.String("snap_snap_time").
+		field.String("snap_time").
 			Optional().
 			Comment("Snap timestamp"),
 		field.Int("snap_time_zone").
