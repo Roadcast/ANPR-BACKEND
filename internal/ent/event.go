@@ -74,8 +74,10 @@ type Event struct {
 	// Vehicle series
 	VehicleSeries string `json:"vehicle_series,omitempty"`
 	// Type of the vehicle
-	VehicleType  string `json:"vehicle_type,omitempty"`
-	selectValues sql.SelectValues
+	VehicleType string `json:"vehicle_type,omitempty"`
+	// IsBlockedVehicle holds the value of the "is_blocked_vehicle" field.
+	IsBlockedVehicle bool `json:"is_blocked_vehicle,omitempty"`
+	selectValues     sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -85,7 +87,7 @@ func (*Event) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case event.FieldPlateBoundingBox, event.FieldVehicleBoundingBox:
 			values[i] = new([]byte)
-		case event.FieldPlateIsExist, event.FieldSnapAllowUser, event.FieldSnapOpenStrobe:
+		case event.FieldPlateIsExist, event.FieldSnapAllowUser, event.FieldSnapOpenStrobe, event.FieldIsBlockedVehicle:
 			values[i] = new(sql.NullBool)
 		case event.FieldPlateChannel, event.FieldPlateConfidence, event.FieldPlateUploadNum, event.FieldSnapDstTune, event.FieldSnapInCarPeopleNum, event.FieldSnapLanNo, event.FieldSnapTimeZone, event.FieldVehicleSpeed:
 			values[i] = new(sql.NullInt64)
@@ -288,6 +290,12 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.VehicleType = value.String
 			}
+		case event.FieldIsBlockedVehicle:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_blocked_vehicle", values[i])
+			} else if value.Valid {
+				e.IsBlockedVehicle = value.Bool
+			}
 		default:
 			e.selectValues.Set(columns[i], values[i])
 		}
@@ -407,6 +415,9 @@ func (e *Event) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("vehicle_type=")
 	builder.WriteString(e.VehicleType)
+	builder.WriteString(", ")
+	builder.WriteString("is_blocked_vehicle=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsBlockedVehicle))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -108,6 +108,10 @@ func init() {
 	event.DefaultUpdatedAt = eventDescUpdatedAt.Default.(func() time.Time)
 	// event.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	event.UpdateDefaultUpdatedAt = eventDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// eventDescIsBlockedVehicle is the schema descriptor for is_blocked_vehicle field.
+	eventDescIsBlockedVehicle := eventFields[26].Descriptor()
+	// event.DefaultIsBlockedVehicle holds the default value on creation for the is_blocked_vehicle field.
+	event.DefaultIsBlockedVehicle = eventDescIsBlockedVehicle.Default.(bool)
 	// eventDescID is the schema descriptor for id field.
 	eventDescID := eventMixinFields0[0].Descriptor()
 	// event.DefaultID holds the default value on creation for the id field.

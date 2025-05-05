@@ -1345,6 +1345,12 @@ type EventWhereInput struct {
 	VehicleTypeNotNil       bool     `json:"vehicleTypeNotNil,omitempty"`
 	VehicleTypeEqualFold    *string  `json:"vehicleTypeEqualFold,omitempty"`
 	VehicleTypeContainsFold *string  `json:"vehicleTypeContainsFold,omitempty"`
+
+	// "is_blocked_vehicle" field predicates.
+	IsBlockedVehicle       *bool `json:"isBlockedVehicle,omitempty"`
+	IsBlockedVehicleNEQ    *bool `json:"isBlockedVehicleNEQ,omitempty"`
+	IsBlockedVehicleIsNil  bool  `json:"isBlockedVehicleIsNil,omitempty"`
+	IsBlockedVehicleNotNil bool  `json:"isBlockedVehicleNotNil,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -2302,6 +2308,18 @@ func (i *EventWhereInput) P() (predicate.Event, error) {
 	}
 	if i.VehicleTypeContainsFold != nil {
 		predicates = append(predicates, event.VehicleTypeContainsFold(*i.VehicleTypeContainsFold))
+	}
+	if i.IsBlockedVehicle != nil {
+		predicates = append(predicates, event.IsBlockedVehicleEQ(*i.IsBlockedVehicle))
+	}
+	if i.IsBlockedVehicleNEQ != nil {
+		predicates = append(predicates, event.IsBlockedVehicleNEQ(*i.IsBlockedVehicleNEQ))
+	}
+	if i.IsBlockedVehicleIsNil {
+		predicates = append(predicates, event.IsBlockedVehicleIsNil())
+	}
+	if i.IsBlockedVehicleNotNil {
+		predicates = append(predicates, event.IsBlockedVehicleNotNil())
 	}
 
 	switch len(predicates) {

@@ -70,6 +70,8 @@ const (
 	FieldVehicleSeries = "vehicle_series"
 	// FieldVehicleType holds the string denoting the vehicle_type field in the database.
 	FieldVehicleType = "vehicle_type"
+	// FieldIsBlockedVehicle holds the string denoting the is_blocked_vehicle field in the database.
+	FieldIsBlockedVehicle = "is_blocked_vehicle"
 	// Table holds the table name of the event in the database.
 	Table = "events"
 )
@@ -105,6 +107,7 @@ var Columns = []string{
 	FieldVehicleColor,
 	FieldVehicleSeries,
 	FieldVehicleType,
+	FieldIsBlockedVehicle,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -124,6 +127,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultIsBlockedVehicle holds the default value on creation for the "is_blocked_vehicle" field.
+	DefaultIsBlockedVehicle bool
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
@@ -264,4 +269,9 @@ func ByVehicleSeries(opts ...sql.OrderTermOption) OrderOption {
 // ByVehicleType orders the results by the vehicle_type field.
 func ByVehicleType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldVehicleType, opts...).ToFunc()
+}
+
+// ByIsBlockedVehicle orders the results by the is_blocked_vehicle field.
+func ByIsBlockedVehicle(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsBlockedVehicle, opts...).ToFunc()
 }

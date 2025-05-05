@@ -118,6 +118,7 @@ type ComplexityRoot struct {
 	Event struct {
 		CreatedAt            func(childComplexity int) int
 		ID                   func(childComplexity int) int
+		IsBlockedVehicle     func(childComplexity int) int
 		PlateBoundingBox     func(childComplexity int) int
 		PlateChannel         func(childComplexity int) int
 		PlateColor           func(childComplexity int) int
@@ -727,6 +728,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Event.ID(childComplexity), true
+
+	case "Event.isBlockedVehicle":
+		if e.complexity.Event.IsBlockedVehicle == nil {
+			break
+		}
+
+		return e.complexity.Event.IsBlockedVehicle(childComplexity), true
 
 	case "Event.plateBoundingBox":
 		if e.complexity.Event.PlateBoundingBox == nil {
@@ -2792,6 +2800,7 @@ input CreateEventInput {
   Type of the vehicle
   """
   vehicleType: String
+  isBlockedVehicle: Boolean
 }
 """
 CreatePermissionInput is used for create Permission object.
@@ -2962,6 +2971,7 @@ type Event implements Node {
   Type of the vehicle
   """
   vehicleType: String
+  isBlockedVehicle: Boolean
 }
 """
 A connection to a list of items.
@@ -3391,6 +3401,13 @@ input EventWhereInput {
   vehicleTypeNotNil: Boolean
   vehicleTypeEqualFold: String
   vehicleTypeContainsFold: String
+  """
+  is_blocked_vehicle field predicates
+  """
+  isBlockedVehicle: Boolean
+  isBlockedVehicleNEQ: Boolean
+  isBlockedVehicleIsNil: Boolean
+  isBlockedVehicleNotNil: Boolean
 }
 """
 An object with an ID.
@@ -4224,6 +4241,8 @@ input UpdateEventInput {
   """
   vehicleType: String
   clearVehicleType: Boolean
+  isBlockedVehicle: Boolean
+  clearIsBlockedVehicle: Boolean
 }
 """
 UpdatePermissionInput is used for update Permission object.
@@ -8586,6 +8605,8 @@ func (ec *executionContext) fieldContext_CustomEvent_event(_ context.Context, fi
 				return ec.fieldContext_Event_vehicleSeries(ctx, field)
 			case "vehicleType":
 				return ec.fieldContext_Event_vehicleType(ctx, field)
+			case "isBlockedVehicle":
+				return ec.fieldContext_Event_isBlockedVehicle(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Event", field.Name)
 		},
@@ -9923,6 +9944,47 @@ func (ec *executionContext) fieldContext_Event_vehicleType(_ context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _Event_isBlockedVehicle(ctx context.Context, field graphql.CollectedField, obj *ent.Event) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Event_isBlockedVehicle(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsBlockedVehicle, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Event_isBlockedVehicle(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Event",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _EventConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.EventConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_EventConnection_edges(ctx, field)
 	if err != nil {
@@ -10162,6 +10224,8 @@ func (ec *executionContext) fieldContext_EventEdge_node(_ context.Context, field
 				return ec.fieldContext_Event_vehicleSeries(ctx, field)
 			case "vehicleType":
 				return ec.fieldContext_Event_vehicleType(ctx, field)
+			case "isBlockedVehicle":
+				return ec.fieldContext_Event_isBlockedVehicle(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Event", field.Name)
 		},
@@ -21256,7 +21320,7 @@ func (ec *executionContext) unmarshalInputCreateEventInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "plateBoundingBox", "plateChannel", "plateConfidence", "plateIsExist", "plateColor", "plateNumber", "plateType", "plateRegion", "plateUploadNum", "snapAccurateTime", "snapAllowUser", "snapAllowUserEndTime", "snapDstTune", "snapDefenceCode", "snapDeviceID", "snapDirection", "snapInCarPeopleNum", "snapLanNo", "snapOpenStrobe", "snapTime", "snapTimeZone", "vehicleSpeed", "vehicleBoundingBox", "vehicleColor", "vehicleSeries", "vehicleType"}
+	fieldsInOrder := [...]string{"createdAt", "updatedAt", "plateBoundingBox", "plateChannel", "plateConfidence", "plateIsExist", "plateColor", "plateNumber", "plateType", "plateRegion", "plateUploadNum", "snapAccurateTime", "snapAllowUser", "snapAllowUserEndTime", "snapDstTune", "snapDefenceCode", "snapDeviceID", "snapDirection", "snapInCarPeopleNum", "snapLanNo", "snapOpenStrobe", "snapTime", "snapTimeZone", "vehicleSpeed", "vehicleBoundingBox", "vehicleColor", "vehicleSeries", "vehicleType", "isBlockedVehicle"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -21459,6 +21523,13 @@ func (ec *executionContext) unmarshalInputCreateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.VehicleType = data
+		case "isBlockedVehicle":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isBlockedVehicle"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsBlockedVehicle = data
 		}
 	}
 
@@ -21814,7 +21885,7 @@ func (ec *executionContext) unmarshalInputEventWhereInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "plateChannel", "plateChannelNEQ", "plateChannelIn", "plateChannelNotIn", "plateChannelGT", "plateChannelGTE", "plateChannelLT", "plateChannelLTE", "plateChannelIsNil", "plateChannelNotNil", "plateConfidence", "plateConfidenceNEQ", "plateConfidenceIn", "plateConfidenceNotIn", "plateConfidenceGT", "plateConfidenceGTE", "plateConfidenceLT", "plateConfidenceLTE", "plateConfidenceIsNil", "plateConfidenceNotNil", "plateIsExist", "plateIsExistNEQ", "plateIsExistIsNil", "plateIsExistNotNil", "plateColor", "plateColorNEQ", "plateColorIn", "plateColorNotIn", "plateColorGT", "plateColorGTE", "plateColorLT", "plateColorLTE", "plateColorContains", "plateColorHasPrefix", "plateColorHasSuffix", "plateColorIsNil", "plateColorNotNil", "plateColorEqualFold", "plateColorContainsFold", "plateNumber", "plateNumberNEQ", "plateNumberIn", "plateNumberNotIn", "plateNumberGT", "plateNumberGTE", "plateNumberLT", "plateNumberLTE", "plateNumberContains", "plateNumberHasPrefix", "plateNumberHasSuffix", "plateNumberIsNil", "plateNumberNotNil", "plateNumberEqualFold", "plateNumberContainsFold", "plateType", "plateTypeNEQ", "plateTypeIn", "plateTypeNotIn", "plateTypeGT", "plateTypeGTE", "plateTypeLT", "plateTypeLTE", "plateTypeContains", "plateTypeHasPrefix", "plateTypeHasSuffix", "plateTypeIsNil", "plateTypeNotNil", "plateTypeEqualFold", "plateTypeContainsFold", "plateRegion", "plateRegionNEQ", "plateRegionIn", "plateRegionNotIn", "plateRegionGT", "plateRegionGTE", "plateRegionLT", "plateRegionLTE", "plateRegionContains", "plateRegionHasPrefix", "plateRegionHasSuffix", "plateRegionIsNil", "plateRegionNotNil", "plateRegionEqualFold", "plateRegionContainsFold", "plateUploadNum", "plateUploadNumNEQ", "plateUploadNumIn", "plateUploadNumNotIn", "plateUploadNumGT", "plateUploadNumGTE", "plateUploadNumLT", "plateUploadNumLTE", "plateUploadNumIsNil", "plateUploadNumNotNil", "snapAccurateTime", "snapAccurateTimeNEQ", "snapAccurateTimeIn", "snapAccurateTimeNotIn", "snapAccurateTimeGT", "snapAccurateTimeGTE", "snapAccurateTimeLT", "snapAccurateTimeLTE", "snapAccurateTimeContains", "snapAccurateTimeHasPrefix", "snapAccurateTimeHasSuffix", "snapAccurateTimeIsNil", "snapAccurateTimeNotNil", "snapAccurateTimeEqualFold", "snapAccurateTimeContainsFold", "snapAllowUser", "snapAllowUserNEQ", "snapAllowUserIsNil", "snapAllowUserNotNil", "snapAllowUserEndTime", "snapAllowUserEndTimeNEQ", "snapAllowUserEndTimeIn", "snapAllowUserEndTimeNotIn", "snapAllowUserEndTimeGT", "snapAllowUserEndTimeGTE", "snapAllowUserEndTimeLT", "snapAllowUserEndTimeLTE", "snapAllowUserEndTimeContains", "snapAllowUserEndTimeHasPrefix", "snapAllowUserEndTimeHasSuffix", "snapAllowUserEndTimeIsNil", "snapAllowUserEndTimeNotNil", "snapAllowUserEndTimeEqualFold", "snapAllowUserEndTimeContainsFold", "snapDstTune", "snapDstTuneNEQ", "snapDstTuneIn", "snapDstTuneNotIn", "snapDstTuneGT", "snapDstTuneGTE", "snapDstTuneLT", "snapDstTuneLTE", "snapDstTuneIsNil", "snapDstTuneNotNil", "snapDefenceCode", "snapDefenceCodeNEQ", "snapDefenceCodeIn", "snapDefenceCodeNotIn", "snapDefenceCodeGT", "snapDefenceCodeGTE", "snapDefenceCodeLT", "snapDefenceCodeLTE", "snapDefenceCodeContains", "snapDefenceCodeHasPrefix", "snapDefenceCodeHasSuffix", "snapDefenceCodeIsNil", "snapDefenceCodeNotNil", "snapDefenceCodeEqualFold", "snapDefenceCodeContainsFold", "snapDeviceID", "snapDeviceIDNEQ", "snapDeviceIDIn", "snapDeviceIDNotIn", "snapDeviceIDGT", "snapDeviceIDGTE", "snapDeviceIDLT", "snapDeviceIDLTE", "snapDeviceIDContains", "snapDeviceIDHasPrefix", "snapDeviceIDHasSuffix", "snapDeviceIDIsNil", "snapDeviceIDNotNil", "snapDeviceIDEqualFold", "snapDeviceIDContainsFold", "snapDirection", "snapDirectionNEQ", "snapDirectionIn", "snapDirectionNotIn", "snapDirectionGT", "snapDirectionGTE", "snapDirectionLT", "snapDirectionLTE", "snapDirectionContains", "snapDirectionHasPrefix", "snapDirectionHasSuffix", "snapDirectionIsNil", "snapDirectionNotNil", "snapDirectionEqualFold", "snapDirectionContainsFold", "snapInCarPeopleNum", "snapInCarPeopleNumNEQ", "snapInCarPeopleNumIn", "snapInCarPeopleNumNotIn", "snapInCarPeopleNumGT", "snapInCarPeopleNumGTE", "snapInCarPeopleNumLT", "snapInCarPeopleNumLTE", "snapInCarPeopleNumIsNil", "snapInCarPeopleNumNotNil", "snapLanNo", "snapLanNoNEQ", "snapLanNoIn", "snapLanNoNotIn", "snapLanNoGT", "snapLanNoGTE", "snapLanNoLT", "snapLanNoLTE", "snapLanNoIsNil", "snapLanNoNotNil", "snapOpenStrobe", "snapOpenStrobeNEQ", "snapOpenStrobeIsNil", "snapOpenStrobeNotNil", "snapTime", "snapTimeNEQ", "snapTimeIn", "snapTimeNotIn", "snapTimeGT", "snapTimeGTE", "snapTimeLT", "snapTimeLTE", "snapTimeContains", "snapTimeHasPrefix", "snapTimeHasSuffix", "snapTimeIsNil", "snapTimeNotNil", "snapTimeEqualFold", "snapTimeContainsFold", "snapTimeZone", "snapTimeZoneNEQ", "snapTimeZoneIn", "snapTimeZoneNotIn", "snapTimeZoneGT", "snapTimeZoneGTE", "snapTimeZoneLT", "snapTimeZoneLTE", "snapTimeZoneIsNil", "snapTimeZoneNotNil", "vehicleSpeed", "vehicleSpeedNEQ", "vehicleSpeedIn", "vehicleSpeedNotIn", "vehicleSpeedGT", "vehicleSpeedGTE", "vehicleSpeedLT", "vehicleSpeedLTE", "vehicleSpeedIsNil", "vehicleSpeedNotNil", "vehicleColor", "vehicleColorNEQ", "vehicleColorIn", "vehicleColorNotIn", "vehicleColorGT", "vehicleColorGTE", "vehicleColorLT", "vehicleColorLTE", "vehicleColorContains", "vehicleColorHasPrefix", "vehicleColorHasSuffix", "vehicleColorIsNil", "vehicleColorNotNil", "vehicleColorEqualFold", "vehicleColorContainsFold", "vehicleSeries", "vehicleSeriesNEQ", "vehicleSeriesIn", "vehicleSeriesNotIn", "vehicleSeriesGT", "vehicleSeriesGTE", "vehicleSeriesLT", "vehicleSeriesLTE", "vehicleSeriesContains", "vehicleSeriesHasPrefix", "vehicleSeriesHasSuffix", "vehicleSeriesIsNil", "vehicleSeriesNotNil", "vehicleSeriesEqualFold", "vehicleSeriesContainsFold", "vehicleType", "vehicleTypeNEQ", "vehicleTypeIn", "vehicleTypeNotIn", "vehicleTypeGT", "vehicleTypeGTE", "vehicleTypeLT", "vehicleTypeLTE", "vehicleTypeContains", "vehicleTypeHasPrefix", "vehicleTypeHasSuffix", "vehicleTypeIsNil", "vehicleTypeNotNil", "vehicleTypeEqualFold", "vehicleTypeContainsFold"}
+	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "plateChannel", "plateChannelNEQ", "plateChannelIn", "plateChannelNotIn", "plateChannelGT", "plateChannelGTE", "plateChannelLT", "plateChannelLTE", "plateChannelIsNil", "plateChannelNotNil", "plateConfidence", "plateConfidenceNEQ", "plateConfidenceIn", "plateConfidenceNotIn", "plateConfidenceGT", "plateConfidenceGTE", "plateConfidenceLT", "plateConfidenceLTE", "plateConfidenceIsNil", "plateConfidenceNotNil", "plateIsExist", "plateIsExistNEQ", "plateIsExistIsNil", "plateIsExistNotNil", "plateColor", "plateColorNEQ", "plateColorIn", "plateColorNotIn", "plateColorGT", "plateColorGTE", "plateColorLT", "plateColorLTE", "plateColorContains", "plateColorHasPrefix", "plateColorHasSuffix", "plateColorIsNil", "plateColorNotNil", "plateColorEqualFold", "plateColorContainsFold", "plateNumber", "plateNumberNEQ", "plateNumberIn", "plateNumberNotIn", "plateNumberGT", "plateNumberGTE", "plateNumberLT", "plateNumberLTE", "plateNumberContains", "plateNumberHasPrefix", "plateNumberHasSuffix", "plateNumberIsNil", "plateNumberNotNil", "plateNumberEqualFold", "plateNumberContainsFold", "plateType", "plateTypeNEQ", "plateTypeIn", "plateTypeNotIn", "plateTypeGT", "plateTypeGTE", "plateTypeLT", "plateTypeLTE", "plateTypeContains", "plateTypeHasPrefix", "plateTypeHasSuffix", "plateTypeIsNil", "plateTypeNotNil", "plateTypeEqualFold", "plateTypeContainsFold", "plateRegion", "plateRegionNEQ", "plateRegionIn", "plateRegionNotIn", "plateRegionGT", "plateRegionGTE", "plateRegionLT", "plateRegionLTE", "plateRegionContains", "plateRegionHasPrefix", "plateRegionHasSuffix", "plateRegionIsNil", "plateRegionNotNil", "plateRegionEqualFold", "plateRegionContainsFold", "plateUploadNum", "plateUploadNumNEQ", "plateUploadNumIn", "plateUploadNumNotIn", "plateUploadNumGT", "plateUploadNumGTE", "plateUploadNumLT", "plateUploadNumLTE", "plateUploadNumIsNil", "plateUploadNumNotNil", "snapAccurateTime", "snapAccurateTimeNEQ", "snapAccurateTimeIn", "snapAccurateTimeNotIn", "snapAccurateTimeGT", "snapAccurateTimeGTE", "snapAccurateTimeLT", "snapAccurateTimeLTE", "snapAccurateTimeContains", "snapAccurateTimeHasPrefix", "snapAccurateTimeHasSuffix", "snapAccurateTimeIsNil", "snapAccurateTimeNotNil", "snapAccurateTimeEqualFold", "snapAccurateTimeContainsFold", "snapAllowUser", "snapAllowUserNEQ", "snapAllowUserIsNil", "snapAllowUserNotNil", "snapAllowUserEndTime", "snapAllowUserEndTimeNEQ", "snapAllowUserEndTimeIn", "snapAllowUserEndTimeNotIn", "snapAllowUserEndTimeGT", "snapAllowUserEndTimeGTE", "snapAllowUserEndTimeLT", "snapAllowUserEndTimeLTE", "snapAllowUserEndTimeContains", "snapAllowUserEndTimeHasPrefix", "snapAllowUserEndTimeHasSuffix", "snapAllowUserEndTimeIsNil", "snapAllowUserEndTimeNotNil", "snapAllowUserEndTimeEqualFold", "snapAllowUserEndTimeContainsFold", "snapDstTune", "snapDstTuneNEQ", "snapDstTuneIn", "snapDstTuneNotIn", "snapDstTuneGT", "snapDstTuneGTE", "snapDstTuneLT", "snapDstTuneLTE", "snapDstTuneIsNil", "snapDstTuneNotNil", "snapDefenceCode", "snapDefenceCodeNEQ", "snapDefenceCodeIn", "snapDefenceCodeNotIn", "snapDefenceCodeGT", "snapDefenceCodeGTE", "snapDefenceCodeLT", "snapDefenceCodeLTE", "snapDefenceCodeContains", "snapDefenceCodeHasPrefix", "snapDefenceCodeHasSuffix", "snapDefenceCodeIsNil", "snapDefenceCodeNotNil", "snapDefenceCodeEqualFold", "snapDefenceCodeContainsFold", "snapDeviceID", "snapDeviceIDNEQ", "snapDeviceIDIn", "snapDeviceIDNotIn", "snapDeviceIDGT", "snapDeviceIDGTE", "snapDeviceIDLT", "snapDeviceIDLTE", "snapDeviceIDContains", "snapDeviceIDHasPrefix", "snapDeviceIDHasSuffix", "snapDeviceIDIsNil", "snapDeviceIDNotNil", "snapDeviceIDEqualFold", "snapDeviceIDContainsFold", "snapDirection", "snapDirectionNEQ", "snapDirectionIn", "snapDirectionNotIn", "snapDirectionGT", "snapDirectionGTE", "snapDirectionLT", "snapDirectionLTE", "snapDirectionContains", "snapDirectionHasPrefix", "snapDirectionHasSuffix", "snapDirectionIsNil", "snapDirectionNotNil", "snapDirectionEqualFold", "snapDirectionContainsFold", "snapInCarPeopleNum", "snapInCarPeopleNumNEQ", "snapInCarPeopleNumIn", "snapInCarPeopleNumNotIn", "snapInCarPeopleNumGT", "snapInCarPeopleNumGTE", "snapInCarPeopleNumLT", "snapInCarPeopleNumLTE", "snapInCarPeopleNumIsNil", "snapInCarPeopleNumNotNil", "snapLanNo", "snapLanNoNEQ", "snapLanNoIn", "snapLanNoNotIn", "snapLanNoGT", "snapLanNoGTE", "snapLanNoLT", "snapLanNoLTE", "snapLanNoIsNil", "snapLanNoNotNil", "snapOpenStrobe", "snapOpenStrobeNEQ", "snapOpenStrobeIsNil", "snapOpenStrobeNotNil", "snapTime", "snapTimeNEQ", "snapTimeIn", "snapTimeNotIn", "snapTimeGT", "snapTimeGTE", "snapTimeLT", "snapTimeLTE", "snapTimeContains", "snapTimeHasPrefix", "snapTimeHasSuffix", "snapTimeIsNil", "snapTimeNotNil", "snapTimeEqualFold", "snapTimeContainsFold", "snapTimeZone", "snapTimeZoneNEQ", "snapTimeZoneIn", "snapTimeZoneNotIn", "snapTimeZoneGT", "snapTimeZoneGTE", "snapTimeZoneLT", "snapTimeZoneLTE", "snapTimeZoneIsNil", "snapTimeZoneNotNil", "vehicleSpeed", "vehicleSpeedNEQ", "vehicleSpeedIn", "vehicleSpeedNotIn", "vehicleSpeedGT", "vehicleSpeedGTE", "vehicleSpeedLT", "vehicleSpeedLTE", "vehicleSpeedIsNil", "vehicleSpeedNotNil", "vehicleColor", "vehicleColorNEQ", "vehicleColorIn", "vehicleColorNotIn", "vehicleColorGT", "vehicleColorGTE", "vehicleColorLT", "vehicleColorLTE", "vehicleColorContains", "vehicleColorHasPrefix", "vehicleColorHasSuffix", "vehicleColorIsNil", "vehicleColorNotNil", "vehicleColorEqualFold", "vehicleColorContainsFold", "vehicleSeries", "vehicleSeriesNEQ", "vehicleSeriesIn", "vehicleSeriesNotIn", "vehicleSeriesGT", "vehicleSeriesGTE", "vehicleSeriesLT", "vehicleSeriesLTE", "vehicleSeriesContains", "vehicleSeriesHasPrefix", "vehicleSeriesHasSuffix", "vehicleSeriesIsNil", "vehicleSeriesNotNil", "vehicleSeriesEqualFold", "vehicleSeriesContainsFold", "vehicleType", "vehicleTypeNEQ", "vehicleTypeIn", "vehicleTypeNotIn", "vehicleTypeGT", "vehicleTypeGTE", "vehicleTypeLT", "vehicleTypeLTE", "vehicleTypeContains", "vehicleTypeHasPrefix", "vehicleTypeHasSuffix", "vehicleTypeIsNil", "vehicleTypeNotNil", "vehicleTypeEqualFold", "vehicleTypeContainsFold", "isBlockedVehicle", "isBlockedVehicleNEQ", "isBlockedVehicleIsNil", "isBlockedVehicleNotNil"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -23907,6 +23978,34 @@ func (ec *executionContext) unmarshalInputEventWhereInput(ctx context.Context, o
 				return it, err
 			}
 			it.VehicleTypeContainsFold = data
+		case "isBlockedVehicle":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isBlockedVehicle"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsBlockedVehicle = data
+		case "isBlockedVehicleNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isBlockedVehicleNEQ"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsBlockedVehicleNEQ = data
+		case "isBlockedVehicleIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isBlockedVehicleIsNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsBlockedVehicleIsNil = data
+		case "isBlockedVehicleNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isBlockedVehicleNotNil"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsBlockedVehicleNotNil = data
 		}
 	}
 
@@ -25190,7 +25289,7 @@ func (ec *executionContext) unmarshalInputUpdateEventInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "plateBoundingBox", "appendPlateBoundingBox", "clearPlateBoundingBox", "plateChannel", "clearPlateChannel", "plateConfidence", "clearPlateConfidence", "plateIsExist", "clearPlateIsExist", "plateColor", "clearPlateColor", "plateNumber", "clearPlateNumber", "plateType", "clearPlateType", "plateRegion", "clearPlateRegion", "plateUploadNum", "clearPlateUploadNum", "snapAccurateTime", "clearSnapAccurateTime", "snapAllowUser", "clearSnapAllowUser", "snapAllowUserEndTime", "clearSnapAllowUserEndTime", "snapDstTune", "clearSnapDstTune", "snapDefenceCode", "clearSnapDefenceCode", "snapDeviceID", "clearSnapDeviceID", "snapDirection", "clearSnapDirection", "snapInCarPeopleNum", "clearSnapInCarPeopleNum", "snapLanNo", "clearSnapLanNo", "snapOpenStrobe", "clearSnapOpenStrobe", "snapTime", "clearSnapTime", "snapTimeZone", "clearSnapTimeZone", "vehicleSpeed", "clearVehicleSpeed", "vehicleBoundingBox", "appendVehicleBoundingBox", "clearVehicleBoundingBox", "vehicleColor", "clearVehicleColor", "vehicleSeries", "clearVehicleSeries", "vehicleType", "clearVehicleType"}
+	fieldsInOrder := [...]string{"updatedAt", "plateBoundingBox", "appendPlateBoundingBox", "clearPlateBoundingBox", "plateChannel", "clearPlateChannel", "plateConfidence", "clearPlateConfidence", "plateIsExist", "clearPlateIsExist", "plateColor", "clearPlateColor", "plateNumber", "clearPlateNumber", "plateType", "clearPlateType", "plateRegion", "clearPlateRegion", "plateUploadNum", "clearPlateUploadNum", "snapAccurateTime", "clearSnapAccurateTime", "snapAllowUser", "clearSnapAllowUser", "snapAllowUserEndTime", "clearSnapAllowUserEndTime", "snapDstTune", "clearSnapDstTune", "snapDefenceCode", "clearSnapDefenceCode", "snapDeviceID", "clearSnapDeviceID", "snapDirection", "clearSnapDirection", "snapInCarPeopleNum", "clearSnapInCarPeopleNum", "snapLanNo", "clearSnapLanNo", "snapOpenStrobe", "clearSnapOpenStrobe", "snapTime", "clearSnapTime", "snapTimeZone", "clearSnapTimeZone", "vehicleSpeed", "clearVehicleSpeed", "vehicleBoundingBox", "appendVehicleBoundingBox", "clearVehicleBoundingBox", "vehicleColor", "clearVehicleColor", "vehicleSeries", "clearVehicleSeries", "vehicleType", "clearVehicleType", "isBlockedVehicle", "clearIsBlockedVehicle"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -25582,6 +25681,20 @@ func (ec *executionContext) unmarshalInputUpdateEventInput(ctx context.Context, 
 				return it, err
 			}
 			it.ClearVehicleType = data
+		case "isBlockedVehicle":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isBlockedVehicle"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsBlockedVehicle = data
+		case "clearIsBlockedVehicle":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearIsBlockedVehicle"))
+			data, err := ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClearIsBlockedVehicle = data
 		}
 	}
 
@@ -26962,6 +27075,8 @@ func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = ec._Event_vehicleSeries(ctx, field, obj)
 		case "vehicleType":
 			out.Values[i] = ec._Event_vehicleType(ctx, field, obj)
+		case "isBlockedVehicle":
+			out.Values[i] = ec._Event_isBlockedVehicle(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

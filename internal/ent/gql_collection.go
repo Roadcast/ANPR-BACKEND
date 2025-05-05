@@ -492,6 +492,11 @@ func (e *EventQuery) collectField(ctx context.Context, oneNode bool, opCtx *grap
 				selectedFields = append(selectedFields, event.FieldVehicleType)
 				fieldSeen[event.FieldVehicleType] = struct{}{}
 			}
+		case "isBlockedVehicle":
+			if _, ok := fieldSeen[event.FieldIsBlockedVehicle]; !ok {
+				selectedFields = append(selectedFields, event.FieldIsBlockedVehicle)
+				fieldSeen[event.FieldIsBlockedVehicle] = struct{}{}
+			}
 		case "id":
 		case "__typename":
 		default:

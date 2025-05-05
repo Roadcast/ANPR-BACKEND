@@ -530,6 +530,7 @@ input CreateEventInput {
   Type of the vehicle
   """
   vehicleType: String
+  isBlockedVehicle: Boolean
 }
 """
 CreatePermissionInput is used for create Permission object.
@@ -700,6 +701,7 @@ type Event implements Node {
   Type of the vehicle
   """
   vehicleType: String
+  isBlockedVehicle: Boolean
 }
 """
 A connection to a list of items.
@@ -1129,6 +1131,13 @@ input EventWhereInput {
   vehicleTypeNotNil: Boolean
   vehicleTypeEqualFold: String
   vehicleTypeContainsFold: String
+  """
+  is_blocked_vehicle field predicates
+  """
+  isBlockedVehicle: Boolean
+  isBlockedVehicleNEQ: Boolean
+  isBlockedVehicleIsNil: Boolean
+  isBlockedVehicleNotNil: Boolean
 }
 """
 An object with an ID.
@@ -1962,6 +1971,8 @@ input UpdateEventInput {
   """
   vehicleType: String
   clearVehicleType: Boolean
+  isBlockedVehicle: Boolean
+  clearIsBlockedVehicle: Boolean
 }
 """
 UpdatePermissionInput is used for update Permission object.

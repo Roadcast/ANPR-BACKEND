@@ -607,6 +607,26 @@ func (eu *EventUpdate) ClearVehicleType() *EventUpdate {
 	return eu
 }
 
+// SetIsBlockedVehicle sets the "is_blocked_vehicle" field.
+func (eu *EventUpdate) SetIsBlockedVehicle(b bool) *EventUpdate {
+	eu.mutation.SetIsBlockedVehicle(b)
+	return eu
+}
+
+// SetNillableIsBlockedVehicle sets the "is_blocked_vehicle" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsBlockedVehicle(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsBlockedVehicle(*b)
+	}
+	return eu
+}
+
+// ClearIsBlockedVehicle clears the value of the "is_blocked_vehicle" field.
+func (eu *EventUpdate) ClearIsBlockedVehicle() *EventUpdate {
+	eu.mutation.ClearIsBlockedVehicle()
+	return eu
+}
+
 // Mutation returns the EventMutation object of the builder.
 func (eu *EventUpdate) Mutation() *EventMutation {
 	return eu.mutation
@@ -849,6 +869,12 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if eu.mutation.VehicleTypeCleared() {
 		_spec.ClearField(event.FieldVehicleType, field.TypeString)
+	}
+	if value, ok := eu.mutation.IsBlockedVehicle(); ok {
+		_spec.SetField(event.FieldIsBlockedVehicle, field.TypeBool, value)
+	}
+	if eu.mutation.IsBlockedVehicleCleared() {
+		_spec.ClearField(event.FieldIsBlockedVehicle, field.TypeBool)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -1448,6 +1474,26 @@ func (euo *EventUpdateOne) ClearVehicleType() *EventUpdateOne {
 	return euo
 }
 
+// SetIsBlockedVehicle sets the "is_blocked_vehicle" field.
+func (euo *EventUpdateOne) SetIsBlockedVehicle(b bool) *EventUpdateOne {
+	euo.mutation.SetIsBlockedVehicle(b)
+	return euo
+}
+
+// SetNillableIsBlockedVehicle sets the "is_blocked_vehicle" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsBlockedVehicle(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsBlockedVehicle(*b)
+	}
+	return euo
+}
+
+// ClearIsBlockedVehicle clears the value of the "is_blocked_vehicle" field.
+func (euo *EventUpdateOne) ClearIsBlockedVehicle() *EventUpdateOne {
+	euo.mutation.ClearIsBlockedVehicle()
+	return euo
+}
+
 // Mutation returns the EventMutation object of the builder.
 func (euo *EventUpdateOne) Mutation() *EventMutation {
 	return euo.mutation
@@ -1720,6 +1766,12 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	}
 	if euo.mutation.VehicleTypeCleared() {
 		_spec.ClearField(event.FieldVehicleType, field.TypeString)
+	}
+	if value, ok := euo.mutation.IsBlockedVehicle(); ok {
+		_spec.SetField(event.FieldIsBlockedVehicle, field.TypeBool, value)
+	}
+	if euo.mutation.IsBlockedVehicleCleared() {
+		_spec.ClearField(event.FieldIsBlockedVehicle, field.TypeBool)
 	}
 	_node = &Event{config: euo.config}
 	_spec.Assign = _node.assignValues

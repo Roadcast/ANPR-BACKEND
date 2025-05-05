@@ -104,6 +104,8 @@ func (Event) Fields() []ent.Field {
 		field.String("vehicle_type").
 			Optional().
 			Comment("Type of the vehicle"),
+
+		field.Bool("is_blocked_vehicle").Default(false).Optional(),
 	}
 }
 

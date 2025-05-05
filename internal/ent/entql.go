@@ -107,6 +107,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			event.FieldVehicleColor:         {Type: field.TypeString, Column: event.FieldVehicleColor},
 			event.FieldVehicleSeries:        {Type: field.TypeString, Column: event.FieldVehicleSeries},
 			event.FieldVehicleType:          {Type: field.TypeString, Column: event.FieldVehicleType},
+			event.FieldIsBlockedVehicle:     {Type: field.TypeBool, Column: event.FieldIsBlockedVehicle},
 		},
 	}
 	graph.Nodes[3] = &sqlgraph.Node{
@@ -719,6 +720,11 @@ func (f *EventFilter) WhereVehicleSeries(p entql.StringP) {
 // WhereVehicleType applies the entql string predicate on the vehicle_type field.
 func (f *EventFilter) WhereVehicleType(p entql.StringP) {
 	f.Where(p.Field(event.FieldVehicleType))
+}
+
+// WhereIsBlockedVehicle applies the entql bool predicate on the is_blocked_vehicle field.
+func (f *EventFilter) WhereIsBlockedVehicle(p entql.BoolP) {
+	f.Where(p.Field(event.FieldIsBlockedVehicle))
 }
 
 // addPredicate implements the predicateAdder interface.

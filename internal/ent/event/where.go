@@ -185,6 +185,11 @@ func VehicleType(v string) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldVehicleType, v))
 }
 
+// IsBlockedVehicle applies equality check predicate on the "is_blocked_vehicle" field. It's identical to IsBlockedVehicleEQ.
+func IsBlockedVehicle(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsBlockedVehicle, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldCreatedAt, v))
@@ -1718,6 +1723,26 @@ func VehicleTypeEqualFold(v string) predicate.Event {
 // VehicleTypeContainsFold applies the ContainsFold predicate on the "vehicle_type" field.
 func VehicleTypeContainsFold(v string) predicate.Event {
 	return predicate.Event(sql.FieldContainsFold(FieldVehicleType, v))
+}
+
+// IsBlockedVehicleEQ applies the EQ predicate on the "is_blocked_vehicle" field.
+func IsBlockedVehicleEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsBlockedVehicle, v))
+}
+
+// IsBlockedVehicleNEQ applies the NEQ predicate on the "is_blocked_vehicle" field.
+func IsBlockedVehicleNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsBlockedVehicle, v))
+}
+
+// IsBlockedVehicleIsNil applies the IsNil predicate on the "is_blocked_vehicle" field.
+func IsBlockedVehicleIsNil() predicate.Event {
+	return predicate.Event(sql.FieldIsNull(FieldIsBlockedVehicle))
+}
+
+// IsBlockedVehicleNotNil applies the NotNil predicate on the "is_blocked_vehicle" field.
+func IsBlockedVehicleNotNil() predicate.Event {
+	return predicate.Event(sql.FieldNotNull(FieldIsBlockedVehicle))
 }
 
 // And groups predicates with the AND operator between them.

@@ -400,6 +400,20 @@ func (ec *EventCreate) SetNillableVehicleType(s *string) *EventCreate {
 	return ec
 }
 
+// SetIsBlockedVehicle sets the "is_blocked_vehicle" field.
+func (ec *EventCreate) SetIsBlockedVehicle(b bool) *EventCreate {
+	ec.mutation.SetIsBlockedVehicle(b)
+	return ec
+}
+
+// SetNillableIsBlockedVehicle sets the "is_blocked_vehicle" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsBlockedVehicle(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsBlockedVehicle(*b)
+	}
+	return ec
+}
+
 // SetID sets the "id" field.
 func (ec *EventCreate) SetID(u uuid.UUID) *EventCreate {
 	ec.mutation.SetID(u)
@@ -456,6 +470,10 @@ func (ec *EventCreate) defaults() {
 	if _, ok := ec.mutation.UpdatedAt(); !ok {
 		v := event.DefaultUpdatedAt()
 		ec.mutation.SetUpdatedAt(v)
+	}
+	if _, ok := ec.mutation.IsBlockedVehicle(); !ok {
+		v := event.DefaultIsBlockedVehicle
+		ec.mutation.SetIsBlockedVehicle(v)
 	}
 	if _, ok := ec.mutation.ID(); !ok {
 		v := event.DefaultID()
@@ -618,6 +636,10 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.VehicleType(); ok {
 		_spec.SetField(event.FieldVehicleType, field.TypeString, value)
 		_node.VehicleType = value
+	}
+	if value, ok := ec.mutation.IsBlockedVehicle(); ok {
+		_spec.SetField(event.FieldIsBlockedVehicle, field.TypeBool, value)
+		_node.IsBlockedVehicle = value
 	}
 	return _node, _spec
 }
@@ -1196,6 +1218,24 @@ func (u *EventUpsert) UpdateVehicleType() *EventUpsert {
 // ClearVehicleType clears the value of the "vehicle_type" field.
 func (u *EventUpsert) ClearVehicleType() *EventUpsert {
 	u.SetNull(event.FieldVehicleType)
+	return u
+}
+
+// SetIsBlockedVehicle sets the "is_blocked_vehicle" field.
+func (u *EventUpsert) SetIsBlockedVehicle(v bool) *EventUpsert {
+	u.Set(event.FieldIsBlockedVehicle, v)
+	return u
+}
+
+// UpdateIsBlockedVehicle sets the "is_blocked_vehicle" field to the value that was provided on create.
+func (u *EventUpsert) UpdateIsBlockedVehicle() *EventUpsert {
+	u.SetExcluded(event.FieldIsBlockedVehicle)
+	return u
+}
+
+// ClearIsBlockedVehicle clears the value of the "is_blocked_vehicle" field.
+func (u *EventUpsert) ClearIsBlockedVehicle() *EventUpsert {
+	u.SetNull(event.FieldIsBlockedVehicle)
 	return u
 }
 
@@ -1863,6 +1903,27 @@ func (u *EventUpsertOne) UpdateVehicleType() *EventUpsertOne {
 func (u *EventUpsertOne) ClearVehicleType() *EventUpsertOne {
 	return u.Update(func(s *EventUpsert) {
 		s.ClearVehicleType()
+	})
+}
+
+// SetIsBlockedVehicle sets the "is_blocked_vehicle" field.
+func (u *EventUpsertOne) SetIsBlockedVehicle(v bool) *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.SetIsBlockedVehicle(v)
+	})
+}
+
+// UpdateIsBlockedVehicle sets the "is_blocked_vehicle" field to the value that was provided on create.
+func (u *EventUpsertOne) UpdateIsBlockedVehicle() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateIsBlockedVehicle()
+	})
+}
+
+// ClearIsBlockedVehicle clears the value of the "is_blocked_vehicle" field.
+func (u *EventUpsertOne) ClearIsBlockedVehicle() *EventUpsertOne {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearIsBlockedVehicle()
 	})
 }
 
@@ -2697,6 +2758,27 @@ func (u *EventUpsertBulk) UpdateVehicleType() *EventUpsertBulk {
 func (u *EventUpsertBulk) ClearVehicleType() *EventUpsertBulk {
 	return u.Update(func(s *EventUpsert) {
 		s.ClearVehicleType()
+	})
+}
+
+// SetIsBlockedVehicle sets the "is_blocked_vehicle" field.
+func (u *EventUpsertBulk) SetIsBlockedVehicle(v bool) *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.SetIsBlockedVehicle(v)
+	})
+}
+
+// UpdateIsBlockedVehicle sets the "is_blocked_vehicle" field to the value that was provided on create.
+func (u *EventUpsertBulk) UpdateIsBlockedVehicle() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.UpdateIsBlockedVehicle()
+	})
+}
+
+// ClearIsBlockedVehicle clears the value of the "is_blocked_vehicle" field.
+func (u *EventUpsertBulk) ClearIsBlockedVehicle() *EventUpsertBulk {
+	return u.Update(func(s *EventUpsert) {
+		s.ClearIsBlockedVehicle()
 	})
 }
 

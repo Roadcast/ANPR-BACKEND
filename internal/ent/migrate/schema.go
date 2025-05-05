@@ -127,6 +127,7 @@ var (
 		{Name: "vehicle_color", Type: field.TypeString, Nullable: true},
 		{Name: "vehicle_series", Type: field.TypeString, Nullable: true},
 		{Name: "vehicle_type", Type: field.TypeString, Nullable: true},
+		{Name: "is_blocked_vehicle", Type: field.TypeBool, Nullable: true, Default: false},
 	}
 	// EventsTable holds the schema information for the "events" table.
 	EventsTable = &schema.Table{

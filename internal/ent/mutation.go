@@ -2096,6 +2096,7 @@ type EventMutation struct {
 	vehicle_color              *string
 	vehicle_series             *string
 	vehicle_type               *string
+	is_blocked_vehicle         *bool
 	clearedFields              map[string]struct{}
 	done                       bool
 	oldValue                   func(context.Context) (*Event, error)
@@ -3752,6 +3753,55 @@ func (m *EventMutation) ResetVehicleType() {
 	delete(m.clearedFields, event.FieldVehicleType)
 }
 
+// SetIsBlockedVehicle sets the "is_blocked_vehicle" field.
+func (m *EventMutation) SetIsBlockedVehicle(b bool) {
+	m.is_blocked_vehicle = &b
+}
+
+// IsBlockedVehicle returns the value of the "is_blocked_vehicle" field in the mutation.
+func (m *EventMutation) IsBlockedVehicle() (r bool, exists bool) {
+	v := m.is_blocked_vehicle
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsBlockedVehicle returns the old "is_blocked_vehicle" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldIsBlockedVehicle(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsBlockedVehicle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsBlockedVehicle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsBlockedVehicle: %w", err)
+	}
+	return oldValue.IsBlockedVehicle, nil
+}
+
+// ClearIsBlockedVehicle clears the value of the "is_blocked_vehicle" field.
+func (m *EventMutation) ClearIsBlockedVehicle() {
+	m.is_blocked_vehicle = nil
+	m.clearedFields[event.FieldIsBlockedVehicle] = struct{}{}
+}
+
+// IsBlockedVehicleCleared returns if the "is_blocked_vehicle" field was cleared in this mutation.
+func (m *EventMutation) IsBlockedVehicleCleared() bool {
+	_, ok := m.clearedFields[event.FieldIsBlockedVehicle]
+	return ok
+}
+
+// ResetIsBlockedVehicle resets all changes to the "is_blocked_vehicle" field.
+func (m *EventMutation) ResetIsBlockedVehicle() {
+	m.is_blocked_vehicle = nil
+	delete(m.clearedFields, event.FieldIsBlockedVehicle)
+}
+
 // Where appends a list predicates to the EventMutation builder.
 func (m *EventMutation) Where(ps ...predicate.Event) {
 	m.predicates = append(m.predicates, ps...)
@@ -3786,7 +3836,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 28)
+	fields := make([]string, 0, 29)
 	if m.created_at != nil {
 		fields = append(fields, event.FieldCreatedAt)
 	}
@@ -3871,6 +3921,9 @@ func (m *EventMutation) Fields() []string {
 	if m.vehicle_type != nil {
 		fields = append(fields, event.FieldVehicleType)
 	}
+	if m.is_blocked_vehicle != nil {
+		fields = append(fields, event.FieldIsBlockedVehicle)
+	}
 	return fields
 }
 
@@ -3935,6 +3988,8 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.VehicleSeries()
 	case event.FieldVehicleType:
 		return m.VehicleType()
+	case event.FieldIsBlockedVehicle:
+		return m.IsBlockedVehicle()
 	}
 	return nil, false
 }
@@ -4000,6 +4055,8 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldVehicleSeries(ctx)
 	case event.FieldVehicleType:
 		return m.OldVehicleType(ctx)
+	case event.FieldIsBlockedVehicle:
+		return m.OldIsBlockedVehicle(ctx)
 	}
 	return nil, fmt.Errorf("unknown Event field %s", name)
 }
@@ -4204,6 +4261,13 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetVehicleType(v)
+		return nil
+	case event.FieldIsBlockedVehicle:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsBlockedVehicle(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)
@@ -4412,6 +4476,9 @@ func (m *EventMutation) ClearedFields() []string {
 	if m.FieldCleared(event.FieldVehicleType) {
 		fields = append(fields, event.FieldVehicleType)
 	}
+	if m.FieldCleared(event.FieldIsBlockedVehicle) {
+		fields = append(fields, event.FieldIsBlockedVehicle)
+	}
 	return fields
 }
 
@@ -4504,6 +4571,9 @@ func (m *EventMutation) ClearField(name string) error {
 	case event.FieldVehicleType:
 		m.ClearVehicleType()
 		return nil
+	case event.FieldIsBlockedVehicle:
+		m.ClearIsBlockedVehicle()
+		return nil
 	}
 	return fmt.Errorf("unknown Event nullable field %s", name)
 }
@@ -4595,6 +4665,9 @@ func (m *EventMutation) ResetField(name string) error {
 		return nil
 	case event.FieldVehicleType:
 		m.ResetVehicleType()
+		return nil
+	case event.FieldIsBlockedVehicle:
+		m.ResetIsBlockedVehicle()
 		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)

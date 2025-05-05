@@ -292,6 +292,7 @@ type CreateEventInput struct {
 	VehicleColor         *string
 	VehicleSeries        *string
 	VehicleType          *string
+	IsBlockedVehicle     *bool
 }
 
 // Mutate applies the CreateEventInput on the EventMutation builder.
@@ -380,6 +381,9 @@ func (i *CreateEventInput) Mutate(m *EventMutation) {
 	if v := i.VehicleType; v != nil {
 		m.SetVehicleType(*v)
 	}
+	if v := i.IsBlockedVehicle; v != nil {
+		m.SetIsBlockedVehicle(*v)
+	}
 }
 
 // SetInput applies the change-set in the CreateEventInput on the EventCreate builder.
@@ -445,6 +449,8 @@ type UpdateEventInput struct {
 	VehicleSeries             *string
 	ClearVehicleType          bool
 	VehicleType               *string
+	ClearIsBlockedVehicle     bool
+	IsBlockedVehicle          *bool
 }
 
 // Mutate applies the UpdateEventInput on the EventMutation builder.
@@ -613,6 +619,12 @@ func (i *UpdateEventInput) Mutate(m *EventMutation) {
 	}
 	if v := i.VehicleType; v != nil {
 		m.SetVehicleType(*v)
+	}
+	if i.ClearIsBlockedVehicle {
+		m.ClearIsBlockedVehicle()
+	}
+	if v := i.IsBlockedVehicle; v != nil {
+		m.SetIsBlockedVehicle(*v)
 	}
 }
 
