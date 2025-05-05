@@ -68,6 +68,9 @@ func init() {
 	// camera.DefaultID holds the default value on creation for the id field.
 	camera.DefaultID = cameraDescID.Default.(func() uuid.UUID)
 	carMixin := schema.Car{}.Mixin()
+	carHooks := schema.Car{}.Hooks()
+	car.Hooks[0] = carHooks[0]
+	car.Hooks[1] = carHooks[1]
 	carMixinFields0 := carMixin[0].Fields()
 	_ = carMixinFields0
 	carFields := schema.Car{}.Fields()

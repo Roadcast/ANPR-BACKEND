@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	hook "go-ent-project/ent/hooks"
 	"go-ent-project/utils/base"
 )
 
@@ -67,4 +68,8 @@ func (Car) Edges() []ent.Edge {
 			Ref("car").Field("police_station_id").Unique().
 			Annotations(),
 	}
+}
+
+func (Car) Hooks() []ent.Hook {
+	return hook.CarHooks()
 }

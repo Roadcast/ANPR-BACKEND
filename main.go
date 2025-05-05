@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"entgo.io/ent/dialect/sql/schema"
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -74,6 +75,7 @@ func main() {
 		Cache: lru.New[string](100),
 	})
 
+	http.HandleFunc("/car", carHandler)
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", middleware.AuthMiddleware(client)(srv))
 
@@ -103,4 +105,27 @@ func applyUUIDDefaults(db *sql.DB, tables ...string) error {
 		}
 	}
 	return nil
+}
+
+func carHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var body struct {
+		PlateNumber string `json:"plate_number"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, "Bad Request: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("Received alert for plate: %s", body.PlateNumber)
+
+	// You can now log, insert into DB, trigger downstream alerts, etc.
+	// For now, respond with acknowledgment
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("Received plate: " + body.PlateNumber))
 }

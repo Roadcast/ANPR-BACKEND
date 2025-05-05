@@ -530,7 +530,8 @@ func (c *CarClient) QueryPoliceStation(ca *Car) *PoliceStationQuery {
 
 // Hooks returns the client hooks.
 func (c *CarClient) Hooks() []Hook {
-	return c.hooks.Car
+	hooks := c.hooks.Car
+	return append(hooks[:len(hooks):len(hooks)], car.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

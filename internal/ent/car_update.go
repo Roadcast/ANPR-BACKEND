@@ -215,7 +215,9 @@ func (cu *CarUpdate) ClearPoliceStation() *CarUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (cu *CarUpdate) Save(ctx context.Context) (int, error) {
-	cu.defaults()
+	if err := cu.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, cu.sqlSave, cu.mutation, cu.hooks)
 }
 
@@ -242,11 +244,15 @@ func (cu *CarUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (cu *CarUpdate) defaults() {
+func (cu *CarUpdate) defaults() error {
 	if _, ok := cu.mutation.UpdatedAt(); !ok {
+		if car.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized car.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := car.UpdateDefaultUpdatedAt()
 		cu.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -563,7 +569,9 @@ func (cuo *CarUpdateOne) Select(field string, fields ...string) *CarUpdateOne {
 
 // Save executes the query and returns the updated Car entity.
 func (cuo *CarUpdateOne) Save(ctx context.Context) (*Car, error) {
-	cuo.defaults()
+	if err := cuo.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, cuo.sqlSave, cuo.mutation, cuo.hooks)
 }
 
@@ -590,11 +598,15 @@ func (cuo *CarUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (cuo *CarUpdateOne) defaults() {
+func (cuo *CarUpdateOne) defaults() error {
 	if _, ok := cuo.mutation.UpdatedAt(); !ok {
+		if car.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized car.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := car.UpdateDefaultUpdatedAt()
 		cuo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
