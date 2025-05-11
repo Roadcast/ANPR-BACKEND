@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	checkInterval = 5 * time.Second
+	checkInterval = 5 * time.Minute
 	cutoffAge     = 15 * time.Minute
 )
 
