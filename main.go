@@ -2,10 +2,7 @@ package main
 
 import (
 	"context"
-	"database/sql"
-	"encoding/json"
 	"entgo.io/ent/dialect/sql/schema"
-	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
@@ -17,6 +14,7 @@ import (
 	"github.com/vektah/gqlparser/v2/ast"
 	"go-ent-project/config"
 	"go-ent-project/cron"
+	"go-ent-project/ent/background_tasks"
 	"go-ent-project/graph"
 	"go-ent-project/internal/ent"
 	"go-ent-project/utils/celery"
@@ -77,7 +75,7 @@ func main() {
 		Cache: lru.New[string](100),
 	})
 
-	http.HandleFunc("/car", carHandler)
+	http.HandleFunc("/car", background_tasks.CarHandler(client))
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", middleware.AuthMiddleware(client)(srv))
 
@@ -92,42 +90,4 @@ func main() {
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, corsHandler(http.DefaultServeMux)))
 
-}
-
-func applyUUIDDefaults(db *sql.DB, tables ...string) error {
-	_, err := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`)
-	if err != nil {
-		return fmt.Errorf("failed to enable uuid-ossp extension: %w", err)
-	}
-
-	for _, table := range tables {
-		query := fmt.Sprintf(`ALTER TABLE %s ALTER COLUMN id SET DEFAULT uuid_generate_v4()`, table)
-		if _, err := db.Exec(query); err != nil {
-			return fmt.Errorf("failed to set default on table %s: %w", table, err)
-		}
-	}
-	return nil
-}
-
-func carHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	var body struct {
-		PlateNumber string `json:"plate_number"`
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		http.Error(w, "Bad Request: "+err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	log.Printf("Received alert for plate: %s", body.PlateNumber)
-
-	// You can now log, insert into DB, trigger downstream alerts, etc.
-	// For now, respond with acknowledgment
-	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte("Received plate: " + body.PlateNumber))
 }
