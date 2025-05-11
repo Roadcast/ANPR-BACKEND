@@ -3,6 +3,7 @@ package graph
 // THIS CODE WILL BE UPDATED WITH SCHEMA CHANGES. PREVIOUS IMPLEMENTATION FOR SCHEMA CHANGES WILL BE KEPT IN THE COMMENT SECTION. IMPLEMENTATION FOR UNCHANGED SCHEMA WILL BE KEPT.
 
 import (
+	"database/sql"
 	"encoding/hex"
 	"fmt"
 	"github.com/twpayne/go-geom"
@@ -12,6 +13,7 @@ import (
 
 type Resolver struct {
 	Client *ent.Client
+	SQL    *sql.DB
 }
 
 // Convert WKB (Bytes) to WKT (String)

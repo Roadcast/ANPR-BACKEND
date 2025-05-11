@@ -6,6 +6,7 @@ package graph
 
 import (
 	"context"
+	_ "database/sql"
 	"fmt"
 	"go-ent-project/graph/model"
 	"go-ent-project/internal/ent"
@@ -172,31 +173,40 @@ func (r *queryResolver) DistrictVehicleCounts(ctx context.Context) ([]*model.Dis
 // EventsPerHour returns number of events grouped by hour of the current day.
 func (r *queryResolver) EventsPerHour(ctx context.Context) ([]*model.EventHourStat, error) {
 	type HourStat struct {
-		CreatedAt  time.Time `json:"created_at"`
-		EventCount int       `json:"count"`
+		Hour       int
+		EventCount int
 	}
 
 	start := time.Now().Truncate(24 * time.Hour)
 	end := start.Add(24 * time.Hour)
-	var rawStats []HourStat
-	err := r.Client.Event.Query().
-		Where(event.CreatedAtGTE(start), event.CreatedAtLT(end)).
-		GroupBy(event.FieldCreatedAt).
-		Aggregate(ent.Count()).
-		Scan(ctx, &rawStats)
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch hourly event stats: %w", err)
-	}
 
-	var result []*model.EventHourStat
-	for _, row := range rawStats {
-		hour := row.CreatedAt.Format("15:00")
-		result = append(result, &model.EventHourStat{
-			Hour:       hour,
-			EventCount: row.EventCount,
+	sqlStr := `
+		SELECT EXTRACT(HOUR FROM created_at)::int AS hour, COUNT(*) AS count
+		FROM events
+		WHERE created_at >= $1 AND created_at < $2
+		GROUP BY hour
+		ORDER BY hour;
+	`
+
+	rows, err := r.SQL.QueryContext(ctx, sqlStr, start, end)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute raw SQL for hourly stats: %w", err)
+	}
+	defer rows.Close() // 🔑 Close the result set
+
+	var results []*model.EventHourStat
+	for rows.Next() {
+		var stat HourStat
+		if err := rows.Scan(&stat.Hour, &stat.EventCount); err != nil {
+			return nil, fmt.Errorf("row scan error: %w", err)
+		}
+		results = append(results, &model.EventHourStat{
+			Hour:       fmt.Sprintf("%02d:00", stat.Hour),
+			EventCount: stat.EventCount,
 		})
 	}
-	return result, nil
+
+	return results, nil
 }
 
 // EventsByCamera returns number of events per camera.

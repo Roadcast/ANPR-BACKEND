@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"entgo.io/ent/dialect"
+	entsql "entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/schema"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -18,7 +21,6 @@ import (
 	"go-ent-project/graph"
 	"go-ent-project/internal/ent"
 	"go-ent-project/utils/celery"
-	"go-ent-project/utils/db"
 	"go-ent-project/utils/middleware"
 	redisDB "go-ent-project/utils/redis"
 	"log"
@@ -39,7 +41,13 @@ func main() {
 	cfg := config.LoadDBConfig()
 	dbURL := config.GetPostgresDSN(cfg)
 
-	client, err := ent.Open("postgres", dbURL)
+	sqlDB, err := sql.Open("postgres", dbURL)
+	if err != nil {
+		log.Fatalf("failed to open raw sql.DB: %v", err)
+	}
+
+	client := ent.NewClient(ent.Driver(entsql.OpenDB(dialect.Postgres, sqlDB)))
+
 	if err != nil {
 		log.Fatalf("failed opening connection to postgres: %v", err)
 	}
@@ -61,7 +69,8 @@ func main() {
 
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
-			Client: db.Client, // Pass the initialized Ent client
+			Client: client,
+			SQL:    sqlDB,
 		},
 	}))
 	srv.AddTransport(transport.Options{})
