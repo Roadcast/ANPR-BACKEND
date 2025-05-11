@@ -7246,9 +7246,9 @@ func (ec *executionContext) _Camera_lastPingTime(ctx context.Context, field grap
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(time.Time)
+	res := resTmp.(*time.Time)
 	fc.Result = res
-	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Camera_lastPingTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {

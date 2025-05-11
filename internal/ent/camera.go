@@ -36,7 +36,7 @@ type Camera struct {
 	// Address holds the value of the "address" field.
 	Address string `json:"address,omitempty"`
 	// LastPingTime holds the value of the "last_ping_time" field.
-	LastPingTime time.Time `json:"last_ping_time,omitempty"`
+	LastPingTime *time.Time `json:"last_ping_time,omitempty"`
 	// IsWorking holds the value of the "is_working" field.
 	IsWorking bool `json:"is_working,omitempty"`
 	// District holds the value of the "district" field.
@@ -159,7 +159,8 @@ func (c *Camera) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field last_ping_time", values[i])
 			} else if value.Valid {
-				c.LastPingTime = value.Time
+				c.LastPingTime = new(time.Time)
+				*c.LastPingTime = value.Time
 			}
 		case camera.FieldIsWorking:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -246,8 +247,10 @@ func (c *Camera) String() string {
 	builder.WriteString("address=")
 	builder.WriteString(c.Address)
 	builder.WriteString(", ")
-	builder.WriteString("last_ping_time=")
-	builder.WriteString(c.LastPingTime.Format(time.ANSIC))
+	if v := c.LastPingTime; v != nil {
+		builder.WriteString("last_ping_time=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("is_working=")
 	builder.WriteString(fmt.Sprintf("%v", c.IsWorking))

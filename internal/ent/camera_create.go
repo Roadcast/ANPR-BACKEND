@@ -355,7 +355,7 @@ func (cc *CameraCreate) createSpec() (*Camera, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := cc.mutation.LastPingTime(); ok {
 		_spec.SetField(camera.FieldLastPingTime, field.TypeTime, value)
-		_node.LastPingTime = value
+		_node.LastPingTime = &value
 	}
 	if value, ok := cc.mutation.IsWorking(); ok {
 		_spec.SetField(camera.FieldIsWorking, field.TypeBool, value)

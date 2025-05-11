@@ -57,7 +57,7 @@ func (Camera) Fields() []ent.Field {
 			Annotations(),
 
 		field.String("address").Optional(),
-		field.Time("last_ping_time").Optional(),
+		field.Time("last_ping_time").Optional().Nillable(),
 		field.Bool("is_working").Default(true).Annotations(),
 		field.String("district").Default("N/A").Nillable().Annotations(),
 		field.UUID("police_station_id", uuid.UUID{}).Nillable().
