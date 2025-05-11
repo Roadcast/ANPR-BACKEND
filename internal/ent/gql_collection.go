@@ -809,6 +809,11 @@ func (ps *PoliceStationQuery) collectField(ctx context.Context, oneNode bool, op
 				selectedFields = append(selectedFields, policestation.FieldCode)
 				fieldSeen[policestation.FieldCode] = struct{}{}
 			}
+		case "district":
+			if _, ok := fieldSeen[policestation.FieldDistrict]; !ok {
+				selectedFields = append(selectedFields, policestation.FieldDistrict)
+				fieldSeen[policestation.FieldDistrict] = struct{}{}
+			}
 		case "identifier":
 			if _, ok := fieldSeen[policestation.FieldIdentifier]; !ok {
 				selectedFields = append(selectedFields, policestation.FieldIdentifier)

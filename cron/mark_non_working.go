@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	checkInterval = 5 * time.Minute
+	checkInterval = 5 * time.Second
 	cutoffAge     = 15 * time.Minute
 )
 
@@ -33,9 +33,15 @@ func StartCameraHealthCheck(client *ent.Client, workerID string) {
 
 		now := time.Now()
 		for _, cam := range cameras {
-			if cam.LastPingTime.IsZero() {
-				log.Printf("[%s] ⚠️ No ping time for camera: %s (IMEI: %s)", workerID, cam.Name, cam.Imei)
-				continue
+			if cam.LastPingTime == nil {
+				_, err := client.Camera.UpdateOneID(cam.ID).
+					SetIsWorking(false).
+					Save(ctx)
+				if err != nil {
+					log.Printf("[%s] ❌ Failed to mark camera %s (IMEI: %s) as not working: %v", workerID, cam.Name, cam.Imei, err)
+				} else {
+					log.Printf("[%s] 🛠️ Camera marked not working: %s (IMEI: %s)", workerID, cam.Name, cam.Imei)
+				}
 			}
 
 			if now.Sub(*cam.LastPingTime) > cutoffAge {
@@ -47,6 +53,12 @@ func StartCameraHealthCheck(client *ent.Client, workerID string) {
 				} else {
 					log.Printf("[%s] 🛠️ Camera marked not working: %s (IMEI: %s)", workerID, cam.Name, cam.Imei)
 				}
+			} else {
+				_, _ = client.Camera.UpdateOneID(cam.ID).
+					SetIsWorking(true).
+					Save(ctx)
+
+				log.Printf("[%s] ✅ Camera is working: %s (IMEI: %s)", workerID, cam.Name, cam.Imei)
 			}
 		}
 	}

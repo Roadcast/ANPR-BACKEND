@@ -25,6 +25,8 @@ const (
 	FieldLocation = "location"
 	// FieldCode holds the string denoting the code field in the database.
 	FieldCode = "code"
+	// FieldDistrict holds the string denoting the district field in the database.
+	FieldDistrict = "district"
 	// FieldIdentifier holds the string denoting the identifier field in the database.
 	FieldIdentifier = "identifier"
 	// FieldParentStationID holds the string denoting the parent_station_id field in the database.
@@ -80,6 +82,7 @@ var Columns = []string{
 	FieldName,
 	FieldLocation,
 	FieldCode,
+	FieldDistrict,
 	FieldIdentifier,
 	FieldParentStationID,
 }
@@ -105,6 +108,8 @@ var (
 	NameValidator func(string) error
 	// CodeValidator is a validator for the "code" field. It is called by the builders before save.
 	CodeValidator func(string) error
+	// DefaultDistrict holds the default value on creation for the "district" field.
+	DefaultDistrict string
 	// IdentifierValidator is a validator for the "identifier" field. It is called by the builders before save.
 	IdentifierValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.
@@ -142,6 +147,11 @@ func ByLocation(opts ...sql.OrderTermOption) OrderOption {
 // ByCode orders the results by the code field.
 func ByCode(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCode, opts...).ToFunc()
+}
+
+// ByDistrict orders the results by the district field.
+func ByDistrict(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDistrict, opts...).ToFunc()
 }
 
 // ByIdentifier orders the results by the identifier field.

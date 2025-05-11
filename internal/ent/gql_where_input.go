@@ -2599,6 +2599,21 @@ type PoliceStationWhereInput struct {
 	CodeEqualFold    *string  `json:"codeEqualFold,omitempty"`
 	CodeContainsFold *string  `json:"codeContainsFold,omitempty"`
 
+	// "district" field predicates.
+	District             *string  `json:"district,omitempty"`
+	DistrictNEQ          *string  `json:"districtNEQ,omitempty"`
+	DistrictIn           []string `json:"districtIn,omitempty"`
+	DistrictNotIn        []string `json:"districtNotIn,omitempty"`
+	DistrictGT           *string  `json:"districtGT,omitempty"`
+	DistrictGTE          *string  `json:"districtGTE,omitempty"`
+	DistrictLT           *string  `json:"districtLT,omitempty"`
+	DistrictLTE          *string  `json:"districtLTE,omitempty"`
+	DistrictContains     *string  `json:"districtContains,omitempty"`
+	DistrictHasPrefix    *string  `json:"districtHasPrefix,omitempty"`
+	DistrictHasSuffix    *string  `json:"districtHasSuffix,omitempty"`
+	DistrictEqualFold    *string  `json:"districtEqualFold,omitempty"`
+	DistrictContainsFold *string  `json:"districtContainsFold,omitempty"`
+
 	// "identifier" field predicates.
 	Identifier             *string  `json:"identifier,omitempty"`
 	IdentifierNEQ          *string  `json:"identifierNEQ,omitempty"`
@@ -2815,6 +2830,45 @@ func (i *PoliceStationWhereInput) P() (predicate.PoliceStation, error) {
 	}
 	if i.CodeContainsFold != nil {
 		predicates = append(predicates, policestation.CodeContainsFold(*i.CodeContainsFold))
+	}
+	if i.District != nil {
+		predicates = append(predicates, policestation.DistrictEQ(*i.District))
+	}
+	if i.DistrictNEQ != nil {
+		predicates = append(predicates, policestation.DistrictNEQ(*i.DistrictNEQ))
+	}
+	if len(i.DistrictIn) > 0 {
+		predicates = append(predicates, policestation.DistrictIn(i.DistrictIn...))
+	}
+	if len(i.DistrictNotIn) > 0 {
+		predicates = append(predicates, policestation.DistrictNotIn(i.DistrictNotIn...))
+	}
+	if i.DistrictGT != nil {
+		predicates = append(predicates, policestation.DistrictGT(*i.DistrictGT))
+	}
+	if i.DistrictGTE != nil {
+		predicates = append(predicates, policestation.DistrictGTE(*i.DistrictGTE))
+	}
+	if i.DistrictLT != nil {
+		predicates = append(predicates, policestation.DistrictLT(*i.DistrictLT))
+	}
+	if i.DistrictLTE != nil {
+		predicates = append(predicates, policestation.DistrictLTE(*i.DistrictLTE))
+	}
+	if i.DistrictContains != nil {
+		predicates = append(predicates, policestation.DistrictContains(*i.DistrictContains))
+	}
+	if i.DistrictHasPrefix != nil {
+		predicates = append(predicates, policestation.DistrictHasPrefix(*i.DistrictHasPrefix))
+	}
+	if i.DistrictHasSuffix != nil {
+		predicates = append(predicates, policestation.DistrictHasSuffix(*i.DistrictHasSuffix))
+	}
+	if i.DistrictEqualFold != nil {
+		predicates = append(predicates, policestation.DistrictEqualFold(*i.DistrictEqualFold))
+	}
+	if i.DistrictContainsFold != nil {
+		predicates = append(predicates, policestation.DistrictContainsFold(*i.DistrictContainsFold))
 	}
 	if i.Identifier != nil {
 		predicates = append(predicates, policestation.IdentifierEQ(*i.Identifier))

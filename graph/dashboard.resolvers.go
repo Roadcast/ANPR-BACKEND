@@ -11,6 +11,7 @@ import (
 	"go-ent-project/internal/ent"
 	"go-ent-project/internal/ent/camera"
 	"go-ent-project/internal/ent/event"
+	"go-ent-project/internal/ent/policestation"
 	"sort"
 	"time"
 )
@@ -133,4 +134,95 @@ func (r *queryResolver) DashboardStats(ctx context.Context) (*model.DashboardSta
 		TotalCameras:   totalCameras,
 		WorkingCameras: workingCameras,
 	}, nil
+}
+
+// PoliceStationVehicleCounts is the resolver for the policeStationVehicleCounts field.
+func (r *queryResolver) PoliceStationVehicleCounts(ctx context.Context) ([]*model.PoliceStationVehicleCount, error) {
+	stations, err := r.Client.PoliceStation.Query().WithCar().All(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch stations: %w", err)
+	}
+	var result []*model.PoliceStationVehicleCount
+	for _, ps := range stations {
+		result = append(result, &model.PoliceStationVehicleCount{
+			PoliceStationName: ps.Name,
+			VehicleCount:      len(ps.Edges.Car),
+		})
+	}
+	return result, nil
+}
+
+// DistrictVehicleCounts returns total vehicles per district.
+func (r *queryResolver) DistrictVehicleCounts(ctx context.Context) ([]*model.DistrictVehicleCount, error) {
+	results := make([]*model.DistrictVehicleCount, 0)
+	err := r.Client.PoliceStation.Query().GroupBy(policestation.FieldDistrict).Aggregate(ent.Count()).Scan(ctx, &results)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch district vehicle stats: %w", err)
+	}
+	var result []*model.DistrictVehicleCount
+	for _, d := range results {
+		result = append(result, &model.DistrictVehicleCount{
+			District:     d.District,
+			VehicleCount: d.VehicleCount,
+		})
+	}
+	return result, nil
+}
+
+// EventsPerHour returns number of events grouped by hour of the current day.
+func (r *queryResolver) EventsPerHour(ctx context.Context) ([]*model.EventHourStat, error) {
+	type HourStat struct {
+		Hour       time.Time `json:"hour"`
+		EventCount int       `json:"count"`
+	}
+
+	start := time.Now().Truncate(24 * time.Hour)
+	end := start.Add(24 * time.Hour)
+	var rawStats []HourStat
+	err := r.Client.Event.Query().
+		Where(event.CreatedAtGTE(start), event.CreatedAtLT(end)).
+		GroupBy(event.FieldCreatedAt).
+		Aggregate(ent.Count()).
+		Scan(ctx, &rawStats)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch hourly event stats: %w", err)
+	}
+
+	var result []*model.EventHourStat
+	for _, row := range rawStats {
+		hour := row.Hour.Format("15:00")
+		result = append(result, &model.EventHourStat{
+			Hour:       hour,
+			EventCount: row.EventCount,
+		})
+	}
+	return result, nil
+}
+
+// EventsByCamera returns number of events per camera.
+func (r *queryResolver) EventsByCamera(ctx context.Context) ([]*model.CameraEventStat, error) {
+	type CameraStat struct {
+		CameraID   string `json:"camera_id"`
+		EventCount int    `json:"count"`
+	}
+	start := time.Now().Truncate(24 * time.Hour)
+	end := start.Add(24 * time.Hour)
+	var stats []CameraStat
+	err := r.Client.Event.Query().
+		Where(event.CreatedAtGTE(start), event.CreatedAtLT(end)).
+		GroupBy(event.FieldSnapDeviceID).
+		Aggregate(ent.Count()).
+		Scan(ctx, &stats)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch event stats by camera: %w", err)
+	}
+
+	var result []*model.CameraEventStat
+	for _, row := range stats {
+		result = append(result, &model.CameraEventStat{
+			CameraID:   r.Client.Camera.Query().Where(camera.ImeiEQ(row.CameraID)).OnlyX(ctx).Name,
+			EventCount: row.EventCount,
+		})
+	}
+	return result, nil
 }

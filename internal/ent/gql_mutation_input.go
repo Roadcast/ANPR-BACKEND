@@ -743,6 +743,7 @@ type CreatePoliceStationInput struct {
 	Name            string
 	Location        *string
 	Code            string
+	District        *string
 	Identifier      string
 	UserIDs         []uuid.UUID
 	CameraIDs       []uuid.UUID
@@ -764,6 +765,9 @@ func (i *CreatePoliceStationInput) Mutate(m *PoliceStationMutation) {
 		m.SetLocation(*v)
 	}
 	m.SetCode(i.Code)
+	if v := i.District; v != nil {
+		m.SetDistrict(*v)
+	}
 	m.SetIdentifier(i.Identifier)
 	if v := i.UserIDs; len(v) > 0 {
 		m.AddUserIDs(v...)
@@ -795,6 +799,7 @@ type UpdatePoliceStationInput struct {
 	ClearLocation         bool
 	Location              *string
 	Code                  *string
+	District              *string
 	Identifier            *string
 	ClearUsers            bool
 	AddUserIDs            []uuid.UUID
@@ -828,6 +833,9 @@ func (i *UpdatePoliceStationInput) Mutate(m *PoliceStationMutation) {
 	}
 	if v := i.Code; v != nil {
 		m.SetCode(*v)
+	}
+	if v := i.District; v != nil {
+		m.SetDistrict(*v)
 	}
 	if v := i.Identifier; v != nil {
 		m.SetIdentifier(*v)

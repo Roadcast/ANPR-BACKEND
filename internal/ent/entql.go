@@ -147,6 +147,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			policestation.FieldName:            {Type: field.TypeString, Column: policestation.FieldName},
 			policestation.FieldLocation:        {Type: field.TypeString, Column: policestation.FieldLocation},
 			policestation.FieldCode:            {Type: field.TypeString, Column: policestation.FieldCode},
+			policestation.FieldDistrict:        {Type: field.TypeString, Column: policestation.FieldDistrict},
 			policestation.FieldIdentifier:      {Type: field.TypeString, Column: policestation.FieldIdentifier},
 			policestation.FieldParentStationID: {Type: field.TypeUUID, Column: policestation.FieldParentStationID},
 		},
@@ -871,6 +872,11 @@ func (f *PoliceStationFilter) WhereLocation(p entql.StringP) {
 // WhereCode applies the entql string predicate on the code field.
 func (f *PoliceStationFilter) WhereCode(p entql.StringP) {
 	f.Where(p.Field(policestation.FieldCode))
+}
+
+// WhereDistrict applies the entql string predicate on the district field.
+func (f *PoliceStationFilter) WhereDistrict(p entql.StringP) {
+	f.Where(p.Field(policestation.FieldDistrict))
 }
 
 // WhereIdentifier applies the entql string predicate on the identifier field.

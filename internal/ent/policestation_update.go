@@ -86,6 +86,20 @@ func (psu *PoliceStationUpdate) SetNillableCode(s *string) *PoliceStationUpdate 
 	return psu
 }
 
+// SetDistrict sets the "district" field.
+func (psu *PoliceStationUpdate) SetDistrict(s string) *PoliceStationUpdate {
+	psu.mutation.SetDistrict(s)
+	return psu
+}
+
+// SetNillableDistrict sets the "district" field if the given value is not nil.
+func (psu *PoliceStationUpdate) SetNillableDistrict(s *string) *PoliceStationUpdate {
+	if s != nil {
+		psu.SetDistrict(*s)
+	}
+	return psu
+}
+
 // SetIdentifier sets the "identifier" field.
 func (psu *PoliceStationUpdate) SetIdentifier(s string) *PoliceStationUpdate {
 	psu.mutation.SetIdentifier(s)
@@ -377,6 +391,9 @@ func (psu *PoliceStationUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	if value, ok := psu.mutation.Code(); ok {
 		_spec.SetField(policestation.FieldCode, field.TypeString, value)
 	}
+	if value, ok := psu.mutation.District(); ok {
+		_spec.SetField(policestation.FieldDistrict, field.TypeString, value)
+	}
 	if value, ok := psu.mutation.Identifier(); ok {
 		_spec.SetField(policestation.FieldIdentifier, field.TypeString, value)
 	}
@@ -659,6 +676,20 @@ func (psuo *PoliceStationUpdateOne) SetCode(s string) *PoliceStationUpdateOne {
 func (psuo *PoliceStationUpdateOne) SetNillableCode(s *string) *PoliceStationUpdateOne {
 	if s != nil {
 		psuo.SetCode(*s)
+	}
+	return psuo
+}
+
+// SetDistrict sets the "district" field.
+func (psuo *PoliceStationUpdateOne) SetDistrict(s string) *PoliceStationUpdateOne {
+	psuo.mutation.SetDistrict(s)
+	return psuo
+}
+
+// SetNillableDistrict sets the "district" field if the given value is not nil.
+func (psuo *PoliceStationUpdateOne) SetNillableDistrict(s *string) *PoliceStationUpdateOne {
+	if s != nil {
+		psuo.SetDistrict(*s)
 	}
 	return psuo
 }
@@ -983,6 +1014,9 @@ func (psuo *PoliceStationUpdateOne) sqlSave(ctx context.Context) (_node *PoliceS
 	}
 	if value, ok := psuo.mutation.Code(); ok {
 		_spec.SetField(policestation.FieldCode, field.TypeString, value)
+	}
+	if value, ok := psuo.mutation.District(); ok {
+		_spec.SetField(policestation.FieldDistrict, field.TypeString, value)
 	}
 	if value, ok := psuo.mutation.Identifier(); ok {
 		_spec.SetField(policestation.FieldIdentifier, field.TypeString, value)

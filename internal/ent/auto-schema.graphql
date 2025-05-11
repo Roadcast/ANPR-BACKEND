@@ -570,6 +570,7 @@ input CreatePoliceStationInput {
   name: String!
   location: String
   code: String!
+  district: String
   identifier: String!
   userIDs: [ID!]
   cameraIDs: [ID!]
@@ -1302,6 +1303,7 @@ type PoliceStation implements Node {
   name: String!
   location: String
   code: String!
+  district: String!
   identifier: String!
   parentStationID: ID
   users: [User!]
@@ -1412,6 +1414,22 @@ input PoliceStationWhereInput {
   codeHasSuffix: String
   codeEqualFold: String
   codeContainsFold: String
+  """
+  district field predicates
+  """
+  district: String
+  districtNEQ: String
+  districtIn: [String!]
+  districtNotIn: [String!]
+  districtGT: String
+  districtGTE: String
+  districtLT: String
+  districtLTE: String
+  districtContains: String
+  districtHasPrefix: String
+  districtHasSuffix: String
+  districtEqualFold: String
+  districtContainsFold: String
   """
   identifier field predicates
   """
@@ -2013,6 +2031,7 @@ input UpdatePoliceStationInput {
   location: String
   clearLocation: Boolean
   code: String
+  district: String
   identifier: String
   addUserIDs: [ID!]
   removeUserIDs: [ID!]

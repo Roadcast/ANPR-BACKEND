@@ -81,6 +81,11 @@ func Code(v string) predicate.PoliceStation {
 	return predicate.PoliceStation(sql.FieldEQ(FieldCode, v))
 }
 
+// District applies equality check predicate on the "district" field. It's identical to DistrictEQ.
+func District(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldEQ(FieldDistrict, v))
+}
+
 // Identifier applies equality check predicate on the "identifier" field. It's identical to IdentifierEQ.
 func Identifier(v string) predicate.PoliceStation {
 	return predicate.PoliceStation(sql.FieldEQ(FieldIdentifier, v))
@@ -374,6 +379,71 @@ func CodeEqualFold(v string) predicate.PoliceStation {
 // CodeContainsFold applies the ContainsFold predicate on the "code" field.
 func CodeContainsFold(v string) predicate.PoliceStation {
 	return predicate.PoliceStation(sql.FieldContainsFold(FieldCode, v))
+}
+
+// DistrictEQ applies the EQ predicate on the "district" field.
+func DistrictEQ(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldEQ(FieldDistrict, v))
+}
+
+// DistrictNEQ applies the NEQ predicate on the "district" field.
+func DistrictNEQ(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldNEQ(FieldDistrict, v))
+}
+
+// DistrictIn applies the In predicate on the "district" field.
+func DistrictIn(vs ...string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldIn(FieldDistrict, vs...))
+}
+
+// DistrictNotIn applies the NotIn predicate on the "district" field.
+func DistrictNotIn(vs ...string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldNotIn(FieldDistrict, vs...))
+}
+
+// DistrictGT applies the GT predicate on the "district" field.
+func DistrictGT(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldGT(FieldDistrict, v))
+}
+
+// DistrictGTE applies the GTE predicate on the "district" field.
+func DistrictGTE(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldGTE(FieldDistrict, v))
+}
+
+// DistrictLT applies the LT predicate on the "district" field.
+func DistrictLT(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldLT(FieldDistrict, v))
+}
+
+// DistrictLTE applies the LTE predicate on the "district" field.
+func DistrictLTE(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldLTE(FieldDistrict, v))
+}
+
+// DistrictContains applies the Contains predicate on the "district" field.
+func DistrictContains(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldContains(FieldDistrict, v))
+}
+
+// DistrictHasPrefix applies the HasPrefix predicate on the "district" field.
+func DistrictHasPrefix(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldHasPrefix(FieldDistrict, v))
+}
+
+// DistrictHasSuffix applies the HasSuffix predicate on the "district" field.
+func DistrictHasSuffix(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldHasSuffix(FieldDistrict, v))
+}
+
+// DistrictEqualFold applies the EqualFold predicate on the "district" field.
+func DistrictEqualFold(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldEqualFold(FieldDistrict, v))
+}
+
+// DistrictContainsFold applies the ContainsFold predicate on the "district" field.
+func DistrictContainsFold(v string) predicate.PoliceStation {
+	return predicate.PoliceStation(sql.FieldContainsFold(FieldDistrict, v))
 }
 
 // IdentifierEQ applies the EQ predicate on the "identifier" field.

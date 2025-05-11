@@ -81,6 +81,20 @@ func (psc *PoliceStationCreate) SetCode(s string) *PoliceStationCreate {
 	return psc
 }
 
+// SetDistrict sets the "district" field.
+func (psc *PoliceStationCreate) SetDistrict(s string) *PoliceStationCreate {
+	psc.mutation.SetDistrict(s)
+	return psc
+}
+
+// SetNillableDistrict sets the "district" field if the given value is not nil.
+func (psc *PoliceStationCreate) SetNillableDistrict(s *string) *PoliceStationCreate {
+	if s != nil {
+		psc.SetDistrict(*s)
+	}
+	return psc
+}
+
 // SetIdentifier sets the "identifier" field.
 func (psc *PoliceStationCreate) SetIdentifier(s string) *PoliceStationCreate {
 	psc.mutation.SetIdentifier(s)
@@ -237,6 +251,10 @@ func (psc *PoliceStationCreate) defaults() {
 		v := policestation.DefaultUpdatedAt()
 		psc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := psc.mutation.District(); !ok {
+		v := policestation.DefaultDistrict
+		psc.mutation.SetDistrict(v)
+	}
 	if _, ok := psc.mutation.ID(); !ok {
 		v := policestation.DefaultID()
 		psc.mutation.SetID(v)
@@ -266,6 +284,9 @@ func (psc *PoliceStationCreate) check() error {
 		if err := policestation.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "PoliceStation.code": %w`, err)}
 		}
+	}
+	if _, ok := psc.mutation.District(); !ok {
+		return &ValidationError{Name: "district", err: errors.New(`ent: missing required field "PoliceStation.district"`)}
 	}
 	if _, ok := psc.mutation.Identifier(); !ok {
 		return &ValidationError{Name: "identifier", err: errors.New(`ent: missing required field "PoliceStation.identifier"`)}
@@ -330,6 +351,10 @@ func (psc *PoliceStationCreate) createSpec() (*PoliceStation, *sqlgraph.CreateSp
 	if value, ok := psc.mutation.Code(); ok {
 		_spec.SetField(policestation.FieldCode, field.TypeString, value)
 		_node.Code = value
+	}
+	if value, ok := psc.mutation.District(); ok {
+		_spec.SetField(policestation.FieldDistrict, field.TypeString, value)
+		_node.District = &value
 	}
 	if value, ok := psc.mutation.Identifier(); ok {
 		_spec.SetField(policestation.FieldIdentifier, field.TypeString, value)
@@ -522,6 +547,18 @@ func (u *PoliceStationUpsert) UpdateCode() *PoliceStationUpsert {
 	return u
 }
 
+// SetDistrict sets the "district" field.
+func (u *PoliceStationUpsert) SetDistrict(v string) *PoliceStationUpsert {
+	u.Set(policestation.FieldDistrict, v)
+	return u
+}
+
+// UpdateDistrict sets the "district" field to the value that was provided on create.
+func (u *PoliceStationUpsert) UpdateDistrict() *PoliceStationUpsert {
+	u.SetExcluded(policestation.FieldDistrict)
+	return u
+}
+
 // SetIdentifier sets the "identifier" field.
 func (u *PoliceStationUpsert) SetIdentifier(v string) *PoliceStationUpsert {
 	u.Set(policestation.FieldIdentifier, v)
@@ -663,6 +700,20 @@ func (u *PoliceStationUpsertOne) SetCode(v string) *PoliceStationUpsertOne {
 func (u *PoliceStationUpsertOne) UpdateCode() *PoliceStationUpsertOne {
 	return u.Update(func(s *PoliceStationUpsert) {
 		s.UpdateCode()
+	})
+}
+
+// SetDistrict sets the "district" field.
+func (u *PoliceStationUpsertOne) SetDistrict(v string) *PoliceStationUpsertOne {
+	return u.Update(func(s *PoliceStationUpsert) {
+		s.SetDistrict(v)
+	})
+}
+
+// UpdateDistrict sets the "district" field to the value that was provided on create.
+func (u *PoliceStationUpsertOne) UpdateDistrict() *PoliceStationUpsertOne {
+	return u.Update(func(s *PoliceStationUpsert) {
+		s.UpdateDistrict()
 	})
 }
 
@@ -979,6 +1030,20 @@ func (u *PoliceStationUpsertBulk) SetCode(v string) *PoliceStationUpsertBulk {
 func (u *PoliceStationUpsertBulk) UpdateCode() *PoliceStationUpsertBulk {
 	return u.Update(func(s *PoliceStationUpsert) {
 		s.UpdateCode()
+	})
+}
+
+// SetDistrict sets the "district" field.
+func (u *PoliceStationUpsertBulk) SetDistrict(v string) *PoliceStationUpsertBulk {
+	return u.Update(func(s *PoliceStationUpsert) {
+		s.SetDistrict(v)
+	})
+}
+
+// UpdateDistrict sets the "district" field to the value that was provided on create.
+func (u *PoliceStationUpsertBulk) UpdateDistrict() *PoliceStationUpsertBulk {
+	return u.Update(func(s *PoliceStationUpsert) {
+		s.UpdateDistrict()
 	})
 }
 

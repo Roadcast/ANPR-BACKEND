@@ -178,8 +178,12 @@ func init() {
 	policestationDescCode := policestationFields[2].Descriptor()
 	// policestation.CodeValidator is a validator for the "code" field. It is called by the builders before save.
 	policestation.CodeValidator = policestationDescCode.Validators[0].(func(string) error)
+	// policestationDescDistrict is the schema descriptor for district field.
+	policestationDescDistrict := policestationFields[3].Descriptor()
+	// policestation.DefaultDistrict holds the default value on creation for the district field.
+	policestation.DefaultDistrict = policestationDescDistrict.Default.(string)
 	// policestationDescIdentifier is the schema descriptor for identifier field.
-	policestationDescIdentifier := policestationFields[3].Descriptor()
+	policestationDescIdentifier := policestationFields[4].Descriptor()
 	// policestation.IdentifierValidator is a validator for the "identifier" field. It is called by the builders before save.
 	policestation.IdentifierValidator = policestationDescIdentifier.Validators[0].(func(string) error)
 	// policestationDescID is the schema descriptor for id field.

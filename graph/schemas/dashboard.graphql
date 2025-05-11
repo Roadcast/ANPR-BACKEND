@@ -14,18 +14,45 @@ type VehicleTrackingStat {
     vehicleCount: Int!
 }
 
-extend type Query {
-    policeStationCameraCounts: [PoliceStationCameraCount!]!
-    policeStationCameraStatusCounts: [PoliceStationCameraStatusCount!]!
-    vehicleTrackingStats: [VehicleTrackingStat!]!
-    dashboardStats: DashboardStats!
-
-}
-
-
 type DashboardStats {
     totalUsers: Int!
     totalCameras: Int!
     workingCameras: Int!
 }
+
+
+
+type PoliceStationVehicleCount {
+    policeStationName: String!
+    vehicleCount: Int!
+}
+
+type DistrictVehicleCount {
+    district: String!
+    vehicleCount: Int!
+}
+
+type EventHourStat {
+    hour: String!
+    eventCount: Int!
+}
+
+type CameraEventStat {
+    cameraID: String!
+    eventCount: Int!
+}
+
+
+extend type Query {
+    policeStationCameraCounts: [PoliceStationCameraCount!]!
+    policeStationCameraStatusCounts: [PoliceStationCameraStatusCount!]!
+    vehicleTrackingStats: [VehicleTrackingStat!]!
+    dashboardStats: DashboardStats!
+    policeStationVehicleCounts: [PoliceStationVehicleCount!]!
+    districtVehicleCounts: [DistrictVehicleCount!]!
+    eventsPerHour: [EventHourStat!]!
+    eventsByCamera: [CameraEventStat!]!
+
+}
+
 

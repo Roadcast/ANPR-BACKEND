@@ -5461,6 +5461,7 @@ type PoliceStationMutation struct {
 	name                  *string
 	location              *string
 	code                  *string
+	district              *string
 	identifier            *string
 	clearedFields         map[string]struct{}
 	users                 map[uuid.UUID]struct{}
@@ -5777,6 +5778,42 @@ func (m *PoliceStationMutation) OldCode(ctx context.Context) (v string, err erro
 // ResetCode resets all changes to the "code" field.
 func (m *PoliceStationMutation) ResetCode() {
 	m.code = nil
+}
+
+// SetDistrict sets the "district" field.
+func (m *PoliceStationMutation) SetDistrict(s string) {
+	m.district = &s
+}
+
+// District returns the value of the "district" field in the mutation.
+func (m *PoliceStationMutation) District() (r string, exists bool) {
+	v := m.district
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDistrict returns the old "district" field's value of the PoliceStation entity.
+// If the PoliceStation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PoliceStationMutation) OldDistrict(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDistrict is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDistrict requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDistrict: %w", err)
+	}
+	return oldValue.District, nil
+}
+
+// ResetDistrict resets all changes to the "district" field.
+func (m *PoliceStationMutation) ResetDistrict() {
+	m.district = nil
 }
 
 // SetIdentifier sets the "identifier" field.
@@ -6154,7 +6191,7 @@ func (m *PoliceStationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PoliceStationMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, policestation.FieldCreatedAt)
 	}
@@ -6169,6 +6206,9 @@ func (m *PoliceStationMutation) Fields() []string {
 	}
 	if m.code != nil {
 		fields = append(fields, policestation.FieldCode)
+	}
+	if m.district != nil {
+		fields = append(fields, policestation.FieldDistrict)
 	}
 	if m.identifier != nil {
 		fields = append(fields, policestation.FieldIdentifier)
@@ -6194,6 +6234,8 @@ func (m *PoliceStationMutation) Field(name string) (ent.Value, bool) {
 		return m.Location()
 	case policestation.FieldCode:
 		return m.Code()
+	case policestation.FieldDistrict:
+		return m.District()
 	case policestation.FieldIdentifier:
 		return m.Identifier()
 	case policestation.FieldParentStationID:
@@ -6217,6 +6259,8 @@ func (m *PoliceStationMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldLocation(ctx)
 	case policestation.FieldCode:
 		return m.OldCode(ctx)
+	case policestation.FieldDistrict:
+		return m.OldDistrict(ctx)
 	case policestation.FieldIdentifier:
 		return m.OldIdentifier(ctx)
 	case policestation.FieldParentStationID:
@@ -6264,6 +6308,13 @@ func (m *PoliceStationMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCode(v)
+		return nil
+	case policestation.FieldDistrict:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDistrict(v)
 		return nil
 	case policestation.FieldIdentifier:
 		v, ok := value.(string)
@@ -6357,6 +6408,9 @@ func (m *PoliceStationMutation) ResetField(name string) error {
 		return nil
 	case policestation.FieldCode:
 		m.ResetCode()
+		return nil
+	case policestation.FieldDistrict:
+		m.ResetDistrict()
 		return nil
 	case policestation.FieldIdentifier:
 		m.ResetIdentifier()

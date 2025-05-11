@@ -48,6 +48,7 @@ func (PoliceStation) Fields() []ent.Field {
 			Unique().
 			NotEmpty().
 			Annotations(),
+		field.String("district").Default("N/A").Nillable().Annotations(),
 
 		// Unique identifier for the police station
 		field.String("identifier").

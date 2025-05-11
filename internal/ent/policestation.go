@@ -28,6 +28,8 @@ type PoliceStation struct {
 	Location *string `json:"location,omitempty"`
 	// Code holds the value of the "code" field.
 	Code string `json:"code,omitempty"`
+	// District holds the value of the "district" field.
+	District *string `json:"district,omitempty"`
 	// Identifier holds the value of the "identifier" field.
 	Identifier string `json:"identifier,omitempty"`
 	// ParentStationID holds the value of the "parent_station_id" field.
@@ -116,7 +118,7 @@ func (*PoliceStation) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case policestation.FieldParentStationID:
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
-		case policestation.FieldName, policestation.FieldLocation, policestation.FieldCode, policestation.FieldIdentifier:
+		case policestation.FieldName, policestation.FieldLocation, policestation.FieldCode, policestation.FieldDistrict, policestation.FieldIdentifier:
 			values[i] = new(sql.NullString)
 		case policestation.FieldCreatedAt, policestation.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -173,6 +175,13 @@ func (ps *PoliceStation) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field code", values[i])
 			} else if value.Valid {
 				ps.Code = value.String
+			}
+		case policestation.FieldDistrict:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field district", values[i])
+			} else if value.Valid {
+				ps.District = new(string)
+				*ps.District = value.String
 			}
 		case policestation.FieldIdentifier:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -264,6 +273,11 @@ func (ps *PoliceStation) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("code=")
 	builder.WriteString(ps.Code)
+	builder.WriteString(", ")
+	if v := ps.District; v != nil {
+		builder.WriteString("district=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	builder.WriteString("identifier=")
 	builder.WriteString(ps.Identifier)

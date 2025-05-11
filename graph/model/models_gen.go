@@ -9,6 +9,11 @@ import (
 	"github.com/google/uuid"
 )
 
+type CameraEventStat struct {
+	CameraID   string `json:"cameraID"`
+	EventCount int    `json:"eventCount"`
+}
+
 type CustomEvent struct {
 	Camera *ent.Camera `json:"camera,omitempty"`
 	Event  *ent.Event  `json:"event,omitempty"`
@@ -18,6 +23,16 @@ type DashboardStats struct {
 	TotalUsers     int `json:"totalUsers"`
 	TotalCameras   int `json:"totalCameras"`
 	WorkingCameras int `json:"workingCameras"`
+}
+
+type DistrictVehicleCount struct {
+	District     string `json:"district"`
+	VehicleCount int    `json:"vehicleCount"`
+}
+
+type EventHourStat struct {
+	Hour       string `json:"hour"`
+	EventCount int    `json:"eventCount"`
 }
 
 type EventList struct {
@@ -49,6 +64,11 @@ type PoliceStationCameraStatusCount struct {
 	PoliceStationName     string `json:"policeStationName"`
 	WorkingCameraCount    int    `json:"workingCameraCount"`
 	NonWorkingCameraCount int    `json:"nonWorkingCameraCount"`
+}
+
+type PoliceStationVehicleCount struct {
+	PoliceStationName string `json:"policeStationName"`
+	VehicleCount      int    `json:"vehicleCount"`
 }
 
 type RefreshTokenResponse struct {

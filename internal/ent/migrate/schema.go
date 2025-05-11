@@ -239,6 +239,7 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "location", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"postgres": "GEOMETRY(Point, 4326)"}},
 		{Name: "code", Type: field.TypeString, Unique: true},
+		{Name: "district", Type: field.TypeString, Default: "N/A"},
 		{Name: "identifier", Type: field.TypeString, Unique: true},
 		{Name: "parent_station_id", Type: field.TypeUUID, Nullable: true, SchemaType: map[string]string{"postgres": "uuid"}},
 	}
@@ -250,7 +251,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "police_stations_police_stations_child_stations",
-				Columns:    []*schema.Column{PoliceStationsColumns[7]},
+				Columns:    []*schema.Column{PoliceStationsColumns[8]},
 				RefColumns: []*schema.Column{PoliceStationsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

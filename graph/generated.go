@@ -79,6 +79,11 @@ type ComplexityRoot struct {
 		Node   func(childComplexity int) int
 	}
 
+	CameraEventStat struct {
+		CameraID   func(childComplexity int) int
+		EventCount func(childComplexity int) int
+	}
+
 	Car struct {
 		Color           func(childComplexity int) int
 		CreatedAt       func(childComplexity int) int
@@ -114,6 +119,11 @@ type ComplexityRoot struct {
 		TotalCameras   func(childComplexity int) int
 		TotalUsers     func(childComplexity int) int
 		WorkingCameras func(childComplexity int) int
+	}
+
+	DistrictVehicleCount struct {
+		District     func(childComplexity int) int
+		VehicleCount func(childComplexity int) int
 	}
 
 	Event struct {
@@ -158,6 +168,11 @@ type ComplexityRoot struct {
 	EventEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
+	}
+
+	EventHourStat struct {
+		EventCount func(childComplexity int) int
+		Hour       func(childComplexity int) int
 	}
 
 	EventList struct {
@@ -242,6 +257,7 @@ type ComplexityRoot struct {
 		ChildStations   func(childComplexity int) int
 		Code            func(childComplexity int) int
 		CreatedAt       func(childComplexity int) int
+		District        func(childComplexity int) int
 		ID              func(childComplexity int) int
 		Identifier      func(childComplexity int) int
 		Location        func(childComplexity int) int
@@ -274,11 +290,19 @@ type ComplexityRoot struct {
 		Node   func(childComplexity int) int
 	}
 
+	PoliceStationVehicleCount struct {
+		PoliceStationName func(childComplexity int) int
+		VehicleCount      func(childComplexity int) int
+	}
+
 	Query struct {
 		Cameras                         func(childComplexity int, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.CameraOrder, where *ent.CameraWhereInput) int
 		Cars                            func(childComplexity int, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.CarOrder, where *ent.CarWhereInput) int
 		DashboardStats                  func(childComplexity int) int
+		DistrictVehicleCounts           func(childComplexity int) int
 		Events                          func(childComplexity int, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.EventOrder, where *ent.EventWhereInput) int
+		EventsByCamera                  func(childComplexity int) int
+		EventsPerHour                   func(childComplexity int) int
 		GetCamera                       func(childComplexity int, id uuid.UUID) int
 		GetCameraByName                 func(childComplexity int, name string, limit int, offset int) int
 		GetCar                          func(childComplexity int, id uuid.UUID) int
@@ -296,6 +320,7 @@ type ComplexityRoot struct {
 		Permissions                     func(childComplexity int, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.PermissionOrder, where *ent.PermissionWhereInput) int
 		PoliceStationCameraCounts       func(childComplexity int) int
 		PoliceStationCameraStatusCounts func(childComplexity int) int
+		PoliceStationVehicleCounts      func(childComplexity int) int
 		PoliceStations                  func(childComplexity int, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.PoliceStationOrder, where *ent.PoliceStationWhereInput) int
 		Roles                           func(childComplexity int, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.RoleOrder, where *ent.RoleWhereInput) int
 		Users                           func(childComplexity int, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy []*ent.UserOrder, where *ent.UserWhereInput) int
@@ -408,6 +433,10 @@ type QueryResolver interface {
 	PoliceStationCameraStatusCounts(ctx context.Context) ([]*model.PoliceStationCameraStatusCount, error)
 	VehicleTrackingStats(ctx context.Context) ([]*model.VehicleTrackingStat, error)
 	DashboardStats(ctx context.Context) (*model.DashboardStats, error)
+	PoliceStationVehicleCounts(ctx context.Context) ([]*model.PoliceStationVehicleCount, error)
+	DistrictVehicleCounts(ctx context.Context) ([]*model.DistrictVehicleCount, error)
+	EventsPerHour(ctx context.Context) ([]*model.EventHourStat, error)
+	EventsByCamera(ctx context.Context) ([]*model.CameraEventStat, error)
 	GetMe(ctx context.Context) (*ent.User, error)
 	GetUserByName(ctx context.Context, name string, limit int, offset int) ([]*ent.User, error)
 	GetPoliceStationByName(ctx context.Context, name string, limit int, offset int) ([]*ent.PoliceStation, error)
@@ -569,6 +598,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CameraEdge.Node(childComplexity), true
 
+	case "CameraEventStat.cameraID":
+		if e.complexity.CameraEventStat.CameraID == nil {
+			break
+		}
+
+		return e.complexity.CameraEventStat.CameraID(childComplexity), true
+
+	case "CameraEventStat.eventCount":
+		if e.complexity.CameraEventStat.EventCount == nil {
+			break
+		}
+
+		return e.complexity.CameraEventStat.EventCount(childComplexity), true
+
 	case "Car.color":
 		if e.complexity.Car.Color == nil {
 			break
@@ -722,6 +765,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.DashboardStats.WorkingCameras(childComplexity), true
+
+	case "DistrictVehicleCount.district":
+		if e.complexity.DistrictVehicleCount.District == nil {
+			break
+		}
+
+		return e.complexity.DistrictVehicleCount.District(childComplexity), true
+
+	case "DistrictVehicleCount.vehicleCount":
+		if e.complexity.DistrictVehicleCount.VehicleCount == nil {
+			break
+		}
+
+		return e.complexity.DistrictVehicleCount.VehicleCount(childComplexity), true
 
 	case "Event.createdAt":
 		if e.complexity.Event.CreatedAt == nil {
@@ -967,6 +1024,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.EventEdge.Node(childComplexity), true
+
+	case "EventHourStat.eventCount":
+		if e.complexity.EventHourStat.EventCount == nil {
+			break
+		}
+
+		return e.complexity.EventHourStat.EventCount(childComplexity), true
+
+	case "EventHourStat.hour":
+		if e.complexity.EventHourStat.Hour == nil {
+			break
+		}
+
+		return e.complexity.EventHourStat.Hour(childComplexity), true
 
 	case "EventList.node":
 		if e.complexity.EventList.Node == nil {
@@ -1507,6 +1578,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PoliceStation.CreatedAt(childComplexity), true
 
+	case "PoliceStation.district":
+		if e.complexity.PoliceStation.District == nil {
+			break
+		}
+
+		return e.complexity.PoliceStation.District(childComplexity), true
+
 	case "PoliceStation.id":
 		if e.complexity.PoliceStation.ID == nil {
 			break
@@ -1633,6 +1711,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PoliceStationEdge.Node(childComplexity), true
 
+	case "PoliceStationVehicleCount.policeStationName":
+		if e.complexity.PoliceStationVehicleCount.PoliceStationName == nil {
+			break
+		}
+
+		return e.complexity.PoliceStationVehicleCount.PoliceStationName(childComplexity), true
+
+	case "PoliceStationVehicleCount.vehicleCount":
+		if e.complexity.PoliceStationVehicleCount.VehicleCount == nil {
+			break
+		}
+
+		return e.complexity.PoliceStationVehicleCount.VehicleCount(childComplexity), true
+
 	case "Query.cameras":
 		if e.complexity.Query.Cameras == nil {
 			break
@@ -1664,6 +1756,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.DashboardStats(childComplexity), true
 
+	case "Query.districtVehicleCounts":
+		if e.complexity.Query.DistrictVehicleCounts == nil {
+			break
+		}
+
+		return e.complexity.Query.DistrictVehicleCounts(childComplexity), true
+
 	case "Query.events":
 		if e.complexity.Query.Events == nil {
 			break
@@ -1675,6 +1774,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Events(childComplexity, args["after"].(*entgql.Cursor[uuid.UUID]), args["first"].(*int), args["before"].(*entgql.Cursor[uuid.UUID]), args["last"].(*int), args["orderBy"].([]*ent.EventOrder), args["where"].(*ent.EventWhereInput)), true
+
+	case "Query.eventsByCamera":
+		if e.complexity.Query.EventsByCamera == nil {
+			break
+		}
+
+		return e.complexity.Query.EventsByCamera(childComplexity), true
+
+	case "Query.eventsPerHour":
+		if e.complexity.Query.EventsPerHour == nil {
+			break
+		}
+
+		return e.complexity.Query.EventsPerHour(childComplexity), true
 
 	case "Query.getCamera":
 		if e.complexity.Query.GetCamera == nil {
@@ -1864,6 +1977,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.PoliceStationCameraStatusCounts(childComplexity), true
+
+	case "Query.policeStationVehicleCounts":
+		if e.complexity.Query.PoliceStationVehicleCounts == nil {
+			break
+		}
+
+		return e.complexity.Query.PoliceStationVehicleCounts(childComplexity), true
 
 	case "Query.policeStations":
 		if e.complexity.Query.PoliceStations == nil {
@@ -2848,6 +2968,7 @@ input CreatePoliceStationInput {
   name: String!
   location: String
   code: String!
+  district: String
   identifier: String!
   userIDs: [ID!]
   cameraIDs: [ID!]
@@ -3580,6 +3701,7 @@ type PoliceStation implements Node {
   name: String!
   location: String
   code: String!
+  district: String!
   identifier: String!
   parentStationID: ID
   users: [User!]
@@ -3690,6 +3812,22 @@ input PoliceStationWhereInput {
   codeHasSuffix: String
   codeEqualFold: String
   codeContainsFold: String
+  """
+  district field predicates
+  """
+  district: String
+  districtNEQ: String
+  districtIn: [String!]
+  districtNotIn: [String!]
+  districtGT: String
+  districtGTE: String
+  districtLT: String
+  districtLTE: String
+  districtContains: String
+  districtHasPrefix: String
+  districtHasSuffix: String
+  districtEqualFold: String
+  districtContainsFold: String
   """
   identifier field predicates
   """
@@ -4291,6 +4429,7 @@ input UpdatePoliceStationInput {
   location: String
   clearLocation: Boolean
   code: String
+  district: String
   identifier: String
   addUserIDs: [ID!]
   removeUserIDs: [ID!]
@@ -7441,6 +7580,8 @@ func (ec *executionContext) fieldContext_Camera_policeStation(_ context.Context,
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -7717,6 +7858,94 @@ func (ec *executionContext) fieldContext_CameraEdge_cursor(_ context.Context, fi
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Cursor does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CameraEventStat_cameraID(ctx context.Context, field graphql.CollectedField, obj *model.CameraEventStat) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CameraEventStat_cameraID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CameraID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CameraEventStat_cameraID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CameraEventStat",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CameraEventStat_eventCount(ctx context.Context, field graphql.CollectedField, obj *model.CameraEventStat) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CameraEventStat_eventCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EventCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CameraEventStat_eventCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CameraEventStat",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -8233,6 +8462,8 @@ func (ec *executionContext) fieldContext_Car_policeStation(_ context.Context, fi
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -8806,6 +9037,94 @@ func (ec *executionContext) _DashboardStats_workingCameras(ctx context.Context, 
 func (ec *executionContext) fieldContext_DashboardStats_workingCameras(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DashboardStats",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DistrictVehicleCount_district(ctx context.Context, field graphql.CollectedField, obj *model.DistrictVehicleCount) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DistrictVehicleCount_district(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.District, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DistrictVehicleCount_district(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DistrictVehicleCount",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DistrictVehicleCount_vehicleCount(ctx context.Context, field graphql.CollectedField, obj *model.DistrictVehicleCount) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DistrictVehicleCount_vehicleCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VehicleCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DistrictVehicleCount_vehicleCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DistrictVehicleCount",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -10347,6 +10666,94 @@ func (ec *executionContext) fieldContext_EventEdge_cursor(_ context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _EventHourStat_hour(ctx context.Context, field graphql.CollectedField, obj *model.EventHourStat) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_EventHourStat_hour(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Hour, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_EventHourStat_hour(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "EventHourStat",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _EventHourStat_eventCount(ctx context.Context, field graphql.CollectedField, obj *model.EventHourStat) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_EventHourStat_eventCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EventCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_EventHourStat_eventCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "EventHourStat",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _EventList_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.EventList) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_EventList_pageInfo(ctx, field)
 	if err != nil {
@@ -10844,6 +11251,8 @@ func (ec *executionContext) fieldContext_Mutation_addUserToPoliceStation(ctx con
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -11091,6 +11500,8 @@ func (ec *executionContext) fieldContext_Mutation_addChildPoliceStationToParentP
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -11174,6 +11585,8 @@ func (ec *executionContext) fieldContext_Mutation_addParentPoliceStationToChildP
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -11257,6 +11670,8 @@ func (ec *executionContext) fieldContext_Mutation_removeUserFromPoliceStation(ct
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -11504,6 +11919,8 @@ func (ec *executionContext) fieldContext_Mutation_removeChildPoliceStationFromPa
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -11587,6 +12004,8 @@ func (ec *executionContext) fieldContext_Mutation_removeParentPoliceStationFromC
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -12112,6 +12531,8 @@ func (ec *executionContext) fieldContext_Mutation_addPoliceStation(ctx context.C
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -12195,6 +12616,8 @@ func (ec *executionContext) fieldContext_Mutation_updatePoliceStation(ctx contex
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -13795,6 +14218,50 @@ func (ec *executionContext) fieldContext_PoliceStation_code(_ context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _PoliceStation_district(ctx context.Context, field graphql.CollectedField, obj *ent.PoliceStation) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PoliceStation_district(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.District, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalNString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PoliceStation_district(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PoliceStation",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PoliceStation_identifier(ctx context.Context, field graphql.CollectedField, obj *ent.PoliceStation) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PoliceStation_identifier(ctx, field)
 	if err != nil {
@@ -14131,6 +14598,8 @@ func (ec *executionContext) fieldContext_PoliceStation_parent(_ context.Context,
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -14200,6 +14669,8 @@ func (ec *executionContext) fieldContext_PoliceStation_childStations(_ context.C
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -14634,6 +15105,8 @@ func (ec *executionContext) fieldContext_PoliceStationEdge_node(_ context.Contex
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -14694,6 +15167,94 @@ func (ec *executionContext) fieldContext_PoliceStationEdge_cursor(_ context.Cont
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Cursor does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PoliceStationVehicleCount_policeStationName(ctx context.Context, field graphql.CollectedField, obj *model.PoliceStationVehicleCount) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PoliceStationVehicleCount_policeStationName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PoliceStationName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PoliceStationVehicleCount_policeStationName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PoliceStationVehicleCount",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PoliceStationVehicleCount_vehicleCount(ctx context.Context, field graphql.CollectedField, obj *model.PoliceStationVehicleCount) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PoliceStationVehicleCount_vehicleCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VehicleCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PoliceStationVehicleCount_vehicleCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PoliceStationVehicleCount",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -15383,6 +15944,8 @@ func (ec *executionContext) fieldContext_Query_getPoliceStation(ctx context.Cont
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -15830,6 +16393,206 @@ func (ec *executionContext) fieldContext_Query_dashboardStats(_ context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_policeStationVehicleCounts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_policeStationVehicleCounts(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().PoliceStationVehicleCounts(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.PoliceStationVehicleCount)
+	fc.Result = res
+	return ec.marshalNPoliceStationVehicleCount2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐPoliceStationVehicleCountᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_policeStationVehicleCounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "policeStationName":
+				return ec.fieldContext_PoliceStationVehicleCount_policeStationName(ctx, field)
+			case "vehicleCount":
+				return ec.fieldContext_PoliceStationVehicleCount_vehicleCount(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PoliceStationVehicleCount", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_districtVehicleCounts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_districtVehicleCounts(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().DistrictVehicleCounts(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.DistrictVehicleCount)
+	fc.Result = res
+	return ec.marshalNDistrictVehicleCount2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐDistrictVehicleCountᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_districtVehicleCounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "district":
+				return ec.fieldContext_DistrictVehicleCount_district(ctx, field)
+			case "vehicleCount":
+				return ec.fieldContext_DistrictVehicleCount_vehicleCount(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DistrictVehicleCount", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_eventsPerHour(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_eventsPerHour(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().EventsPerHour(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.EventHourStat)
+	fc.Result = res
+	return ec.marshalNEventHourStat2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐEventHourStatᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_eventsPerHour(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "hour":
+				return ec.fieldContext_EventHourStat_hour(ctx, field)
+			case "eventCount":
+				return ec.fieldContext_EventHourStat_eventCount(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type EventHourStat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_eventsByCamera(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_eventsByCamera(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().EventsByCamera(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.CameraEventStat)
+	fc.Result = res
+	return ec.marshalNCameraEventStat2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐCameraEventStatᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_eventsByCamera(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "cameraID":
+				return ec.fieldContext_CameraEventStat_cameraID(ctx, field)
+			case "eventCount":
+				return ec.fieldContext_CameraEventStat_eventCount(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CameraEventStat", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_getMe(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_getMe(ctx, field)
 	if err != nil {
@@ -16028,6 +16791,8 @@ func (ec *executionContext) fieldContext_Query_getPoliceStationByName(ctx contex
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -17628,6 +18393,8 @@ func (ec *executionContext) fieldContext_User_policeStation(_ context.Context, f
 				return ec.fieldContext_PoliceStation_location(ctx, field)
 			case "code":
 				return ec.fieldContext_PoliceStation_code(ctx, field)
+			case "district":
+				return ec.fieldContext_PoliceStation_district(ctx, field)
 			case "identifier":
 				return ec.fieldContext_PoliceStation_identifier(ctx, field)
 			case "parentStationID":
@@ -21773,7 +22540,7 @@ func (ec *executionContext) unmarshalInputCreatePoliceStationInput(ctx context.C
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "name", "location", "code", "identifier", "userIDs", "cameraIDs", "carIDs", "parentID", "childStationIDs"}
+	fieldsInOrder := [...]string{"createdAt", "updatedAt", "name", "location", "code", "district", "identifier", "userIDs", "cameraIDs", "carIDs", "parentID", "childStationIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -21815,6 +22582,13 @@ func (ec *executionContext) unmarshalInputCreatePoliceStationInput(ctx context.C
 				return it, err
 			}
 			it.Code = data
+		case "district":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("district"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.District = data
 		case "identifier":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("identifier"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -24478,7 +25252,7 @@ func (ec *executionContext) unmarshalInputPoliceStationWhereInput(ctx context.Co
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "identifier", "identifierNEQ", "identifierIn", "identifierNotIn", "identifierGT", "identifierGTE", "identifierLT", "identifierLTE", "identifierContains", "identifierHasPrefix", "identifierHasSuffix", "identifierEqualFold", "identifierContainsFold", "parentStationID", "parentStationIDNEQ", "parentStationIDIn", "parentStationIDNotIn", "parentStationIDIsNil", "parentStationIDNotNil", "hasUsers", "hasUsersWith", "hasCamera", "hasCameraWith", "hasCar", "hasCarWith", "hasParent", "hasParentWith", "hasChildStations", "hasChildStationsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "code", "codeNEQ", "codeIn", "codeNotIn", "codeGT", "codeGTE", "codeLT", "codeLTE", "codeContains", "codeHasPrefix", "codeHasSuffix", "codeEqualFold", "codeContainsFold", "district", "districtNEQ", "districtIn", "districtNotIn", "districtGT", "districtGTE", "districtLT", "districtLTE", "districtContains", "districtHasPrefix", "districtHasSuffix", "districtEqualFold", "districtContainsFold", "identifier", "identifierNEQ", "identifierIn", "identifierNotIn", "identifierGT", "identifierGTE", "identifierLT", "identifierLTE", "identifierContains", "identifierHasPrefix", "identifierHasSuffix", "identifierEqualFold", "identifierContainsFold", "parentStationID", "parentStationIDNEQ", "parentStationIDIn", "parentStationIDNotIn", "parentStationIDIsNil", "parentStationIDNotNil", "hasUsers", "hasUsersWith", "hasCamera", "hasCameraWith", "hasCar", "hasCarWith", "hasParent", "hasParentWith", "hasChildStations", "hasChildStationsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -24744,6 +25518,97 @@ func (ec *executionContext) unmarshalInputPoliceStationWhereInput(ctx context.Co
 				return it, err
 			}
 			it.CodeContainsFold = data
+		case "district":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("district"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.District = data
+		case "districtNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("districtNEQ"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DistrictNEQ = data
+		case "districtIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("districtIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DistrictIn = data
+		case "districtNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("districtNotIn"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DistrictNotIn = data
+		case "districtGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("districtGT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DistrictGT = data
+		case "districtGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("districtGTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DistrictGTE = data
+		case "districtLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("districtLT"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DistrictLT = data
+		case "districtLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("districtLTE"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DistrictLTE = data
+		case "districtContains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("districtContains"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DistrictContains = data
+		case "districtHasPrefix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("districtHasPrefix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DistrictHasPrefix = data
+		case "districtHasSuffix":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("districtHasSuffix"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DistrictHasSuffix = data
+		case "districtEqualFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("districtEqualFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DistrictEqualFold = data
+		case "districtContainsFold":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("districtContainsFold"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DistrictContainsFold = data
 		case "identifier":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("identifier"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -25945,7 +26810,7 @@ func (ec *executionContext) unmarshalInputUpdatePoliceStationInput(ctx context.C
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "name", "location", "clearLocation", "code", "identifier", "addUserIDs", "removeUserIDs", "clearUsers", "addCameraIDs", "removeCameraIDs", "clearCamera", "addCarIDs", "removeCarIDs", "clearCar", "parentID", "clearParent", "addChildStationIDs", "removeChildStationIDs", "clearChildStations"}
+	fieldsInOrder := [...]string{"updatedAt", "name", "location", "clearLocation", "code", "district", "identifier", "addUserIDs", "removeUserIDs", "clearUsers", "addCameraIDs", "removeCameraIDs", "clearCamera", "addCarIDs", "removeCarIDs", "clearCar", "parentID", "clearParent", "addChildStationIDs", "removeChildStationIDs", "clearChildStations"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -25987,6 +26852,13 @@ func (ec *executionContext) unmarshalInputUpdatePoliceStationInput(ctx context.C
 				return it, err
 			}
 			it.Code = data
+		case "district":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("district"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.District = data
 		case "identifier":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("identifier"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
@@ -26899,6 +27771,50 @@ func (ec *executionContext) _CameraEdge(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
+var cameraEventStatImplementors = []string{"CameraEventStat"}
+
+func (ec *executionContext) _CameraEventStat(ctx context.Context, sel ast.SelectionSet, obj *model.CameraEventStat) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, cameraEventStatImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CameraEventStat")
+		case "cameraID":
+			out.Values[i] = ec._CameraEventStat_cameraID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "eventCount":
+			out.Values[i] = ec._CameraEventStat_eventCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var carImplementors = []string{"Car", "Node"}
 
 func (ec *executionContext) _Car(ctx context.Context, sel ast.SelectionSet, obj *ent.Car) graphql.Marshaler {
@@ -27174,6 +28090,50 @@ func (ec *executionContext) _DashboardStats(ctx context.Context, sel ast.Selecti
 	return out
 }
 
+var districtVehicleCountImplementors = []string{"DistrictVehicleCount"}
+
+func (ec *executionContext) _DistrictVehicleCount(ctx context.Context, sel ast.SelectionSet, obj *model.DistrictVehicleCount) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, districtVehicleCountImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DistrictVehicleCount")
+		case "district":
+			out.Values[i] = ec._DistrictVehicleCount_district(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "vehicleCount":
+			out.Values[i] = ec._DistrictVehicleCount_vehicleCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var eventImplementors = []string{"Event", "Node"}
 
 func (ec *executionContext) _Event(ctx context.Context, sel ast.SelectionSet, obj *ent.Event) graphql.Marshaler {
@@ -27338,6 +28298,50 @@ func (ec *executionContext) _EventEdge(ctx context.Context, sel ast.SelectionSet
 			out.Values[i] = ec._EventEdge_node(ctx, field, obj)
 		case "cursor":
 			out.Values[i] = ec._EventEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var eventHourStatImplementors = []string{"EventHourStat"}
+
+func (ec *executionContext) _EventHourStat(ctx context.Context, sel ast.SelectionSet, obj *model.EventHourStat) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, eventHourStatImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("EventHourStat")
+		case "hour":
+			out.Values[i] = ec._EventHourStat_hour(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "eventCount":
+			out.Values[i] = ec._EventHourStat_eventCount(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -27985,6 +28989,11 @@ func (ec *executionContext) _PoliceStation(ctx context.Context, sel ast.Selectio
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "district":
+			out.Values[i] = ec._PoliceStation_district(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "identifier":
 			out.Values[i] = ec._PoliceStation_identifier(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -28334,6 +29343,50 @@ func (ec *executionContext) _PoliceStationEdge(ctx context.Context, sel ast.Sele
 			out.Values[i] = ec._PoliceStationEdge_node(ctx, field, obj)
 		case "cursor":
 			out.Values[i] = ec._PoliceStationEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var policeStationVehicleCountImplementors = []string{"PoliceStationVehicleCount"}
+
+func (ec *executionContext) _PoliceStationVehicleCount(ctx context.Context, sel ast.SelectionSet, obj *model.PoliceStationVehicleCount) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, policeStationVehicleCountImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PoliceStationVehicleCount")
+		case "policeStationName":
+			out.Values[i] = ec._PoliceStationVehicleCount_policeStationName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "vehicleCount":
+			out.Values[i] = ec._PoliceStationVehicleCount_vehicleCount(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -28760,6 +29813,94 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_dashboardStats(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "policeStationVehicleCounts":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_policeStationVehicleCounts(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "districtVehicleCounts":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_districtVehicleCounts(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "eventsPerHour":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_eventsPerHour(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "eventsByCamera":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_eventsByCamera(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -29885,6 +31026,60 @@ func (ec *executionContext) marshalNCameraConnection2ᚖgoᚑentᚑprojectᚋint
 	return ec._CameraConnection(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNCameraEventStat2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐCameraEventStatᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.CameraEventStat) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCameraEventStat2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐCameraEventStat(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNCameraEventStat2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐCameraEventStat(ctx context.Context, sel ast.SelectionSet, v *model.CameraEventStat) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CameraEventStat(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNCameraOrder2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐCameraOrder(ctx context.Context, v any) (*ent.CameraOrder, error) {
 	res, err := ec.unmarshalInputCameraOrder(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -30065,6 +31260,60 @@ func (ec *executionContext) marshalNDashboardStats2ᚖgoᚑentᚑprojectᚋgraph
 	return ec._DashboardStats(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNDistrictVehicleCount2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐDistrictVehicleCountᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.DistrictVehicleCount) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNDistrictVehicleCount2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐDistrictVehicleCount(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNDistrictVehicleCount2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐDistrictVehicleCount(ctx context.Context, sel ast.SelectionSet, v *model.DistrictVehicleCount) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DistrictVehicleCount(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNEventConnection2goᚑentᚑprojectᚋinternalᚋentᚐEventConnection(ctx context.Context, sel ast.SelectionSet, v ent.EventConnection) graphql.Marshaler {
 	return ec._EventConnection(ctx, sel, &v)
 }
@@ -30077,6 +31326,60 @@ func (ec *executionContext) marshalNEventConnection2ᚖgoᚑentᚑprojectᚋinte
 		return graphql.Null
 	}
 	return ec._EventConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNEventHourStat2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐEventHourStatᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.EventHourStat) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNEventHourStat2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐEventHourStat(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNEventHourStat2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐEventHourStat(ctx context.Context, sel ast.SelectionSet, v *model.EventHourStat) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._EventHourStat(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNEventList2goᚑentᚑprojectᚋgraphᚋmodelᚐEventList(ctx context.Context, sel ast.SelectionSet, v model.EventList) graphql.Marshaler {
@@ -30515,6 +31818,60 @@ func (ec *executionContext) marshalNPoliceStationOrderField2ᚖgoᚑentᚑprojec
 		return graphql.Null
 	}
 	return v
+}
+
+func (ec *executionContext) marshalNPoliceStationVehicleCount2ᚕᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐPoliceStationVehicleCountᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.PoliceStationVehicleCount) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPoliceStationVehicleCount2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐPoliceStationVehicleCount(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNPoliceStationVehicleCount2ᚖgoᚑentᚑprojectᚋgraphᚋmodelᚐPoliceStationVehicleCount(ctx context.Context, sel ast.SelectionSet, v *model.PoliceStationVehicleCount) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._PoliceStationVehicleCount(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNPoliceStationWhereInput2ᚖgoᚑentᚑprojectᚋinternalᚋentᚐPoliceStationWhereInput(ctx context.Context, v any) (*ent.PoliceStationWhereInput, error) {
