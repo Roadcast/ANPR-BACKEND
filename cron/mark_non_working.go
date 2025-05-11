@@ -42,24 +42,25 @@ func StartCameraHealthCheck(client *ent.Client, workerID string) {
 				} else {
 					log.Printf("[%s] 🛠️ Camera marked not working: %s (IMEI: %s)", workerID, cam.Name, cam.Imei)
 				}
-			}
-
-			if now.Sub(*cam.LastPingTime) > cutoffAge {
-				_, err := client.Camera.UpdateOneID(cam.ID).
-					SetIsWorking(false).
-					Save(ctx)
-				if err != nil {
-					log.Printf("[%s] ❌ Failed to mark camera %s (IMEI: %s) as not working: %v", workerID, cam.Name, cam.Imei, err)
-				} else {
-					log.Printf("[%s] 🛠️ Camera marked not working: %s (IMEI: %s)", workerID, cam.Name, cam.Imei)
-				}
 			} else {
-				_, _ = client.Camera.UpdateOneID(cam.ID).
-					SetIsWorking(true).
-					Save(ctx)
+				if now.Sub(*cam.LastPingTime) > cutoffAge {
+					_, err := client.Camera.UpdateOneID(cam.ID).
+						SetIsWorking(false).
+						Save(ctx)
+					if err != nil {
+						log.Printf("[%s] ❌ Failed to mark camera %s (IMEI: %s) as not working: %v", workerID, cam.Name, cam.Imei, err)
+					} else {
+						log.Printf("[%s] 🛠️ Camera marked not working: %s (IMEI: %s)", workerID, cam.Name, cam.Imei)
+					}
+				} else {
+					_, _ = client.Camera.UpdateOneID(cam.ID).
+						SetIsWorking(true).
+						Save(ctx)
 
-				log.Printf("[%s] ✅ Camera is working: %s (IMEI: %s)", workerID, cam.Name, cam.Imei)
+					log.Printf("[%s] ✅ Camera is working: %s (IMEI: %s)", workerID, cam.Name, cam.Imei)
+				}
 			}
+
 		}
 	}
 }
