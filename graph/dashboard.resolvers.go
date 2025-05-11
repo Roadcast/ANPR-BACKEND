@@ -13,7 +13,6 @@ import (
 	"go-ent-project/internal/ent/camera"
 	"go-ent-project/internal/ent/event"
 	"go-ent-project/internal/ent/policestation"
-	"sort"
 	"time"
 )
 
@@ -63,49 +62,41 @@ func (r *queryResolver) PoliceStationCameraStatusCounts(ctx context.Context) ([]
 
 // VehicleTrackingStats is the resolver for the vehicleTrackingStats field.
 func (r *queryResolver) VehicleTrackingStats(ctx context.Context) ([]*model.VehicleTrackingStat, error) {
-	type result struct {
-		CreatedAt    time.Time `json:"created_at"`
-		VehicleCount int       `json:"count"`
+	type DayStat struct {
+		Date         time.Time
+		VehicleCount int
 	}
 
 	startOfMonth := time.Date(time.Now().Year(), time.Now().Month(), 1, 0, 0, 0, 0, time.UTC)
 	startOfNextMonth := startOfMonth.AddDate(0, 1, 0)
 
-	var rows []result
-	err := r.Client.Event.
-		Query().Where(
-		event.CreatedAtGTE(startOfMonth),    // created_at >= start of this month
-		event.CreatedAtLT(startOfNextMonth), // created_at < start of next month
-	).GroupBy(event.FieldCreatedAt).
-		Aggregate(ent.Count()).
-		Scan(ctx, &rows)
+	sqlStr := `
+		SELECT created_at::date AS date, COUNT(*) AS count
+		FROM events
+		WHERE created_at >= $1 AND created_at < $2
+		GROUP BY date
+		ORDER BY date;
+	`
 
+	rows, err := r.SQL.QueryContext(ctx, sqlStr, startOfMonth, startOfNextMonth)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch vehicle stats: %w", err)
+		return nil, fmt.Errorf("failed to execute raw SQL for vehicle tracking stats: %w", err)
 	}
+	defer rows.Close()
 
-	dateCount := make(map[string]int)
-
-	for _, row := range rows {
-		date := row.CreatedAt.Format("2006-01-02") // Only date part
-		dateCount[date]++
-	}
-
-	// Prepare the final output
-	var output []*model.VehicleTrackingStat
-	for date, count := range dateCount {
-		output = append(output, &model.VehicleTrackingStat{
-			Date:         date,
-			VehicleCount: count,
+	var results []*model.VehicleTrackingStat
+	for rows.Next() {
+		var stat DayStat
+		if err := rows.Scan(&stat.Date, &stat.VehicleCount); err != nil {
+			return nil, fmt.Errorf("row scan error: %w", err)
+		}
+		results = append(results, &model.VehicleTrackingStat{
+			Date:         stat.Date.Format("2006-01-02"),
+			VehicleCount: stat.VehicleCount,
 		})
 	}
 
-	// Optionally, sort by date
-	sort.Slice(output, func(i, j int) bool {
-		return output[i].Date < output[j].Date
-	})
-
-	return output, nil
+	return results, nil
 }
 
 // DashboardStats is the resolver for the dashboardStats field.
