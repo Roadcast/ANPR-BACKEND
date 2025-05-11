@@ -16,6 +16,7 @@ import (
 	_ "github.com/lib/pq" // PostgreSQL driver
 	"github.com/vektah/gqlparser/v2/ast"
 	"go-ent-project/config"
+	"go-ent-project/cron"
 	"go-ent-project/graph"
 	"go-ent-project/internal/ent"
 	"go-ent-project/utils/celery"
@@ -58,6 +59,7 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
+	go cron.StartCameraHealthCheck(client, "worker-1")
 
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{
