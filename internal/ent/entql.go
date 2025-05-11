@@ -40,6 +40,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			camera.FieldLocation:        {Type: field.TypeString, Column: camera.FieldLocation},
 			camera.FieldActive:          {Type: field.TypeBool, Column: camera.FieldActive},
 			camera.FieldAddress:         {Type: field.TypeString, Column: camera.FieldAddress},
+			camera.FieldLastPing:        {Type: field.TypeTime, Column: camera.FieldLastPing},
 			camera.FieldIsWorking:       {Type: field.TypeBool, Column: camera.FieldIsWorking},
 			camera.FieldDistrict:        {Type: field.TypeString, Column: camera.FieldDistrict},
 			camera.FieldPoliceStationID: {Type: field.TypeUUID, Column: camera.FieldPoliceStationID},
@@ -407,6 +408,11 @@ func (f *CameraFilter) WhereActive(p entql.BoolP) {
 // WhereAddress applies the entql string predicate on the address field.
 func (f *CameraFilter) WhereAddress(p entql.StringP) {
 	f.Where(p.Field(camera.FieldAddress))
+}
+
+// WhereLastPing applies the entql time.Time predicate on the last_ping field.
+func (f *CameraFilter) WhereLastPing(p entql.TimeP) {
+	f.Where(p.Field(camera.FieldLastPing))
 }
 
 // WhereIsWorking applies the entql bool predicate on the is_working field.

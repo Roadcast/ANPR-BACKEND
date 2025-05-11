@@ -31,6 +31,8 @@ const (
 	FieldActive = "active"
 	// FieldAddress holds the string denoting the address field in the database.
 	FieldAddress = "address"
+	// FieldLastPing holds the string denoting the last_ping field in the database.
+	FieldLastPing = "last_ping"
 	// FieldIsWorking holds the string denoting the is_working field in the database.
 	FieldIsWorking = "is_working"
 	// FieldDistrict holds the string denoting the district field in the database.
@@ -61,6 +63,7 @@ var Columns = []string{
 	FieldLocation,
 	FieldActive,
 	FieldAddress,
+	FieldLastPing,
 	FieldIsWorking,
 	FieldDistrict,
 	FieldPoliceStationID,
@@ -145,6 +148,11 @@ func ByActive(opts ...sql.OrderTermOption) OrderOption {
 // ByAddress orders the results by the address field.
 func ByAddress(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAddress, opts...).ToFunc()
+}
+
+// ByLastPing orders the results by the last_ping field.
+func ByLastPing(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastPing, opts...).ToFunc()
 }
 
 // ByIsWorking orders the results by the is_working field.

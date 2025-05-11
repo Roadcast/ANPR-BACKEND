@@ -101,6 +101,18 @@ type CameraWhereInput struct {
 	AddressEqualFold    *string  `json:"addressEqualFold,omitempty"`
 	AddressContainsFold *string  `json:"addressContainsFold,omitempty"`
 
+	// "last_ping" field predicates.
+	LastPing       *time.Time  `json:"lastPing,omitempty"`
+	LastPingNEQ    *time.Time  `json:"lastPingNEQ,omitempty"`
+	LastPingIn     []time.Time `json:"lastPingIn,omitempty"`
+	LastPingNotIn  []time.Time `json:"lastPingNotIn,omitempty"`
+	LastPingGT     *time.Time  `json:"lastPingGT,omitempty"`
+	LastPingGTE    *time.Time  `json:"lastPingGTE,omitempty"`
+	LastPingLT     *time.Time  `json:"lastPingLT,omitempty"`
+	LastPingLTE    *time.Time  `json:"lastPingLTE,omitempty"`
+	LastPingIsNil  bool        `json:"lastPingIsNil,omitempty"`
+	LastPingNotNil bool        `json:"lastPingNotNil,omitempty"`
+
 	// "is_working" field predicates.
 	IsWorking    *bool `json:"isWorking,omitempty"`
 	IsWorkingNEQ *bool `json:"isWorkingNEQ,omitempty"`
@@ -387,6 +399,36 @@ func (i *CameraWhereInput) P() (predicate.Camera, error) {
 	}
 	if i.AddressContainsFold != nil {
 		predicates = append(predicates, camera.AddressContainsFold(*i.AddressContainsFold))
+	}
+	if i.LastPing != nil {
+		predicates = append(predicates, camera.LastPingEQ(*i.LastPing))
+	}
+	if i.LastPingNEQ != nil {
+		predicates = append(predicates, camera.LastPingNEQ(*i.LastPingNEQ))
+	}
+	if len(i.LastPingIn) > 0 {
+		predicates = append(predicates, camera.LastPingIn(i.LastPingIn...))
+	}
+	if len(i.LastPingNotIn) > 0 {
+		predicates = append(predicates, camera.LastPingNotIn(i.LastPingNotIn...))
+	}
+	if i.LastPingGT != nil {
+		predicates = append(predicates, camera.LastPingGT(*i.LastPingGT))
+	}
+	if i.LastPingGTE != nil {
+		predicates = append(predicates, camera.LastPingGTE(*i.LastPingGTE))
+	}
+	if i.LastPingLT != nil {
+		predicates = append(predicates, camera.LastPingLT(*i.LastPingLT))
+	}
+	if i.LastPingLTE != nil {
+		predicates = append(predicates, camera.LastPingLTE(*i.LastPingLTE))
+	}
+	if i.LastPingIsNil {
+		predicates = append(predicates, camera.LastPingIsNil())
+	}
+	if i.LastPingNotNil {
+		predicates = append(predicates, camera.LastPingNotNil())
 	}
 	if i.IsWorking != nil {
 		predicates = append(predicates, camera.IsWorkingEQ(*i.IsWorking))

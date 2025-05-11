@@ -126,6 +126,26 @@ func (cu *CameraUpdate) ClearAddress() *CameraUpdate {
 	return cu
 }
 
+// SetLastPing sets the "last_ping" field.
+func (cu *CameraUpdate) SetLastPing(t time.Time) *CameraUpdate {
+	cu.mutation.SetLastPing(t)
+	return cu
+}
+
+// SetNillableLastPing sets the "last_ping" field if the given value is not nil.
+func (cu *CameraUpdate) SetNillableLastPing(t *time.Time) *CameraUpdate {
+	if t != nil {
+		cu.SetLastPing(*t)
+	}
+	return cu
+}
+
+// ClearLastPing clears the value of the "last_ping" field.
+func (cu *CameraUpdate) ClearLastPing() *CameraUpdate {
+	cu.mutation.ClearLastPing()
+	return cu
+}
+
 // SetIsWorking sets the "is_working" field.
 func (cu *CameraUpdate) SetIsWorking(b bool) *CameraUpdate {
 	cu.mutation.SetIsWorking(b)
@@ -282,6 +302,12 @@ func (cu *CameraUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if cu.mutation.AddressCleared() {
 		_spec.ClearField(camera.FieldAddress, field.TypeString)
 	}
+	if value, ok := cu.mutation.LastPing(); ok {
+		_spec.SetField(camera.FieldLastPing, field.TypeTime, value)
+	}
+	if cu.mutation.LastPingCleared() {
+		_spec.ClearField(camera.FieldLastPing, field.TypeTime)
+	}
 	if value, ok := cu.mutation.IsWorking(); ok {
 		_spec.SetField(camera.FieldIsWorking, field.TypeBool, value)
 	}
@@ -430,6 +456,26 @@ func (cuo *CameraUpdateOne) SetNillableAddress(s *string) *CameraUpdateOne {
 // ClearAddress clears the value of the "address" field.
 func (cuo *CameraUpdateOne) ClearAddress() *CameraUpdateOne {
 	cuo.mutation.ClearAddress()
+	return cuo
+}
+
+// SetLastPing sets the "last_ping" field.
+func (cuo *CameraUpdateOne) SetLastPing(t time.Time) *CameraUpdateOne {
+	cuo.mutation.SetLastPing(t)
+	return cuo
+}
+
+// SetNillableLastPing sets the "last_ping" field if the given value is not nil.
+func (cuo *CameraUpdateOne) SetNillableLastPing(t *time.Time) *CameraUpdateOne {
+	if t != nil {
+		cuo.SetLastPing(*t)
+	}
+	return cuo
+}
+
+// ClearLastPing clears the value of the "last_ping" field.
+func (cuo *CameraUpdateOne) ClearLastPing() *CameraUpdateOne {
+	cuo.mutation.ClearLastPing()
 	return cuo
 }
 
@@ -618,6 +664,12 @@ func (cuo *CameraUpdateOne) sqlSave(ctx context.Context) (_node *Camera, err err
 	}
 	if cuo.mutation.AddressCleared() {
 		_spec.ClearField(camera.FieldAddress, field.TypeString)
+	}
+	if value, ok := cuo.mutation.LastPing(); ok {
+		_spec.SetField(camera.FieldLastPing, field.TypeTime, value)
+	}
+	if cuo.mutation.LastPingCleared() {
+		_spec.ClearField(camera.FieldLastPing, field.TypeTime)
 	}
 	if value, ok := cuo.mutation.IsWorking(); ok {
 		_spec.SetField(camera.FieldIsWorking, field.TypeBool, value)
