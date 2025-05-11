@@ -105,16 +105,16 @@ func (cc *CameraCreate) SetNillableAddress(s *string) *CameraCreate {
 	return cc
 }
 
-// SetLastPing sets the "last_ping" field.
-func (cc *CameraCreate) SetLastPing(t time.Time) *CameraCreate {
-	cc.mutation.SetLastPing(t)
+// SetLastPingTime sets the "last_ping_time" field.
+func (cc *CameraCreate) SetLastPingTime(t time.Time) *CameraCreate {
+	cc.mutation.SetLastPingTime(t)
 	return cc
 }
 
-// SetNillableLastPing sets the "last_ping" field if the given value is not nil.
-func (cc *CameraCreate) SetNillableLastPing(t *time.Time) *CameraCreate {
+// SetNillableLastPingTime sets the "last_ping_time" field if the given value is not nil.
+func (cc *CameraCreate) SetNillableLastPingTime(t *time.Time) *CameraCreate {
 	if t != nil {
-		cc.SetLastPing(*t)
+		cc.SetLastPingTime(*t)
 	}
 	return cc
 }
@@ -353,9 +353,9 @@ func (cc *CameraCreate) createSpec() (*Camera, *sqlgraph.CreateSpec) {
 		_spec.SetField(camera.FieldAddress, field.TypeString, value)
 		_node.Address = value
 	}
-	if value, ok := cc.mutation.LastPing(); ok {
-		_spec.SetField(camera.FieldLastPing, field.TypeTime, value)
-		_node.LastPing = value
+	if value, ok := cc.mutation.LastPingTime(); ok {
+		_spec.SetField(camera.FieldLastPingTime, field.TypeTime, value)
+		_node.LastPingTime = value
 	}
 	if value, ok := cc.mutation.IsWorking(); ok {
 		_spec.SetField(camera.FieldIsWorking, field.TypeBool, value)
@@ -524,21 +524,21 @@ func (u *CameraUpsert) ClearAddress() *CameraUpsert {
 	return u
 }
 
-// SetLastPing sets the "last_ping" field.
-func (u *CameraUpsert) SetLastPing(v time.Time) *CameraUpsert {
-	u.Set(camera.FieldLastPing, v)
+// SetLastPingTime sets the "last_ping_time" field.
+func (u *CameraUpsert) SetLastPingTime(v time.Time) *CameraUpsert {
+	u.Set(camera.FieldLastPingTime, v)
 	return u
 }
 
-// UpdateLastPing sets the "last_ping" field to the value that was provided on create.
-func (u *CameraUpsert) UpdateLastPing() *CameraUpsert {
-	u.SetExcluded(camera.FieldLastPing)
+// UpdateLastPingTime sets the "last_ping_time" field to the value that was provided on create.
+func (u *CameraUpsert) UpdateLastPingTime() *CameraUpsert {
+	u.SetExcluded(camera.FieldLastPingTime)
 	return u
 }
 
-// ClearLastPing clears the value of the "last_ping" field.
-func (u *CameraUpsert) ClearLastPing() *CameraUpsert {
-	u.SetNull(camera.FieldLastPing)
+// ClearLastPingTime clears the value of the "last_ping_time" field.
+func (u *CameraUpsert) ClearLastPingTime() *CameraUpsert {
+	u.SetNull(camera.FieldLastPingTime)
 	return u
 }
 
@@ -740,24 +740,24 @@ func (u *CameraUpsertOne) ClearAddress() *CameraUpsertOne {
 	})
 }
 
-// SetLastPing sets the "last_ping" field.
-func (u *CameraUpsertOne) SetLastPing(v time.Time) *CameraUpsertOne {
+// SetLastPingTime sets the "last_ping_time" field.
+func (u *CameraUpsertOne) SetLastPingTime(v time.Time) *CameraUpsertOne {
 	return u.Update(func(s *CameraUpsert) {
-		s.SetLastPing(v)
+		s.SetLastPingTime(v)
 	})
 }
 
-// UpdateLastPing sets the "last_ping" field to the value that was provided on create.
-func (u *CameraUpsertOne) UpdateLastPing() *CameraUpsertOne {
+// UpdateLastPingTime sets the "last_ping_time" field to the value that was provided on create.
+func (u *CameraUpsertOne) UpdateLastPingTime() *CameraUpsertOne {
 	return u.Update(func(s *CameraUpsert) {
-		s.UpdateLastPing()
+		s.UpdateLastPingTime()
 	})
 }
 
-// ClearLastPing clears the value of the "last_ping" field.
-func (u *CameraUpsertOne) ClearLastPing() *CameraUpsertOne {
+// ClearLastPingTime clears the value of the "last_ping_time" field.
+func (u *CameraUpsertOne) ClearLastPingTime() *CameraUpsertOne {
 	return u.Update(func(s *CameraUpsert) {
-		s.ClearLastPing()
+		s.ClearLastPingTime()
 	})
 }
 
@@ -1133,24 +1133,24 @@ func (u *CameraUpsertBulk) ClearAddress() *CameraUpsertBulk {
 	})
 }
 
-// SetLastPing sets the "last_ping" field.
-func (u *CameraUpsertBulk) SetLastPing(v time.Time) *CameraUpsertBulk {
+// SetLastPingTime sets the "last_ping_time" field.
+func (u *CameraUpsertBulk) SetLastPingTime(v time.Time) *CameraUpsertBulk {
 	return u.Update(func(s *CameraUpsert) {
-		s.SetLastPing(v)
+		s.SetLastPingTime(v)
 	})
 }
 
-// UpdateLastPing sets the "last_ping" field to the value that was provided on create.
-func (u *CameraUpsertBulk) UpdateLastPing() *CameraUpsertBulk {
+// UpdateLastPingTime sets the "last_ping_time" field to the value that was provided on create.
+func (u *CameraUpsertBulk) UpdateLastPingTime() *CameraUpsertBulk {
 	return u.Update(func(s *CameraUpsert) {
-		s.UpdateLastPing()
+		s.UpdateLastPingTime()
 	})
 }
 
-// ClearLastPing clears the value of the "last_ping" field.
-func (u *CameraUpsertBulk) ClearLastPing() *CameraUpsertBulk {
+// ClearLastPingTime clears the value of the "last_ping_time" field.
+func (u *CameraUpsertBulk) ClearLastPingTime() *CameraUpsertBulk {
 	return u.Update(func(s *CameraUpsert) {
-		s.ClearLastPing()
+		s.ClearLastPingTime()
 	})
 }
 

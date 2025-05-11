@@ -59,7 +59,7 @@ type ComplexityRoot struct {
 		ID              func(childComplexity int) int
 		Imei            func(childComplexity int) int
 		IsWorking       func(childComplexity int) int
-		LastPing        func(childComplexity int) int
+		LastPingTime    func(childComplexity int) int
 		Location        func(childComplexity int) int
 		Model           func(childComplexity int) int
 		Name            func(childComplexity int) int
@@ -485,12 +485,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Camera.IsWorking(childComplexity), true
 
-	case "Camera.lastPing":
-		if e.complexity.Camera.LastPing == nil {
+	case "Camera.lastPingTime":
+		if e.complexity.Camera.LastPingTime == nil {
 			break
 		}
 
-		return e.complexity.Camera.LastPing(childComplexity), true
+		return e.complexity.Camera.LastPingTime(childComplexity), true
 
 	case "Camera.location":
 		if e.complexity.Camera.Location == nil {
@@ -2288,7 +2288,7 @@ type Camera implements Node {
   location: String!
   active: Boolean!
   address: String
-  lastPing: Time
+  lastPingTime: Time
   isWorking: Boolean!
   district: String!
   policeStationID: ID
@@ -2436,18 +2436,18 @@ input CameraWhereInput {
   addressEqualFold: String
   addressContainsFold: String
   """
-  last_ping field predicates
+  last_ping_time field predicates
   """
-  lastPing: Time
-  lastPingNEQ: Time
-  lastPingIn: [Time!]
-  lastPingNotIn: [Time!]
-  lastPingGT: Time
-  lastPingGTE: Time
-  lastPingLT: Time
-  lastPingLTE: Time
-  lastPingIsNil: Boolean
-  lastPingNotNil: Boolean
+  lastPingTime: Time
+  lastPingTimeNEQ: Time
+  lastPingTimeIn: [Time!]
+  lastPingTimeNotIn: [Time!]
+  lastPingTimeGT: Time
+  lastPingTimeGTE: Time
+  lastPingTimeLT: Time
+  lastPingTimeLTE: Time
+  lastPingTimeIsNil: Boolean
+  lastPingTimeNotNil: Boolean
   """
   is_working field predicates
   """
@@ -2691,7 +2691,7 @@ input CreateCameraInput {
   location: String!
   active: Boolean
   address: String
-  lastPing: Time
+  lastPingTime: Time
   isWorking: Boolean
   district: String
   policeStationID: ID
@@ -4099,8 +4099,8 @@ input UpdateCameraInput {
   active: Boolean
   address: String
   clearAddress: Boolean
-  lastPing: Time
-  clearLastPing: Boolean
+  lastPingTime: Time
+  clearLastPingTime: Boolean
   isWorking: Boolean
   district: String
   policeStationID: ID
@@ -7223,8 +7223,8 @@ func (ec *executionContext) fieldContext_Camera_address(_ context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Camera_lastPing(ctx context.Context, field graphql.CollectedField, obj *ent.Camera) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Camera_lastPing(ctx, field)
+func (ec *executionContext) _Camera_lastPingTime(ctx context.Context, field graphql.CollectedField, obj *ent.Camera) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Camera_lastPingTime(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -7237,7 +7237,7 @@ func (ec *executionContext) _Camera_lastPing(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.LastPing, nil
+		return obj.LastPingTime, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7251,7 +7251,7 @@ func (ec *executionContext) _Camera_lastPing(ctx context.Context, field graphql.
 	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Camera_lastPing(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Camera_lastPingTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Camera",
 		Field:      field,
@@ -7661,8 +7661,8 @@ func (ec *executionContext) fieldContext_CameraEdge_node(_ context.Context, fiel
 				return ec.fieldContext_Camera_active(ctx, field)
 			case "address":
 				return ec.fieldContext_Camera_address(ctx, field)
-			case "lastPing":
-				return ec.fieldContext_Camera_lastPing(ctx, field)
+			case "lastPingTime":
+				return ec.fieldContext_Camera_lastPingTime(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -8564,8 +8564,8 @@ func (ec *executionContext) fieldContext_CustomEvent_camera(_ context.Context, f
 				return ec.fieldContext_Camera_active(ctx, field)
 			case "address":
 				return ec.fieldContext_Camera_address(ctx, field)
-			case "lastPing":
-				return ec.fieldContext_Camera_lastPing(ctx, field)
+			case "lastPingTime":
+				return ec.fieldContext_Camera_lastPingTime(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -10933,8 +10933,8 @@ func (ec *executionContext) fieldContext_Mutation_addCameraToPoliceStation(ctx c
 				return ec.fieldContext_Camera_active(ctx, field)
 			case "address":
 				return ec.fieldContext_Camera_address(ctx, field)
-			case "lastPing":
-				return ec.fieldContext_Camera_lastPing(ctx, field)
+			case "lastPingTime":
+				return ec.fieldContext_Camera_lastPingTime(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -11346,8 +11346,8 @@ func (ec *executionContext) fieldContext_Mutation_removeCameraFromPoliceStation(
 				return ec.fieldContext_Camera_active(ctx, field)
 			case "address":
 				return ec.fieldContext_Camera_address(ctx, field)
-			case "lastPing":
-				return ec.fieldContext_Camera_lastPing(ctx, field)
+			case "lastPingTime":
+				return ec.fieldContext_Camera_lastPingTime(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -11676,8 +11676,8 @@ func (ec *executionContext) fieldContext_Mutation_addCamera(ctx context.Context,
 				return ec.fieldContext_Camera_active(ctx, field)
 			case "address":
 				return ec.fieldContext_Camera_address(ctx, field)
-			case "lastPing":
-				return ec.fieldContext_Camera_lastPing(ctx, field)
+			case "lastPingTime":
+				return ec.fieldContext_Camera_lastPingTime(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -11761,8 +11761,8 @@ func (ec *executionContext) fieldContext_Mutation_updateCamera(ctx context.Conte
 				return ec.fieldContext_Camera_active(ctx, field)
 			case "address":
 				return ec.fieldContext_Camera_address(ctx, field)
-			case "lastPing":
-				return ec.fieldContext_Camera_lastPing(ctx, field)
+			case "lastPingTime":
+				return ec.fieldContext_Camera_lastPingTime(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -13999,8 +13999,8 @@ func (ec *executionContext) fieldContext_PoliceStation_camera(_ context.Context,
 				return ec.fieldContext_Camera_active(ctx, field)
 			case "address":
 				return ec.fieldContext_Camera_address(ctx, field)
-			case "lastPing":
-				return ec.fieldContext_Camera_lastPing(ctx, field)
+			case "lastPingTime":
+				return ec.fieldContext_Camera_lastPingTime(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -15304,8 +15304,8 @@ func (ec *executionContext) fieldContext_Query_getCamera(ctx context.Context, fi
 				return ec.fieldContext_Camera_active(ctx, field)
 			case "address":
 				return ec.fieldContext_Camera_address(ctx, field)
-			case "lastPing":
-				return ec.fieldContext_Camera_lastPing(ctx, field)
+			case "lastPingTime":
+				return ec.fieldContext_Camera_lastPingTime(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -16117,8 +16117,8 @@ func (ec *executionContext) fieldContext_Query_getCameraByName(ctx context.Conte
 				return ec.fieldContext_Camera_active(ctx, field)
 			case "address":
 				return ec.fieldContext_Camera_address(ctx, field)
-			case "lastPing":
-				return ec.fieldContext_Camera_lastPing(ctx, field)
+			case "lastPingTime":
+				return ec.fieldContext_Camera_lastPingTime(ctx, field)
 			case "isWorking":
 				return ec.fieldContext_Camera_isWorking(ctx, field)
 			case "district":
@@ -19809,7 +19809,7 @@ func (ec *executionContext) unmarshalInputCameraWhereInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "model", "modelNEQ", "modelIn", "modelNotIn", "modelGT", "modelGTE", "modelLT", "modelLTE", "modelContains", "modelHasPrefix", "modelHasSuffix", "modelEqualFold", "modelContainsFold", "imei", "imeiNEQ", "imeiIn", "imeiNotIn", "imeiGT", "imeiGTE", "imeiLT", "imeiLTE", "imeiContains", "imeiHasPrefix", "imeiHasSuffix", "imeiEqualFold", "imeiContainsFold", "active", "activeNEQ", "address", "addressNEQ", "addressIn", "addressNotIn", "addressGT", "addressGTE", "addressLT", "addressLTE", "addressContains", "addressHasPrefix", "addressHasSuffix", "addressIsNil", "addressNotNil", "addressEqualFold", "addressContainsFold", "lastPing", "lastPingNEQ", "lastPingIn", "lastPingNotIn", "lastPingGT", "lastPingGTE", "lastPingLT", "lastPingLTE", "lastPingIsNil", "lastPingNotNil", "isWorking", "isWorkingNEQ", "district", "districtNEQ", "districtIn", "districtNotIn", "districtGT", "districtGTE", "districtLT", "districtLTE", "districtContains", "districtHasPrefix", "districtHasSuffix", "districtEqualFold", "districtContainsFold", "hasPoliceStation", "hasPoliceStationWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "model", "modelNEQ", "modelIn", "modelNotIn", "modelGT", "modelGTE", "modelLT", "modelLTE", "modelContains", "modelHasPrefix", "modelHasSuffix", "modelEqualFold", "modelContainsFold", "imei", "imeiNEQ", "imeiIn", "imeiNotIn", "imeiGT", "imeiGTE", "imeiLT", "imeiLTE", "imeiContains", "imeiHasPrefix", "imeiHasSuffix", "imeiEqualFold", "imeiContainsFold", "active", "activeNEQ", "address", "addressNEQ", "addressIn", "addressNotIn", "addressGT", "addressGTE", "addressLT", "addressLTE", "addressContains", "addressHasPrefix", "addressHasSuffix", "addressIsNil", "addressNotNil", "addressEqualFold", "addressContainsFold", "lastPingTime", "lastPingTimeNEQ", "lastPingTimeIn", "lastPingTimeNotIn", "lastPingTimeGT", "lastPingTimeGTE", "lastPingTimeLT", "lastPingTimeLTE", "lastPingTimeIsNil", "lastPingTimeNotNil", "isWorking", "isWorkingNEQ", "district", "districtNEQ", "districtIn", "districtNotIn", "districtGT", "districtGTE", "districtLT", "districtLTE", "districtContains", "districtHasPrefix", "districtHasSuffix", "districtEqualFold", "districtContainsFold", "hasPoliceStation", "hasPoliceStationWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -20285,76 +20285,76 @@ func (ec *executionContext) unmarshalInputCameraWhereInput(ctx context.Context, 
 				return it, err
 			}
 			it.AddressContainsFold = data
-		case "lastPing":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPing"))
+		case "lastPingTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingTime"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastPing = data
-		case "lastPingNEQ":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingNEQ"))
+			it.LastPingTime = data
+		case "lastPingTimeNEQ":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingTimeNEQ"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastPingNEQ = data
-		case "lastPingIn":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingIn"))
+			it.LastPingTimeNEQ = data
+		case "lastPingTimeIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingTimeIn"))
 			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastPingIn = data
-		case "lastPingNotIn":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingNotIn"))
+			it.LastPingTimeIn = data
+		case "lastPingTimeNotIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingTimeNotIn"))
 			data, err := ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastPingNotIn = data
-		case "lastPingGT":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingGT"))
+			it.LastPingTimeNotIn = data
+		case "lastPingTimeGT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingTimeGT"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastPingGT = data
-		case "lastPingGTE":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingGTE"))
+			it.LastPingTimeGT = data
+		case "lastPingTimeGTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingTimeGTE"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastPingGTE = data
-		case "lastPingLT":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingLT"))
+			it.LastPingTimeGTE = data
+		case "lastPingTimeLT":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingTimeLT"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastPingLT = data
-		case "lastPingLTE":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingLTE"))
+			it.LastPingTimeLT = data
+		case "lastPingTimeLTE":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingTimeLTE"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastPingLTE = data
-		case "lastPingIsNil":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingIsNil"))
+			it.LastPingTimeLTE = data
+		case "lastPingTimeIsNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingTimeIsNil"))
 			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastPingIsNil = data
-		case "lastPingNotNil":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingNotNil"))
+			it.LastPingTimeIsNil = data
+		case "lastPingTimeNotNil":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingTimeNotNil"))
 			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastPingNotNil = data
+			it.LastPingTimeNotNil = data
 		case "isWorking":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isWorking"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -21287,7 +21287,7 @@ func (ec *executionContext) unmarshalInputCreateCameraInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "name", "model", "imei", "location", "active", "address", "lastPing", "isWorking", "district", "policeStationID"}
+	fieldsInOrder := [...]string{"createdAt", "updatedAt", "name", "model", "imei", "location", "active", "address", "lastPingTime", "isWorking", "district", "policeStationID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -21350,13 +21350,13 @@ func (ec *executionContext) unmarshalInputCreateCameraInput(ctx context.Context,
 				return it, err
 			}
 			it.Address = data
-		case "lastPing":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPing"))
+		case "lastPingTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingTime"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastPing = data
+			it.LastPingTime = data
 		case "isWorking":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isWorking"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -25214,7 +25214,7 @@ func (ec *executionContext) unmarshalInputUpdateCameraInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "name", "model", "imei", "location", "active", "address", "clearAddress", "lastPing", "clearLastPing", "isWorking", "district", "policeStationID", "clearPoliceStation"}
+	fieldsInOrder := [...]string{"updatedAt", "name", "model", "imei", "location", "active", "address", "clearAddress", "lastPingTime", "clearLastPingTime", "isWorking", "district", "policeStationID", "clearPoliceStation"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -25277,20 +25277,20 @@ func (ec *executionContext) unmarshalInputUpdateCameraInput(ctx context.Context,
 				return it, err
 			}
 			it.ClearAddress = data
-		case "lastPing":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPing"))
+		case "lastPingTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastPingTime"))
 			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.LastPing = data
-		case "clearLastPing":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearLastPing"))
+			it.LastPingTime = data
+		case "clearLastPingTime":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearLastPingTime"))
 			data, err := ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.ClearLastPing = data
+			it.ClearLastPingTime = data
 		case "isWorking":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isWorking"))
 			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
@@ -26742,8 +26742,8 @@ func (ec *executionContext) _Camera(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "address":
 			out.Values[i] = ec._Camera_address(ctx, field, obj)
-		case "lastPing":
-			out.Values[i] = ec._Camera_lastPing(ctx, field, obj)
+		case "lastPingTime":
+			out.Values[i] = ec._Camera_lastPingTime(ctx, field, obj)
 		case "isWorking":
 			out.Values[i] = ec._Camera_isWorking(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

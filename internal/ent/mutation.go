@@ -54,7 +54,7 @@ type CameraMutation struct {
 	location              *string
 	active                *bool
 	address               *string
-	last_ping             *time.Time
+	last_ping_time        *time.Time
 	is_working            *bool
 	district              *string
 	clearedFields         map[string]struct{}
@@ -470,53 +470,53 @@ func (m *CameraMutation) ResetAddress() {
 	delete(m.clearedFields, camera.FieldAddress)
 }
 
-// SetLastPing sets the "last_ping" field.
-func (m *CameraMutation) SetLastPing(t time.Time) {
-	m.last_ping = &t
+// SetLastPingTime sets the "last_ping_time" field.
+func (m *CameraMutation) SetLastPingTime(t time.Time) {
+	m.last_ping_time = &t
 }
 
-// LastPing returns the value of the "last_ping" field in the mutation.
-func (m *CameraMutation) LastPing() (r time.Time, exists bool) {
-	v := m.last_ping
+// LastPingTime returns the value of the "last_ping_time" field in the mutation.
+func (m *CameraMutation) LastPingTime() (r time.Time, exists bool) {
+	v := m.last_ping_time
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLastPing returns the old "last_ping" field's value of the Camera entity.
+// OldLastPingTime returns the old "last_ping_time" field's value of the Camera entity.
 // If the Camera object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CameraMutation) OldLastPing(ctx context.Context) (v time.Time, err error) {
+func (m *CameraMutation) OldLastPingTime(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastPing is only allowed on UpdateOne operations")
+		return v, errors.New("OldLastPingTime is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastPing requires an ID field in the mutation")
+		return v, errors.New("OldLastPingTime requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastPing: %w", err)
+		return v, fmt.Errorf("querying old value for OldLastPingTime: %w", err)
 	}
-	return oldValue.LastPing, nil
+	return oldValue.LastPingTime, nil
 }
 
-// ClearLastPing clears the value of the "last_ping" field.
-func (m *CameraMutation) ClearLastPing() {
-	m.last_ping = nil
-	m.clearedFields[camera.FieldLastPing] = struct{}{}
+// ClearLastPingTime clears the value of the "last_ping_time" field.
+func (m *CameraMutation) ClearLastPingTime() {
+	m.last_ping_time = nil
+	m.clearedFields[camera.FieldLastPingTime] = struct{}{}
 }
 
-// LastPingCleared returns if the "last_ping" field was cleared in this mutation.
-func (m *CameraMutation) LastPingCleared() bool {
-	_, ok := m.clearedFields[camera.FieldLastPing]
+// LastPingTimeCleared returns if the "last_ping_time" field was cleared in this mutation.
+func (m *CameraMutation) LastPingTimeCleared() bool {
+	_, ok := m.clearedFields[camera.FieldLastPingTime]
 	return ok
 }
 
-// ResetLastPing resets all changes to the "last_ping" field.
-func (m *CameraMutation) ResetLastPing() {
-	m.last_ping = nil
-	delete(m.clearedFields, camera.FieldLastPing)
+// ResetLastPingTime resets all changes to the "last_ping_time" field.
+func (m *CameraMutation) ResetLastPingTime() {
+	m.last_ping_time = nil
+	delete(m.clearedFields, camera.FieldLastPingTime)
 }
 
 // SetIsWorking sets the "is_working" field.
@@ -726,8 +726,8 @@ func (m *CameraMutation) Fields() []string {
 	if m.address != nil {
 		fields = append(fields, camera.FieldAddress)
 	}
-	if m.last_ping != nil {
-		fields = append(fields, camera.FieldLastPing)
+	if m.last_ping_time != nil {
+		fields = append(fields, camera.FieldLastPingTime)
 	}
 	if m.is_working != nil {
 		fields = append(fields, camera.FieldIsWorking)
@@ -762,8 +762,8 @@ func (m *CameraMutation) Field(name string) (ent.Value, bool) {
 		return m.Active()
 	case camera.FieldAddress:
 		return m.Address()
-	case camera.FieldLastPing:
-		return m.LastPing()
+	case camera.FieldLastPingTime:
+		return m.LastPingTime()
 	case camera.FieldIsWorking:
 		return m.IsWorking()
 	case camera.FieldDistrict:
@@ -795,8 +795,8 @@ func (m *CameraMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldActive(ctx)
 	case camera.FieldAddress:
 		return m.OldAddress(ctx)
-	case camera.FieldLastPing:
-		return m.OldLastPing(ctx)
+	case camera.FieldLastPingTime:
+		return m.OldLastPingTime(ctx)
 	case camera.FieldIsWorking:
 		return m.OldIsWorking(ctx)
 	case camera.FieldDistrict:
@@ -868,12 +868,12 @@ func (m *CameraMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAddress(v)
 		return nil
-	case camera.FieldLastPing:
+	case camera.FieldLastPingTime:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLastPing(v)
+		m.SetLastPingTime(v)
 		return nil
 	case camera.FieldIsWorking:
 		v, ok := value.(bool)
@@ -929,8 +929,8 @@ func (m *CameraMutation) ClearedFields() []string {
 	if m.FieldCleared(camera.FieldAddress) {
 		fields = append(fields, camera.FieldAddress)
 	}
-	if m.FieldCleared(camera.FieldLastPing) {
-		fields = append(fields, camera.FieldLastPing)
+	if m.FieldCleared(camera.FieldLastPingTime) {
+		fields = append(fields, camera.FieldLastPingTime)
 	}
 	if m.FieldCleared(camera.FieldPoliceStationID) {
 		fields = append(fields, camera.FieldPoliceStationID)
@@ -952,8 +952,8 @@ func (m *CameraMutation) ClearField(name string) error {
 	case camera.FieldAddress:
 		m.ClearAddress()
 		return nil
-	case camera.FieldLastPing:
-		m.ClearLastPing()
+	case camera.FieldLastPingTime:
+		m.ClearLastPingTime()
 		return nil
 	case camera.FieldPoliceStationID:
 		m.ClearPoliceStationID()
@@ -990,8 +990,8 @@ func (m *CameraMutation) ResetField(name string) error {
 	case camera.FieldAddress:
 		m.ResetAddress()
 		return nil
-	case camera.FieldLastPing:
-		m.ResetLastPing()
+	case camera.FieldLastPingTime:
+		m.ResetLastPingTime()
 		return nil
 	case camera.FieldIsWorking:
 		m.ResetIsWorking()

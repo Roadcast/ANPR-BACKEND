@@ -101,17 +101,17 @@ type CameraWhereInput struct {
 	AddressEqualFold    *string  `json:"addressEqualFold,omitempty"`
 	AddressContainsFold *string  `json:"addressContainsFold,omitempty"`
 
-	// "last_ping" field predicates.
-	LastPing       *time.Time  `json:"lastPing,omitempty"`
-	LastPingNEQ    *time.Time  `json:"lastPingNEQ,omitempty"`
-	LastPingIn     []time.Time `json:"lastPingIn,omitempty"`
-	LastPingNotIn  []time.Time `json:"lastPingNotIn,omitempty"`
-	LastPingGT     *time.Time  `json:"lastPingGT,omitempty"`
-	LastPingGTE    *time.Time  `json:"lastPingGTE,omitempty"`
-	LastPingLT     *time.Time  `json:"lastPingLT,omitempty"`
-	LastPingLTE    *time.Time  `json:"lastPingLTE,omitempty"`
-	LastPingIsNil  bool        `json:"lastPingIsNil,omitempty"`
-	LastPingNotNil bool        `json:"lastPingNotNil,omitempty"`
+	// "last_ping_time" field predicates.
+	LastPingTime       *time.Time  `json:"lastPingTime,omitempty"`
+	LastPingTimeNEQ    *time.Time  `json:"lastPingTimeNEQ,omitempty"`
+	LastPingTimeIn     []time.Time `json:"lastPingTimeIn,omitempty"`
+	LastPingTimeNotIn  []time.Time `json:"lastPingTimeNotIn,omitempty"`
+	LastPingTimeGT     *time.Time  `json:"lastPingTimeGT,omitempty"`
+	LastPingTimeGTE    *time.Time  `json:"lastPingTimeGTE,omitempty"`
+	LastPingTimeLT     *time.Time  `json:"lastPingTimeLT,omitempty"`
+	LastPingTimeLTE    *time.Time  `json:"lastPingTimeLTE,omitempty"`
+	LastPingTimeIsNil  bool        `json:"lastPingTimeIsNil,omitempty"`
+	LastPingTimeNotNil bool        `json:"lastPingTimeNotNil,omitempty"`
 
 	// "is_working" field predicates.
 	IsWorking    *bool `json:"isWorking,omitempty"`
@@ -400,35 +400,35 @@ func (i *CameraWhereInput) P() (predicate.Camera, error) {
 	if i.AddressContainsFold != nil {
 		predicates = append(predicates, camera.AddressContainsFold(*i.AddressContainsFold))
 	}
-	if i.LastPing != nil {
-		predicates = append(predicates, camera.LastPingEQ(*i.LastPing))
+	if i.LastPingTime != nil {
+		predicates = append(predicates, camera.LastPingTimeEQ(*i.LastPingTime))
 	}
-	if i.LastPingNEQ != nil {
-		predicates = append(predicates, camera.LastPingNEQ(*i.LastPingNEQ))
+	if i.LastPingTimeNEQ != nil {
+		predicates = append(predicates, camera.LastPingTimeNEQ(*i.LastPingTimeNEQ))
 	}
-	if len(i.LastPingIn) > 0 {
-		predicates = append(predicates, camera.LastPingIn(i.LastPingIn...))
+	if len(i.LastPingTimeIn) > 0 {
+		predicates = append(predicates, camera.LastPingTimeIn(i.LastPingTimeIn...))
 	}
-	if len(i.LastPingNotIn) > 0 {
-		predicates = append(predicates, camera.LastPingNotIn(i.LastPingNotIn...))
+	if len(i.LastPingTimeNotIn) > 0 {
+		predicates = append(predicates, camera.LastPingTimeNotIn(i.LastPingTimeNotIn...))
 	}
-	if i.LastPingGT != nil {
-		predicates = append(predicates, camera.LastPingGT(*i.LastPingGT))
+	if i.LastPingTimeGT != nil {
+		predicates = append(predicates, camera.LastPingTimeGT(*i.LastPingTimeGT))
 	}
-	if i.LastPingGTE != nil {
-		predicates = append(predicates, camera.LastPingGTE(*i.LastPingGTE))
+	if i.LastPingTimeGTE != nil {
+		predicates = append(predicates, camera.LastPingTimeGTE(*i.LastPingTimeGTE))
 	}
-	if i.LastPingLT != nil {
-		predicates = append(predicates, camera.LastPingLT(*i.LastPingLT))
+	if i.LastPingTimeLT != nil {
+		predicates = append(predicates, camera.LastPingTimeLT(*i.LastPingTimeLT))
 	}
-	if i.LastPingLTE != nil {
-		predicates = append(predicates, camera.LastPingLTE(*i.LastPingLTE))
+	if i.LastPingTimeLTE != nil {
+		predicates = append(predicates, camera.LastPingTimeLTE(*i.LastPingTimeLTE))
 	}
-	if i.LastPingIsNil {
-		predicates = append(predicates, camera.LastPingIsNil())
+	if i.LastPingTimeIsNil {
+		predicates = append(predicates, camera.LastPingTimeIsNil())
 	}
-	if i.LastPingNotNil {
-		predicates = append(predicates, camera.LastPingNotNil())
+	if i.LastPingTimeNotNil {
+		predicates = append(predicates, camera.LastPingTimeNotNil())
 	}
 	if i.IsWorking != nil {
 		predicates = append(predicates, camera.IsWorkingEQ(*i.IsWorking))

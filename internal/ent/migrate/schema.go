@@ -20,7 +20,7 @@ var (
 		{Name: "location", Type: field.TypeString, SchemaType: map[string]string{"postgres": "GEOMETRY(Point, 4326)"}},
 		{Name: "active", Type: field.TypeBool, Default: true},
 		{Name: "address", Type: field.TypeString, Nullable: true},
-		{Name: "last_ping", Type: field.TypeTime, Nullable: true},
+		{Name: "last_ping_time", Type: field.TypeTime, Nullable: true},
 		{Name: "is_working", Type: field.TypeBool, Default: true},
 		{Name: "district", Type: field.TypeString, Default: "N/A"},
 		{Name: "police_station_id", Type: field.TypeUUID, Nullable: true, SchemaType: map[string]string{"postgres": "uuid"}},

@@ -96,9 +96,9 @@ func Address(v string) predicate.Camera {
 	return predicate.Camera(sql.FieldEQ(FieldAddress, v))
 }
 
-// LastPing applies equality check predicate on the "last_ping" field. It's identical to LastPingEQ.
-func LastPing(v time.Time) predicate.Camera {
-	return predicate.Camera(sql.FieldEQ(FieldLastPing, v))
+// LastPingTime applies equality check predicate on the "last_ping_time" field. It's identical to LastPingTimeEQ.
+func LastPingTime(v time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldEQ(FieldLastPingTime, v))
 }
 
 // IsWorking applies equality check predicate on the "is_working" field. It's identical to IsWorkingEQ.
@@ -541,54 +541,54 @@ func AddressContainsFold(v string) predicate.Camera {
 	return predicate.Camera(sql.FieldContainsFold(FieldAddress, v))
 }
 
-// LastPingEQ applies the EQ predicate on the "last_ping" field.
-func LastPingEQ(v time.Time) predicate.Camera {
-	return predicate.Camera(sql.FieldEQ(FieldLastPing, v))
+// LastPingTimeEQ applies the EQ predicate on the "last_ping_time" field.
+func LastPingTimeEQ(v time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldEQ(FieldLastPingTime, v))
 }
 
-// LastPingNEQ applies the NEQ predicate on the "last_ping" field.
-func LastPingNEQ(v time.Time) predicate.Camera {
-	return predicate.Camera(sql.FieldNEQ(FieldLastPing, v))
+// LastPingTimeNEQ applies the NEQ predicate on the "last_ping_time" field.
+func LastPingTimeNEQ(v time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldNEQ(FieldLastPingTime, v))
 }
 
-// LastPingIn applies the In predicate on the "last_ping" field.
-func LastPingIn(vs ...time.Time) predicate.Camera {
-	return predicate.Camera(sql.FieldIn(FieldLastPing, vs...))
+// LastPingTimeIn applies the In predicate on the "last_ping_time" field.
+func LastPingTimeIn(vs ...time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldIn(FieldLastPingTime, vs...))
 }
 
-// LastPingNotIn applies the NotIn predicate on the "last_ping" field.
-func LastPingNotIn(vs ...time.Time) predicate.Camera {
-	return predicate.Camera(sql.FieldNotIn(FieldLastPing, vs...))
+// LastPingTimeNotIn applies the NotIn predicate on the "last_ping_time" field.
+func LastPingTimeNotIn(vs ...time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldNotIn(FieldLastPingTime, vs...))
 }
 
-// LastPingGT applies the GT predicate on the "last_ping" field.
-func LastPingGT(v time.Time) predicate.Camera {
-	return predicate.Camera(sql.FieldGT(FieldLastPing, v))
+// LastPingTimeGT applies the GT predicate on the "last_ping_time" field.
+func LastPingTimeGT(v time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldGT(FieldLastPingTime, v))
 }
 
-// LastPingGTE applies the GTE predicate on the "last_ping" field.
-func LastPingGTE(v time.Time) predicate.Camera {
-	return predicate.Camera(sql.FieldGTE(FieldLastPing, v))
+// LastPingTimeGTE applies the GTE predicate on the "last_ping_time" field.
+func LastPingTimeGTE(v time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldGTE(FieldLastPingTime, v))
 }
 
-// LastPingLT applies the LT predicate on the "last_ping" field.
-func LastPingLT(v time.Time) predicate.Camera {
-	return predicate.Camera(sql.FieldLT(FieldLastPing, v))
+// LastPingTimeLT applies the LT predicate on the "last_ping_time" field.
+func LastPingTimeLT(v time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldLT(FieldLastPingTime, v))
 }
 
-// LastPingLTE applies the LTE predicate on the "last_ping" field.
-func LastPingLTE(v time.Time) predicate.Camera {
-	return predicate.Camera(sql.FieldLTE(FieldLastPing, v))
+// LastPingTimeLTE applies the LTE predicate on the "last_ping_time" field.
+func LastPingTimeLTE(v time.Time) predicate.Camera {
+	return predicate.Camera(sql.FieldLTE(FieldLastPingTime, v))
 }
 
-// LastPingIsNil applies the IsNil predicate on the "last_ping" field.
-func LastPingIsNil() predicate.Camera {
-	return predicate.Camera(sql.FieldIsNull(FieldLastPing))
+// LastPingTimeIsNil applies the IsNil predicate on the "last_ping_time" field.
+func LastPingTimeIsNil() predicate.Camera {
+	return predicate.Camera(sql.FieldIsNull(FieldLastPingTime))
 }
 
-// LastPingNotNil applies the NotNil predicate on the "last_ping" field.
-func LastPingNotNil() predicate.Camera {
-	return predicate.Camera(sql.FieldNotNull(FieldLastPing))
+// LastPingTimeNotNil applies the NotNil predicate on the "last_ping_time" field.
+func LastPingTimeNotNil() predicate.Camera {
+	return predicate.Camera(sql.FieldNotNull(FieldLastPingTime))
 }
 
 // IsWorkingEQ applies the EQ predicate on the "is_working" field.
