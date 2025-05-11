@@ -172,7 +172,7 @@ func (r *queryResolver) DistrictVehicleCounts(ctx context.Context) ([]*model.Dis
 // EventsPerHour returns number of events grouped by hour of the current day.
 func (r *queryResolver) EventsPerHour(ctx context.Context) ([]*model.EventHourStat, error) {
 	type HourStat struct {
-		Hour       time.Time `json:"hour"`
+		CreatedAt  time.Time `json:"created_at"`
 		EventCount int       `json:"count"`
 	}
 
@@ -190,7 +190,7 @@ func (r *queryResolver) EventsPerHour(ctx context.Context) ([]*model.EventHourSt
 
 	var result []*model.EventHourStat
 	for _, row := range rawStats {
-		hour := row.Hour.Format("15:00")
+		hour := row.CreatedAt.Format("15:00")
 		result = append(result, &model.EventHourStat{
 			Hour:       hour,
 			EventCount: row.EventCount,
