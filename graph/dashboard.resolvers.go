@@ -146,7 +146,12 @@ func (r *queryResolver) PoliceStationVehicleCounts(ctx context.Context) ([]*mode
 
 // DistrictVehicleCounts returns total vehicles per district.
 func (r *queryResolver) DistrictVehicleCounts(ctx context.Context) ([]*model.DistrictVehicleCount, error) {
-	results := make([]*model.DistrictVehicleCount, 0)
+	type DistrictStat struct {
+		District     string `json:"district"`
+		VehicleCount int    `json:"count"`
+	}
+	var results []DistrictStat
+
 	err := r.Client.PoliceStation.Query().GroupBy(policestation.FieldDistrict).Aggregate(ent.Count()).Scan(ctx, &results)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch district vehicle stats: %w", err)
@@ -203,8 +208,8 @@ func (r *queryResolver) EventsPerHour(ctx context.Context) ([]*model.EventHourSt
 // EventsByCamera returns number of events per camera.
 func (r *queryResolver) EventsByCamera(ctx context.Context) ([]*model.CameraEventStat, error) {
 	type CameraStat struct {
-		CameraID   string `json:"camera_id"`
-		EventCount int    `json:"count"`
+		SnapDeviceID string `json:"snap_device_id"`
+		EventCount   int    `json:"count"`
 	}
 	start := time.Now().Truncate(24 * time.Hour)
 	end := start.Add(24 * time.Hour)
@@ -221,7 +226,7 @@ func (r *queryResolver) EventsByCamera(ctx context.Context) ([]*model.CameraEven
 	var result []*model.CameraEventStat
 	for _, row := range stats {
 		result = append(result, &model.CameraEventStat{
-			CameraID:   r.Client.Camera.Query().Where(camera.ImeiEQ(row.CameraID)).OnlyX(ctx).Name,
+			CameraID:   r.Client.Camera.Query().Where(camera.ImeiEQ(row.SnapDeviceID)).OnlyX(ctx).Name,
 			EventCount: row.EventCount,
 		})
 	}
