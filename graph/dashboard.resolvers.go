@@ -225,8 +225,16 @@ func (r *queryResolver) EventsByCamera(ctx context.Context) ([]*model.CameraEven
 
 	var result []*model.CameraEventStat
 	for _, row := range stats {
+		cameraName := row.SnapDeviceID
+		findCamera, err := r.Client.Camera.Query().Where(camera.ImeiEQ(row.SnapDeviceID)).Only(ctx)
+		if findCamera == nil || err != nil {
+			cameraName = "Unknown"
+		} else {
+			cameraName = findCamera.Name
+		}
+
 		result = append(result, &model.CameraEventStat{
-			CameraID:   r.Client.Camera.Query().Where(camera.ImeiEQ(row.SnapDeviceID)).OnlyX(ctx).Name,
+			CameraID:   cameraName,
 			EventCount: row.EventCount,
 		})
 	}
