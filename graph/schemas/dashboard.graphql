@@ -18,6 +18,7 @@ type DashboardStats {
     totalUsers: Int!
     totalCameras: Int!
     workingCameras: Int!
+    nonWorkingCameras: Int!
 }
 
 
@@ -54,5 +55,4 @@ extend type Query {
     eventsByCamera: [CameraEventStat!]!
 
 }
-
 

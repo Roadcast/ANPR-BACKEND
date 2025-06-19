@@ -121,10 +121,19 @@ func (r *queryResolver) DashboardStats(ctx context.Context) (*model.DashboardSta
 		return nil, fmt.Errorf("failed to count working cameras: %w", err)
 	}
 
+	// Count non-working cameras
+	nonWorkingCameras, err := r.Client.Camera.Query().Where(
+		camera.IsWorking(false),
+	).Count(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to count non-working cameras: %w", err)
+	}
+
 	return &model.DashboardStats{
-		TotalUsers:     totalUsers,
-		TotalCameras:   totalCameras,
-		WorkingCameras: workingCameras,
+		TotalUsers:        totalUsers,
+		TotalCameras:      totalCameras,
+		WorkingCameras:    workingCameras,
+		NonWorkingCameras: nonWorkingCameras,
 	}, nil
 }
 
