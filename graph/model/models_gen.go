@@ -20,9 +20,10 @@ type CustomEvent struct {
 }
 
 type DashboardStats struct {
-	TotalUsers     int `json:"totalUsers"`
-	TotalCameras   int `json:"totalCameras"`
-	WorkingCameras int `json:"workingCameras"`
+	TotalUsers        int `json:"totalUsers"`
+	TotalCameras      int `json:"totalCameras"`
+	WorkingCameras    int `json:"workingCameras"`
+	NonWorkingCameras int `json:"nonWorkingCameras"`
 }
 
 type DistrictVehicleCount struct {

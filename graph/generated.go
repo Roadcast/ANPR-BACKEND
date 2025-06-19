@@ -116,9 +116,10 @@ type ComplexityRoot struct {
 	}
 
 	DashboardStats struct {
-		TotalCameras   func(childComplexity int) int
-		TotalUsers     func(childComplexity int) int
-		WorkingCameras func(childComplexity int) int
+		NonWorkingCameras func(childComplexity int) int
+		TotalCameras      func(childComplexity int) int
+		TotalUsers        func(childComplexity int) int
+		WorkingCameras    func(childComplexity int) int
 	}
 
 	DistrictVehicleCount struct {
@@ -744,6 +745,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CustomEvent.Event(childComplexity), true
+
+	case "DashboardStats.nonWorkingCameras":
+		if e.complexity.DashboardStats.NonWorkingCameras == nil {
+			break
+		}
+
+		return e.complexity.DashboardStats.NonWorkingCameras(childComplexity), true
 
 	case "DashboardStats.totalCameras":
 		if e.complexity.DashboardStats.TotalCameras == nil {
@@ -9047,6 +9055,50 @@ func (ec *executionContext) fieldContext_DashboardStats_workingCameras(_ context
 	return fc, nil
 }
 
+func (ec *executionContext) _DashboardStats_nonWorkingCameras(ctx context.Context, field graphql.CollectedField, obj *model.DashboardStats) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DashboardStats_nonWorkingCameras(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.NonWorkingCameras, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DashboardStats_nonWorkingCameras(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DashboardStats",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _DistrictVehicleCount_district(ctx context.Context, field graphql.CollectedField, obj *model.DistrictVehicleCount) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_DistrictVehicleCount_district(ctx, field)
 	if err != nil {
@@ -16386,6 +16438,8 @@ func (ec *executionContext) fieldContext_Query_dashboardStats(_ context.Context,
 				return ec.fieldContext_DashboardStats_totalCameras(ctx, field)
 			case "workingCameras":
 				return ec.fieldContext_DashboardStats_workingCameras(ctx, field)
+			case "nonWorkingCameras":
+				return ec.fieldContext_DashboardStats_nonWorkingCameras(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type DashboardStats", field.Name)
 		},
@@ -28064,6 +28118,11 @@ func (ec *executionContext) _DashboardStats(ctx context.Context, sel ast.Selecti
 			}
 		case "workingCameras":
 			out.Values[i] = ec._DashboardStats_workingCameras(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "nonWorkingCameras":
+			out.Values[i] = ec._DashboardStats_nonWorkingCameras(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
