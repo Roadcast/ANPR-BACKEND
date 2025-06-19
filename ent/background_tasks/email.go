@@ -62,14 +62,14 @@ func CarHandler(client *ent.Client) http.HandlerFunc {
 		}
 
 		log.Printf("🚨 Plate %s is stolen. Notifying users of station %s (%d user(s))", body.PlateNumber, station.Name, len(users))
-		sendZeptoEmails(users, body.PlateNumber, station.Name)
+		SendZeptoEmails(users, body.PlateNumber, station.Name)
 
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("Alert processed for plate: " + body.PlateNumber))
 	}
 }
 
-func sendZeptoEmails(users []*ent.User, plate string, station string) {
+func SendZeptoEmails(users []*ent.User, plate string, station string) {
 	apiKey := os.Getenv("ZEPTO_MAIL_ACCESS_TOKEN")
 	domain := os.Getenv("ZEPTO_MAIL_FROM_DOMAIN")
 	from := map[string]string{"address": domain}
